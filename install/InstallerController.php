@@ -180,11 +180,12 @@ class InstallerController
 
     private function handleStep4(): void
     {
-        $appName  = trim($_POST['app_name'] ?? 'M365 Tenant Tool');
-        $cacheTtl = (int)($_POST['cache_ttl'] ?? 15);
-        $timezone = trim($_POST['timezone'] ?? 'Europe/Berlin');
+        $appName    = trim($_POST['app_name'] ?? 'M365 Tenant Tool');
+        $appBaseUrl = rtrim(trim($_POST['app_base_url'] ?? ''), '/');
+        $cacheTtl   = (int)($_POST['cache_ttl'] ?? 15);
+        $timezone   = trim($_POST['timezone'] ?? 'Europe/Berlin');
 
-        $_SESSION['install_settings'] = compact('appName', 'cacheTtl', 'timezone');
+        $_SESSION['install_settings'] = compact('appName', 'appBaseUrl', 'cacheTtl', 'timezone');
         $_SESSION['install_step'] = 5;
         header('Location: ?step=5'); exit;
     }
@@ -226,9 +227,10 @@ class InstallerController
 
         // Save settings
         $settings = $_SESSION['install_settings'];
-        $this->saveConfig('app_name',  $settings['appName'],           false, $enc);
-        $this->saveConfig('cache_ttl', (string)$settings['cacheTtl'],  false, $enc);
-        $this->saveConfig('timezone',  $settings['timezone'],          false, $enc);
+        $this->saveConfig('app_name',     $settings['appName'],           false, $enc);
+        $this->saveConfig('app_base_url', $settings['appBaseUrl'] ?? '',  false, $enc);
+        $this->saveConfig('cache_ttl',    (string)$settings['cacheTtl'],  false, $enc);
+        $this->saveConfig('timezone',     $settings['timezone'],          false, $enc);
 
         // Write bootstrap ini (DB connection info for index.php, password encrypted)
         $bootstrapPath = dirname(__DIR__) . '/storage/db_bootstrap.ini';

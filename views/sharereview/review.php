@@ -1,15 +1,23 @@
+<?php require __DIR__ . '/_brand.php'; ?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Freigabe bestätigen</title>
+    <title>Freigabe bestätigen — <?= htmlspecialchars($brandAppName) ?></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        body { background: #f3f4f6; min-height: 100vh; display: flex; align-items: center; }
-        .review-card { max-width: 620px; width: 100%; margin: 40px auto; }
-        .brand-bar { background: #0078d4; color: #fff; border-radius: 12px 12px 0 0; padding: 20px 28px; }
+        :root {
+            --brand: <?= htmlspecialchars($brandColor) ?>;
+            --brand-dark: <?= htmlspecialchars($brandColorDark) ?>;
+            --brand-text: <?= htmlspecialchars($brandTextColor) ?>;
+        }
+        body { background: #f3f4f6; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        .review-card { max-width: 640px; width: 100%; margin: 40px auto; }
+        .brand-bar { background: var(--brand); color: var(--brand-text); border-radius: 12px 12px 0 0; padding: 18px 28px; }
+        .brand-logo { width: 38px; height: 38px; border-radius: 8px; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; overflow: hidden; flex-shrink: 0; }
+        .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
         .card-body { background: #fff; border-radius: 0 0 12px 12px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
         .scope-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
         .scope-anonymous { background: #fee2e2; color: #991b1b; }
@@ -18,17 +26,24 @@
         .info-table td { padding: 10px 14px; font-size: 14px; }
         .info-table tr:nth-child(odd) td { background: #f9fafb; }
         .info-table td:first-child { font-weight: 600; width: 140px; color: #374151; }
-        .btn-confirm { background: #0078d4; border: none; padding: 12px 32px; font-size: 15px; font-weight: 600; border-radius: 8px; }
-        .btn-confirm:hover { background: #005fa3; }
+        .btn-confirm { background: var(--brand); color: var(--brand-text) !important; border: none; padding: 12px 32px; font-size: 15px; font-weight: 600; border-radius: 8px; transition: .15s; }
+        .btn-confirm:hover { background: var(--brand-dark); }
+        footer.brand-footer { font-size: 12px; color: #9ca3af; text-align: center; padding: 16px; }
     </style>
 </head>
 <body>
 <div class="review-card">
     <div class="brand-bar d-flex align-items-center gap-3">
-        <i class="bi bi-shield-check" style="font-size:28px;"></i>
+        <div class="brand-logo">
+            <?php if ($brandLogoUrl): ?>
+                <img src="<?= htmlspecialchars($brandLogoUrl) ?>" alt="Logo">
+            <?php else: ?>
+                <?= htmlspecialchars($brandLogoText) ?>
+            <?php endif; ?>
+        </div>
         <div>
-            <div style="font-size:18px;font-weight:700;">Freigabe-Überprüfung</div>
-            <div style="font-size:13px;opacity:.85;">Bitte bestätigen Sie, ob diese Freigabe noch benötigt wird</div>
+            <div style="font-size:17px;font-weight:700;">Freigabe-Überprüfung</div>
+            <div style="font-size:13px;opacity:.85;"><?= htmlspecialchars($brandAppName) ?></div>
         </div>
     </div>
     <div class="card-body">
@@ -42,7 +57,8 @@
 
         <?php if (!empty($share)): ?>
         <p class="text-muted mb-3" style="font-size:14px;">
-            Sie wurden gebeten, die folgende Freigabe zu überprüfen:
+            Sie haben eine Datei oder einen Ordner freigegeben, die regelmäßig überprüft werden muss.
+            Bitte bestätigen Sie, ob diese Freigabe noch benötigt wird.
         </p>
 
         <table class="table info-table mb-4 rounded overflow-hidden">
@@ -52,7 +68,8 @@
                     <td>
                         <strong><?= htmlspecialchars($share['item_name'] ?? '—') ?></strong>
                         <?php if (!empty($share['item_url'])): ?>
-                            <a href="<?= htmlspecialchars($share['item_url']) ?>" target="_blank" class="ms-2 text-primary" title="Datei öffnen">
+                            <a href="<?= htmlspecialchars($share['item_url']) ?>" target="_blank"
+                               class="ms-2" style="color:var(--brand);" title="Datei öffnen">
                                 <i class="bi bi-box-arrow-up-right"></i>
                             </a>
                         <?php endif; ?>
@@ -83,12 +100,10 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Erstellt am</td>
-                    <td><?= htmlspecialchars(
-                        $share['first_detected']
-                            ? date('d.m.Y', strtotime($share['first_detected']))
-                            : '—'
-                    ) ?></td>
+                    <td>Freigabe seit</td>
+                    <td><?= $share['first_detected']
+                        ? htmlspecialchars(date('d.m.Y', strtotime($share['first_detected'])))
+                        : '—' ?></td>
                 </tr>
                 <?php if (!empty($share['auto_revoke_at'])): ?>
                 <tr>
@@ -96,7 +111,7 @@
                     <td>
                         <span class="text-danger fw-semibold">
                             <i class="bi bi-clock-history me-1"></i>
-                            <?= date('d.m.Y', strtotime($share['auto_revoke_at'])) ?>
+                            <?= htmlspecialchars(date('d.m.Y', strtotime($share['auto_revoke_at']))) ?>
                         </span>
                         <span class="text-muted ms-1" style="font-size:12px;">(danach automatischer Widerruf)</span>
                     </td>
@@ -116,12 +131,12 @@
                 <div class="form-text">Mindestens 5 Zeichen. Ihre Begründung wird protokolliert.</div>
             </div>
 
-            <div class="d-flex gap-3 align-items-center">
-                <button type="submit" class="btn btn-primary btn-confirm text-white">
+            <div class="d-flex gap-3 align-items-center flex-wrap">
+                <button type="submit" class="btn btn-confirm">
                     <i class="bi bi-check-circle me-2"></i>Freigabe bestätigen
                 </button>
                 <span class="text-muted" style="font-size:12px;">
-                    Die Freigabe wird um <?= (int)($share['review_interval_days'] ?? 30) ?> Tage verlängert.
+                    Verlängerung um <?= (int)($share['review_interval_days'] ?? 30) ?> Tage.
                 </span>
             </div>
         </form>
@@ -133,10 +148,18 @@
         <p class="text-muted mb-0" style="font-size:12px;">
             <i class="bi bi-info-circle me-1"></i>
             Dieser Link ist personalisiert und kann nur einmal verwendet werden.
-            Sie benötigen kein Passwort oder Login für diese Seite.
+            Sie benötigen kein Passwort.
+            <?php if ($brandSupportEmail): ?>
+                · Bei Fragen: <a href="mailto:<?= htmlspecialchars($brandSupportEmail) ?>"><?= htmlspecialchars($brandSupportEmail) ?></a>
+            <?php endif; ?>
         </p>
     </div>
 </div>
+
+<?php if ($brandFooter): ?>
+<footer class="brand-footer"><?= htmlspecialchars($brandFooter) ?></footer>
+<?php endif; ?>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

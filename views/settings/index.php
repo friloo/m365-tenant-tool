@@ -213,12 +213,104 @@
             </div>
         </div>
 
+        <!-- Branding: public review page -->
+        <div class="content-card mb-4" id="branding">
+            <div class="card-header-custom">
+                <i class="bi bi-palette text-primary"></i>
+                <h6>Branding — Öffentliche Bestätigungsseite</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted small mb-3">
+                    Passt das Erscheinungsbild der öffentlichen Freigabe-Bestätigungsseite an
+                    (der Link, den Freigabe-Besitzer per E-Mail erhalten).
+                </p>
+
+                <!-- Live Preview -->
+                <div class="mb-4 p-3 rounded border" id="brandPreview" style="background:#f9fafb;">
+                    <div class="d-flex align-items-center gap-3 p-2 rounded mb-2"
+                         id="previewBar" style="background:#0078d4;color:#fff;border-radius:8px;">
+                        <span id="previewLogo" style="font-size:20px;font-weight:700;">M</span>
+                        <span id="previewTitle" style="font-size:15px;font-weight:600;">Freigabe-Überprüfung</span>
+                    </div>
+                    <div class="text-muted" style="font-size:12px;">
+                        <i class="bi bi-eye me-1"></i>Vorschau der Titelleiste
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Primärfarbe</label>
+                        <div class="input-group">
+                            <input type="color" name="brand_primary_color" id="brandColor"
+                                   class="form-control form-control-color"
+                                   value="<?= $e($s['brand_primary_color']) ?>"
+                                   title="Farbe wählen">
+                            <input type="text" id="brandColorText" class="form-control font-monospace"
+                                   value="<?= $e($s['brand_primary_color']) ?>"
+                                   placeholder="#0078d4" maxlength="7" readonly>
+                        </div>
+                        <div class="form-text">Standard: #0078d4 (Microsoft Blau)</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Logo-URL</label>
+                        <input type="url" name="brand_logo_url" id="brandLogoUrl" class="form-control"
+                               value="<?= $e($s['brand_logo_url']) ?>"
+                               placeholder="https://firma.de/logo.png">
+                        <div class="form-text">PNG/SVG, wird in der Titelleiste angezeigt. Leer = Textkürzel.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Logo-Text / Kürzel</label>
+                        <input type="text" name="brand_logo_text" id="brandLogoText" class="form-control"
+                               value="<?= $e($s['brand_logo_text']) ?>"
+                               placeholder="M" maxlength="3">
+                        <div class="form-text">Kürzel wenn kein Logo gesetzt (max. 3 Zeichen).</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Support-E-Mail (optional)</label>
+                        <input type="email" name="brand_review_support_email" class="form-control"
+                               value="<?= $e($s['brand_review_support_email']) ?>"
+                               placeholder="it@firma.de">
+                        <div class="form-text">Wird auf der Bestätigungsseite als Kontakt angezeigt.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Fußzeilentext (optional)</label>
+                        <input type="text" name="brand_review_footer" class="form-control"
+                               value="<?= $e($s['brand_review_footer']) ?>"
+                               placeholder="© Firma GmbH · IT-Abteilung">
+                        <div class="form-text">Erscheint am unteren Rand der öffentlichen Seite.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary px-4">
                 <i class="bi bi-check2 me-1"></i> Einstellungen speichern
             </button>
         </div>
         </form>
+
+<script>
+// Live preview for branding
+(function () {
+    const colorPicker = document.getElementById('brandColor');
+    const colorText   = document.getElementById('brandColorText');
+    const bar         = document.getElementById('previewBar');
+    const logoText    = document.getElementById('brandLogoText');
+    const previewLogo = document.getElementById('previewLogo');
+
+    function updatePreview() {
+        const color = colorPicker.value;
+        colorText.value = color;
+        bar.style.background = color;
+        previewLogo.textContent = (logoText?.value || 'M').substring(0, 3) || 'M';
+    }
+
+    colorPicker?.addEventListener('input', updatePreview);
+    logoText?.addEventListener('input', updatePreview);
+    updatePreview();
+})();
+</script>
     </div>
 
     <!-- Sidebar actions -->

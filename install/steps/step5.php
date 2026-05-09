@@ -15,6 +15,7 @@
             <tr><td>Client Secret</td><td>●●●●●●●●</td></tr>
             <tr class="table-light"><td colspan="2"><strong>Einstellungen</strong></td></tr>
             <tr><td>App-Name</td><td><?= htmlspecialchars($settings['appName'] ?? '') ?></td></tr>
+            <tr><td>Öffentliche URL</td><td><?= htmlspecialchars($settings['appBaseUrl'] ?? '(nicht gesetzt)') ?></td></tr>
             <tr><td>Cache-TTL</td><td><?= (int)($settings['cacheTtl'] ?? 15) ?> Minuten</td></tr>
             <tr><td>Zeitzone</td><td><?= htmlspecialchars($settings['timezone'] ?? '') ?></td></tr>
         </tbody>

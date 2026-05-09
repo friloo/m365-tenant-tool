@@ -33,6 +33,11 @@ class SettingsController
             'share_review_interval_days'     => $config->get('share_review_interval_days', '30'),
             'share_review_grace_days'        => $config->get('share_review_grace_days', '7'),
             'share_review_only_anonymous'    => $config->get('share_review_only_anonymous', '0'),
+            'brand_primary_color'            => $config->get('brand_primary_color', '#0078d4'),
+            'brand_logo_url'                 => $config->get('brand_logo_url', ''),
+            'brand_logo_text'                => $config->get('brand_logo_text', ''),
+            'brand_review_support_email'     => $config->get('brand_review_support_email', ''),
+            'brand_review_footer'            => $config->get('brand_review_footer', ''),
         ];
 
         $flash = Session::getFlash('success');
@@ -67,6 +72,11 @@ class SettingsController
             $config->set('share_review_interval_days',    (string)max(1, (int)($_POST['share_review_interval_days'] ?? 30)));
             $config->set('share_review_grace_days',       (string)max(1, (int)($_POST['share_review_grace_days'] ?? 7)));
             $config->set('share_review_only_anonymous',   isset($_POST['share_review_only_anonymous']) ? '1' : '0');
+            $config->set('brand_primary_color',           trim($_POST['brand_primary_color'] ?? '#0078d4') ?: '#0078d4');
+            $config->set('brand_logo_url',                trim($_POST['brand_logo_url'] ?? ''));
+            $config->set('brand_logo_text',               trim($_POST['brand_logo_text'] ?? ''));
+            $config->set('brand_review_support_email',    trim($_POST['brand_review_support_email'] ?? ''));
+            $config->set('brand_review_footer',           trim($_POST['brand_review_footer'] ?? ''));
 
             if (!empty($_POST['smtp_password'])) {
                 $config->set('smtp_password', trim($_POST['smtp_password']), true);
