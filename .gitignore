@@ -1,0 +1,7 @@
+vendor/
+storage/app.key
+storage/db_bootstrap.ini
+storage/installed.lock
+storage/logs/
+storage/exports/
+.env
