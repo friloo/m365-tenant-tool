@@ -72,6 +72,23 @@ class DashboardService
         } catch (\Throwable) { return []; }
     }
 
+    public function getLicenseRecommendations(array $skus): array
+    {
+        $recs = [];
+        foreach ($skus as $sku) {
+            if ($sku['pct'] >= 90) {
+                $recs[] = ['type' => 'warning', 'msg' => "⚠️ <strong>{$sku['name']}</strong>: nur noch {$sku['available']} Lizenzen verfügbar ({$sku['pct']}% belegt)"];
+            }
+            if ($sku['pct'] <= 20 && $sku['consumed'] > 0 && $sku['total'] >= 10) {
+                $recs[] = ['type' => 'info', 'msg' => "💡 <strong>{$sku['name']}</strong>: {$sku['available']} ungenutzte Lizenzen ({$sku['pct']}% belegt) — Kontingent reduzierbar"];
+            }
+            if ($sku['suspended'] > 0) {
+                $recs[] = ['type' => 'danger', 'msg' => "🚫 <strong>{$sku['name']}</strong>: {$sku['suspended']} Lizenzen gesperrt"];
+            }
+        }
+        return $recs;
+    }
+
     private function friendlySkuName(string $partNumber): string
     {
         $map = [

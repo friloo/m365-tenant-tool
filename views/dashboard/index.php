@@ -58,6 +58,16 @@ $n = fn($v) => $v !== null ? number_format((int)$v) : '<span class="text-muted">
     </div>
 </div>
 
+<?php if (!empty($recommendations)): ?>
+<div class="mb-4">
+    <?php foreach ($recommendations as $rec): ?>
+        <div class="alert alert-<?= $rec['type'] === 'danger' ? 'danger' : ($rec['type'] === 'warning' ? 'warning' : 'info') ?> py-2 mb-2">
+            <?= $rec['msg'] ?>
+        </div>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
+
 <!-- Charts Row -->
 <div class="row g-3 mb-4">
     <!-- License Breakdown -->

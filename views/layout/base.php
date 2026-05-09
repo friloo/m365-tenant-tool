@@ -49,7 +49,10 @@
                 </a>
                 <div class="d-flex align-items-center gap-2 ms-2 ps-2" style="border-left: 1px solid #e5e7eb;">
                     <i class="bi bi-person-circle text-secondary"></i>
-                    <span style="font-size: 13px; font-weight: 500;"><?= \App\Core\View::escape(\App\Auth\LocalAuth::username()) ?></span>
+                    <span style="font-size:13px;font-weight:500;"><?= \App\Core\View::escape(\App\Auth\LocalAuth::username()) ?></span>
+                    <?php if (\App\Auth\LocalAuth::role() === 'operator'): ?>
+                        <span class="badge-warning" style="font-size:10px;">Operator</span>
+                    <?php endif; ?>
                 </div>
             </div>
         </header>

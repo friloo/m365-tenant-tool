@@ -1,8 +1,11 @@
 <?php
+use App\Auth\LocalAuth;
+
 $currentPath = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
 function navItem(string $icon, string $label, string $route, string $current): void {
-    $active = ($current === $route || ($route === '' && $current === '')) ? 'active' : '';
+    $base   = explode('/', $current)[0] ?? '';
+    $active = ($base === $route || ($route === '' && $current === '')) ? 'active' : '';
     echo "<a href=\"/{$route}\" class=\"nav-item {$active}\" data-route=\"{$route}\">
             <span class=\"nav-icon\"><i class=\"bi bi-{$icon}\"></i></span>
             <span class=\"nav-label\">{$label}</span>
@@ -15,6 +18,7 @@ function navItem(string $icon, string $label, string $route, string $current): v
 
 <div class="sidebar-section">Verzeichnis</div>
 <?php navItem('people', 'Benutzer', 'users', $currentPath); ?>
+<?php navItem('person-badge', 'Gastbenutzer', 'guestusers', $currentPath); ?>
 <?php navItem('diagram-3', 'Gruppen & Teams', 'groups', $currentPath); ?>
 <?php navItem('award', 'Lizenzen', 'licenses', $currentPath); ?>
 
@@ -26,3 +30,9 @@ function navItem(string $icon, string $label, string $route, string $current): v
 <div class="sidebar-section">Sicherheit</div>
 <?php navItem('shield-check', 'Sicherheit', 'security', $currentPath); ?>
 <?php navItem('phone', 'Geräte', 'devices', $currentPath); ?>
+<?php navItem('clock-history', 'Audit-Log', 'auditlog', $currentPath); ?>
+
+<?php if (LocalAuth::isAdmin()): ?>
+<div class="sidebar-section">Administration</div>
+<?php navItem('gear', 'Einstellungen', 'settings', $currentPath); ?>
+<?php endif; ?>

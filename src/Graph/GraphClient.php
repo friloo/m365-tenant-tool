@@ -67,7 +67,7 @@ class GraphClient
         return (int)($result['@odata.count'] ?? 0);
     }
 
-    private function request(string $method, string $url, bool $withCount = false): array
+    private function request(string $method, string $url, bool $withCount = false, ?array $body = null): array
     {
         $token = $this->tokenManager->getToken();
         $headers = [
@@ -80,12 +80,16 @@ class GraphClient
         }
 
         $ch = curl_init($url);
-        curl_setopt_array($ch, [
+        $opts = [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER     => $headers,
             CURLOPT_TIMEOUT        => 30,
             CURLOPT_CUSTOMREQUEST  => $method,
-        ]);
+        ];
+        if ($body !== null) {
+            $opts[CURLOPT_POSTFIELDS] = json_encode($body);
+        }
+        curl_setopt_array($ch, $opts);
 
         $attempts = 0;
         while ($attempts < 3) {
@@ -109,6 +113,10 @@ class GraphClient
             throw new \RuntimeException("Graph API error on {$url}: {$msg}");
         }
 
+        if ($httpCode === 204 || $response === '' || $response === false) {
+            return [];
+        }
+
         return json_decode($response, true) ?: [];
     }
 
@@ -119,6 +127,24 @@ class GraphClient
             $url .= (str_contains($url, '?') ? '&' : '?') . http_build_query($query);
         }
         return $url;
+    }
+
+    public function post(string $endpoint, array $body = []): array
+    {
+        $url = $this->buildUrl($endpoint);
+        return $this->request('POST', $url, false, $body);
+    }
+
+    public function patch(string $endpoint, array $body): void
+    {
+        $url = $this->buildUrl($endpoint);
+        $this->request('PATCH', $url, false, $body);
+    }
+
+    public function delete(string $endpoint): void
+    {
+        $url = $this->buildUrl($endpoint);
+        $this->request('DELETE', $url);
     }
 
     public function getCache(): GraphCache

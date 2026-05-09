@@ -64,6 +64,12 @@ class SharingService
         return $shares;
     }
 
+    public function revokePermission(string $driveId, string $itemId, string $permissionId): void
+    {
+        $this->graph->delete("/drives/{$driveId}/items/{$itemId}/permissions/{$permissionId}");
+        $this->graph->getCache()->forget("sharing_items_{$driveId}");
+    }
+
     public function getSharingSummary(): array
     {
         $shares = $this->getExternalShares();

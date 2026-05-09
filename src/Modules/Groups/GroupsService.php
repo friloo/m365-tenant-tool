@@ -53,6 +53,31 @@ class GroupsService
         } catch (\Throwable) { return []; }
     }
 
+    public function addMember(string $groupId, string $userId): void
+    {
+        $this->graph->post("/groups/{$groupId}/members/\$ref", [
+            '@odata.id' => "https://graph.microsoft.com/v1.0/directoryObjects/{$userId}",
+        ]);
+        $this->graph->getCache()->forget("group_members_{$groupId}");
+    }
+
+    public function removeMember(string $groupId, string $userId): void
+    {
+        $this->graph->delete("/groups/{$groupId}/members/{$userId}/\$ref");
+        $this->graph->getCache()->forget("group_members_{$groupId}");
+    }
+
+    public function searchUsers(string $query): array
+    {
+        try {
+            return $this->graph->get('/users', [
+                '$select' => 'id,displayName,userPrincipalName',
+                '$filter' => "startswith(displayName,'{$query}') or startswith(userPrincipalName,'{$query}')",
+                '$top'    => '10',
+            ]);
+        } catch (\Throwable) { return []; }
+    }
+
     public static function getType(array $group): string
     {
         $types = $group['groupTypes'] ?? [];

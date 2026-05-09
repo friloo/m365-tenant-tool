@@ -31,7 +31,19 @@ $total = count($users);
 <div class="content-card">
     <div class="table-toolbar">
         <input type="text" id="userSearch" class="search-box" placeholder="Benutzer suchen…">
-        <a href="?refresh=1" class="btn btn-sm btn-outline-secondary ms-auto">
+        <select id="userFilter" class="form-select form-select-sm ms-2" style="max-width:180px;" onchange="filterUsers()">
+            <option value="">Alle Benutzer</option>
+            <option value="active">Nur aktive</option>
+            <option value="disabled">Nur deaktivierte</option>
+            <option value="no-mfa">MFA nicht registriert</option>
+            <option value="inactive-30">Inaktiv > 30 Tage</option>
+            <option value="inactive-90">Inaktiv > 90 Tage</option>
+            <option value="no-license">Keine Lizenz</option>
+        </select>
+        <a href="/users/export" class="btn btn-sm btn-outline-secondary ms-2">
+            <i class="bi bi-download me-1"></i> CSV
+        </a>
+        <a href="?refresh=1" class="btn btn-sm btn-outline-secondary ms-2">
             <i class="bi bi-arrow-clockwise"></i> Aktualisieren
         </a>
     </div>
@@ -52,12 +64,17 @@ $total = count($users);
             <tbody>
                 <?php foreach ($users as $user): ?>
                     <?php
-                    $mfa     = $mfaMap[$user['userPrincipalName'] ?? ''] ?? null;
-                    $enabled = $user['accountEnabled'] ?? true;
-                    $licenses = count($user['assignedLicenses'] ?? []);
+                    $mfa        = $mfaMap[$user['userPrincipalName'] ?? ''] ?? null;
+                    $enabled    = $user['accountEnabled'] ?? true;
+                    $licenses   = count($user['assignedLicenses'] ?? []);
                     $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
+                    $daysAgo    = $lastSignIn ? (int)floor((time() - strtotime($lastSignIn)) / 86400) : 9999;
+                    $mfaReg     = $mfa['mfaRegistered'] ?? false;
                     ?>
-                    <tr>
+                    <tr data-enabled="<?= $enabled ? '1' : '0' ?>"
+                        data-mfa="<?= $mfaReg ? '1' : '0' ?>"
+                        data-days="<?= $daysAgo ?>"
+                        data-licenses="<?= $licenses ?>">
                         <td>
                             <div class="d-flex align-items-center gap-2">
                                 <div style="width:32px;height:32px;border-radius:50%;background:#e3f0fb;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#0078d4;flex-shrink:0;">
@@ -114,4 +131,20 @@ $total = count($users);
     </div>
 </div>
 
-<script>initTableSearch('userSearch', 'userTable');</script>
+<script>
+initTableSearch('userSearch', 'userTable');
+function filterUsers() {
+    const val = document.getElementById('userFilter').value;
+    document.querySelectorAll('#userTable tbody tr').forEach(r => {
+        let show = true;
+        const d = r.dataset;
+        if (val === 'active')      show = d.enabled === '1';
+        if (val === 'disabled')    show = d.enabled === '0';
+        if (val === 'no-mfa')      show = d.mfa === '0' && d.enabled === '1';
+        if (val === 'inactive-30') show = parseInt(d.days) > 30;
+        if (val === 'inactive-90') show = parseInt(d.days) > 90;
+        if (val === 'no-license')  show = d.licenses === '0' && d.enabled === '1';
+        r.style.display = show ? '' : 'none';
+    });
+}
+</script>

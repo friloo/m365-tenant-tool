@@ -89,31 +89,59 @@ $router->get('/logout', [\App\Modules\Auth\AuthController::class, 'logout']);
 $router->get('/',        [\App\Modules\Dashboard\DashboardController::class, 'index']);
 
 // Users
-$router->get('/users',           [\App\Modules\Users\UsersController::class, 'index']);
-$router->get('/users/{id}',      [\App\Modules\Users\UsersController::class, 'show']);
+$router->get('/users',                            [\App\Modules\Users\UsersController::class, 'index']);
+$router->get('/users/export',                     [\App\Modules\Users\UsersController::class, 'export']);
+$router->get('/users/{id}',                       [\App\Modules\Users\UsersController::class, 'show']);
+$router->post('/users/{id}/toggle-enabled',       [\App\Modules\Users\UsersController::class, 'toggleEnabled']);
+$router->post('/users/{id}/reset-mfa',            [\App\Modules\Users\UsersController::class, 'resetMfa']);
+$router->post('/users/{id}/assign-license',       [\App\Modules\Users\UsersController::class, 'assignLicense']);
+$router->post('/users/{id}/remove-license',       [\App\Modules\Users\UsersController::class, 'removeLicense']);
 
 // OneDrive
-$router->get('/onedrive',        [\App\Modules\OneDrive\OneDriveController::class, 'index']);
+$router->get('/onedrive',                         [\App\Modules\OneDrive\OneDriveController::class, 'index']);
 
 // SharePoint
-$router->get('/sharepoint',      [\App\Modules\SharePoint\SharePointController::class, 'index']);
-$router->get('/sharepoint/{id}', [\App\Modules\SharePoint\SharePointController::class, 'site']);
+$router->get('/sharepoint',                       [\App\Modules\SharePoint\SharePointController::class, 'index']);
+$router->get('/sharepoint/{id}',                  [\App\Modules\SharePoint\SharePointController::class, 'site']);
 
 // Sharing
-$router->get('/sharing',         [\App\Modules\Sharing\SharingController::class, 'index']);
+$router->get('/sharing',                          [\App\Modules\Sharing\SharingController::class, 'index']);
+$router->get('/sharing/export',                   [\App\Modules\Sharing\SharingController::class, 'export']);
+$router->post('/sharing/revoke',                  [\App\Modules\Sharing\SharingController::class, 'revoke']);
 
 // Groups
-$router->get('/groups',          [\App\Modules\Groups\GroupsController::class, 'index']);
-$router->get('/groups/{id}',     [\App\Modules\Groups\GroupsController::class, 'show']);
+$router->get('/groups',                           [\App\Modules\Groups\GroupsController::class, 'index']);
+$router->get('/groups/export',                    [\App\Modules\Groups\GroupsController::class, 'export']);
+$router->get('/groups/{id}',                      [\App\Modules\Groups\GroupsController::class, 'show']);
+$router->post('/groups/{id}/add-member',          [\App\Modules\Groups\GroupsController::class, 'addMember']);
+$router->post('/groups/{id}/remove-member/{uid}', [\App\Modules\Groups\GroupsController::class, 'removeMember']);
 
 // Licenses
-$router->get('/licenses',        [\App\Modules\Licenses\LicensesController::class, 'index']);
+$router->get('/licenses',                         [\App\Modules\Licenses\LicensesController::class, 'index']);
+$router->get('/licenses/export',                  [\App\Modules\Licenses\LicensesController::class, 'export']);
 
 // Security
-$router->get('/security',        [\App\Modules\Security\SecurityController::class, 'index']);
+$router->get('/security',                         [\App\Modules\Security\SecurityController::class, 'index']);
 
 // Devices
-$router->get('/devices',         [\App\Modules\Devices\DevicesController::class, 'index']);
+$router->get('/devices',                          [\App\Modules\Devices\DevicesController::class, 'index']);
+$router->get('/devices/export',                   [\App\Modules\Devices\DevicesController::class, 'export']);
+
+// Guest Users
+$router->get('/guestusers',                       [\App\Modules\GuestUsers\GuestUsersController::class, 'index']);
+$router->get('/guestusers/export',                [\App\Modules\GuestUsers\GuestUsersController::class, 'export']);
+$router->post('/guestusers/{id}/disable',         [\App\Modules\GuestUsers\GuestUsersController::class, 'disable']);
+$router->post('/guestusers/{id}/remove',          [\App\Modules\GuestUsers\GuestUsersController::class, 'remove']);
+
+// Audit Log
+$router->get('/auditlog',                         [\App\Modules\AuditLog\AuditLogController::class, 'index']);
+$router->get('/auditlog/export',                  [\App\Modules\AuditLog\AuditLogController::class, 'export']);
+
+// Settings
+$router->get('/settings',                         [\App\Modules\Settings\SettingsController::class, 'index']);
+$router->post('/settings/save',                   [\App\Modules\Settings\SettingsController::class, 'save']);
+$router->get('/settings/clear-cache',             [\App\Modules\Settings\SettingsController::class, 'clearCache']);
+$router->get('/settings/test-mail',               [\App\Modules\Settings\SettingsController::class, 'testMail']);
 
 // ── Dispatch ──────────────────────────────────────────────
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';

@@ -54,6 +54,57 @@ class UsersService
         } catch (\Throwable) { return []; }
     }
 
+    public function setAccountEnabled(string $userId, bool $enabled): void
+    {
+        $this->graph->patch("/users/{$userId}", ['accountEnabled' => $enabled]);
+        $this->graph->getCache()->forget('users_all');
+        $this->graph->getCache()->forget("user_{$userId}");
+    }
+
+    public function resetMfa(string $userId): void
+    {
+        // Retrieve and delete all non-password auth methods
+        $methods = $this->graph->get("/users/{$userId}/authentication/methods");
+        foreach ($methods['value'] ?? [] as $method) {
+            $type = $method['@odata.type'] ?? '';
+            if (str_contains($type, 'password')) continue;
+            $id = $method['id'] ?? '';
+            if (!$id) continue;
+            $endpoint = match(true) {
+                str_contains($type, 'microsoftAuthenticator') => "/users/{$userId}/authentication/microsoftAuthenticatorMethods/{$id}",
+                str_contains($type, 'phone')                  => "/users/{$userId}/authentication/phoneMethods/{$id}",
+                str_contains($type, 'fido2')                  => "/users/{$userId}/authentication/fido2Methods/{$id}",
+                default => null,
+            };
+            if ($endpoint) {
+                try { $this->graph->delete($endpoint); } catch (\Throwable) {}
+            }
+        }
+        $this->graph->getCache()->forget("user_{$userId}");
+    }
+
+    public function assignLicense(string $userId, string $skuId): void
+    {
+        $this->graph->post("/users/{$userId}/assignLicense", [
+            'addLicenses'    => [['skuId' => $skuId, 'disabledPlans' => []]],
+            'removeLicenses' => [],
+        ]);
+        $this->graph->getCache()->forget('users_all');
+        $this->graph->getCache()->forget("user_{$userId}");
+        $this->graph->getCache()->forget('licenses_users');
+    }
+
+    public function removeLicense(string $userId, string $skuId): void
+    {
+        $this->graph->post("/users/{$userId}/assignLicense", [
+            'addLicenses'    => [],
+            'removeLicenses' => [$skuId],
+        ]);
+        $this->graph->getCache()->forget('users_all');
+        $this->graph->getCache()->forget("user_{$userId}");
+        $this->graph->getCache()->forget('licenses_users');
+    }
+
     public function getMemberOf(string $userId): array
     {
         try {

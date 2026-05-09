@@ -3,6 +3,13 @@ $items = $summary['items'] ?? [];
 $byType = $summary['byType'] ?? [];
 ?>
 
+<?php if (!empty($flash)): ?>
+    <div class="alert alert-success alert-dismissible mb-3"><i class="bi bi-check-circle me-2"></i><?= $e($flash) ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+<?php endif; ?>
+<?php if (!empty($error)): ?>
+    <div class="alert alert-danger alert-dismissible mb-3"><i class="bi bi-exclamation-triangle me-2"></i><?= $e($error) ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+<?php endif; ?>
+
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
@@ -48,6 +55,9 @@ $byType = $summary['byType'] ?? [];
             <option value="users">Externe Benutzer</option>
             <option value="organization">Organisation</option>
         </select>
+        <a href="/sharing/export" class="btn btn-sm btn-outline-secondary ms-auto">
+            <i class="bi bi-download me-1"></i> CSV
+        </a>
     </div>
     <div class="table-responsive">
         <table class="data-table" id="sharingTable">
