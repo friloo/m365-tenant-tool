@@ -109,6 +109,21 @@ $router->get('/sharing',                          [\App\Modules\Sharing\SharingC
 $router->get('/sharing/export',                   [\App\Modules\Sharing\SharingController::class, 'export']);
 $router->post('/sharing/revoke',                  [\App\Modules\Sharing\SharingController::class, 'revoke']);
 
+// Share Review (public — no auth)
+$router->get('/review/{token}',                   [\App\Modules\ShareReview\ShareReviewController::class, 'review']);
+$router->post('/review/{token}',                  [\App\Modules\ShareReview\ShareReviewController::class, 'submitReview']);
+
+// Share Review Monitor (admin)
+$router->get('/sharing/monitor',                  [\App\Modules\ShareReview\ShareReviewController::class, 'admin']);
+$router->get('/sharing/monitor/scan',             [\App\Modules\ShareReview\ShareReviewController::class, 'scan']);
+$router->post('/sharing/monitor/revoke/{id}',     [\App\Modules\ShareReview\ShareReviewController::class, 'revoke']);
+$router->post('/sharing/monitor/remind/{id}',     [\App\Modules\ShareReview\ShareReviewController::class, 'remind']);
+
+// Sharing Policies (global settings per module)
+$router->get('/sharing/policies',                 [\App\Modules\SharingPolicies\SharingPoliciesController::class, 'index']);
+$router->post('/sharing/policies/sharepoint',     [\App\Modules\SharingPolicies\SharingPoliciesController::class, 'updateSharePoint']);
+$router->post('/sharing/policies/site',           [\App\Modules\SharingPolicies\SharingPoliciesController::class, 'updateSite']);
+
 // Groups
 $router->get('/groups',                           [\App\Modules\Groups\GroupsController::class, 'index']);
 $router->get('/groups/export',                    [\App\Modules\Groups\GroupsController::class, 'export']);

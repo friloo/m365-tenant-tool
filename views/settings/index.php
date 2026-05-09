@@ -160,6 +160,59 @@
             </div>
         </div>
 
+        <!-- Share Review / Freigaben-Monitor -->
+        <div class="content-card mb-4" id="share-review">
+            <div class="card-header-custom">
+                <i class="bi bi-eye-slash text-primary"></i>
+                <h6>Freigaben-Monitor</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted small mb-3">
+                    Automatisch öffentliche / externe SharePoint-Freigaben überwachen, Besitzer per E-Mail fragen
+                    und bei Nicht-Reaktion automatisch widerrufen.
+                    <a href="/sharing/monitor" class="ms-1">→ Zum Monitor</a>
+                </p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">App-Basis-URL</label>
+                        <input type="url" name="app_base_url" class="form-control"
+                               value="<?= $e($s['app_base_url'] ?? '') ?>"
+                               placeholder="https://m365.firma.de">
+                        <div class="form-text">Wird für den Bestätigungslink in der E-Mail verwendet.</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-medium">Prüfintervall</label>
+                        <div class="input-group">
+                            <input type="number" name="share_review_interval_days" class="form-control"
+                                   value="<?= (int)($s['share_review_interval_days'] ?? 30) ?>" min="1" max="365">
+                            <span class="input-group-text">Tage</span>
+                        </div>
+                        <div class="form-text">Wie oft wird eine Bestätigung angefordert?</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-medium">Toleranzzeit</label>
+                        <div class="input-group">
+                            <input type="number" name="share_review_grace_days" class="form-control"
+                                   value="<?= (int)($s['share_review_grace_days'] ?? 7) ?>" min="1" max="60">
+                            <span class="input-group-text">Tage</span>
+                        </div>
+                        <div class="form-text">Zeit bis zum automatischen Widerruf nach Erinnerung.</div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="share_review_only_anonymous"
+                                   id="chkOnlyAnon" value="1"
+                                   <?= ($s['share_review_only_anonymous'] ?? '0') === '1' ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="chkOnlyAnon">
+                                Nur öffentliche Links (Anyone-Links) überwachen
+                                <span class="text-muted">(deaktiviert = alle externen Freigaben)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary px-4">
                 <i class="bi bi-check2 me-1"></i> Einstellungen speichern

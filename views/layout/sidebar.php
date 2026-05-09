@@ -3,9 +3,37 @@ use App\Auth\LocalAuth;
 
 $currentPath = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
+// All sidebar routes — pre-declared so each navItem can detect more-specific matches
+$_allNavRoutes = [
+    '', 'users', 'guestusers', 'groups', 'licenses',
+    'onedrive', 'sharepoint', 'sharing', 'sharing/monitor', 'sharing/policies',
+    'security', 'devices', 'auditlog', 'settings',
+];
+
 function navItem(string $icon, string $label, string $route, string $current): void {
-    $base   = explode('/', $current)[0] ?? '';
-    $active = ($base === $route || ($route === '' && $current === '')) ? 'active' : '';
+    global $_allNavRoutes;
+
+    if ($route === '') {
+        $isMatch = $current === '';
+    } else {
+        $isMatch = $current === $route || str_starts_with($current, $route . '/');
+    }
+
+    if ($isMatch) {
+        // Only mark active if no more-specific nav route also matches the current path
+        $hasMoreSpecific = false;
+        foreach ($_allNavRoutes as $r) {
+            if ($r !== $route && str_starts_with($r, $route . '/') &&
+                ($current === $r || str_starts_with($current, $r . '/'))) {
+                $hasMoreSpecific = true;
+                break;
+            }
+        }
+        $active = $hasMoreSpecific ? '' : 'active';
+    } else {
+        $active = '';
+    }
+
     echo "<a href=\"/{$route}\" class=\"nav-item {$active}\" data-route=\"{$route}\">
             <span class=\"nav-icon\"><i class=\"bi bi-{$icon}\"></i></span>
             <span class=\"nav-label\">{$label}</span>
@@ -26,6 +54,8 @@ function navItem(string $icon, string $label, string $route, string $current): v
 <?php navItem('cloud', 'OneDrive', 'onedrive', $currentPath); ?>
 <?php navItem('share', 'SharePoint', 'sharepoint', $currentPath); ?>
 <?php navItem('link-45deg', 'Freigaben', 'sharing', $currentPath); ?>
+<?php navItem('eye-slash', 'Freigaben-Monitor', 'sharing/monitor', $currentPath); ?>
+<?php navItem('sliders', 'Freigaberichtlinien', 'sharing/policies', $currentPath); ?>
 
 <div class="sidebar-section">Sicherheit</div>
 <?php navItem('shield-check', 'Sicherheit', 'security', $currentPath); ?>

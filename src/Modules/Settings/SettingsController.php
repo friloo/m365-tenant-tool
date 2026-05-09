@@ -26,9 +26,13 @@ class SettingsController
             'smtp_port'          => $config->get('smtp_port', '587'),
             'smtp_user'          => $config->get('smtp_user', ''),
             'alert_mfa_threshold'=> $config->get('alert_mfa_threshold', '80'),
-            'operator_username'  => $config->get('operator_username', ''),
-            'alert_risky_users'  => $config->get('alert_risky_users', '1'),
-            'alert_anon_shares'  => $config->get('alert_anon_shares', '1'),
+            'operator_username'              => $config->get('operator_username', ''),
+            'alert_risky_users'              => $config->get('alert_risky_users', '1'),
+            'alert_anon_shares'              => $config->get('alert_anon_shares', '1'),
+            'app_base_url'                   => $config->get('app_base_url', ''),
+            'share_review_interval_days'     => $config->get('share_review_interval_days', '30'),
+            'share_review_grace_days'        => $config->get('share_review_grace_days', '7'),
+            'share_review_only_anonymous'    => $config->get('share_review_only_anonymous', '0'),
         ];
 
         $flash = Session::getFlash('success');
@@ -57,8 +61,12 @@ class SettingsController
             $config->set('smtp_port',            (string)(int)($_POST['smtp_port'] ?? 587));
             $config->set('smtp_user',            trim($_POST['smtp_user'] ?? ''));
             $config->set('alert_mfa_threshold',  (string)(int)($_POST['alert_mfa_threshold'] ?? 80));
-            $config->set('alert_risky_users',    isset($_POST['alert_risky_users']) ? '1' : '0');
-            $config->set('alert_anon_shares',    isset($_POST['alert_anon_shares']) ? '1' : '0');
+            $config->set('alert_risky_users',             isset($_POST['alert_risky_users']) ? '1' : '0');
+            $config->set('alert_anon_shares',             isset($_POST['alert_anon_shares']) ? '1' : '0');
+            $config->set('app_base_url',                  rtrim(trim($_POST['app_base_url'] ?? ''), '/'));
+            $config->set('share_review_interval_days',    (string)max(1, (int)($_POST['share_review_interval_days'] ?? 30)));
+            $config->set('share_review_grace_days',       (string)max(1, (int)($_POST['share_review_grace_days'] ?? 7)));
+            $config->set('share_review_only_anonymous',   isset($_POST['share_review_only_anonymous']) ? '1' : '0');
 
             if (!empty($_POST['smtp_password'])) {
                 $config->set('smtp_password', trim($_POST['smtp_password']), true);
