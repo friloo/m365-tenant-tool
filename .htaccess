@@ -1,10 +1,10 @@
 RewriteEngine On
 
-# Block access to sensitive directories
-RewriteRule ^(src|config|views|storage|vendor|install)(/|$) - [F,L]
+# Block direct access to backend directories — install/ is accessible (needed for setup wizard)
+RewriteRule ^(src|config|views|storage|vendor)(/|$) - [F,L]
 RewriteRule ^composer\.(json|lock)$ - [F,L]
 
-# Route all requests to index.php
+# Route all requests to index.php (except real files and install/)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]
@@ -24,5 +24,8 @@ RewriteRule ^(.*)$ index.php [QSA,L]
     </IfModule>
 </FilesMatch>
 
-php_value session.cookie_httponly On
-php_value session.use_strict_mode On
+# php_value only works with mod_php — use php.ini or php-fpm pool config for session settings
+<IfModule mod_php.c>
+    php_value session.cookie_httponly On
+    php_value session.use_strict_mode On
+</IfModule>
