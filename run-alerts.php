@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * Alert runner — execute via cron:
+ *   0 8 * * * php /var/www/m365tool/run-alerts.php >> /var/log/m365tool-alerts.log 2>&1
+ */
+
+define('BASE_PATH', __DIR__);
+
+if (!file_exists(__DIR__ . '/storage/installed.lock')) {
+    echo "Not installed yet.\n"; exit(1);
+}
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Auth\GraphTokenManager;
+use App\Cache\GraphCache;
+use App\Core\Config;
+use App\Database\DB;
+use App\Encryption\Encryptor;
+use App\Graph\GraphClient;
+use App\Helpers\AlertRunner;
+
+$encryptor = new Encryptor(__DIR__ . '/storage/app.key');
+$ini = parse_ini_file(__DIR__ . '/storage/db_bootstrap.ini');
+DB::connect([
+    'host'     => $ini['db_host'],
+    'port'     => $ini['db_port'] ?? 3306,
+    'name'     => $ini['db_name'],
+    'user'     => $ini['db_user'],
+    'password' => $encryptor->decrypt($ini['db_password_enc']),
+]);
+
+$config = Config::getInstance();
+$config->setEncryptor($encryptor);
+
+$cache   = new GraphCache((int)$config->get('cache_ttl', 15));
+$tokens  = new GraphTokenManager($encryptor);
+$graph   = new GraphClient($tokens, $cache);
+
+$runner  = new AlertRunner($graph, $config);
+$results = $runner->run();
+
+$ts = date('Y-m-d H:i:s');
+if (empty($results)) {
+    echo "[{$ts}] No alerts triggered.\n";
+} else {
+    foreach ($results as $msg) {
+        echo "[{$ts}] {$msg}\n";
+    }
+}

@@ -1,0 +1,120 @@
+<?php
+
+namespace App\Modules\Users;
+
+use App\Graph\GraphClient;
+
+class UsersService
+{
+    public function __construct(private GraphClient $graph) {}
+
+    public function getAll(): array
+    {
+        return $this->graph->paginate(
+            '/users',
+            [
+                '$select' => 'id,displayName,userPrincipalName,accountEnabled,assignedLicenses,signInActivity,createdDateTime,jobTitle,department,mail',
+                '$top'    => '999',
+            ],
+            50,
+            'users_all',
+            900
+        );
+    }
+
+    public function getOne(string $id): array
+    {
+        return $this->graph->get(
+            "/users/{$id}",
+            ['$select' => 'id,displayName,userPrincipalName,accountEnabled,assignedLicenses,signInActivity,createdDateTime,jobTitle,department,mail,mobilePhone,usageLocation,assignedPlans'],
+            "user_{$id}",
+            300
+        );
+    }
+
+    public function getMfaStatus(): array
+    {
+        try {
+            $data = $this->graph->paginate(
+                '/reports/credentialUserRegistrationDetails',
+                [],
+                50,
+                'users_mfa',
+                1800
+            );
+            $map = [];
+            foreach ($data as $row) {
+                $map[$row['userPrincipalName']] = [
+                    'mfaRegistered' => $row['isMfaRegistered'] ?? false,
+                    'mfaCapable'    => $row['isMfaCapable'] ?? false,
+                    'methods'       => $row['authMethods'] ?? [],
+                ];
+            }
+            return $map;
+        } catch (\Throwable) { return []; }
+    }
+
+    public function setAccountEnabled(string $userId, bool $enabled): void
+    {
+        $this->graph->patch("/users/{$userId}", ['accountEnabled' => $enabled]);
+        $this->graph->getCache()->forget('users_all');
+        $this->graph->getCache()->forget("user_{$userId}");
+    }
+
+    public function resetMfa(string $userId): void
+    {
+        // Retrieve and delete all non-password auth methods
+        $methods = $this->graph->get("/users/{$userId}/authentication/methods");
+        foreach ($methods['value'] ?? [] as $method) {
+            $type = $method['@odata.type'] ?? '';
+            if (str_contains($type, 'password')) continue;
+            $id = $method['id'] ?? '';
+            if (!$id) continue;
+            $endpoint = match(true) {
+                str_contains($type, 'microsoftAuthenticator') => "/users/{$userId}/authentication/microsoftAuthenticatorMethods/{$id}",
+                str_contains($type, 'phone')                  => "/users/{$userId}/authentication/phoneMethods/{$id}",
+                str_contains($type, 'fido2')                  => "/users/{$userId}/authentication/fido2Methods/{$id}",
+                default => null,
+            };
+            if ($endpoint) {
+                try { $this->graph->delete($endpoint); } catch (\Throwable) {}
+            }
+        }
+        $this->graph->getCache()->forget("user_{$userId}");
+    }
+
+    public function assignLicense(string $userId, string $skuId): void
+    {
+        $this->graph->post("/users/{$userId}/assignLicense", [
+            'addLicenses'    => [['skuId' => $skuId, 'disabledPlans' => []]],
+            'removeLicenses' => [],
+        ]);
+        $this->graph->getCache()->forget('users_all');
+        $this->graph->getCache()->forget("user_{$userId}");
+        $this->graph->getCache()->forget('licenses_users');
+    }
+
+    public function removeLicense(string $userId, string $skuId): void
+    {
+        $this->graph->post("/users/{$userId}/assignLicense", [
+            'addLicenses'    => [],
+            'removeLicenses' => [$skuId],
+        ]);
+        $this->graph->getCache()->forget('users_all');
+        $this->graph->getCache()->forget("user_{$userId}");
+        $this->graph->getCache()->forget('licenses_users');
+    }
+
+    public function getMemberOf(string $userId): array
+    {
+        try {
+            return $this->graph->paginate(
+                "/users/{$userId}/memberOf",
+                ['$select' => 'id,displayName,groupTypes'],
+                10,
+                "user_groups_{$userId}",
+                600
+            );
+        } catch (\Throwable) { return []; }
+    }
+}
