@@ -27,14 +27,15 @@ class MfaMethodsService
 
     /**
      * Fetch all users with their MFA registration details.
-     * Uses the userRegistrationDetails report endpoint.
+     * Tries the modern endpoint first, falls back to the legacy one.
      *
      * @return array<int, array>
      */
     public function getAll(): array
     {
+        // Try the modern endpoint first
         try {
-            return $this->graph->paginate(
+            $users = $this->graph->paginate(
                 '/reports/authenticationMethods/userRegistrationDetails',
                 [
                     '$select' => 'id,userPrincipalName,userDisplayName,isMfaRegistered,isMfaCapable,methodsRegistered,defaultMfaMethod',
@@ -44,9 +45,44 @@ class MfaMethodsService
                 'mfa_methods_detail',
                 1800
             );
-        } catch (\Throwable) {
+            if (!empty($users)) {
+                return $users;
+            }
+        } catch (\Throwable $e) {
+            error_log('MFA methods (new endpoint) failed: ' . $e->getMessage());
+        }
+
+        // Fallback to the legacy report endpoint — same data, different shape
+        try {
+            $rows = $this->graph->paginate(
+                '/reports/credentialUserRegistrationDetails',
+                [],
+                50,
+                'mfa_methods_legacy',
+                1800
+            );
+            if (empty($rows)) return [];
+
+            // Normalise legacy shape to match what the view expects
+            return array_map(fn($r) => [
+                'id'                => $r['id'] ?? '',
+                'userPrincipalName' => $r['userPrincipalName'] ?? '',
+                'userDisplayName'   => $r['userDisplayName'] ?? '',
+                'isMfaRegistered'   => $r['isMfaRegistered'] ?? false,
+                'isMfaCapable'      => $r['isCapable']       ?? ($r['isMfaRegistered'] ?? false),
+                'methodsRegistered' => $r['authMethods']     ?? [],
+                'defaultMfaMethod'  => '',
+            ], $rows);
+        } catch (\Throwable $e) {
+            error_log('MFA methods (legacy endpoint) failed: ' . $e->getMessage());
             return [];
         }
+    }
+
+    /** Returns the last Graph error (e.g. 403 missing permission), or null. */
+    public function getLastError(): ?array
+    {
+        return $this->graph->getLastError();
     }
 
     /**

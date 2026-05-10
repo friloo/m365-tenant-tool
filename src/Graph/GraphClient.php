@@ -10,11 +10,18 @@ class GraphClient
     private string $baseUrl = 'https://graph.microsoft.com/v1.0';
     private GraphTokenManager $tokenManager;
     private GraphCache $cache;
+    private ?array $lastError = null;
 
     public function __construct(GraphTokenManager $tokenManager, GraphCache $cache)
     {
         $this->tokenManager = $tokenManager;
         $this->cache        = $cache;
+    }
+
+    /** Returns the last silently-swallowed Graph error (403/404), or null. */
+    public function getLastError(): ?array
+    {
+        return $this->lastError;
     }
 
     public function get(string $endpoint, array $query = [], ?string $cacheKey = null, int $ttl = 900): array
@@ -29,7 +36,9 @@ class GraphClient
         $url = $this->buildUrl($endpoint, $query);
         $result = $this->request('GET', $url);
 
-        if ($cacheKey) {
+        // Don't cache responses that came from a swallowed 403/404 — otherwise
+        // the empty result sticks around long after the permission is fixed.
+        if ($cacheKey && $this->lastError === null) {
             $this->cache->set($cacheKey, $result, $ttl);
         }
         return $result;
@@ -47,15 +56,21 @@ class GraphClient
         $url = $this->buildUrl($endpoint, $query);
         $all = [];
         $pages = 0;
+        $pageError = null;
 
         while ($url && $pages < $maxPages) {
             $result = $this->request('GET', $url);
+            if ($this->lastError !== null) $pageError = $this->lastError;
             $all = array_merge($all, $result['value'] ?? []);
             $url = $result['@odata.nextLink'] ?? null;
             $pages++;
         }
 
-        if ($cacheKey) {
+        // Same: skip cache if any page returned an error, and preserve the
+        // error so callers reading getLastError() after paginate() see it
+        if ($pageError !== null) {
+            $this->lastError = $pageError;
+        } elseif ($cacheKey) {
             $this->cache->set($cacheKey, $all, $ttl);
         }
         return $all;
@@ -69,6 +84,7 @@ class GraphClient
 
     private function request(string $method, string $url, bool $withCount = false, ?array $body = null): array
     {
+        $this->lastError = null;
         $token = $this->tokenManager->getToken();
         $headers = [
             'Authorization: Bearer ' . $token,
@@ -117,12 +133,14 @@ class GraphClient
             if ($httpCode === 403 || $code === 'Authorization_RequestDenied' || $code === 'InsufficientPrivileges') {
                 if ($method === 'GET') {
                     error_log("Graph 403 (missing permission) on {$url}: {$msg}");
+                    $this->lastError = ['status' => 403, 'code' => $code, 'message' => $msg, 'url' => $url];
                     return ['value' => [], '@odata.count' => 0];
                 }
             }
 
             // 404: resource not found — return empty
             if ($httpCode === 404) {
+                $this->lastError = ['status' => 404, 'code' => $code, 'message' => $msg, 'url' => $url];
                 return ['value' => [], '@odata.count' => 0];
             }
 

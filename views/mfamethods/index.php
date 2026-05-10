@@ -11,6 +11,54 @@ $maxMethod     = !empty($byMethod)  ? max($byMethod)  : 1;
 $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
 ?>
 
+<?php if (!empty($apiError)): ?>
+<div class="alert mb-4" style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:16px;">
+    <div class="d-flex align-items-start gap-3">
+        <i class="bi bi-exclamation-triangle-fill" style="color:#dc2626;font-size:20px;flex-shrink:0;margin-top:2px;"></i>
+        <div style="flex:1;">
+            <div class="fw-semibold mb-1" style="color:#991b1b;">
+                Microsoft Graph antwortet mit HTTP <?= (int)$apiError['status'] ?> — Daten können nicht geladen werden.
+            </div>
+            <div class="small mb-2" style="color:#7f1d1d;">
+                <code><?= $e($apiError['code'] ?: 'Error') ?></code>: <?= $e($apiError['message']) ?>
+            </div>
+            <div class="small" style="color:#7f1d1d;">
+                Mögliche Ursachen:
+                <ul class="mb-2 mt-1">
+                    <li><strong>Berechtigung fehlt:</strong> Der Endpunkt benötigt
+                        <code>AuditLog.Read.All</code> + <code>Reports.Read.All</code>
+                        als <em>Anwendungs</em>-Berechtigung mit Admin-Consent.</li>
+                    <li><strong>Token ist veraltet:</strong> Nach dem Hinzufügen neuer Berechtigungen muss der
+                        gecachte Access-Token erneuert werden. Klicke auf
+                        <a href="?refresh=1"><strong>Aktualisieren</strong></a> — das leert auch den Token-Cache.</li>
+                    <li><strong>Azure AD Premium-Lizenz fehlt:</strong> Der Bericht
+                        <code>userRegistrationDetails</code> setzt mindestens eine
+                        <strong>Azure AD / Entra ID P1 oder P2</strong>-Lizenz im Tenant voraus.
+                        Ohne P1/P2 liefert die API HTTP 403 selbst mit vollständigen Berechtigungen.</li>
+                </ul>
+                Vollständige Endpunkt-URL: <code><?= $e($apiError['url']) ?></code>
+            </div>
+        </div>
+    </div>
+</div>
+<?php elseif (empty($users)): ?>
+<div class="alert mb-4" style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:16px;">
+    <div class="d-flex align-items-start gap-3">
+        <i class="bi bi-info-circle-fill" style="color:#d97706;font-size:20px;flex-shrink:0;margin-top:2px;"></i>
+        <div style="flex:1;">
+            <div class="fw-semibold mb-1" style="color:#92400e;">Keine Daten verfügbar</div>
+            <div class="small" style="color:#78350f;">
+                Microsoft Graph hat den Aufruf akzeptiert, aber eine leere Antwort geliefert.
+                Klicke auf <a href="?refresh=1"><strong>Aktualisieren</strong></a> um Token und Cache neu zu laden.
+                Falls die Liste danach weiterhin leer ist, kontrolliere die Berechtigungen
+                <code>AuditLog.Read.All</code> + <code>Reports.Read.All</code> und stelle sicher,
+                dass der Tenant eine <strong>Entra ID P1/P2-Lizenz</strong> besitzt.
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- Metric cards -->
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
