@@ -55,39 +55,93 @@
     setInterval(fmt, 60000);
 })();
 
-// ── Client-side table search ──────────────────────────────────
-function initTableSearch(inputId, tableId) {
-    const input = document.getElementById(inputId);
+// ── Client-side table pagination ─────────────────────────────
+// Works alongside initTableSearch (defined in <head>) and optional
+// filterXxx() functions. Both set dataset.searchMatch / dataset.filterMatch
+// and dispatch 'hs:filter' on the table; initPagination listens and pages.
+function initPagination(tableId, initialSize) {
     const table = document.getElementById(tableId);
-    if (!input || !table) return;
+    if (!table) return;
+    let pageSize = initialSize || 25;
+    let page = 1;
 
-    input.addEventListener('input', function () {
-        const term = this.value.toLowerCase();
-        let visible = 0;
-        table.querySelectorAll('tbody tr[data-searchable!="false"]').forEach(row => {
-            const match = row.textContent.toLowerCase().includes(term);
-            row.style.display = match ? '' : 'none';
-            if (match) visible++;
-        });
-        // Show/hide empty state
-        let empty = table.querySelector('tr.empty-search');
-        if (visible === 0 && term) {
-            if (!empty) {
-                empty = document.createElement('tr');
-                empty.className = 'empty-search';
-                const cols = table.querySelector('thead tr')?.children.length || 5;
-                empty.innerHTML = `<td colspan="${cols}" class="text-center text-muted py-4">
-                    <i class="bi bi-search me-2"></i>Keine Ergebnisse für „${term}"</td>`;
-                table.querySelector('tbody')?.appendChild(empty);
+    function allRows() {
+        return [...table.querySelectorAll('tbody tr')];
+    }
+    function pageableRows() {
+        return allRows().filter(r =>
+            r.dataset.searchMatch !== '0' && r.dataset.filterMatch !== '0'
+        );
+    }
+    function applyPage() {
+        const pr = pageableRows();
+        const total = pr.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        if (page > totalPages) page = totalPages;
+        const start = (page - 1) * pageSize;
+        const end   = start + pageSize;
+        allRows().forEach(r => {
+            if (r.dataset.searchMatch === '0' || r.dataset.filterMatch === '0') {
+                r.style.display = 'none';
+            } else {
+                r.style.display = pr.indexOf(r) >= start && pr.indexOf(r) < end ? '' : 'none';
             }
-        } else {
-            empty?.remove();
+        });
+        renderPager(total, totalPages);
+    }
+    function renderPager(total, totalPages) {
+        let pager = document.getElementById(tableId + '-pager');
+        if (!pager) {
+            pager = document.createElement('div');
+            pager.id = tableId + '-pager';
+            pager.className = 'pager-bar';
+            const card = table.closest('.content-card');
+            if (card) card.appendChild(pager);
+            else table.parentElement.insertAdjacentElement('afterend', pager);
         }
+        if (total === 0) {
+            pager.innerHTML = '<span class="text-muted small">Keine Einträge gefunden</span>';
+            return;
+        }
+        const from = (page - 1) * pageSize + 1;
+        const to   = Math.min(page * pageSize, total);
+        let btns = '', lastEllipsis = false;
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || Math.abs(i - page) <= 1) {
+                const cls = i === page ? 'btn-primary' : 'btn-outline-secondary';
+                btns += `<button class="btn btn-sm ${cls} pager-btn px-2 py-1" style="min-width:32px;" data-p="${i}">${i}</button>`;
+                lastEllipsis = false;
+            } else if (!lastEllipsis) {
+                btns += `<span class="text-muted small px-1">…</span>`;
+                lastEllipsis = true;
+            }
+        }
+        pager.innerHTML = `
+            <span class="text-muted small">${from}–${to} von ${total}</span>
+            <div class="d-flex align-items-center gap-1">
+                <button class="btn btn-sm btn-outline-secondary pager-btn px-2 py-1" data-p="prev" ${page <= 1 ? 'disabled' : ''}>‹</button>
+                ${btns}
+                <button class="btn btn-sm btn-outline-secondary pager-btn px-2 py-1" data-p="next" ${page >= totalPages ? 'disabled' : ''}>›</button>
+            </div>`;
+        pager.querySelectorAll('.pager-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const v = btn.dataset.p;
+                if      (v === 'prev') { if (page > 1) page--; }
+                else if (v === 'next') { if (page < totalPages) page++; }
+                else page = +v;
+                applyPage();
+            });
+        });
+    }
+    // Initialise default match state on all rows
+    allRows().forEach(r => {
+        if (r.dataset.searchMatch === undefined) r.dataset.searchMatch = '1';
+        if (r.dataset.filterMatch === undefined) r.dataset.filterMatch = '1';
     });
+    // Re-page whenever search or filter fires
+    table.addEventListener('hs:filter', () => { page = 1; applyPage(); });
+    applyPage();
 }
-// Process calls that were queued before app.js loaded
-(window._isqQ || []).forEach(([a, b]) => initTableSearch(a, b));
-window._isqQ = null;
 
 // ── Format bytes ──────────────────────────────────────────────
 function formatBytes(bytes) {
