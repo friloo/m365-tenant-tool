@@ -79,6 +79,6 @@ class SecurityService
             '/identity/conditionalAccessPolicies/' . $policyId,
             ['state' => $newState]
         );
-        $this->graph->getCache()->forget('ca_policies');
+        $this->graph->getCache()->forget('security_ca');
     }
 }
