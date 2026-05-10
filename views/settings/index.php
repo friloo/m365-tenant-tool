@@ -483,6 +483,19 @@
     <div class="col-lg-4">
         <div class="content-card mb-3">
             <div class="card-header-custom">
+                <i class="bi bi-shield-check text-primary"></i>
+                <h6>Graph API Berechtigungen</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="small text-muted mb-3">Prüft welche Berechtigungen dem App-Konto erteilt sind und welche Features dadurch eingeschränkt sind.</p>
+                <a href="/settings/permissions" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="bi bi-card-checklist me-1"></i> Berechtigungen prüfen
+                </a>
+            </div>
+        </div>
+
+        <div class="content-card mb-3">
+            <div class="card-header-custom">
                 <i class="bi bi-database text-secondary"></i>
                 <h6>Cache</h6>
             </div>

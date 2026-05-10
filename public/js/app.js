@@ -177,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
         { label: 'Einstellungen: Wöchentlicher Report',  icon: 'envelope-paper', url: '/settings#weekly-report',    cat: 'Einstellungen' },
         { label: 'Einstellungen: Lizenz-Kriterien',      icon: 'lightbulb',      url: '/settings#license-criteria', cat: 'Einstellungen' },
         { label: 'Einstellungen: Branding',              icon: 'palette',        url: '/settings#branding',         cat: 'Einstellungen' },
+        { label: 'Einstellungen: Berechtigungen prüfen', icon: 'shield-check',   url: '/settings/permissions',      cat: 'Einstellungen' },
     ];
 
     const overlay  = document.getElementById('qsOverlay');

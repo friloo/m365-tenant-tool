@@ -170,4 +170,39 @@ class SettingsController
         }
         Redirect::to('/settings');
     }
+
+    public function permissions(): void
+    {
+        LocalAuth::require();
+        /** @var \App\Modules\Settings\PermissionCheckerService $svc */
+        $svc     = app_service(PermissionCheckerService::class);
+        $checked = $svc->checkPermissions();
+        $summary = $svc->getSummary($checked);
+        $info    = $svc->getTokenInfo();
+        $tenant  = $svc->getTenantName();
+
+        // Group by section
+        $bySectionGranted = [];
+        $bySectionMissing = [];
+        foreach ($checked as $perm => $data) {
+            $sec = $data['section'];
+            if ($data['granted']) {
+                $bySectionGranted[$sec][] = $data;
+            } else {
+                $bySectionMissing[$sec][] = $data;
+            }
+        }
+        ksort($bySectionGranted);
+        ksort($bySectionMissing);
+
+        View::render('settings/permissions', [
+            'pageTitle'        => 'Graph API Berechtigungen',
+            'checked'          => $checked,
+            'summary'          => $summary,
+            'tokenInfo'        => $info,
+            'tenantName'       => $tenant,
+            'bySectionGranted' => $bySectionGranted,
+            'bySectionMissing' => $bySectionMissing,
+        ]);
+    }
 }
