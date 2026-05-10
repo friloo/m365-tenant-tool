@@ -143,7 +143,10 @@ $router->get('/licenses',                         [\App\Modules\Licenses\License
 $router->get('/licenses/export',                  [\App\Modules\Licenses\LicensesController::class, 'export']);
 
 // App Registrations & Enterprise Apps
-$router->get('/appregistrations',                           [\App\Modules\AppRegistrations\AppRegistrationsController::class, 'index']);
+$router->get('/appregistrations',                              [\App\Modules\AppRegistrations\AppRegistrationsController::class, 'index']);
+$router->get('/appregistrations/{id}',                         [\App\Modules\AppRegistrations\AppRegistrationsController::class, 'show']);
+$router->post('/appregistrations/{id}/add-secret',             [\App\Modules\AppRegistrations\AppRegistrationsController::class, 'addSecret']);
+$router->post('/appregistrations/{id}/delete-secret',          [\App\Modules\AppRegistrations\AppRegistrationsController::class, 'deleteSecret']);
 
 // Risky Sign-ins
 $router->get('/riskysignins',                               [\App\Modules\RiskySignIns\RiskySignInsController::class, 'index']);
@@ -177,11 +180,16 @@ $router->get('/securityposture',                  [\App\Modules\SecurityPosture\
 $router->get('/teamsusage',                       [\App\Modules\TeamsUsage\TeamsUsageController::class, 'index']);
 
 // Security
-$router->get('/security',                         [\App\Modules\Security\SecurityController::class, 'index']);
+$router->get('/security',                                    [\App\Modules\Security\SecurityController::class, 'index']);
+$router->post('/security/ca/{policyId}/toggle',              [\App\Modules\Security\SecurityController::class, 'toggleCaPolicy']);
 
 // Devices
 $router->get('/devices',                          [\App\Modules\Devices\DevicesController::class, 'index']);
 $router->get('/devices/export',                   [\App\Modules\Devices\DevicesController::class, 'export']);
+$router->get('/devices/{id}',                     [\App\Modules\Devices\DevicesController::class, 'show']);
+$router->post('/devices/{id}/sync',               [\App\Modules\Devices\DevicesController::class, 'sync']);
+$router->post('/devices/{id}/retire',             [\App\Modules\Devices\DevicesController::class, 'retire']);
+$router->post('/devices/{id}/wipe',               [\App\Modules\Devices\DevicesController::class, 'wipe']);
 
 // Guest Users
 $router->get('/guestusers',                       [\App\Modules\GuestUsers\GuestUsersController::class, 'index']);
