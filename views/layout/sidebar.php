@@ -11,6 +11,9 @@ $_allNavRoutes = [
     'mailboxes', 'appregistrations', 'servicehealth', 'cron', 'settings',
     'mfamethods', 'passwordexpiry', 'defenderalerts', 'securityposture', 'teamsusage',
     'adminroles', 'signinlog', 'adoption',
+    'msgcenter', 'mailflow',
+    'groups/inactive', 'licenses/expiry',
+    'mailboxes/shared', 'mailboxes/external-forwards',
 ];
 
 function navItem(string $icon, string $label, string $route, string $current): void {
@@ -67,6 +70,8 @@ function navItem(string $icon, string $label, string $route, string $current): v
 <?php navItem('envelope', 'Postfächer', 'mailboxes', $currentPath); ?>
 <?php navItem('camera-video', 'Teams-Nutzung', 'teamsusage', $currentPath); ?>
 <?php navItem('graph-up-arrow', 'Adoptions-Report', 'adoption', $currentPath); ?>
+<?php navItem('megaphone', 'Message Center', 'msgcenter', $currentPath); ?>
+<?php navItem('arrow-left-right', 'Mail Flow & Schutz', 'mailflow', $currentPath); ?>
 <?php navItem('heart-pulse', 'Dienststatus', 'servicehealth', $currentPath); ?>
 
 <div class="sidebar-section">Sicherheit</div>
