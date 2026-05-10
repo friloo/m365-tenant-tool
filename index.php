@@ -113,6 +113,7 @@ $router->get('/sharing/export',                   [\App\Modules\Sharing\SharingC
 $router->post('/sharing/revoke',                  [\App\Modules\Sharing\SharingController::class, 'revoke']);
 
 // Share Review (public — no auth)
+$router->get('/review/demo',                      [\App\Modules\ShareReview\ShareReviewController::class, 'demoReview']);
 $router->get('/review/{token}',                   [\App\Modules\ShareReview\ShareReviewController::class, 'review']);
 $router->post('/review/{token}',                  [\App\Modules\ShareReview\ShareReviewController::class, 'submitReview']);
 

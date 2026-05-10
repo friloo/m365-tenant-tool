@@ -496,6 +496,19 @@
 
         <div class="content-card mb-3">
             <div class="card-header-custom">
+                <i class="bi bi-eye-slash text-primary"></i>
+                <h6>Freigaben-Review — Vorschau</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="small text-muted mb-3">So sieht die Bestätigungsseite für Benutzer aus, nachdem sie eine Review-E-Mail erhalten haben.</p>
+                <a href="/review/demo" target="_blank" class="btn btn-outline-secondary btn-sm w-100">
+                    <i class="bi bi-box-arrow-up-right me-1"></i> Vorschau öffnen
+                </a>
+            </div>
+        </div>
+
+        <div class="content-card mb-3">
+            <div class="card-header-custom">
                 <i class="bi bi-shield-check text-primary"></i>
                 <h6>Graph API Berechtigungen</h6>
             </div>

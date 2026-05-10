@@ -11,6 +11,27 @@ class ShareReviewController
 {
     // ── Public (no auth) — token-based review ────────────────
 
+    public function demoReview(): void
+    {
+        LocalAuth::require();
+
+        $config = \App\Core\Config::getInstance();
+
+        View::render('sharereview/review', [
+            'token'  => 'demo',
+            'isDemo' => true,
+            'share'  => [
+                'item_name'           => 'Projektplanung Q3 2025.xlsx',
+                'item_url'            => '#',
+                'site_name'           => 'Marketing-Team',
+                'share_scope'         => 'anonymous',
+                'first_detected'      => date('Y-m-d', strtotime('-22 days')),
+                'auto_revoke_at'      => date('Y-m-d', strtotime('+7 days')),
+                'review_interval_days'=> (int)$config->get('share_review_interval_days', 30),
+            ],
+        ], false);
+    }
+
     public function review(string $token): void
     {
         $service = app_service(ShareReviewService::class);
