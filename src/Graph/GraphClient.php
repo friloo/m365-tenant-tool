@@ -170,6 +170,44 @@ class GraphClient
         return $this->request('GET', $url, true);
     }
 
+    /**
+     * GET a Reports API endpoint (follows 302 redirect, requests JSON format).
+     * Returns the parsed `value` array, or [] on error/missing permission.
+     */
+    public function getReport(string $endpoint, array $query = [], ?string $cacheKey = null, int $ttl = 3600): array
+    {
+        if ($cacheKey) {
+            $cached = $this->cache->get($cacheKey);
+            if ($cached !== null) return $cached;
+        }
+
+        $query['$format'] = 'application/json';
+        $url   = $this->buildUrl($endpoint, $query);
+        $token = $this->tokenManager->getToken();
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTPHEADER     => ['Authorization: Bearer ' . $token, 'Accept: application/json'],
+            CURLOPT_TIMEOUT        => 60,
+        ]);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode >= 400 || !$response) {
+            error_log("Graph Reports API error ({$httpCode}) on {$url}");
+            return [];
+        }
+
+        $data   = json_decode($response, true) ?: [];
+        $result = $data['value'] ?? [];
+
+        if ($cacheKey) $this->cache->set($cacheKey, $result, $ttl);
+        return $result;
+    }
+
     public function getCache(): GraphCache
     {
         return $this->cache;

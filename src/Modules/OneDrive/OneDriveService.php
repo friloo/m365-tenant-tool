@@ -61,4 +61,80 @@ class OneDriveService
         usort($result, fn($a, $b) => $b['used'] <=> $a['used']);
         return $result;
     }
+
+    /**
+     * Returns a map of lowercase UPN → drive info for all provisioned OneDrives,
+     * using the tenant-wide usage report (single API call, cached).
+     */
+    public function getPersonalDrivesReport(): array
+    {
+        $rows = $this->graph->getReport(
+            "/reports/getOneDriveUsageAccountDetail(period='D30')",
+            [],
+            'od_personal_report',
+            1800
+        );
+        $map = [];
+        foreach ($rows as $row) {
+            $upn = strtolower($row['ownerPrincipalName'] ?? '');
+            if (!$upn || ($row['isDeleted'] ?? false)) continue;
+            $map[$upn] = [
+                'storageUsed'      => (int)($row['storageUsedInBytes']      ?? 0),
+                'storageAllocated' => (int)($row['storageAllocatedInBytes'] ?? 0),
+                'fileCount'        => (int)($row['fileCount']               ?? 0),
+                'lastActivity'     => $row['lastActivityDate'] ?? null,
+                'siteUrl'          => $row['siteUrl']          ?? null,
+            ];
+        }
+        return $map;
+    }
+
+    /**
+     * Provision a personal OneDrive for a user by accessing their drive endpoint.
+     * Returns true if the drive exists/was just created.
+     */
+    public function provisionDrive(string $userId): bool
+    {
+        $drive = $this->graph->get(
+            "/users/{$userId}/drive",
+            ['$select' => 'id,webUrl'],
+            null,
+            0
+        );
+        $ok = !empty($drive['id']);
+        if ($ok) {
+            $this->graph->getCache()->forget('od_personal_report');
+            $this->graph->getCache()->forget("drive_{$userId}");
+        }
+        return $ok;
+    }
+
+    /**
+     * Deprovision (delete) a user's personal OneDrive site.
+     * Requires Sites.FullControl.All on the Azure App Registration.
+     * The site is moved to the SharePoint recycle bin (not immediately purged).
+     */
+    public function deprovisionDrive(string $userId): void
+    {
+        // Resolve the site ID from the drive's sharePointIds
+        $drive = $this->graph->get(
+            "/users/{$userId}/drive",
+            ['$select' => 'id,sharePointIds,webUrl'],
+            null,
+            0
+        );
+
+        if (empty($drive['id'])) {
+            throw new \RuntimeException('Kein OneDrive für diesen Benutzer gefunden.');
+        }
+
+        $siteId = $drive['sharePointIds']['siteId'] ?? null;
+        if (!$siteId) {
+            throw new \RuntimeException('SharePoint Site-ID konnte nicht ermittelt werden.');
+        }
+
+        $this->graph->delete("/sites/{$siteId}");
+        $this->graph->getCache()->forget('od_personal_report');
+        $this->graph->getCache()->forget("drive_{$userId}");
+    }
 }

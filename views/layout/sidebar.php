@@ -64,6 +64,7 @@ $_navDefs = [
     // ── Virtual routes (not rendered, but needed for active-state resolution)
     // Sub-routes that have no nav item of their own but would otherwise cause
     // their parent to stay active incorrectly.
+    ['section' => null, 'icon' => null, 'label' => null, 'route' => 'onedrive/personal',            'admin' => false],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'groups/inactive',              'admin' => false],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'licenses/expiry',              'admin' => false],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'mailboxes/shared',             'admin' => false],
@@ -75,9 +76,7 @@ $_navDefs = [
 $_allNavRoutes = array_column($_navDefs, 'route');
 
 // ── navItem renderer ───────────────────────────────────────────────────────
-function navItem(string $icon, string $label, string $route, string $current): void {
-    global $_allNavRoutes;
-
+function navItem(string $icon, string $label, string $route, string $current, array $allRoutes): void {
     if ($route === '') {
         $isMatch = $current === '';
     } else {
@@ -86,7 +85,7 @@ function navItem(string $icon, string $label, string $route, string $current): v
 
     if ($isMatch) {
         $hasMoreSpecific = false;
-        foreach ($_allNavRoutes as $r) {
+        foreach ($allRoutes as $r) {
             if ($r !== $route
                 && str_starts_with($r, $route . '/')
                 && ($current === $r || str_starts_with($current, $r . '/'))) {
@@ -109,17 +108,10 @@ function navItem(string $icon, string $label, string $route, string $current): v
 $isAdmin = LocalAuth::isAdmin();
 
 foreach ($_navDefs as $item) {
-    // Skip virtual items (no icon/label)
-    if ($item['icon'] === null) {
-        continue;
-    }
-    // Skip admin-only items if not admin
-    if ($item['admin'] && !$isAdmin) {
-        continue;
-    }
-    // Section header
+    if ($item['icon'] === null) continue;
+    if ($item['admin'] && !$isAdmin) continue;
     if ($item['section'] !== null) {
         echo '<div class="sidebar-section">' . htmlspecialchars($item['section']) . '</div>';
     }
-    navItem($item['icon'], $item['label'], $item['route'], $currentPath);
+    navItem($item['icon'], $item['label'], $item['route'], $currentPath, $_allNavRoutes);
 }

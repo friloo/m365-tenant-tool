@@ -547,6 +547,38 @@ body {
 .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
 .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
 
+/* ── Module sub-tabs ── */
+.module-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 0;
+}
+.module-tab {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    text-decoration: none;
+    border-radius: 6px 6px 0 0;
+    border: 1px solid transparent;
+    border-bottom: none;
+    margin-bottom: -2px;
+    transition: color .15s, background .15s;
+}
+.module-tab:hover {
+    color: var(--ms-blue);
+    background: #f0f7ff;
+}
+.module-tab.active {
+    color: var(--ms-blue);
+    background: #fff;
+    border-color: #e5e7eb;
+    border-bottom-color: #fff;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
     .sidebar { width: 64px; }
