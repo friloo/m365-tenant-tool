@@ -42,8 +42,15 @@
                     <span><?= implode(' / ', array_map('htmlspecialchars', $breadcrumb)) ?></span>
                 <?php endif; ?>
             </div>
+            <!-- Quick search trigger -->
+            <button class="qs-trigger" id="qsTrigger" title="Schnellsuche (Strg+K)">
+                <i class="bi bi-search"></i>
+                <span class="qs-trigger-label">Suchen…</span>
+                <kbd>Strg K</kbd>
+            </button>
+
             <div class="topbar-right">
-                <span class="refresh-badge" id="lastRefresh" title="Letzter Cache-Refresh"></span>
+                <span class="refresh-badge" id="lastRefresh" data-ts="<?= time() * 1000 ?>" title="Letzter Datenabruf"></span>
                 <a href="?refresh=1" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" title="Daten aktualisieren">
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>
@@ -70,6 +77,18 @@
 
             <?php echo $content ?? ''; ?>
         </main>
+    </div>
+</div>
+
+<!-- Command Palette -->
+<div class="qs-overlay" id="qsOverlay" aria-hidden="true">
+    <div class="qs-palette" role="dialog" aria-label="Schnellsuche">
+        <div class="qs-input-wrap">
+            <i class="bi bi-search qs-input-icon"></i>
+            <input type="text" id="qsInput" class="qs-input" placeholder="Seite oder Einstellung suchen…" autocomplete="off" spellcheck="false">
+            <kbd class="qs-esc-hint">Esc</kbd>
+        </div>
+        <div class="qs-results" id="qsResults" role="listbox"></div>
     </div>
 </div>
 

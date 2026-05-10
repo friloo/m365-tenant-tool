@@ -36,4 +36,23 @@ class LicensesController
             ], $skus)
         );
     }
+
+    public function expiry(): void
+    {
+        LocalAuth::require();
+        $service = app_service(LicensesService::class);
+
+        if (($_GET['refresh'] ?? '') === '1') {
+            app_graph()->getCache()->forget('license_expiry');
+        }
+
+        $subscriptions = $service->getSubscriptionExpiry();
+        $expiringSoon  = $service->getExpiringSoon(60);
+
+        View::render('licenses/expiry', [
+            'pageTitle'     => 'Lizenz-Ablauf',
+            'subscriptions' => $subscriptions,
+            'expiringSoon'  => $expiringSoon,
+        ]);
+    }
 }

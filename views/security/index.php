@@ -1,4 +1,12 @@
-<?php use App\Core\View; $e = fn($v) => View::escape($v); ?>
+<?php use App\Core\View; use App\Core\Session; $e = fn($v) => View::escape($v); ?>
+
+<?php $flash = Session::getFlash('success'); $error = Session::getFlash('error'); ?>
+<?php if ($flash): ?>
+    <div class="alert alert-success alert-dismissible mb-3"><i class="bi bi-check-circle me-2"></i><?= $e($flash) ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+<?php endif; ?>
+<?php if ($error): ?>
+    <div class="alert alert-danger alert-dismissible mb-3"><i class="bi bi-exclamation-triangle me-2"></i><?= $e($error) ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+<?php endif; ?>
 
 <!-- MFA + Stats row -->
 <div class="row g-3 mb-4">
@@ -58,20 +66,72 @@
                 <i class="bi bi-shield-check text-success"></i>
                 <h6>Conditional Access Policies (<?= count($policies) ?>)</h6>
             </div>
+            <?php if (!empty($policies)): ?>
+                <div class="alert alert-warning mb-0" style="border-radius:0;border-left:none;border-right:none;font-size:12px;padding:8px 14px;">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                    Änderungen an CA-Richtlinien wirken sich sofort auf alle Benutzer aus. Teste neue Richtlinien zunächst im Berichtsmodus.
+                </div>
+            <?php endif; ?>
             <div class="table-responsive">
                 <table class="data-table">
                     <thead><tr><th>Name</th><th>Status</th></tr></thead>
                     <tbody>
-                        <?php foreach ($policies as $p): ?>
+                        <?php foreach ($policies as $p):
+                            $pId    = $p['id'] ?? '';
+                            $pState = $p['state'] ?? 'disabled';
+                        ?>
                             <tr>
                                 <td style="font-size:13px;"><?= $e($p['displayName'] ?? '') ?></td>
-                                <td>
-                                    <?php if (($p['state'] ?? '') === 'enabled'): ?>
+                                <td style="white-space:nowrap;">
+                                    <?php if ($pState === 'enabled'): ?>
                                         <span class="badge-enabled">Aktiv</span>
-                                    <?php elseif (($p['state'] ?? '') === 'enabledForReportingButNotEnforced'): ?>
-                                        <span class="badge-warning">Report-Only</span>
+                                    <?php elseif ($pState === 'enabledForReportingButNotEnforced'): ?>
+                                        <span class="badge-info">Nur Bericht</span>
                                     <?php else: ?>
                                         <span class="badge-neutral">Deaktiviert</span>
+                                    <?php endif; ?>
+                                    <?php if (\App\Auth\LocalAuth::isAdmin() && $pId !== ''): ?>
+                                        <div class="dropdown d-inline-block ms-1">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle py-0 px-1"
+                                                    style="font-size:11px;line-height:1.6;"
+                                                    type="button"
+                                                    data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end" style="min-width:170px;">
+                                                <li>
+                                                    <form method="post" action="/security/ca/<?= $e($pId) ?>/toggle" class="mb-0">
+                                                        <input type="hidden" name="state" value="enabled">
+                                                        <button type="submit"
+                                                                class="dropdown-item <?= $pState === 'enabled' ? 'active' : '' ?>"
+                                                                style="font-size:13px;">
+                                                            <?= $pState === 'enabled' ? '<i class="bi bi-check2 me-1"></i>' : '' ?>Aktiv
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form method="post" action="/security/ca/<?= $e($pId) ?>/toggle" class="mb-0">
+                                                        <input type="hidden" name="state" value="enabledForReportingButNotEnforced">
+                                                        <button type="submit"
+                                                                class="dropdown-item <?= $pState === 'enabledForReportingButNotEnforced' ? 'active' : '' ?>"
+                                                                style="font-size:13px;">
+                                                            <?= $pState === 'enabledForReportingButNotEnforced' ? '<i class="bi bi-check2 me-1"></i>' : '' ?>Nur Bericht
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form method="post" action="/security/ca/<?= $e($pId) ?>/toggle" class="mb-0">
+                                                        <input type="hidden" name="state" value="disabled">
+                                                        <button type="submit"
+                                                                class="dropdown-item <?= $pState === 'disabled' ? 'active' : '' ?>"
+                                                                style="font-size:13px;">
+                                                            <?= $pState === 'disabled' ? '<i class="bi bi-check2 me-1"></i>' : '' ?>Deaktiviert
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     <?php endif; ?>
                                 </td>
                             </tr>

@@ -96,6 +96,9 @@ $router->post('/users/{id}/toggle-enabled',       [\App\Modules\Users\UsersContr
 $router->post('/users/{id}/reset-mfa',            [\App\Modules\Users\UsersController::class, 'resetMfa']);
 $router->post('/users/{id}/assign-license',       [\App\Modules\Users\UsersController::class, 'assignLicense']);
 $router->post('/users/{id}/remove-license',       [\App\Modules\Users\UsersController::class, 'removeLicense']);
+$router->get('/users/{id}/edit',                  [\App\Modules\Users\UsersController::class, 'editForm']);
+$router->post('/users/{id}/update',               [\App\Modules\Users\UsersController::class, 'updateUser']);
+$router->post('/users/{id}/offboarding',          [\App\Modules\Users\UsersController::class, 'offboarding']);
 
 // OneDrive
 $router->get('/onedrive',                         [\App\Modules\OneDrive\OneDriveController::class, 'index']);
@@ -127,20 +130,75 @@ $router->post('/sharing/policies/site',           [\App\Modules\SharingPolicies\
 // Groups
 $router->get('/groups',                           [\App\Modules\Groups\GroupsController::class, 'index']);
 $router->get('/groups/export',                    [\App\Modules\Groups\GroupsController::class, 'export']);
+$router->get('/groups/inactive',                  [\App\Modules\Groups\GroupsController::class, 'inactive']);
+$router->get('/groups/inactive/export',           [\App\Modules\Groups\GroupsController::class, 'exportInactive']);
 $router->get('/groups/{id}',                      [\App\Modules\Groups\GroupsController::class, 'show']);
 $router->post('/groups/{id}/add-member',          [\App\Modules\Groups\GroupsController::class, 'addMember']);
 $router->post('/groups/{id}/remove-member/{uid}', [\App\Modules\Groups\GroupsController::class, 'removeMember']);
+$router->post('/groups/create',                   [\App\Modules\Groups\GroupsController::class, 'create']);
+$router->post('/groups/{id}/delete',              [\App\Modules\Groups\GroupsController::class, 'delete']);
+$router->post('/groups/{id}/add-owner',           [\App\Modules\Groups\GroupsController::class, 'addOwner']);
+$router->post('/groups/{id}/remove-owner/{uid}',  [\App\Modules\Groups\GroupsController::class, 'removeOwner']);
 
 // Licenses
 $router->get('/licenses',                         [\App\Modules\Licenses\LicensesController::class, 'index']);
 $router->get('/licenses/export',                  [\App\Modules\Licenses\LicensesController::class, 'export']);
+$router->get('/licenses/expiry',                  [\App\Modules\Licenses\LicensesController::class, 'expiry']);
+
+// App Registrations & Enterprise Apps
+$router->get('/appregistrations',                              [\App\Modules\AppRegistrations\AppRegistrationsController::class, 'index']);
+$router->get('/appregistrations/{id}',                         [\App\Modules\AppRegistrations\AppRegistrationsController::class, 'show']);
+$router->post('/appregistrations/{id}/add-secret',             [\App\Modules\AppRegistrations\AppRegistrationsController::class, 'addSecret']);
+$router->post('/appregistrations/{id}/delete-secret',          [\App\Modules\AppRegistrations\AppRegistrationsController::class, 'deleteSecret']);
+
+// Risky Sign-ins
+$router->get('/riskysignins',                               [\App\Modules\RiskySignIns\RiskySignInsController::class, 'index']);
+$router->post('/riskysignins/{userId}/confirm-compromised',  [\App\Modules\RiskySignIns\RiskySignInsController::class, 'confirmCompromised']);
+$router->post('/riskysignins/{userId}/dismiss-risk',         [\App\Modules\RiskySignIns\RiskySignInsController::class, 'dismissRisk']);
+
+// Stale Accounts
+$router->get('/staleaccounts',                              [\App\Modules\StaleAccounts\StaleAccountsController::class, 'index']);
+$router->get('/staleaccounts/export',                       [\App\Modules\StaleAccounts\StaleAccountsController::class, 'export']);
+$router->post('/staleaccounts/{userId}/remove-license',     [\App\Modules\StaleAccounts\StaleAccountsController::class, 'removeLicense']);
+
+// License Advisor
+$router->get('/licenseadvisor',                   [\App\Modules\LicenseAdvisor\LicenseAdvisorController::class, 'index']);
+$router->post('/licenseadvisor/save-criteria',    [\App\Modules\LicenseAdvisor\LicenseAdvisorController::class, 'saveCriteria']);
+$router->get('/licenseadvisor/export',            [\App\Modules\LicenseAdvisor\LicenseAdvisorController::class, 'exportUncovered']);
+
+// MFA Methods
+$router->get('/mfamethods',                       [\App\Modules\MfaMethods\MfaMethodsController::class, 'index']);
+
+// Password Expiry
+$router->get('/passwordexpiry',                   [\App\Modules\PasswordExpiry\PasswordExpiryController::class, 'index']);
+
+// Defender Alerts
+$router->get('/defenderalerts',                   [\App\Modules\DefenderAlerts\DefenderAlertsController::class, 'index']);
+$router->post('/defenderalerts/{alertId}/resolve', [\App\Modules\DefenderAlerts\DefenderAlertsController::class, 'resolve']);
+
+// Security Posture
+$router->get('/securityposture',                  [\App\Modules\SecurityPosture\SecurityPostureController::class, 'index']);
+
+// Teams Usage
+$router->get('/teamsusage',                       [\App\Modules\TeamsUsage\TeamsUsageController::class, 'index']);
+
+// Message Center
+$router->get('/msgcenter',                        [\App\Modules\MessageCenter\MessageCenterController::class, 'index']);
+
+// Mail Flow & Schutz
+$router->get('/mailflow',                         [\App\Modules\MailFlow\MailFlowController::class, 'index']);
 
 // Security
-$router->get('/security',                         [\App\Modules\Security\SecurityController::class, 'index']);
+$router->get('/security',                                    [\App\Modules\Security\SecurityController::class, 'index']);
+$router->post('/security/ca/{policyId}/toggle',              [\App\Modules\Security\SecurityController::class, 'toggleCaPolicy']);
 
 // Devices
 $router->get('/devices',                          [\App\Modules\Devices\DevicesController::class, 'index']);
 $router->get('/devices/export',                   [\App\Modules\Devices\DevicesController::class, 'export']);
+$router->get('/devices/{id}',                     [\App\Modules\Devices\DevicesController::class, 'show']);
+$router->post('/devices/{id}/sync',               [\App\Modules\Devices\DevicesController::class, 'sync']);
+$router->post('/devices/{id}/retire',             [\App\Modules\Devices\DevicesController::class, 'retire']);
+$router->post('/devices/{id}/wipe',               [\App\Modules\Devices\DevicesController::class, 'wipe']);
 
 // Guest Users
 $router->get('/guestusers',                       [\App\Modules\GuestUsers\GuestUsersController::class, 'index']);
@@ -152,11 +210,54 @@ $router->post('/guestusers/{id}/remove',          [\App\Modules\GuestUsers\Guest
 $router->get('/auditlog',                         [\App\Modules\AuditLog\AuditLogController::class, 'index']);
 $router->get('/auditlog/export',                  [\App\Modules\AuditLog\AuditLogController::class, 'export']);
 
+// Secure Score
+$router->get('/securescore',                      [\App\Modules\SecureScore\SecureScoreController::class, 'index']);
+
+// Mailboxes
+$router->get('/mailboxes',                               [\App\Modules\Mailboxes\MailboxController::class, 'index']);
+$router->get('/mailboxes/export',                        [\App\Modules\Mailboxes\MailboxController::class, 'export']);
+$router->get('/mailboxes/external-forwards',             [\App\Modules\Mailboxes\MailboxController::class, 'externalForwards']);
+$router->get('/mailboxes/external-forwards/export',      [\App\Modules\Mailboxes\MailboxController::class, 'exportExternalForwards']);
+$router->post('/mailboxes/external-forwards/remove',     [\App\Modules\Mailboxes\MailboxController::class, 'removeForwardingExternal']);
+$router->get('/mailboxes/shared',                        [\App\Modules\Mailboxes\MailboxController::class, 'sharedMailboxes']);
+$router->get('/mailboxes/{id}',                          [\App\Modules\Mailboxes\MailboxController::class, 'show']);
+$router->post('/mailboxes/{id}/forwarding',              [\App\Modules\Mailboxes\MailboxController::class, 'setForwarding']);
+$router->post('/mailboxes/{id}/auto-reply',              [\App\Modules\Mailboxes\MailboxController::class, 'setAutoReply']);
+
+// Admin Roles
+$router->get('/adminroles',                                   [\App\Modules\AdminRoles\AdminRolesController::class, 'index']);
+$router->post('/adminroles/assign',                           [\App\Modules\AdminRoles\AdminRolesController::class, 'assignRole']);
+$router->post('/adminroles/{assignmentId}/remove',            [\App\Modules\AdminRoles\AdminRolesController::class, 'removeAssignment']);
+
+// Tenant Sign-in Log
+$router->get('/signinlog',                        [\App\Modules\SignInLog\SignInLogController::class, 'index']);
+$router->get('/signinlog/export',                 [\App\Modules\SignInLog\SignInLogController::class, 'export']);
+
+// Adoption Dashboard
+$router->get('/adoption',                         [\App\Modules\Adoption\AdoptionController::class, 'index']);
+
+// Mailboxes — create shared
+$router->post('/mailboxes/create-shared',         [\App\Modules\Mailboxes\MailboxController::class, 'createSharedMailbox']);
+
+// Service Health
+$router->get('/servicehealth',                    [\App\Modules\ServiceHealth\ServiceHealthController::class, 'index']);
+
+// Users bulk actions
+$router->post('/users/bulk-action',               [\App\Modules\Users\UsersController::class, 'bulkAction']);
+
 // Settings
 $router->get('/settings',                         [\App\Modules\Settings\SettingsController::class, 'index']);
 $router->post('/settings/save',                   [\App\Modules\Settings\SettingsController::class, 'save']);
 $router->get('/settings/clear-cache',             [\App\Modules\Settings\SettingsController::class, 'clearCache']);
 $router->get('/settings/test-mail',               [\App\Modules\Settings\SettingsController::class, 'testMail']);
+$router->get('/settings/permissions',             [\App\Modules\Settings\SettingsController::class, 'permissions']);
+
+// Cron & Queue management
+$router->get('/cron',                             [\App\Modules\Cron\CronController::class, 'index']);
+$router->post('/cron/update-job/{key}',           [\App\Modules\Cron\CronController::class, 'updateJob']);
+$router->post('/cron/run-job/{key}',              [\App\Modules\Cron\CronController::class, 'runJob']);
+$router->post('/cron/queue/retry',                [\App\Modules\Cron\CronController::class, 'retryFailed']);
+$router->post('/cron/queue/prune',                [\App\Modules\Cron\CronController::class, 'pruneQueue']);
 
 // ── Dispatch ──────────────────────────────────────────────
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';

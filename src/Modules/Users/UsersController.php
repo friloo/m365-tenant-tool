@@ -3,11 +3,13 @@
 namespace App\Modules\Users;
 
 use App\Auth\LocalAuth;
+use App\Core\Config;
 use App\Core\Redirect;
 use App\Core\Session;
 use App\Core\View;
 use App\Helpers\CsvExporter;
 use App\Modules\Licenses\LicensesService;
+use App\Queue\QueueDispatcher;
 
 class UsersController
 {
@@ -36,18 +38,115 @@ class UsersController
         LocalAuth::require();
         $service = app_service(UsersService::class);
 
-        $user   = $service->getOne($id);
-        $groups = $service->getMemberOf($id);
-        $skus   = app_service(LicensesService::class)->getSkus();
+        $user     = $service->getOne($id);
+        $groups   = $service->getMemberOf($id);
+        $skus     = app_service(LicensesService::class)->getSkus();
+        $signIns  = $service->getSignInHistory($id);
 
         View::render('users/detail', [
             'pageTitle' => $user['displayName'] ?? 'Benutzer',
             'user'      => $user,
             'groups'    => $groups,
             'skus'      => $skus,
+            'signIns'   => $signIns,
             'flash'     => Session::getFlash('success'),
             'error'     => Session::getFlash('error'),
         ]);
+    }
+
+    public function editForm(string $id): void
+    {
+        LocalAuth::require();
+        $service = app_service(UsersService::class);
+        $user    = $service->getOne($id);
+
+        View::render('users/edit', [
+            'pageTitle' => 'Benutzer bearbeiten',
+            'user'      => $user,
+            'flash'     => Session::getFlash('success'),
+            'error'     => Session::getFlash('error'),
+        ]);
+    }
+
+    public function updateUser(string $id): void
+    {
+        LocalAuth::require();
+        $allowed = ['displayName', 'jobTitle', 'department', 'mobilePhone', 'officeLocation'];
+        $data    = [];
+        foreach ($allowed as $field) {
+            if (isset($_POST[$field])) {
+                $data[$field] = trim($_POST[$field]);
+            }
+        }
+        try {
+            app_service(UsersService::class)->updateUser($id, $data);
+            Session::flash('success', 'Benutzer erfolgreich aktualisiert.');
+        } catch (\Throwable $e) {
+            Session::flash('error', 'Fehler beim Speichern: ' . $e->getMessage());
+        }
+        Redirect::to('/users/' . $id);
+    }
+
+    public function offboarding(string $id): void
+    {
+        LocalAuth::requireAdmin();
+        $service  = app_service(UsersService::class);
+        $completed = [];
+
+        if (!empty($_POST['revoke_sessions'])) {
+            try {
+                $service->revokeSignInSessions($id);
+                $completed[] = 'Sitzungen beendet';
+            } catch (\Throwable $e) {
+                Session::flash('error', 'Sitzungen beenden fehlgeschlagen: ' . $e->getMessage());
+            }
+        }
+
+        if (!empty($_POST['remove_licenses'])) {
+            try {
+                $service->removeAllLicenses($id);
+                $completed[] = 'Lizenzen entzogen';
+            } catch (\Throwable $e) {
+                Session::flash('error', 'Lizenzen entziehen fehlgeschlagen: ' . $e->getMessage());
+            }
+        }
+
+        if (!empty($_POST['set_forwarding'])) {
+            $forwardTo = trim($_POST['forward_to'] ?? '');
+            if ($forwardTo !== '') {
+                try {
+                    app_graph()->patch("/users/{$id}/mailboxSettings", [
+                        'forwardingSmtpAddress' => $forwardTo,
+                    ]);
+                    $completed[] = 'E-Mail-Weiterleitung gesetzt';
+                } catch (\Throwable) {
+                    // silently skip — may require MailboxSettings.ReadWrite permission
+                }
+            }
+        }
+
+        if (!empty($_POST['set_ooo'])) {
+            $oooMessage = trim($_POST['ooo_message'] ?? '');
+            if ($oooMessage !== '') {
+                try {
+                    app_graph()->patch("/users/{$id}/mailboxSettings", [
+                        'automaticRepliesSetting' => [
+                            'status'               => 'alwaysEnabled',
+                            'internalReplyMessage' => $oooMessage,
+                            'externalReplyMessage' => $oooMessage,
+                        ],
+                    ]);
+                    $completed[] = 'Abwesenheitsnotiz aktiviert';
+                } catch (\Throwable $e) {
+                    Session::flash('error', 'Abwesenheitsnotiz fehlgeschlagen: ' . $e->getMessage());
+                }
+            }
+        }
+
+        if (!empty($completed)) {
+            Session::flash('success', 'Cloud-Cleanup abgeschlossen: ' . implode(', ', $completed) . '.');
+        }
+        Redirect::to('/users/' . $id);
     }
 
     public function export(): void
@@ -125,5 +224,44 @@ class UsersController
             Session::flash('error', 'Lizenz-Entfernung fehlgeschlagen: ' . $e->getMessage());
         }
         Redirect::to('/users/' . $id);
+    }
+
+    public function bulkAction(): void
+    {
+        LocalAuth::require();
+
+        $action  = $_POST['action'] ?? '';
+        $userIds = array_values(array_filter(array_map('trim', (array)($_POST['user_ids'] ?? []))));
+
+        if (empty($userIds) || !in_array($action, ['disable', 'enable', 'reset_mfa'], true)) {
+            Session::flash('error', 'Ungültige Bulk-Aktion oder keine Benutzer ausgewählt.');
+            Redirect::to('/users');
+        }
+
+        // Map action → queue job type
+        $jobType = match($action) {
+            'disable'   => 'user_toggle',
+            'enable'    => 'user_toggle',
+            'reset_mfa' => 'mfa_reset',
+        };
+
+        $payloads = array_map(function (string $uid) use ($action, $jobType): array {
+            $base = ['user_id' => $uid];
+            if ($jobType === 'user_toggle') {
+                $base['enabled'] = $action === 'enable';
+            }
+            return $base;
+        }, $userIds);
+
+        $count = QueueDispatcher::dispatchBatch($jobType, $payloads);
+
+        $label = match($action) {
+            'disable'   => 'Deaktivieren',
+            'enable'    => 'Aktivieren',
+            'reset_mfa' => 'MFA zurücksetzen',
+        };
+
+        Session::flash('success', "{$count} Benutzer zum {$label} in die Warteschlange aufgenommen — Verarbeitung durch den Cron-Job.");
+        Redirect::to('/users');
     }
 }
