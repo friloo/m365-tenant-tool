@@ -135,6 +135,19 @@ $router->post('/groups/{id}/remove-member/{uid}', [\App\Modules\Groups\GroupsCon
 $router->get('/licenses',                         [\App\Modules\Licenses\LicensesController::class, 'index']);
 $router->get('/licenses/export',                  [\App\Modules\Licenses\LicensesController::class, 'export']);
 
+// App Registrations & Enterprise Apps
+$router->get('/appregistrations',                           [\App\Modules\AppRegistrations\AppRegistrationsController::class, 'index']);
+
+// Risky Sign-ins
+$router->get('/riskysignins',                               [\App\Modules\RiskySignIns\RiskySignInsController::class, 'index']);
+$router->post('/riskysignins/{userId}/confirm-compromised',  [\App\Modules\RiskySignIns\RiskySignInsController::class, 'confirmCompromised']);
+$router->post('/riskysignins/{userId}/dismiss-risk',         [\App\Modules\RiskySignIns\RiskySignInsController::class, 'dismissRisk']);
+
+// Stale Accounts
+$router->get('/staleaccounts',                              [\App\Modules\StaleAccounts\StaleAccountsController::class, 'index']);
+$router->get('/staleaccounts/export',                       [\App\Modules\StaleAccounts\StaleAccountsController::class, 'export']);
+$router->post('/staleaccounts/{userId}/remove-license',     [\App\Modules\StaleAccounts\StaleAccountsController::class, 'removeLicense']);
+
 // Security
 $router->get('/security',                         [\App\Modules\Security\SecurityController::class, 'index']);
 
@@ -151,6 +164,19 @@ $router->post('/guestusers/{id}/remove',          [\App\Modules\GuestUsers\Guest
 // Audit Log
 $router->get('/auditlog',                         [\App\Modules\AuditLog\AuditLogController::class, 'index']);
 $router->get('/auditlog/export',                  [\App\Modules\AuditLog\AuditLogController::class, 'export']);
+
+// Secure Score
+$router->get('/securescore',                      [\App\Modules\SecureScore\SecureScoreController::class, 'index']);
+
+// Mailboxes
+$router->get('/mailboxes',                        [\App\Modules\Mailboxes\MailboxController::class, 'index']);
+$router->get('/mailboxes/export',                 [\App\Modules\Mailboxes\MailboxController::class, 'export']);
+
+// Service Health
+$router->get('/servicehealth',                    [\App\Modules\ServiceHealth\ServiceHealthController::class, 'index']);
+
+// Users bulk actions
+$router->post('/users/bulk-action',               [\App\Modules\Users\UsersController::class, 'bulkAction']);
 
 // Settings
 $router->get('/settings',                         [\App\Modules\Settings\SettingsController::class, 'index']);

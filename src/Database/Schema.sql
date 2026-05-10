@@ -69,6 +69,18 @@ CREATE TABLE IF NOT EXISTS share_reviews (
     INDEX idx_owner (owner_email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Stale Account Actions: log of license removals / disables on inactive accounts
+CREATE TABLE IF NOT EXISTS stale_account_log (
+    id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id    VARCHAR(255) NOT NULL,
+    user_upn   VARCHAR(255),
+    action     VARCHAR(50) NOT NULL,  -- license_removed|account_disabled|skipped
+    details    JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user    (user_id),
+    INDEX idx_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- One-time review tokens (emailed to share owners)
 CREATE TABLE IF NOT EXISTS share_review_tokens (
     id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

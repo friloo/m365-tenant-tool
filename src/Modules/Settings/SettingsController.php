@@ -38,6 +38,10 @@ class SettingsController
             'brand_logo_text'                => $config->get('brand_logo_text', ''),
             'brand_review_support_email'     => $config->get('brand_review_support_email', ''),
             'brand_review_footer'            => $config->get('brand_review_footer', ''),
+            'stale_account_days'             => $config->get('stale_account_days', '90'),
+            'stale_auto_release_enabled'     => $config->get('stale_auto_release_enabled', '0'),
+            'stale_auto_release_days'        => $config->get('stale_auto_release_days', '180'),
+            'stale_warn_days_before'         => $config->get('stale_warn_days_before', '14'),
         ];
 
         $flash = Session::getFlash('success');
@@ -77,6 +81,10 @@ class SettingsController
             $config->set('brand_logo_text',               trim($_POST['brand_logo_text'] ?? ''));
             $config->set('brand_review_support_email',    trim($_POST['brand_review_support_email'] ?? ''));
             $config->set('brand_review_footer',           trim($_POST['brand_review_footer'] ?? ''));
+            $config->set('stale_account_days',            (string)max(1, (int)($_POST['stale_account_days'] ?? 90)));
+            $config->set('stale_auto_release_enabled',    isset($_POST['stale_auto_release_enabled']) ? '1' : '0');
+            $config->set('stale_auto_release_days',       (string)max(1, (int)($_POST['stale_auto_release_days'] ?? 180)));
+            $config->set('stale_warn_days_before',        (string)max(0, (int)($_POST['stale_warn_days_before'] ?? 14)));
 
             if (!empty($_POST['smtp_password'])) {
                 $config->set('smtp_password', trim($_POST['smtp_password']), true);

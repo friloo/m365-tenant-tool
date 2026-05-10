@@ -28,8 +28,11 @@ $total = count($users);
     </div>
 </div>
 
+<!-- Bulk Action Form (wraps table) -->
+<form method="post" action="/users/bulk-action" id="bulkForm">
 <div class="content-card">
     <div class="table-toolbar">
+        <input type="checkbox" id="selectAll" class="form-check-input me-2" title="Alle auswählen">
         <input type="text" id="userSearch" class="search-box" placeholder="Benutzer suchen…">
         <select id="userFilter" class="form-select form-select-sm ms-2" style="max-width:180px;" onchange="filterUsers()">
             <option value="">Alle Benutzer</option>
@@ -48,10 +51,30 @@ $total = count($users);
         </a>
     </div>
 
+    <!-- Bulk action bar (shown when rows are selected) -->
+    <div id="bulkBar" style="display:none;padding:10px 20px;background:#eff6ff;border-bottom:1px solid #bfdbfe;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span id="bulkCount" class="badge-info badge-pill me-2">0 ausgewählt</span>
+        <input type="hidden" name="action" id="bulkAction" value="">
+        <button type="button" class="btn btn-sm btn-outline-secondary"
+                onclick="submitBulk('disable')"
+                title="Ausgewählte Benutzer deaktivieren">
+            <i class="bi bi-person-dash me-1"></i> Deaktivieren
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-success"
+                onclick="submitBulk('enable')">
+            <i class="bi bi-person-check me-1"></i> Aktivieren
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-warning"
+                onclick="submitBulk('reset_mfa')">
+            <i class="bi bi-shield-x me-1"></i> MFA zurücksetzen
+        </button>
+    </div>
+
     <div class="table-responsive">
         <table class="data-table" id="userTable">
             <thead>
                 <tr>
+                    <th style="width:36px;"></th>
                     <th>Name</th>
                     <th>UPN</th>
                     <th>Status</th>
@@ -75,6 +98,10 @@ $total = count($users);
                         data-mfa="<?= $mfaReg ? '1' : '0' ?>"
                         data-days="<?= $daysAgo ?>"
                         data-licenses="<?= $licenses ?>">
+                        <td>
+                            <input type="checkbox" name="user_ids[]" value="<?= $e($user['id']) ?>"
+                                   class="form-check-input row-check">
+                        </td>
                         <td>
                             <div class="d-flex align-items-center gap-2">
                                 <div style="width:32px;height:32px;border-radius:50%;background:#e3f0fb;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#0078d4;flex-shrink:0;">
@@ -130,9 +157,11 @@ $total = count($users);
         </table>
     </div>
 </div>
+</form>
 
 <script>
 initTableSearch('userSearch', 'userTable');
+
 function filterUsers() {
     const val = document.getElementById('userFilter').value;
     document.querySelectorAll('#userTable tbody tr').forEach(r => {
@@ -145,6 +174,38 @@ function filterUsers() {
         if (val === 'inactive-90') show = parseInt(d.days) > 90;
         if (val === 'no-license')  show = d.licenses === '0' && d.enabled === '1';
         r.style.display = show ? '' : 'none';
+        if (!show) r.querySelector('.row-check').checked = false;
     });
+    updateBulkBar();
 }
+
+function updateBulkBar() {
+    const checked = document.querySelectorAll('.row-check:checked');
+    const bar     = document.getElementById('bulkBar');
+    const countEl = document.getElementById('bulkCount');
+    bar.style.display = checked.length > 0 ? 'flex' : 'none';
+    countEl.textContent = checked.length + ' ausgewählt';
+}
+
+function submitBulk(action) {
+    const labels = {
+        disable:   'Ausgewählte Benutzer wirklich deaktivieren?',
+        enable:    'Ausgewählte Benutzer aktivieren?',
+        reset_mfa: 'MFA für ausgewählte Benutzer zurücksetzen?',
+    };
+    if (!confirm(labels[action])) return;
+    document.getElementById('bulkAction').value = action;
+    document.getElementById('bulkForm').submit();
+}
+
+document.getElementById('selectAll').addEventListener('change', function () {
+    document.querySelectorAll('#userTable tbody tr:not([style*="none"]) .row-check').forEach(cb => {
+        cb.checked = this.checked;
+    });
+    updateBulkBar();
+});
+
+document.addEventListener('change', function (e) {
+    if (e.target.classList.contains('row-check')) updateBulkBar();
+});
 </script>

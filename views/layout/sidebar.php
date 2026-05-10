@@ -7,7 +7,8 @@ $currentPath = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 $_allNavRoutes = [
     '', 'users', 'guestusers', 'groups', 'licenses',
     'onedrive', 'sharepoint', 'sharing', 'sharing/monitor', 'sharing/policies',
-    'security', 'devices', 'auditlog', 'settings',
+    'security', 'securescore', 'riskysignins', 'devices', 'staleaccounts', 'auditlog',
+    'mailboxes', 'appregistrations', 'servicehealth', 'settings',
 ];
 
 function navItem(string $icon, string $label, string $route, string $current): void {
@@ -57,9 +58,17 @@ function navItem(string $icon, string $label, string $route, string $current): v
 <?php navItem('eye-slash', 'Freigaben-Monitor', 'sharing/monitor', $currentPath); ?>
 <?php navItem('sliders', 'Freigaberichtlinien', 'sharing/policies', $currentPath); ?>
 
+<div class="sidebar-section">Exchange & Kommunikation</div>
+<?php navItem('envelope', 'Postfächer', 'mailboxes', $currentPath); ?>
+<?php navItem('heart-pulse', 'Dienststatus', 'servicehealth', $currentPath); ?>
+
 <div class="sidebar-section">Sicherheit</div>
 <?php navItem('shield-check', 'Sicherheit', 'security', $currentPath); ?>
+<?php navItem('bar-chart-line', 'Secure Score', 'securescore', $currentPath); ?>
+<?php navItem('exclamation-triangle', 'Risiko-Anmeldungen', 'riskysignins', $currentPath); ?>
+<?php navItem('grid-3x3-gap', 'App-Registrierungen', 'appregistrations', $currentPath); ?>
 <?php navItem('phone', 'Geräte', 'devices', $currentPath); ?>
+<?php navItem('person-x', 'Inaktive Konten', 'staleaccounts', $currentPath); ?>
 <?php navItem('clock-history', 'Audit-Log', 'auditlog', $currentPath); ?>
 
 <?php if (LocalAuth::isAdmin()): ?>

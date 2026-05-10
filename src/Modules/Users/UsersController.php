@@ -126,4 +126,45 @@ class UsersController
         }
         Redirect::to('/users/' . $id);
     }
+
+    public function bulkAction(): void
+    {
+        LocalAuth::require();
+
+        $action  = $_POST['action'] ?? '';
+        $userIds = array_filter(array_map('trim', (array)($_POST['user_ids'] ?? [])));
+
+        if (empty($userIds) || !in_array($action, ['disable', 'enable', 'reset_mfa'], true)) {
+            Session::flash('error', 'Ungültige Bulk-Aktion oder keine Benutzer ausgewählt.');
+            Redirect::to('/users');
+        }
+
+        $service = app_service(UsersService::class);
+        $ok = 0;
+        $fail = 0;
+
+        foreach ($userIds as $uid) {
+            try {
+                match($action) {
+                    'disable'    => $service->setAccountEnabled($uid, false),
+                    'enable'     => $service->setAccountEnabled($uid, true),
+                    'reset_mfa'  => $service->resetMfa($uid),
+                };
+                $ok++;
+            } catch (\Throwable) {
+                $fail++;
+            }
+        }
+
+        $label = match($action) {
+            'disable'   => 'Deaktiviert',
+            'enable'    => 'Aktiviert',
+            'reset_mfa' => 'MFA zurückgesetzt',
+        };
+
+        $msg = "{$label}: {$ok} Benutzer";
+        if ($fail > 0) $msg .= ", {$fail} Fehler";
+        Session::flash($fail > 0 ? 'error' : 'success', $msg);
+        Redirect::to('/users');
+    }
 }

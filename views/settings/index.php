@@ -213,6 +213,74 @@
             </div>
         </div>
 
+        <!-- Stale Accounts / Inactive Users -->
+        <div class="content-card mb-4" id="stale-accounts">
+            <div class="card-header-custom">
+                <i class="bi bi-person-x text-primary"></i>
+                <h6>Inaktive Konten</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted small mb-3">
+                    Benutzer, die sich länger als der konfigurierte Zeitraum nicht angemeldet haben,
+                    werden als inaktiv markiert.
+                    <a href="/staleaccounts" class="ms-1">→ Inaktive Konten anzeigen</a>
+                </p>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Inaktivitätsschwelle</label>
+                        <div class="input-group">
+                            <input type="number" name="stale_account_days" class="form-control"
+                                   value="<?= (int)($s['stale_account_days'] ?? 90) ?>" min="1" max="730">
+                            <span class="input-group-text">Tage</span>
+                        </div>
+                        <div class="form-text">Ab wie vielen Tagen gilt ein Konto als inaktiv?</div>
+                    </div>
+                </div>
+                <hr>
+                <h6 class="small text-muted text-uppercase mb-3">Automatische Lizenzfreigabe <span class="badge-warning ms-1">Optional</span></h6>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="stale_auto_release_enabled"
+                                   id="chkStaleAutoRelease" value="1"
+                                   <?= ($s['stale_auto_release_enabled'] ?? '0') === '1' ? 'checked' : '' ?>
+                                   onchange="document.getElementById('staleAutoReleaseOptions').style.display = this.checked ? '' : 'none'">
+                            <label class="form-check-label fw-medium" for="chkStaleAutoRelease">
+                                Lizenzen automatisch entziehen bei langer Inaktivität
+                            </label>
+                        </div>
+                        <div class="form-text">
+                            Wenn aktiviert, entfernt der Cron-Job (<code>run-stale-cleanup.php</code>) nach dem
+                            konfigurierten Zeitraum automatisch alle Lizenzen. <strong>Eine Warnung wird
+                            X Tage vorher per E-Mail gesendet.</strong>
+                        </div>
+                    </div>
+                    <div id="staleAutoReleaseOptions" <?= ($s['stale_auto_release_enabled'] ?? '0') !== '1' ? 'style="display:none"' : '' ?>>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-medium">Lizenz-Freigabe nach</label>
+                                <div class="input-group">
+                                    <input type="number" name="stale_auto_release_days" class="form-control"
+                                           value="<?= (int)($s['stale_auto_release_days'] ?? 180) ?>" min="1" max="1095">
+                                    <span class="input-group-text">Tagen</span>
+                                </div>
+                                <div class="form-text">Tage seit letzter Anmeldung, danach werden Lizenzen entzogen.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-medium">Vorwarnung</label>
+                                <div class="input-group">
+                                    <input type="number" name="stale_warn_days_before" class="form-control"
+                                           value="<?= (int)($s['stale_warn_days_before'] ?? 14) ?>" min="0" max="90">
+                                    <span class="input-group-text">Tage vorher</span>
+                                </div>
+                                <div class="form-text">E-Mail-Warnung X Tage vor der automatischen Lizenzfreigabe. 0 = keine Warnung.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Branding: public review page -->
         <div class="content-card mb-4" id="branding">
             <div class="card-header-custom">
