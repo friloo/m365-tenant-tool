@@ -16,9 +16,22 @@ class UserManagementController
         LocalAuth::requireAdmin();
         $users = DB::fetchAll('SELECT * FROM m365_users ORDER BY created_at DESC');
 
+        // Preload tenant users (cached) so the picker can filter client-side
+        // without an AJAX round trip
+        try {
+            $tenantUsers = app_service(\App\Modules\Users\UsersService::class)->getAll();
+            $tenantUsers = array_map(fn($u) => [
+                'displayName'       => $u['displayName']       ?? '',
+                'userPrincipalName' => $u['userPrincipalName'] ?? '',
+            ], $tenantUsers);
+        } catch (\Throwable) {
+            $tenantUsers = [];
+        }
+
         View::render('settings/users', [
             'pageTitle'   => 'Benutzer-Zugang',
             'users'       => $users,
+            'tenantUsers' => $tenantUsers,
             'redirectUri' => MicrosoftAuth::redirectUri(),
             'flash'       => Session::getFlash('success'),
             'error'       => Session::getFlash('error'),

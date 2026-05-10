@@ -254,6 +254,10 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
 </div>
 
 <script>
+// Tenant user list — preloaded server-side (no AJAX) so the picker filters
+// instantly without depending on any backend search endpoint.
+window.__tenantUsers = <?= json_encode($tenantUsers, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+
 (function () {
     const searchInput    = document.getElementById('userSearchInput');
     const dropdown       = document.getElementById('userSearchDropdown');
@@ -263,15 +267,13 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
     const clearBtn       = document.getElementById('clearSelection');
     const upnHidden      = document.getElementById('upnHidden');
     const submitBtn      = document.getElementById('addSubmitBtn');
-    const icon           = document.getElementById('searchIcon');
-    const spinner        = document.getElementById('searchSpinner');
     const toggleManual   = document.getElementById('toggleManual');
     const toggleSearch   = document.getElementById('toggleSearch');
     const manualWrap     = document.getElementById('manualWrap');
     const searchWrap     = document.getElementById('searchWrap');
     const manualInput    = document.getElementById('manualUpnInput');
 
-    let debounceTimer;
+    const ALL_USERS = window.__tenantUsers || [];
 
     // Reset when modal opens
     document.getElementById('addUserModal').addEventListener('show.bs.modal', resetForm);
@@ -310,12 +312,18 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
         submitBtn.disabled = !manualInput.value.trim().includes('@');
     });
 
-    // Search input
+    // Search input — filters the preloaded list client-side, no AJAX
     searchInput.addEventListener('input', function () {
-        clearTimeout(debounceTimer);
-        const q = this.value.trim();
+        const q = this.value.trim().toLowerCase();
         if (q.length < 2) { dropdown.classList.add('d-none'); return; }
-        debounceTimer = setTimeout(() => doSearch(q), 320);
+        const matches = [];
+        for (let i = 0; i < ALL_USERS.length && matches.length < 15; i++) {
+            const u = ALL_USERS[i];
+            const name = (u.displayName || '').toLowerCase();
+            const upn  = (u.userPrincipalName || '').toLowerCase();
+            if (name.includes(q) || upn.includes(q)) matches.push(u);
+        }
+        renderDropdown(matches);
     });
 
     searchInput.addEventListener('keydown', e => {
@@ -326,50 +334,25 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
         if (!e.target.closest('#searchWrap')) dropdown.classList.add('d-none');
     });
 
-    async function doSearch(q) {
-        icon.classList.add('d-none');
-        spinner.classList.remove('d-none');
-        dropdown.classList.add('d-none');
-
-        try {
-            const resp  = await fetch('/settings/users/search?q=' + encodeURIComponent(q));
-            const users = await resp.json();
-
-            if (!resp.ok || users.error) {
-                renderDropdown([{ _error: users.error || 'Suche nicht verfügbar' }]);
-            } else if (!users.length) {
-                renderDropdown([{ _empty: true }]);
-            } else {
-                renderDropdown(users);
-            }
-        } catch {
-            renderDropdown([{ _error: 'Verbindungsfehler' }]);
-        } finally {
-            icon.classList.remove('d-none');
-            spinner.classList.add('d-none');
-        }
-    }
-
     function renderDropdown(users) {
         dropdown.innerHTML = '';
-        users.forEach(u => {
+        if (!users.length) {
             const el = document.createElement('div');
-            if (u._error) {
-                el.className = 'dropdown-item text-danger small pe-none';
-                el.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>' + esc(u._error);
-            } else if (u._empty) {
-                el.className = 'dropdown-item text-muted small pe-none';
-                el.innerHTML = '<i class="bi bi-search me-1"></i>Keine Benutzer gefunden';
-            } else {
-                el.className = 'dropdown-item py-2 cursor-pointer';
+            el.className = 'dropdown-item text-muted small pe-none';
+            el.innerHTML = '<i class="bi bi-search me-1"></i>Keine Benutzer gefunden';
+            dropdown.appendChild(el);
+        } else {
+            users.forEach(u => {
+                const el = document.createElement('div');
+                el.className = 'dropdown-item py-2';
                 el.style.cursor = 'pointer';
                 el.innerHTML =
                     '<div class="fw-medium small">' + esc(u.displayName || u.userPrincipalName) + '</div>' +
                     '<div class="text-muted" style="font-size:11px;">' + esc(u.userPrincipalName) + '</div>';
                 el.addEventListener('click', () => selectUser(u));
-            }
-            dropdown.appendChild(el);
-        });
+                dropdown.appendChild(el);
+            });
+        }
         dropdown.classList.remove('d-none');
     }
 
@@ -392,6 +375,13 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
 
     function esc(str) {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // If user list could not be loaded (e.g. Graph error), prompt manual entry
+    if (ALL_USERS.length === 0) {
+        searchInput.placeholder = 'Benutzerliste nicht verfügbar — UPN manuell eingeben';
+        searchInput.disabled = true;
+        toggleManual.click();
     }
 })();
 </script>
