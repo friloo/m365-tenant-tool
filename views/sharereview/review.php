@@ -32,6 +32,12 @@
     </style>
 </head>
 <body>
+<?php if (!empty($isDemo)): ?>
+<div style="background:#1d4ed8;color:#fff;text-align:center;padding:10px 16px;font-size:13px;font-weight:600;letter-spacing:.3px;position:sticky;top:0;z-index:100;">
+    <i class="bi bi-eye me-2"></i>VORSCHAU — So sehen Benutzer diese Seite nach Erhalt der Review-E-Mail
+    <a href="/settings" style="color:#93c5fd;text-decoration:underline;margin-left:16px;font-weight:400;">← Einstellungen</a>
+</div>
+<?php endif; ?>
 <div class="review-card">
     <div class="brand-bar d-flex align-items-center gap-3">
         <div class="brand-logo">
@@ -132,7 +138,7 @@
             </div>
 
             <div class="d-flex gap-3 align-items-center flex-wrap">
-                <button type="submit" class="btn btn-confirm">
+                <button type="submit" class="btn btn-confirm" <?= !empty($isDemo) ? 'disabled title="Demo — Formular kann nicht abgeschickt werden"' : '' ?>>
                     <i class="bi bi-check-circle me-2"></i>Freigabe bestätigen
                 </button>
                 <span class="text-muted" style="font-size:12px;">
