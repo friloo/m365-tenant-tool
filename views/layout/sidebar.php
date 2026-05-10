@@ -14,7 +14,7 @@ $_allNavRoutes = [
     'msgcenter', 'mailflow',
     'groups/inactive', 'licenses/expiry',
     'mailboxes/shared', 'mailboxes/external-forwards',
-    'settings/update',
+    'settings/update', 'manual',
 ];
 
 function navItem(string $icon, string $label, string $route, string $current): void {
@@ -89,6 +89,8 @@ function navItem(string $icon, string $label, string $route, string $current): v
 <?php navItem('person-x', 'Inaktive Konten', 'staleaccounts', $currentPath); ?>
 <?php navItem('clock-history', 'Audit-Log', 'auditlog', $currentPath); ?>
 <?php navItem('journal-text', 'Sign-in-Log', 'signinlog', $currentPath); ?>
+
+<?php navItem('book', 'Handbuch', 'manual', $currentPath); ?>
 
 <?php if (LocalAuth::isAdmin()): ?>
 <div class="sidebar-section">Administration</div>

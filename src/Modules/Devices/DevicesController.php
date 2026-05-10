@@ -14,15 +14,22 @@ class DevicesController
     {
         LocalAuth::require();
         $service = app_service(DevicesService::class);
-        $devices = $service->getAll();
-        $stats   = $service->getStats($devices);
+        $error   = Session::getFlash('error');
+        $devices = [];
+        try {
+            $devices = $service->getAll();
+        } catch (\Throwable $e) {
+            $error = 'Geräte konnten nicht geladen werden: ' . $e->getMessage();
+            error_log('DevicesController::index error: ' . $e->getMessage());
+        }
+        $stats = $service->getStats($devices);
 
         View::render('devices/index', [
             'pageTitle' => 'Geräte',
             'devices'   => $devices,
             'stats'     => $stats,
             'flash'     => Session::getFlash('success'),
-            'error'     => Session::getFlash('error'),
+            'error'     => $error,
         ]);
     }
 

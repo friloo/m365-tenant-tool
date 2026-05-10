@@ -171,6 +171,12 @@ class SettingsController
         Redirect::to('/settings');
     }
 
+    public function manual(): void
+    {
+        LocalAuth::require();
+        View::render('manual/index', ['pageTitle' => 'Handbuch']);
+    }
+
     public function refreshToken(): void
     {
         LocalAuth::require();

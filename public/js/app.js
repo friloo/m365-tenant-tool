@@ -85,6 +85,9 @@ function initTableSearch(inputId, tableId) {
         }
     });
 }
+// Process calls that were queued before app.js loaded
+(window._isqQ || []).forEach(([a, b]) => initTableSearch(a, b));
+window._isqQ = null;
 
 // ── Format bytes ──────────────────────────────────────────────
 function formatBytes(bytes) {
@@ -179,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
         { label: 'Einstellungen: Branding',              icon: 'palette',        url: '/settings#branding',         cat: 'Einstellungen' },
         { label: 'Einstellungen: Berechtigungen prüfen', icon: 'shield-check',   url: '/settings/permissions',      cat: 'Einstellungen' },
         { label: 'Updates',                              icon: 'cloud-arrow-down', url: '/settings/update',           cat: 'Administration' },
+        { label: 'Handbuch',                             icon: 'book',             url: '/manual',                    cat: 'Administration' },
     ];
 
     const overlay  = document.getElementById('qsOverlay');
