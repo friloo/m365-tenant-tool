@@ -163,6 +163,13 @@ class GraphClient
         $this->request('DELETE', $url);
     }
 
+    /** GET with ConsistencyLevel: eventual — required for $search queries */
+    public function getEventual(string $endpoint, array $query = []): array
+    {
+        $url = $this->buildUrl($endpoint, $query);
+        return $this->request('GET', $url, true);
+    }
+
     public function getCache(): GraphCache
     {
         return $this->cache;

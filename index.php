@@ -275,6 +275,7 @@ $router->get('/settings/refresh-token',           [\App\Modules\Settings\Setting
 
 // User management (M365 users with tool access)
 $router->get('/settings/users',                 [\App\Modules\Settings\UserManagementController::class, 'index']);
+$router->get('/settings/users/search',          [\App\Modules\Settings\UserManagementController::class, 'search']);
 $router->post('/settings/users',                [\App\Modules\Settings\UserManagementController::class, 'add']);
 $router->post('/settings/users/{id}/update',    [\App\Modules\Settings\UserManagementController::class, 'update']);
 $router->post('/settings/users/{id}/delete',    [\App\Modules\Settings\UserManagementController::class, 'delete']);

@@ -78,6 +78,7 @@
         <h6>Administration</h6>
         <a href="#cron">Cron & Automatisierung</a>
         <a href="#settings">Einstellungen</a>
+        <a href="#useraccess">Benutzer-Zugang</a>
         <a href="#updates">Updates</a>
         <a href="#permissions">Berechtigungen</a>
     </div>
@@ -103,7 +104,7 @@
     <h3>Rollen im Tool</h3>
     <ul>
         <li><strong>Administrator</strong> — vollständiger Zugriff inkl. Einstellungen, Updates, Offboarding, Wipe</li>
-        <li><strong>Operator</strong> — Leserechte und begrenzte Aktionen (kein Zugriff auf Einstellungen/Updates)</li>
+        <li><strong>Operator</strong> — alle Monitoring-Module lesen, Scans starten, Erinnerungen senden, Freigaben widerrufen; kein Zugriff auf Einstellungen/Updates</li>
     </ul>
 </div>
 
@@ -555,14 +556,65 @@
     <h3>E-Mail & SMTP</h3>
     <p>Konfiguriert den ausgehenden Mailserver für Alert-E-Mails, Freigaben-Monitor und Berichte. Pflichtfelder: SMTP-Host, Port, Absender-Adresse, Empfänger-Adresse. Optional: SMTP-Authentifizierung.</p>
 
-    <h3>Admin-Passwort / Operator-Konto</h3>
-    <p>Ändert das Passwort des Administrator-Kontos. Das Operator-Konto ist ein zweites Login mit eingeschränkten Rechten (nur Lesen + begrenzte Aktionen, kein Zugriff auf Administration).</p>
+    <h3>Admin-Passwort</h3>
+    <p>Ändert das Passwort des lokalen Administrator-Kontos (das ursprünglich beim Setup eingerichtete Konto).</p>
 
     <h3>Berechtigungen prüfen</h3>
     <p>Zeigt, welche Microsoft Graph Berechtigungen dem konfigurierten App-Konto erteilt wurden und welche Module dadurch eingeschränkt sind. Nach Änderungen in Azure AD kann das Token über den Button „Token erneuern & neu prüfen" sofort aktualisiert werden.</p>
 
     <h3>Cache leeren</h3>
     <p>Löscht alle zwischengespeicherten API-Antworten sofort. Hilfreich nach manuellen Änderungen direkt in Azure AD.</p>
+</div>
+
+<!-- Benutzer-Zugang ──────────────────────────────────────── -->
+<div class="man-section" id="useraccess">
+    <h2><i class="bi bi-people-fill text-primary"></i> Benutzer-Zugang</h2>
+    <p>Neben dem lokalen Admin-Konto können beliebig viele <strong>Microsoft 365-Benutzer</strong> des Tenants berechtigt werden, sich mit ihrem Microsoft-Konto anzumelden — z.B. IT-Mitarbeiter als Operator.</p>
+
+    <h3>Voraussetzungen in Azure</h3>
+    <p>Die bestehende App-Registrierung muss um folgende Konfiguration ergänzt werden:</p>
+    <ol>
+        <li>In der App-Registrierung unter <strong>Authentifizierung → Redirect-URIs</strong> die angezeigte URI eintragen (wird auf der Seite <em>Einstellungen → Benutzer-Zugang</em> direkt angezeigt)</li>
+        <li>Unter <strong>API-Berechtigungen</strong> die <strong>delegierte</strong> Berechtigung <span class="perm-tag">User.Read</span> hinzufügen (nicht die Anwendungsberechtigung — die delegierte Version reicht für das Login)</li>
+        <li>Kein zusätzlicher Admin-Consent nötig — <code>User.Read</code> delegiert wird von jedem Benutzer selbst beim ersten Login genehmigt</li>
+    </ol>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i>Die Redirect-URI ist im Format <code>https://ihre-domain/auth/microsoft/callback</code>. Wenn <em>App-Basis-URL</em> in den Einstellungen konfiguriert ist, wird diese verwendet.</div>
+
+    <h3>Benutzer hinzufügen</h3>
+    <p>Über <strong>Einstellungen → Benutzer-Zugang → Benutzer hinzufügen</strong> können vorhandene Tenant-Benutzer per Suchfunktion ausgewählt werden:</p>
+    <ol>
+        <li>Im Suchfeld Name oder E-Mail-Adresse eingeben (mindestens 2 Zeichen)</li>
+        <li>Benutzer aus den Vorschlägen auswählen (durchsucht Anzeigenamen und UPN)</li>
+        <li>Rolle festlegen: <strong>Operator</strong> (Standard) oder <strong>Administrator</strong></li>
+        <li>„Hinzufügen" klicken</li>
+    </ol>
+    <p>Falls die Graph-Suche nicht verfügbar ist (z.B. fehlende Berechtigung), kann der UPN auch manuell eingegeben werden (Link „UPN manuell eingeben" im Dialog).</p>
+
+    <h3>Anmeldevorgang für Benutzer</h3>
+    <ol>
+        <li>Benutzer öffnet die Login-Seite und klickt <strong>„Mit Microsoft anmelden"</strong></li>
+        <li>Weiterleitung zur Microsoft-Anmeldeseite (login.microsoftonline.com)</li>
+        <li>Nach erfolgreicher Authentifizierung prüft das Tool, ob der Benutzer in der Zugriffsliste steht</li>
+        <li>Ist er eingetragen und aktiv: automatische Anmeldung mit der zugewiesenen Rolle</li>
+        <li>Ist er nicht eingetragen: Anzeige der Seite „Kein Zugriff" — kein Zugriff auf das Tool</li>
+    </ol>
+
+    <h3>Rollen &amp; Berechtigungen</h3>
+    <table class="table table-sm table-bordered small">
+        <thead class="table-light"><tr><th>Funktion</th><th>Operator</th><th>Administrator</th></tr></thead>
+        <tbody>
+            <tr><td>Alle Monitoring-Module lesen</td><td><i class="bi bi-check text-success"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
+            <tr><td>Scans starten, Erinnerungen senden</td><td><i class="bi bi-check text-success"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
+            <tr><td>Freigaben manuell widerrufen</td><td><i class="bi bi-check text-success"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
+            <tr><td>Einstellungen bearbeiten</td><td><i class="bi bi-x text-danger"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
+            <tr><td>Benutzer-Zugang verwalten</td><td><i class="bi bi-x text-danger"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
+            <tr><td>Updates einspielen</td><td><i class="bi bi-x text-danger"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
+        </tbody>
+    </table>
+
+    <h3>Benutzer deaktivieren / entfernen</h3>
+    <p>Über den Bearbeiten-Button kann ein Benutzer <strong>deaktiviert</strong> werden (Zugriff gesperrt, aber Eintrag bleibt erhalten) oder über den Löschen-Button vollständig entfernt werden. Eine aktive Session wird beim nächsten Seitenaufruf automatisch beendet.</p>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i>Der letzte Administrator-Benutzer sollte nicht entfernt werden. Das lokale Admin-Konto (aus dem Setup) ist davon unabhängig und bleibt immer erhalten.</div>
 </div>
 
 <!-- Updates ──────────────────────────────────────────────── -->
@@ -613,6 +665,13 @@
         <li><span class="perm-tag">SecurityEvents.Read.All</span> — Secure Score, Defender</li>
         <li><span class="perm-tag">SecurityAlert.ReadWrite.All</span> — Defender Alerts auflösen</li>
     </ul>
+
+    <h3>Für M365-Benutzer-Login (delegiert)</h3>
+    <p>Damit IT-Mitarbeiter sich mit ihrem Microsoft-Konto anmelden können, wird zusätzlich benötigt:</p>
+    <ul>
+        <li><span class="perm-tag">User.Read</span> — <strong>delegierte</strong> Berechtigung (nicht Application), ermöglicht das Auslesen von Name und UPN des angemeldeten Benutzers nach dem Login</li>
+    </ul>
+    <p class="text-muted small">Diese Berechtigung wird unter <em>API-Berechtigungen → Delegierte Berechtigungen → Microsoft Graph → User.Read</em> hinzugefügt. Kein Admin-Consent nötig.</p>
 
     <h3>Zusätzliche Schreib-Berechtigungen</h3>
     <ul>
