@@ -251,6 +251,7 @@ $router->post('/settings/save',                   [\App\Modules\Settings\Setting
 $router->get('/settings/clear-cache',             [\App\Modules\Settings\SettingsController::class, 'clearCache']);
 $router->get('/settings/test-mail',               [\App\Modules\Settings\SettingsController::class, 'testMail']);
 $router->get('/settings/permissions',             [\App\Modules\Settings\SettingsController::class, 'permissions']);
+$router->get('/settings/refresh-token',           [\App\Modules\Settings\SettingsController::class, 'refreshToken']);
 
 // Cron & Queue management
 $router->get('/cron',                             [\App\Modules\Cron\CronController::class, 'index']);

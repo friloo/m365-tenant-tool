@@ -171,9 +171,23 @@ class SettingsController
         Redirect::to('/settings');
     }
 
+    public function refreshToken(): void
+    {
+        LocalAuth::require();
+        \App\Database\DB::execute('DELETE FROM graph_tokens');
+        \App\Core\Session::setFlash('success', 'Token gelöscht — ein neues wird beim nächsten API-Aufruf geholt.');
+        \App\Core\Redirect::to('/settings/permissions');
+    }
+
     public function permissions(): void
     {
         LocalAuth::require();
+
+        // Force new token if requested (needed after permission changes in Azure)
+        if (isset($_GET['refresh'])) {
+            \App\Database\DB::execute('DELETE FROM graph_tokens');
+        }
+
         /** @var \App\Modules\Settings\PermissionCheckerService $svc */
         $svc     = app_service(PermissionCheckerService::class);
         $checked = $svc->checkPermissions();

@@ -31,7 +31,10 @@ $progressColor = $pct >= 90 ? 'success' : ($pct >= 60 ? 'warning' : 'danger');
         <div class="text-muted" style="font-size:13px;">Prüft welche Microsoft Graph Berechtigungen dem konfigurierten App-Konto erteilt wurden und welche Features dadurch eingeschränkt sind.</div>
     </div>
     <div class="d-flex gap-2">
-        <a href="?refresh=1" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-clockwise me-1"></i>Token neu laden</a>
+        <a href="?refresh=1" class="btn btn-sm btn-primary"
+           title="Löscht das gecachte Token — nach Berechtigungsänderungen in Azure erforderlich">
+            <i class="bi bi-arrow-clockwise me-1"></i>Token erneuern &amp; neu prüfen
+        </a>
         <a href="/settings" class="btn btn-sm btn-outline-secondary"><i class="bi bi-gear me-1"></i>Einstellungen</a>
     </div>
 </div>
@@ -109,6 +112,16 @@ $progressColor = $pct >= 90 ? 'success' : ($pct >= 60 ? 'warning' : 'danger');
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="alert alert-info d-flex gap-2 align-items-start mb-4" style="font-size:13px;">
+    <i class="bi bi-info-circle-fill flex-shrink-0 mt-1"></i>
+    <div>
+        <strong>Berechtigung gerade erteilt aber wird noch als fehlend angezeigt?</strong>
+        Das Access-Token ist bis zu 1 Stunde gecacht. Nach Änderungen in Azure einfach
+        <a href="?refresh=1" class="alert-link">Token erneuern &amp; neu prüfen</a> klicken —
+        das löscht das alte Token und holt sofort ein neues mit den aktuellen Rechten.
     </div>
 </div>
 
