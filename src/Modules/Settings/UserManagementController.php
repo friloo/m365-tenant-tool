@@ -73,4 +73,38 @@ class UserManagementController
         Session::flash('success', 'Benutzer entfernt.');
         Redirect::to('/settings/users');
     }
+
+    public function search(): void
+    {
+        LocalAuth::requireAdmin();
+        header('Content-Type: application/json');
+
+        $q = trim($_GET['q'] ?? '');
+        if (strlen($q) < 2) {
+            echo json_encode([]);
+            return;
+        }
+
+        // Strip OData-sensitive characters to prevent injection
+        $q = preg_replace('/["\'\\\\*?|<>]/', '', $q);
+
+        try {
+            $result = app_graph()->getEventual('/users', [
+                '$search' => '"displayName:' . $q . '" OR "userPrincipalName:' . $q . '"',
+                '$select' => 'id,displayName,userPrincipalName',
+                '$top'    => '15',
+            ]);
+            $users = $result['value'] ?? [];
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+            return;
+        }
+
+        echo json_encode(array_map(fn($u) => [
+            'id'                => $u['id']                ?? '',
+            'displayName'       => $u['displayName']       ?? '',
+            'userPrincipalName' => $u['userPrincipalName'] ?? '',
+        ], $users));
+    }
 }

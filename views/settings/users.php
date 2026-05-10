@@ -184,14 +184,56 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                 <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Benutzer hinzufügen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form method="post" action="/settings/users">
+            <form method="post" action="/settings/users" id="addUserForm">
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-medium">UPN / E-Mail-Adresse <span class="text-danger">*</span></label>
-                        <input type="email" name="upn" class="form-control" required autofocus
-                               placeholder="max.muster@firma.de">
-                        <div class="form-text">Die Azure-Anmeldeadresse des Benutzers (userPrincipalName).</div>
+                    <!-- Tenant user picker -->
+                    <div class="mb-3" id="searchWrap">
+                        <label class="form-label fw-medium">Benutzer suchen <span class="text-danger">*</span></label>
+                        <div class="position-relative">
+                            <span class="position-absolute top-50 translate-middle-y ms-3" style="pointer-events:none; color:#9ca3af;">
+                                <i class="bi bi-search" id="searchIcon"></i>
+                                <span id="searchSpinner" class="spinner-border spinner-border-sm d-none" style="width:.85rem;height:.85rem;"></span>
+                            </span>
+                            <input type="text" id="userSearchInput" class="form-control ps-5"
+                                   placeholder="Name oder E-Mail eingeben…" autocomplete="off">
+                            <div id="userSearchDropdown"
+                                 class="dropdown-menu w-100 shadow-sm py-1 d-none"
+                                 style="max-height:220px; overflow-y:auto; margin-top:2px;">
+                            </div>
+                        </div>
+                        <!-- Selected user chip -->
+                        <div id="selectedUserChip" class="d-none mt-2 px-3 py-2 rounded-3 d-flex align-items-center gap-2"
+                             style="background:#eff6ff; border:1px solid #bfdbfe;">
+                            <i class="bi bi-person-check-fill text-primary"></i>
+                            <div class="flex-grow-1 overflow-hidden">
+                                <div id="chipName" class="fw-medium small text-truncate"></div>
+                                <div id="chipUpn" class="text-muted" style="font-size:11px;" class="text-truncate"></div>
+                            </div>
+                            <button type="button" class="btn-close btn-sm flex-shrink-0" id="clearSelection" style="font-size:.65rem;"></button>
+                        </div>
+                        <!-- Fallback: manual entry toggle -->
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-link btn-sm p-0 text-muted" id="toggleManual"
+                                    style="font-size:12px;">
+                                <i class="bi bi-keyboard me-1"></i>UPN manuell eingeben
+                            </button>
+                        </div>
                     </div>
+
+                    <!-- Manual UPN input (hidden by default) -->
+                    <div class="mb-3 d-none" id="manualWrap">
+                        <label class="form-label fw-medium">UPN / E-Mail <span class="text-danger">*</span></label>
+                        <input type="email" id="manualUpnInput" class="form-control"
+                               placeholder="max.muster@firma.de">
+                        <button type="button" class="btn btn-link btn-sm p-0 text-muted mt-1" id="toggleSearch"
+                                style="font-size:12px;">
+                            <i class="bi bi-search me-1"></i>Suche verwenden
+                        </button>
+                    </div>
+
+                    <!-- Hidden field that is actually submitted -->
+                    <input type="hidden" name="upn" id="upnHidden">
+
                     <div class="mb-1">
                         <label class="form-label fw-medium">Rolle</label>
                         <select name="role" class="form-select">
@@ -202,7 +244,7 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="addSubmitBtn" disabled>
                         <i class="bi bi-check2 me-1"></i>Hinzufügen
                     </button>
                 </div>
@@ -210,6 +252,149 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
         </div>
     </div>
 </div>
+
+<script>
+(function () {
+    const searchInput    = document.getElementById('userSearchInput');
+    const dropdown       = document.getElementById('userSearchDropdown');
+    const chip           = document.getElementById('selectedUserChip');
+    const chipName       = document.getElementById('chipName');
+    const chipUpn        = document.getElementById('chipUpn');
+    const clearBtn       = document.getElementById('clearSelection');
+    const upnHidden      = document.getElementById('upnHidden');
+    const submitBtn      = document.getElementById('addSubmitBtn');
+    const icon           = document.getElementById('searchIcon');
+    const spinner        = document.getElementById('searchSpinner');
+    const toggleManual   = document.getElementById('toggleManual');
+    const toggleSearch   = document.getElementById('toggleSearch');
+    const manualWrap     = document.getElementById('manualWrap');
+    const searchWrap     = document.getElementById('searchWrap');
+    const manualInput    = document.getElementById('manualUpnInput');
+
+    let debounceTimer;
+
+    // Reset when modal opens
+    document.getElementById('addUserModal').addEventListener('show.bs.modal', resetForm);
+
+    function resetForm() {
+        searchInput.value  = '';
+        manualInput.value  = '';
+        upnHidden.value    = '';
+        dropdown.classList.add('d-none');
+        chip.classList.add('d-none');
+        submitBtn.disabled = true;
+        manualWrap.classList.add('d-none');
+        searchWrap.classList.remove('d-none');
+    }
+
+    // Toggle manual entry
+    toggleManual.addEventListener('click', () => {
+        searchWrap.classList.add('d-none');
+        manualWrap.classList.remove('d-none');
+        upnHidden.value    = '';
+        submitBtn.disabled = true;
+        manualInput.focus();
+    });
+    toggleSearch.addEventListener('click', () => {
+        manualWrap.classList.add('d-none');
+        searchWrap.classList.remove('d-none');
+        manualInput.value  = '';
+        upnHidden.value    = '';
+        submitBtn.disabled = true;
+        searchInput.focus();
+    });
+
+    // Manual input — sync to hidden field
+    manualInput.addEventListener('input', () => {
+        upnHidden.value    = manualInput.value.trim();
+        submitBtn.disabled = !manualInput.value.trim().includes('@');
+    });
+
+    // Search input
+    searchInput.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        const q = this.value.trim();
+        if (q.length < 2) { dropdown.classList.add('d-none'); return; }
+        debounceTimer = setTimeout(() => doSearch(q), 320);
+    });
+
+    searchInput.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { dropdown.classList.add('d-none'); searchInput.blur(); }
+    });
+
+    document.addEventListener('click', e => {
+        if (!e.target.closest('#searchWrap')) dropdown.classList.add('d-none');
+    });
+
+    async function doSearch(q) {
+        icon.classList.add('d-none');
+        spinner.classList.remove('d-none');
+        dropdown.classList.add('d-none');
+
+        try {
+            const resp  = await fetch('/settings/users/search?q=' + encodeURIComponent(q));
+            const users = await resp.json();
+
+            if (!resp.ok || users.error) {
+                renderDropdown([{ _error: users.error || 'Suche nicht verfügbar' }]);
+            } else if (!users.length) {
+                renderDropdown([{ _empty: true }]);
+            } else {
+                renderDropdown(users);
+            }
+        } catch {
+            renderDropdown([{ _error: 'Verbindungsfehler' }]);
+        } finally {
+            icon.classList.remove('d-none');
+            spinner.classList.add('d-none');
+        }
+    }
+
+    function renderDropdown(users) {
+        dropdown.innerHTML = '';
+        users.forEach(u => {
+            const el = document.createElement('div');
+            if (u._error) {
+                el.className = 'dropdown-item text-danger small pe-none';
+                el.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>' + esc(u._error);
+            } else if (u._empty) {
+                el.className = 'dropdown-item text-muted small pe-none';
+                el.innerHTML = '<i class="bi bi-search me-1"></i>Keine Benutzer gefunden';
+            } else {
+                el.className = 'dropdown-item py-2 cursor-pointer';
+                el.style.cursor = 'pointer';
+                el.innerHTML =
+                    '<div class="fw-medium small">' + esc(u.displayName || u.userPrincipalName) + '</div>' +
+                    '<div class="text-muted" style="font-size:11px;">' + esc(u.userPrincipalName) + '</div>';
+                el.addEventListener('click', () => selectUser(u));
+            }
+            dropdown.appendChild(el);
+        });
+        dropdown.classList.remove('d-none');
+    }
+
+    function selectUser(u) {
+        upnHidden.value    = u.userPrincipalName;
+        chipName.textContent = u.displayName || u.userPrincipalName;
+        chipUpn.textContent  = u.userPrincipalName;
+        chip.classList.remove('d-none');
+        dropdown.classList.add('d-none');
+        searchInput.value  = '';
+        submitBtn.disabled = false;
+    }
+
+    clearBtn.addEventListener('click', () => {
+        upnHidden.value    = '';
+        chip.classList.add('d-none');
+        submitBtn.disabled = true;
+        searchInput.focus();
+    });
+
+    function esc(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+})();
+</script>
 
 <!-- Edit & delete modals per user -->
 <?php foreach ($users as $u): ?>
