@@ -72,4 +72,13 @@ class SecurityService
             ];
         } catch (\Throwable) { return ['total' => 0, 'registered' => 0, 'capable' => 0, 'pct' => 0]; }
     }
+
+    public function toggleCaPolicy(string $policyId, string $newState): void
+    {
+        $this->graph->patch(
+            '/identity/conditionalAccessPolicies/' . $policyId,
+            ['state' => $newState]
+        );
+        $this->graph->getCache()->forget('ca_policies');
+    }
 }

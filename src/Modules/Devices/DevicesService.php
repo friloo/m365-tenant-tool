@@ -42,4 +42,86 @@ class DevicesService
         arsort($stats['by_os']);
         return $stats;
     }
+
+    public function getDevice(string $deviceId): array
+    {
+        return $this->graph->get("/deviceManagement/managedDevices/{$deviceId}", [], null, 0);
+    }
+
+    public function syncDevice(string $deviceId): void
+    {
+        $this->graph->post("/deviceManagement/managedDevices/{$deviceId}/syncDevice", []);
+    }
+
+    public function retireDevice(string $deviceId): void
+    {
+        $this->graph->post("/deviceManagement/managedDevices/{$deviceId}/retire", []);
+    }
+
+    public function wipeDevice(string $deviceId): void
+    {
+        $this->graph->post("/deviceManagement/managedDevices/{$deviceId}/wipe", [
+            'keepEnrollmentData' => false,
+            'keepUserData'       => false,
+        ]);
+    }
+
+    public function getBitLockerKeys(string $azureAdDeviceId): array
+    {
+        if ($azureAdDeviceId === '') {
+            return [];
+        }
+        try {
+            $result = $this->graph->get(
+                '/informationProtection/bitlocker/recoveryKeys',
+                [
+                    '$filter' => "deviceId eq '{$azureAdDeviceId}'",
+                    '$select' => 'id,createdDateTime,deviceId',
+                ],
+                null,
+                0
+            );
+
+            $keys = $result['value'] ?? (isset($result['id']) ? [$result] : []);
+            $output = [];
+            foreach ($keys as $keyMeta) {
+                $keyId = $keyMeta['id'] ?? '';
+                if ($keyId === '') continue;
+                try {
+                    $keyDetail = $this->graph->get(
+                        "/informationProtection/bitlocker/recoveryKeys/{$keyId}",
+                        ['$select' => 'key'],
+                        null,
+                        0
+                    );
+                    $output[] = [
+                        'id'              => $keyId,
+                        'createdDateTime' => $keyMeta['createdDateTime'] ?? '',
+                        'key'             => $keyDetail['key'] ?? '',
+                    ];
+                } catch (\Throwable) {
+                    $output[] = [
+                        'id'              => $keyId,
+                        'createdDateTime' => $keyMeta['createdDateTime'] ?? '',
+                        'key'             => '',
+                    ];
+                }
+            }
+            return $output;
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    public function getDeviceDetail(string $deviceId): array
+    {
+        return $this->graph->get(
+            "/deviceManagement/managedDevices/{$deviceId}",
+            [
+                '$select' => 'id,deviceName,operatingSystem,osVersion,complianceState,managementState,enrolledDateTime,lastSyncDateTime,userDisplayName,userPrincipalName,azureADDeviceId,manufacturer,model,serialNumber,imei,totalStorageSpaceInBytes,freeStorageSpaceInBytes,isEncrypted,jailBroken',
+            ],
+            null,
+            0
+        );
+    }
 }

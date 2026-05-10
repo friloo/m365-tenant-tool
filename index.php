@@ -199,6 +199,9 @@ $router->get('/securescore',                      [\App\Modules\SecureScore\Secu
 // Mailboxes
 $router->get('/mailboxes',                        [\App\Modules\Mailboxes\MailboxController::class, 'index']);
 $router->get('/mailboxes/export',                 [\App\Modules\Mailboxes\MailboxController::class, 'export']);
+$router->get('/mailboxes/{id}',                   [\App\Modules\Mailboxes\MailboxController::class, 'show']);
+$router->post('/mailboxes/{id}/forwarding',       [\App\Modules\Mailboxes\MailboxController::class, 'setForwarding']);
+$router->post('/mailboxes/{id}/auto-reply',       [\App\Modules\Mailboxes\MailboxController::class, 'setAutoReply']);
 
 // Service Health
 $router->get('/servicehealth',                    [\App\Modules\ServiceHealth\ServiceHealthController::class, 'index']);
