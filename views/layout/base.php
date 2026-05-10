@@ -43,7 +43,7 @@
                 <?php endif; ?>
             </div>
             <div class="topbar-right">
-                <span class="refresh-badge" id="lastRefresh" title="Letzter Cache-Refresh"></span>
+                <span class="refresh-badge" id="lastRefresh" data-ts="<?= time() * 1000 ?>" title="Letzter Datenabruf"></span>
                 <a href="?refresh=1" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" title="Daten aktualisieren">
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>
