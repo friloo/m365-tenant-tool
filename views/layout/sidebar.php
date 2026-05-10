@@ -52,6 +52,8 @@ function navItem(string $icon, string $label, string $route, string $current): v
 <?php navItem('diagram-3', 'Gruppen & Teams', 'groups', $currentPath); ?>
 <?php navItem('award', 'Lizenzen', 'licenses', $currentPath); ?>
 <?php navItem('lightbulb', 'Lizenz-Berater', 'licenseadvisor', $currentPath); ?>
+<?php navItem('shield-lock', 'MFA-Methoden', 'mfamethods', $currentPath); ?>
+<?php navItem('key', 'Passwort-Ablauf', 'passwordexpiry', $currentPath); ?>
 
 <div class="sidebar-section">Speicher & Freigaben</div>
 <?php navItem('cloud', 'OneDrive', 'onedrive', $currentPath); ?>
@@ -62,18 +64,18 @@ function navItem(string $icon, string $label, string $route, string $current): v
 
 <div class="sidebar-section">Exchange & Kommunikation</div>
 <?php navItem('envelope', 'Postfächer', 'mailboxes', $currentPath); ?>
-<?php navItem('microsoft-teams', 'Teams-Nutzung', 'teamsusage', $currentPath); ?>
+<?php navItem('camera-video', 'Teams-Nutzung', 'teamsusage', $currentPath); ?>
 <?php navItem('heart-pulse', 'Dienststatus', 'servicehealth', $currentPath); ?>
 
 <div class="sidebar-section">Sicherheit</div>
 <?php navItem('shield-check', 'Sicherheit', 'security', $currentPath); ?>
 <?php navItem('shield-fill-check', 'Security Posture', 'securityposture', $currentPath); ?>
 <?php navItem('bar-chart-line', 'Secure Score', 'securescore', $currentPath); ?>
-<?php navItem('bell-fill', 'Defender Alerts', 'defenderalerts', $currentPath); ?>
+<?php navItem('bell', 'Defender Alerts', 'defenderalerts', $currentPath); ?>
 <?php navItem('exclamation-triangle', 'Risiko-Anmeldungen', 'riskysignins', $currentPath); ?>
-<?php navItem('shield-lock', 'MFA-Methoden', 'mfamethods', $currentPath); ?>
-<?php navItem('key', 'Passwort-Ablauf', 'passwordexpiry', $currentPath); ?>
 <?php navItem('grid-3x3-gap', 'App-Registrierungen', 'appregistrations', $currentPath); ?>
+
+<div class="sidebar-section">Compliance & Audit</div>
 <?php navItem('phone', 'Geräte', 'devices', $currentPath); ?>
 <?php navItem('person-x', 'Inaktive Konten', 'staleaccounts', $currentPath); ?>
 <?php navItem('clock-history', 'Audit-Log', 'auditlog', $currentPath); ?>

@@ -78,7 +78,7 @@ if (!empty($matchingSkus)) {
             benötigen. Der Advisor zeigt dann, welche Lizenzpläne diese Kombination abdecken und
             welche Benutzer noch nicht abgedeckt sind.
         </p>
-        <form method="post" action="/licenseadvisor/criteria">
+        <form method="post" action="/licenseadvisor/save-criteria">
             <div class="row g-3 mb-4">
                 <?php foreach ($criteriaMap as $key => $def): ?>
                     <div class="col-sm-6 col-lg-4">
