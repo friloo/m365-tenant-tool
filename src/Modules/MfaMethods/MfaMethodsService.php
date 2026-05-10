@@ -34,7 +34,7 @@ class MfaMethodsService
     public function getAll(): array
     {
         try {
-            return $this->graph->paginate(
+            $users = $this->graph->paginate(
                 '/reports/authenticationMethods/userRegistrationDetails',
                 [
                     '$select' => 'id,userPrincipalName,userDisplayName,isMfaRegistered,isMfaCapable,methodsRegistered,defaultMfaMethod',
@@ -44,9 +44,17 @@ class MfaMethodsService
                 'mfa_methods_detail',
                 1800
             );
-        } catch (\Throwable) {
+            return $users;
+        } catch (\Throwable $e) {
+            error_log('MFA methods fetch failed: ' . $e->getMessage());
             return [];
         }
+    }
+
+    /** Returns the last Graph error (e.g. 403 missing permission), or null. */
+    public function getLastError(): ?array
+    {
+        return $this->graph->getLastError();
     }
 
     /**

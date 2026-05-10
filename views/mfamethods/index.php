@@ -11,6 +11,34 @@ $maxMethod     = !empty($byMethod)  ? max($byMethod)  : 1;
 $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
 ?>
 
+<?php if (!empty($apiError)): ?>
+<div class="alert mb-4" style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:16px;">
+    <div class="d-flex align-items-start gap-3">
+        <i class="bi bi-exclamation-triangle-fill" style="color:#dc2626;font-size:20px;flex-shrink:0;margin-top:2px;"></i>
+        <div style="flex:1;">
+            <div class="fw-semibold mb-1" style="color:#991b1b;">
+                Microsoft Graph antwortet mit HTTP <?= (int)$apiError['status'] ?> — Daten können nicht geladen werden.
+            </div>
+            <div class="small mb-2" style="color:#7f1d1d;">
+                <code><?= $e($apiError['code'] ?: 'Error') ?></code>: <?= $e($apiError['message']) ?>
+            </div>
+            <div class="small" style="color:#7f1d1d;">
+                Der Endpunkt <code>/reports/authenticationMethods/userRegistrationDetails</code> benötigt
+                <strong>zwei Anwendungs-Berechtigungen</strong> in der Azure App-Registrierung
+                (zusätzlich zu den MFA-Berechtigungen):
+                <ul class="mb-2 mt-1">
+                    <li><code>AuditLog.Read.All</code> (Application)</li>
+                    <li><code>Reports.Read.All</code> (Application)</li>
+                </ul>
+                Nach dem Hinzufügen muss ein <strong>Global Admin in Azure den Consent erteilen</strong>
+                (Knopf „Admin-Zustimmung erteilen für …" in der API-Berechtigungs-Übersicht).
+                Anschließend hier <a href="?refresh=1">Aktualisieren</a> drücken.
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- Metric cards -->
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
