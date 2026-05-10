@@ -15,7 +15,10 @@ class AuthController
             Redirect::to('/');
         }
         $error = Session::getFlash('error');
-        View::render('auth/login', ['error' => $error], false);
+        View::render('auth/login', [
+            'error'          => $error,
+            'msLoginEnabled' => \App\Auth\MicrosoftAuth::isConfigured(),
+        ], false);
     }
 
     public function doLogin(): void

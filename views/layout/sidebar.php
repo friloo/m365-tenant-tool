@@ -14,7 +14,7 @@ $_allNavRoutes = [
     'msgcenter', 'mailflow',
     'groups/inactive', 'licenses/expiry',
     'mailboxes/shared', 'mailboxes/external-forwards',
-    'settings/update', 'manual',
+    'settings/update', 'settings/users', 'manual',
 ];
 
 function navItem(string $icon, string $label, string $route, string $current): void {
@@ -96,5 +96,6 @@ function navItem(string $icon, string $label, string $route, string $current): v
 <div class="sidebar-section">Administration</div>
 <?php navItem('clock', 'Cron & Automatisierung', 'cron', $currentPath); ?>
 <?php navItem('gear', 'Einstellungen', 'settings', $currentPath); ?>
+<?php navItem('people-fill', 'Benutzer-Zugang', 'settings/users', $currentPath); ?>
 <?php navItem('cloud-arrow-down', 'Updates', 'settings/update', $currentPath); ?>
 <?php endif; ?>

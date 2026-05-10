@@ -483,6 +483,19 @@
     <div class="col-lg-4">
         <div class="content-card mb-3">
             <div class="card-header-custom">
+                <i class="bi bi-people-fill text-primary"></i>
+                <h6>Benutzer-Zugang</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="small text-muted mb-3">M365-Benutzer berechtigen, sich mit ihrem Microsoft-Konto anzumelden (z.B. IT-Mitarbeiter als Operator).</p>
+                <a href="/settings/users" class="btn btn-primary btn-sm w-100">
+                    <i class="bi bi-person-plus me-1"></i> Benutzer verwalten
+                </a>
+            </div>
+        </div>
+
+        <div class="content-card mb-3">
+            <div class="card-header-custom">
                 <i class="bi bi-book text-primary"></i>
                 <h6>Handbuch</h6>
             </div>
