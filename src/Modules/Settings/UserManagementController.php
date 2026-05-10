@@ -79,33 +79,31 @@ class UserManagementController
         LocalAuth::requireAdmin();
         header('Content-Type: application/json');
 
-        $q = trim($_GET['q'] ?? '');
+        $q = strtolower(trim($_GET['q'] ?? ''));
         if (strlen($q) < 2) {
             echo json_encode([]);
             return;
         }
 
-        // Strip OData-sensitive characters to prevent injection
-        $q = preg_replace('/["\'\\\\*?|<>]/', '', $q);
-
         try {
-            $result = app_graph()->getEventual('/users', [
-                '$search' => '"displayName:' . $q . '" OR "userPrincipalName:' . $q . '"',
-                '$select' => 'id,displayName,userPrincipalName',
-                '$top'    => '15',
-                '$count'  => 'true',
-            ]);
-            $users = $result['value'] ?? [];
+            $allUsers = app_service(\App\Modules\Users\UsersService::class)->getAll();
+            $results  = [];
+            foreach ($allUsers as $u) {
+                $name = strtolower($u['displayName']       ?? '');
+                $upn  = strtolower($u['userPrincipalName'] ?? '');
+                if (str_contains($name, $q) || str_contains($upn, $q)) {
+                    $results[] = [
+                        'id'                => $u['id']                ?? '',
+                        'displayName'       => $u['displayName']       ?? '',
+                        'userPrincipalName' => $u['userPrincipalName'] ?? '',
+                    ];
+                    if (count($results) >= 15) break;
+                }
+            }
+            echo json_encode($results);
         } catch (\Throwable $e) {
             http_response_code(500);
             echo json_encode(['error' => $e->getMessage()]);
-            return;
         }
-
-        echo json_encode(array_map(fn($u) => [
-            'id'                => $u['id']                ?? '',
-            'displayName'       => $u['displayName']       ?? '',
-            'userPrincipalName' => $u['userPrincipalName'] ?? '',
-        ], $users));
     }
 }
