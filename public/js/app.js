@@ -85,6 +85,9 @@ function initTableSearch(inputId, tableId) {
         }
     });
 }
+// Process calls that were queued before app.js loaded
+(window._isqQ || []).forEach(([a, b]) => initTableSearch(a, b));
+window._isqQ = null;
 
 // ── Format bytes ──────────────────────────────────────────────
 function formatBytes(bytes) {

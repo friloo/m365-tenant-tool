@@ -66,6 +66,11 @@
 
         <!-- Page content -->
         <main class="page-content">
+            <script>
+            // Stub: queue initTableSearch calls that happen before app.js is ready
+            window._isqQ = [];
+            window.initTableSearch = function(a, b) { window._isqQ.push([a, b]); };
+            </script>
             <?php
             $flash = \App\Core\Session::getFlash('success');
             if ($flash): ?>
