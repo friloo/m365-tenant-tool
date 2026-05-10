@@ -256,6 +256,81 @@ $tz          = $detail['timeZone'] ?? '';
             </div>
         </div>
 
+        <!-- ── Section 5: Kalender-Berechtigungen ───────────────────────────── -->
+        <div class="content-card mt-3">
+            <div class="card-header-custom">
+                <i class="bi bi-calendar-check text-primary"></i>
+                <h6>Kalender-Berechtigungen</h6>
+            </div>
+            <div class="card-body-custom">
+                <?php if (empty($calendarPermissions)): ?>
+                    <div class="alert alert-info py-2 px-3 mb-0" style="font-size:13px;">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Kalenderberechtigungen konnten nicht abgerufen werden. Dies erfordert entweder
+                        delegierte Berechtigungen (<code>Calendars.Read</code>) oder den Exchange
+                        Admin-Zugriff.
+                        <a href="https://admin.exchange.microsoft.com" target="_blank" rel="noopener"
+                           class="ms-1">&rarr; Exchange Admin Center öffnen</a>
+                    </div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="data-table" style="font-size:13px;">
+                            <thead>
+                                <tr>
+                                    <th>Benutzer</th>
+                                    <th>Rolle</th>
+                                    <th>Intern</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($calendarPermissions as $perm):
+                                    $emailName = $perm['emailAddress']['name'] ?? '';
+                                    $emailAddr = $perm['emailAddress']['address'] ?? '';
+                                    $role      = $perm['role'] ?? '';
+                                    $isInside  = (bool)($perm['isInsideOrganization'] ?? false);
+
+                                    $roleBadge = match (strtolower($role)) {
+                                        'owner'       => 'badge-info',
+                                        'write', 'editor' => 'badge-success',
+                                        'read', 'reviewer'  => 'badge-secondary',
+                                        'freebusyread' => 'badge-neutral',
+                                        default        => 'badge-neutral',
+                                    };
+                                ?>
+                                <tr>
+                                    <td>
+                                        <span class="fw-medium"><?= $e($emailName) ?></span>
+                                        <?php if ($emailAddr && $emailAddr !== $emailName): ?>
+                                            <br><span class="text-muted" style="font-size:11px;"><?= $e($emailAddr) ?></span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <span class="<?= $e($roleBadge) ?> badge-pill">
+                                            <?= $e($role) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php if ($isInside): ?>
+                                            <span class="badge-enabled badge-pill">Ja</span>
+                                        <?php else: ?>
+                                            <span class="badge-neutral badge-pill">Nein</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="mt-2 mb-0 text-muted" style="font-size:11px;">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Vollzugriff (Full Access) und &bdquo;Senden als&ldquo;-Berechtigungen werden über das
+                        <a href="https://admin.exchange.microsoft.com" target="_blank" rel="noopener">Exchange Admin Center</a>
+                        verwaltet.
+                    </p>
+                <?php endif; ?>
+            </div>
+        </div>
+
     </div><!-- /col-lg-8 -->
 </div><!-- /row -->
 
