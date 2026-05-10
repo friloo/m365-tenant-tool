@@ -145,4 +145,132 @@ class GroupsService
         if ($group['mailEnabled'] && !$group['securityEnabled']) return 'Distribution';
         return 'Mail-Enabled Security';
     }
+
+    public function getInactiveGroups(int $days = 30): array
+    {
+        $cache = $this->graph->getCache();
+        return $cache->remember('groups_inactive_report', function () use ($days) {
+            $csv  = $this->fetchGroupsActivityCsv();
+            $rows = $this->parseGroupsActivityCsv($csv);
+            $today = new \DateTimeImmutable('today');
+
+            $result = [];
+            foreach ($rows as $row) {
+                // Skip deleted groups
+                if (strtolower($row['is deleted'] ?? 'false') === 'true') {
+                    continue;
+                }
+
+                $lastActivityRaw = trim($row['last activity date'] ?? '');
+                $lastActivity    = null;
+                $daysInactive    = 0;
+
+                if ($lastActivityRaw !== '') {
+                    $dt = \DateTimeImmutable::createFromFormat('Y-m-d', $lastActivityRaw);
+                    if ($dt !== false) {
+                        $lastActivity = $dt;
+                        $daysInactive = (int)$today->diff($dt)->days;
+                        // Only include if inactive for more than $days
+                        if ($daysInactive <= $days) {
+                            continue;
+                        }
+                    }
+                } else {
+                    // No activity date → treat as inactive, days from epoch → very large
+                    $daysInactive = 9999;
+                }
+
+                $result[] = [
+                    'group_name'       => $row['group display name'] ?? '',
+                    'group_id'         => $row['group id'] ?? '',
+                    'owner'            => $row['owner principal name'] ?? '',
+                    'last_activity'    => $lastActivity,
+                    'member_count'     => (int)($row['member count'] ?? 0),
+                    'external_count'   => (int)($row['external member count'] ?? 0),
+                    'days_inactive'    => $daysInactive,
+                    'exchange_emails'  => (int)($row['exchange received email count'] ?? 0),
+                    'sharepoint_files' => (int)($row['sharepoint active file count'] ?? 0),
+                ];
+            }
+
+            // Sort: nulls (no activity) first, then oldest first
+            usort($result, function (array $a, array $b) {
+                if ($a['last_activity'] === null && $b['last_activity'] === null) return 0;
+                if ($a['last_activity'] === null) return -1;
+                if ($b['last_activity'] === null) return 1;
+                return $a['last_activity'] <=> $b['last_activity'];
+            });
+
+            return $result;
+        }, 3600);
+    }
+
+    private function fetchGroupsActivityCsv(): string
+    {
+        // Extract access token via reflection (same pattern as TeamsUsageService)
+        $rc     = new \ReflectionClass($this->graph);
+        $tmProp = $rc->getProperty('tokenManager');
+        $tmProp->setAccessible(true);
+        /** @var \App\Auth\GraphTokenManager $tm */
+        $tm    = $tmProp->getValue($this->graph);
+        $token = $tm->getToken();
+
+        $url = "https://graph.microsoft.com/v1.0/reports/getOffice365GroupsActivityDetail(period='D90')";
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Bearer ' . $token,
+                'Accept: text/csv, application/json',
+            ],
+            CURLOPT_TIMEOUT => 30,
+        ]);
+        $body     = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode >= 400 || $body === false || $body === '') {
+            return '';
+        }
+        return (string)$body;
+    }
+
+    private function parseGroupsActivityCsv(string $csv): array
+    {
+        if (trim($csv) === '') {
+            return [];
+        }
+
+        $lines   = explode("\n", str_replace("\r\n", "\n", $csv));
+        $lines[0] = ltrim($lines[0], "\xEF\xBB\xBF");
+
+        $header = null;
+        $result = [];
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '') {
+                continue;
+            }
+            $cols = str_getcsv($line);
+            if ($header === null) {
+                $header = array_map(fn($h) => strtolower(trim($h)), $cols);
+                continue;
+            }
+            if (count($cols) < 3) {
+                continue;
+            }
+            while (count($cols) < count($header)) {
+                $cols[] = '';
+            }
+            $result[] = array_combine(
+                array_slice($header, 0, count($cols)),
+                array_slice($cols, 0, count($header))
+            );
+        }
+
+        return $result;
+    }
 }

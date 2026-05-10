@@ -131,6 +131,90 @@ class MailboxController
         Redirect::to('/mailboxes/' . $id);
     }
 
+    // ── External Forwards ─────────────────────────────────────────────────────
+
+    public function externalForwards(): void
+    {
+        LocalAuth::require();
+
+        if (($_GET['refresh'] ?? '') === '1') {
+            app_graph()->getCache()->forget('mailbox_external_forwards');
+        }
+
+        $service  = app_service(MailboxService::class);
+        $forwards = $service->getExternalForwards();
+
+        View::render('mailboxes/external-forwards', [
+            'pageTitle' => 'Externe Weiterleitungen',
+            'forwards'  => $forwards,
+            'flash'     => Session::getFlash('success'),
+            'error'     => Session::getFlash('error'),
+        ]);
+    }
+
+    public function removeForwardingExternal(): void
+    {
+        LocalAuth::require();
+
+        $userId = trim($_POST['user_id'] ?? '');
+
+        if ($userId !== '') {
+            $service = app_service(MailboxService::class);
+            try {
+                $service->removeExternalForward($userId);
+                Session::flash('success', 'Weiterleitung entfernt.');
+            } catch (\Throwable $e) {
+                Session::flash('error', 'Fehler beim Entfernen der Weiterleitung: ' . $e->getMessage());
+            }
+        }
+
+        Redirect::to('/mailboxes/external-forwards');
+    }
+
+    public function exportExternalForwards(): void
+    {
+        LocalAuth::require();
+
+        $service  = app_service(MailboxService::class);
+        $forwards = $service->getExternalForwards();
+
+        CsvExporter::download(
+            'externe_weiterleitungen_' . date('Ymd') . '.csv',
+            ['Anzeigename', 'UPN', 'E-Mail', 'Weiterleitungsadresse', 'Aktiviert', 'An Postfach und weiterleiten'],
+            array_map(fn($f) => [
+                $f['displayName'],
+                $f['userPrincipalName'],
+                $f['mail'],
+                $f['forwardingAddress'],
+                $f['forwardingEnabled'] ? 'Ja' : 'Nein',
+                $f['deliverToMailboxAndForward'] ? 'Ja' : 'Nein',
+            ], $forwards)
+        );
+    }
+
+    // ── Shared Mailboxes ──────────────────────────────────────────────────────
+
+    public function sharedMailboxes(): void
+    {
+        LocalAuth::require();
+
+        if (($_GET['refresh'] ?? '') === '1') {
+            app_graph()->getCache()->forget('mailbox_shared_list');
+        }
+
+        $service   = app_service(MailboxService::class);
+        $mailboxes = $service->getSharedMailboxes();
+
+        View::render('mailboxes/shared', [
+            'pageTitle' => 'Freigegebene Postfächer',
+            'mailboxes' => $mailboxes,
+            'flash'     => Session::getFlash('success'),
+            'error'     => Session::getFlash('error'),
+        ]);
+    }
+
+    // ── CSV Export (usage report) ─────────────────────────────────────────────
+
     public function export(): void
     {
         LocalAuth::require();

@@ -298,6 +298,237 @@ class MailboxService
         }
     }
 
+    // ── External Forwards ─────────────────────────────────────────────────────
+
+    /**
+     * Fetch all licensed member users and check each for an external
+     * forwarding address in their mailboxSettings.
+     *
+     * Only users whose forwardingSmtpAddress domain differs from their own
+     * UPN domain are included in the result.
+     *
+     * Cached for 1 hour (expensive: one Graph call per user).
+     *
+     * @return array<int, array{
+     *   id: string,
+     *   displayName: string,
+     *   userPrincipalName: string,
+     *   mail: string,
+     *   forwardingAddress: string,
+     *   forwardingEnabled: bool,
+     *   deliverToMailboxAndForward: bool,
+     * }>
+     */
+    public function getExternalForwards(): array
+    {
+        $cacheKey = 'mailbox_external_forwards';
+
+        // Try cache first (result is already filtered)
+        $cached = $this->graph->getCache()->get($cacheKey);
+        if ($cached !== null) {
+            return $cached;
+        }
+
+        // Step 1: fetch all licensed member users
+        try {
+            $usersData = $this->graph->get(
+                '/users',
+                [
+                    '$select'          => 'id,displayName,userPrincipalName,mail,accountEnabled',
+                    '$filter'          => "assignedLicenses/\$count ne 0 and userType eq 'Member'",
+                    '$count'           => 'true',
+                    '$top'             => '999',
+                    'ConsistencyLevel' => 'eventual',
+                ],
+                null,
+                0
+            );
+        } catch (\Throwable) {
+            return [];
+        }
+
+        $users = $usersData['value'] ?? [];
+        if (empty($users)) {
+            return [];
+        }
+
+        // Step 2: for each user, fetch mailboxSettings and look for an external forward
+        $result = [];
+
+        foreach ($users as $user) {
+            $userId = $user['id'] ?? '';
+            $upn    = $user['userPrincipalName'] ?? '';
+            if ($userId === '' || $upn === '') {
+                continue;
+            }
+
+            // Determine the user's own domain from their UPN
+            $upnDomain = strtolower(substr($upn, (int)strpos($upn, '@') + 1));
+
+            try {
+                $settings = $this->graph->get(
+                    "/users/{$userId}/mailboxSettings",
+                    ['$select' => 'forwardingSmtpAddress,deliverToMailboxAndForward,automaticRepliesSetting'],
+                    null,
+                    0
+                );
+            } catch (\Throwable) {
+                // Mailbox may not exist or permission denied — skip silently
+                continue;
+            }
+
+            $fwdAddress = $settings['forwardingSmtpAddress'] ?? '';
+            if ($fwdAddress === '' || $fwdAddress === null) {
+                continue;
+            }
+
+            // Extract domain from forwarding address (strip leading "smtp:" if present)
+            $cleanAddr = ltrim($fwdAddress, 'sSmMtTpP:');
+            $atPos     = strpos($cleanAddr, '@');
+            if ($atPos === false) {
+                continue;
+            }
+            $fwdDomain = strtolower(substr($cleanAddr, $atPos + 1));
+
+            // Only flag if the target domain is different from the user's domain
+            if ($fwdDomain === $upnDomain) {
+                continue;
+            }
+
+            $result[] = [
+                'id'                        => $userId,
+                'displayName'               => $user['displayName']        ?? '',
+                'userPrincipalName'         => $upn,
+                'mail'                      => $user['mail']               ?? '',
+                'forwardingAddress'         => $fwdAddress,
+                'forwardingEnabled'         => true,
+                'deliverToMailboxAndForward'=> (bool)($settings['deliverToMailboxAndForward'] ?? false),
+            ];
+        }
+
+        $this->graph->getCache()->put($cacheKey, $result, 3600);
+
+        return $result;
+    }
+
+    /**
+     * Remove an external forwarding configuration from a user's mailbox.
+     * Sets forwardingSmtpAddress to null and disables automatic forwarding.
+     */
+    public function removeExternalForward(string $userId): void
+    {
+        $this->graph->patch("/users/{$userId}/mailboxSettings", [
+            'forwardingSmtpAddress'      => null,
+            'automaticForwardingEnabled' => false,
+        ]);
+    }
+
+    // ── Shared Mailboxes ──────────────────────────────────────────────────────
+
+    /**
+     * Fetch all shared mailboxes (disabled member accounts with a license).
+     *
+     * Exchange Online shared mailboxes are typically represented as disabled
+     * user accounts in Azure AD.  We enrich each entry with basic mailbox-
+     * settings (auto-reply status, forwarding address).
+     *
+     * Cached for 30 minutes.
+     *
+     * @return array<int, array{
+     *   id: string,
+     *   displayName: string,
+     *   userPrincipalName: string,
+     *   mail: string,
+     *   createdDateTime: string,
+     *   assignedLicenses: array,
+     *   autoReplyStatus: string,
+     *   forwardingAddress: string,
+     * }>
+     */
+    public function getSharedMailboxes(): array
+    {
+        $cacheKey = 'mailbox_shared_list';
+
+        $cached = $this->graph->getCache()->get($cacheKey);
+        if ($cached !== null) {
+            return $cached;
+        }
+
+        try {
+            $usersData = $this->graph->get(
+                '/users',
+                [
+                    '$select'          => 'id,displayName,userPrincipalName,mail,assignedLicenses,createdDateTime',
+                    '$filter'          => "accountEnabled eq false and userType eq 'Member' and assignedLicenses/\$count ne 0",
+                    '$count'           => 'true',
+                    '$top'             => '999',
+                    'ConsistencyLevel' => 'eventual',
+                ],
+                null,
+                0
+            );
+        } catch (\Throwable) {
+            return [];
+        }
+
+        $users = $usersData['value'] ?? [];
+
+        $result = [];
+        foreach ($users as $user) {
+            $userId = $user['id'] ?? '';
+            if ($userId === '') {
+                continue;
+            }
+
+            $autoReplyStatus = 'disabled';
+            $fwdAddress      = '';
+
+            try {
+                $settings = $this->graph->get(
+                    "/users/{$userId}/mailboxSettings",
+                    ['$select' => 'automaticRepliesSetting,forwardingSmtpAddress'],
+                    null,
+                    0
+                );
+                $autoReplyStatus = $settings['automaticRepliesSetting']['status'] ?? 'disabled';
+                $fwdAddress      = $settings['forwardingSmtpAddress'] ?? '';
+            } catch (\Throwable) {
+                // No mailbox yet or permission denied — use defaults
+            }
+
+            $result[] = [
+                'id'               => $userId,
+                'displayName'      => $user['displayName']      ?? '',
+                'userPrincipalName'=> $user['userPrincipalName'] ?? '',
+                'mail'             => $user['mail']              ?? '',
+                'createdDateTime'  => $user['createdDateTime']   ?? '',
+                'assignedLicenses' => $user['assignedLicenses']  ?? [],
+                'autoReplyStatus'  => $autoReplyStatus,
+                'forwardingAddress'=> $fwdAddress,
+            ];
+        }
+
+        $this->graph->getCache()->put($cacheKey, $result, 1800);
+
+        return $result;
+    }
+
+    /**
+     * Returns mailbox permissions for a shared mailbox.
+     *
+     * Note: Full Access and Send As permissions are managed by Exchange Online
+     * and are not directly accessible via Microsoft Graph v1.0 or beta.
+     * Use the Exchange Admin Center to manage permissions.
+     *
+     * @return array  Always returns an empty array — see note above.
+     */
+    public function getSharedMailboxPermissions(string $userId): array
+    {
+        return [];
+    }
+
+    // ── Usage statistics ──────────────────────────────────────────────────────
+
     /**
      * Compute summary statistics from the usage rows.
      *

@@ -205,11 +205,15 @@ $router->get('/auditlog/export',                  [\App\Modules\AuditLog\AuditLo
 $router->get('/securescore',                      [\App\Modules\SecureScore\SecureScoreController::class, 'index']);
 
 // Mailboxes
-$router->get('/mailboxes',                        [\App\Modules\Mailboxes\MailboxController::class, 'index']);
-$router->get('/mailboxes/export',                 [\App\Modules\Mailboxes\MailboxController::class, 'export']);
-$router->get('/mailboxes/{id}',                   [\App\Modules\Mailboxes\MailboxController::class, 'show']);
-$router->post('/mailboxes/{id}/forwarding',       [\App\Modules\Mailboxes\MailboxController::class, 'setForwarding']);
-$router->post('/mailboxes/{id}/auto-reply',       [\App\Modules\Mailboxes\MailboxController::class, 'setAutoReply']);
+$router->get('/mailboxes',                               [\App\Modules\Mailboxes\MailboxController::class, 'index']);
+$router->get('/mailboxes/export',                        [\App\Modules\Mailboxes\MailboxController::class, 'export']);
+$router->get('/mailboxes/external-forwards',             [\App\Modules\Mailboxes\MailboxController::class, 'externalForwards']);
+$router->get('/mailboxes/external-forwards/export',      [\App\Modules\Mailboxes\MailboxController::class, 'exportExternalForwards']);
+$router->post('/mailboxes/external-forwards/remove',     [\App\Modules\Mailboxes\MailboxController::class, 'removeForwardingExternal']);
+$router->get('/mailboxes/shared',                        [\App\Modules\Mailboxes\MailboxController::class, 'sharedMailboxes']);
+$router->get('/mailboxes/{id}',                          [\App\Modules\Mailboxes\MailboxController::class, 'show']);
+$router->post('/mailboxes/{id}/forwarding',              [\App\Modules\Mailboxes\MailboxController::class, 'setForwarding']);
+$router->post('/mailboxes/{id}/auto-reply',              [\App\Modules\Mailboxes\MailboxController::class, 'setAutoReply']);
 
 // Admin Roles
 $router->get('/adminroles',                                   [\App\Modules\AdminRoles\AdminRolesController::class, 'index']);

@@ -146,4 +146,44 @@ class GroupsController
             ], $groups)
         );
     }
+
+    public function inactive(): void
+    {
+        LocalAuth::require();
+        $service = app_service(GroupsService::class);
+
+        if (($_GET['refresh'] ?? '') === '1') {
+            app_graph()->getCache()->forget('groups_inactive_report');
+        }
+
+        $days   = max(7, min(180, (int)($_GET['days'] ?? 30)));
+        $groups = $service->getInactiveGroups($days);
+
+        View::render('groups/inactive', [
+            'pageTitle' => 'Inaktive Gruppen',
+            'groups'    => $groups,
+            'days'      => $days,
+        ]);
+    }
+
+    public function exportInactive(): void
+    {
+        LocalAuth::require();
+        $days   = max(7, min(180, (int)($_GET['days'] ?? 30)));
+        $groups = app_service(GroupsService::class)->getInactiveGroups($days);
+
+        CsvExporter::download('inaktive-gruppen.csv',
+            ['Gruppe', 'Besitzer', 'Letzte Aktivität', 'Tage inaktiv', 'Mitglieder', 'Externe', 'Exchange E-Mails', 'SharePoint Dateien'],
+            array_map(fn($row) => [
+                $row['group_name'],
+                $row['owner'],
+                $row['last_activity'] !== null ? $row['last_activity']->format('Y-m-d') : '',
+                $row['days_inactive'] >= 9999 ? '' : $row['days_inactive'],
+                $row['member_count'],
+                $row['external_count'],
+                $row['exchange_emails'],
+                $row['sharepoint_files'],
+            ], $groups)
+        );
+    }
 }
