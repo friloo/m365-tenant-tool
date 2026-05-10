@@ -12,15 +12,15 @@ class DashboardService
     {
         $metrics = [];
 
-        // Total users
+        // Total users — $count requires ConsistencyLevel: eventual to be returned
         try {
-            $users = $this->graph->get('/users', ['$count' => 'true', '$top' => '1', '$select' => 'id'], 'dash_user_count', 300);
+            $users = $this->graph->getEventual('/users', ['$count' => 'true', '$top' => '1', '$select' => 'id'], 'dash_user_count', 300);
             $metrics['total_users'] = (int)($users['@odata.count'] ?? count($users['value'] ?? []));
         } catch (\Throwable) { $metrics['total_users'] = null; }
 
-        // Enabled users
+        // Enabled users — same requirement
         try {
-            $enabled = $this->graph->get('/users', ['$count' => 'true', '$top' => '1', '$select' => 'id', '$filter' => 'accountEnabled eq true'], 'dash_enabled_users', 300);
+            $enabled = $this->graph->getEventual('/users', ['$count' => 'true', '$top' => '1', '$select' => 'id', '$filter' => 'accountEnabled eq true'], 'dash_enabled_users', 300);
             $metrics['enabled_users'] = (int)($enabled['@odata.count'] ?? 0);
         } catch (\Throwable) { $metrics['enabled_users'] = null; }
 
@@ -38,13 +38,13 @@ class DashboardService
 
         // Devices
         try {
-            $devices = $this->graph->get('/deviceManagement/managedDevices', ['$count' => 'true', '$top' => '1', '$select' => 'id'], 'dash_devices', 600);
+            $devices = $this->graph->getEventual('/deviceManagement/managedDevices', ['$count' => 'true', '$top' => '1', '$select' => 'id'], 'dash_devices', 600);
             $metrics['total_devices'] = (int)($devices['@odata.count'] ?? count($devices['value'] ?? []));
         } catch (\Throwable) { $metrics['total_devices'] = null; }
 
         // Groups
         try {
-            $groups = $this->graph->get('/groups', ['$count' => 'true', '$top' => '1', '$select' => 'id'], 'dash_groups', 600);
+            $groups = $this->graph->getEventual('/groups', ['$count' => 'true', '$top' => '1', '$select' => 'id'], 'dash_groups', 600);
             $metrics['total_groups'] = (int)($groups['@odata.count'] ?? count($groups['value'] ?? []));
         } catch (\Throwable) { $metrics['total_groups'] = null; }
 

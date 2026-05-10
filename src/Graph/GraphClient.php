@@ -163,11 +163,17 @@ class GraphClient
         $this->request('DELETE', $url);
     }
 
-    /** GET with ConsistencyLevel: eventual — required for $search queries */
-    public function getEventual(string $endpoint, array $query = []): array
+    /** GET with ConsistencyLevel: eventual — required for $search and $count queries */
+    public function getEventual(string $endpoint, array $query = [], ?string $cacheKey = null, int $ttl = 900): array
     {
-        $url = $this->buildUrl($endpoint, $query);
-        return $this->request('GET', $url, true);
+        if ($cacheKey) {
+            $cached = $this->cache->get($cacheKey);
+            if ($cached !== null) return $cached;
+        }
+        $url    = $this->buildUrl($endpoint, $query);
+        $result = $this->request('GET', $url, true);
+        if ($cacheKey) $this->cache->set($cacheKey, $result, $ttl);
+        return $result;
     }
 
     /**

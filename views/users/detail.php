@@ -144,9 +144,10 @@ if ($neverExpires) {
             </div>
             <div class="card-body-custom">
                 <?php
-                $service = app_service(\App\Modules\Licenses\LicensesService::class);
                 $assigned = $user['assignedLicenses'] ?? [];
                 $assignedSkuIds = array_column($assigned, 'skuId');
+                // Build skuId → name map from the $skus list (assignedLicenses only has skuId, not skuPartNumber)
+                $skuNameMap = array_column($skus, 'name', 'skuId');
                 ?>
 
                 <!-- Assigned licenses -->
@@ -154,7 +155,7 @@ if ($neverExpires) {
                     <div class="mb-3">
                         <?php foreach ($assigned as $lic): ?>
                             <div class="d-flex align-items-center justify-content-between mb-2 p-2 rounded" style="background:#f9fafb;">
-                                <span class="small fw-medium"><?= $e($service->friendlyName($lic['skuPartNumber'] ?? '')) ?></span>
+                                <span class="small fw-medium"><?= $e($skuNameMap[$lic['skuId']] ?? $lic['skuId']) ?></span>
                                 <form method="post" action="/users/<?= $e($user['id']) ?>/remove-license"
                                       onsubmit="return confirm('Lizenz entfernen?')" class="mb-0">
                                     <input type="hidden" name="sku_id" value="<?= $e($lic['skuId']) ?>">
