@@ -8,7 +8,7 @@ $_allNavRoutes = [
     '', 'users', 'guestusers', 'groups', 'licenses',
     'onedrive', 'sharepoint', 'sharing', 'sharing/monitor', 'sharing/policies',
     'security', 'securescore', 'riskysignins', 'devices', 'staleaccounts', 'auditlog',
-    'mailboxes', 'appregistrations', 'servicehealth', 'settings',
+    'mailboxes', 'appregistrations', 'servicehealth', 'cron', 'settings',
 ];
 
 function navItem(string $icon, string $label, string $route, string $current): void {
@@ -73,5 +73,6 @@ function navItem(string $icon, string $label, string $route, string $current): v
 
 <?php if (LocalAuth::isAdmin()): ?>
 <div class="sidebar-section">Administration</div>
+<?php navItem('clock', 'Cron & Automatisierung', 'cron', $currentPath); ?>
 <?php navItem('gear', 'Einstellungen', 'settings', $currentPath); ?>
 <?php endif; ?>

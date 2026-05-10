@@ -93,3 +93,34 @@ CREATE TABLE IF NOT EXISTS share_review_tokens (
     INDEX idx_expires (expires_at),
     FOREIGN KEY (share_review_id) REFERENCES share_reviews(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Cron job schedule + state (one row per job, upserted by CronRunner on first run)
+CREATE TABLE IF NOT EXISTS cron_jobs (
+    job_key          VARCHAR(100) PRIMARY KEY,
+    label            VARCHAR(255) NOT NULL,
+    description      TEXT,
+    enabled          TINYINT(1) DEFAULT 1,
+    interval_minutes INT UNSIGNED DEFAULT 60,
+    last_run_at      DATETIME,
+    last_run_status  VARCHAR(20),        -- success|error
+    last_run_log     TEXT,
+    last_run_seconds DECIMAL(6,2),
+    next_run_at      DATETIME,
+    updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Async job queue: Graph API write operations (license changes, bulk actions)
+CREATE TABLE IF NOT EXISTS job_queue (
+    id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    job_type     VARCHAR(100) NOT NULL,
+    payload      JSON NOT NULL,
+    status       VARCHAR(20) DEFAULT 'pending',  -- pending|processing|done|failed
+    attempts     TINYINT UNSIGNED DEFAULT 0,
+    max_attempts TINYINT UNSIGNED DEFAULT 3,
+    last_error   TEXT,
+    available_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    processed_at DATETIME,
+    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_queue_pick (status, available_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

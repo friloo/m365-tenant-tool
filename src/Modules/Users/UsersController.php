@@ -8,6 +8,7 @@ use App\Core\Session;
 use App\Core\View;
 use App\Helpers\CsvExporter;
 use App\Modules\Licenses\LicensesService;
+use App\Queue\QueueDispatcher;
 
 class UsersController
 {
@@ -132,39 +133,45 @@ class UsersController
         LocalAuth::require();
 
         $action  = $_POST['action'] ?? '';
-        $userIds = array_filter(array_map('trim', (array)($_POST['user_ids'] ?? [])));
+        $userIds = array_values(array_filter(array_map('trim', (array)($_POST['user_ids'] ?? []))));
 
         if (empty($userIds) || !in_array($action, ['disable', 'enable', 'reset_mfa'], true)) {
             Session::flash('error', 'Ungültige Bulk-Aktion oder keine Benutzer ausgewählt.');
             Redirect::to('/users');
         }
 
-        $service = app_service(UsersService::class);
-        $ok = 0;
-        $fail = 0;
-
-        foreach ($userIds as $uid) {
-            try {
-                match($action) {
-                    'disable'    => $service->setAccountEnabled($uid, false),
-                    'enable'     => $service->setAccountEnabled($uid, true),
-                    'reset_mfa'  => $service->resetMfa($uid),
-                };
-                $ok++;
-            } catch (\Throwable) {
-                $fail++;
+        // Fetch display names for payload (best-effort, uses cache)
+        $upnMap = [];
+        try {
+            foreach (app_service(UsersService::class)->getAll() as $u) {
+                $upnMap[$u['id']] = $u['userPrincipalName'] ?? '';
             }
-        }
+        } catch (\Throwable) {}
 
-        $label = match($action) {
-            'disable'   => 'Deaktiviert',
-            'enable'    => 'Aktiviert',
-            'reset_mfa' => 'MFA zurückgesetzt',
+        // Map action → queue job type
+        $jobType = match($action) {
+            'disable'   => 'user_toggle',
+            'enable'    => 'user_toggle',
+            'reset_mfa' => 'mfa_reset',
         };
 
-        $msg = "{$label}: {$ok} Benutzer";
-        if ($fail > 0) $msg .= ", {$fail} Fehler";
-        Session::flash($fail > 0 ? 'error' : 'success', $msg);
+        $payloads = array_map(function (string $uid) use ($action, $jobType, $upnMap): array {
+            $base = ['user_id' => $uid, 'user_upn' => $upnMap[$uid] ?? ''];
+            if ($jobType === 'user_toggle') {
+                $base['enabled'] = $action === 'enable';
+            }
+            return $base;
+        }, $userIds);
+
+        $count = QueueDispatcher::dispatchBatch($jobType, $payloads);
+
+        $label = match($action) {
+            'disable'   => 'Deaktivieren',
+            'enable'    => 'Aktivieren',
+            'reset_mfa' => 'MFA zurücksetzen',
+        };
+
+        Session::flash('success', "{$count} Benutzer zum {$label} in die Warteschlange aufgenommen — Verarbeitung durch den Cron-Job.");
         Redirect::to('/users');
     }
 }

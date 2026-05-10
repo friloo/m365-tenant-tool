@@ -184,6 +184,13 @@ $router->post('/settings/save',                   [\App\Modules\Settings\Setting
 $router->get('/settings/clear-cache',             [\App\Modules\Settings\SettingsController::class, 'clearCache']);
 $router->get('/settings/test-mail',               [\App\Modules\Settings\SettingsController::class, 'testMail']);
 
+// Cron & Queue management
+$router->get('/cron',                             [\App\Modules\Cron\CronController::class, 'index']);
+$router->post('/cron/update-job/{key}',           [\App\Modules\Cron\CronController::class, 'updateJob']);
+$router->post('/cron/run-job/{key}',              [\App\Modules\Cron\CronController::class, 'runJob']);
+$router->post('/cron/queue/retry',                [\App\Modules\Cron\CronController::class, 'retryFailed']);
+$router->post('/cron/queue/prune',                [\App\Modules\Cron\CronController::class, 'pruneQueue']);
+
 // ── Dispatch ──────────────────────────────────────────────
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $uri    = $_SERVER['REQUEST_URI'] ?? '/';
