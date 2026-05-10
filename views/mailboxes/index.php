@@ -83,6 +83,7 @@ $fmtBytes = function (int $bytes): string {
                     <th class="text-end">Elemente</th>
                     <th class="text-end">Gel. Elemente</th>
                     <th class="text-end">Gel. Größe</th>
+                    <th>Weiterleitung</th>
                     <th>Speicherauslastung</th>
                 </tr>
             </thead>
@@ -97,15 +98,30 @@ $fmtBytes = function (int $bytes): string {
                     $barColor = $u['storageUsedBytes'] >= 50 * (1024 ** 3)
                         ? '#d97706'
                         : ($u['storageUsedBytes'] >= 20 * (1024 ** 3) ? '#3b82f6' : '#16a34a');
+                    $fwdAddr = $u['forwardingSmtpAddress'] ?? '';
                     ?>
                     <tr>
                         <td class="fw-medium" style="font-size:13px;">
-                            <?= $e($u['displayName']) ?>
+                            <?php if (!empty($u['id'])): ?>
+                                <a href="/mailboxes/<?= $e($u['id']) ?>" class="text-decoration-none text-dark">
+                                    <?= $e($u['displayName']) ?>
+                                </a>
+                            <?php else: ?>
+                                <?= $e($u['displayName']) ?>
+                            <?php endif; ?>
                             <?php if ($u['isDeleted']): ?>
                                 <span class="badge-neutral ms-1">Gelöscht</span>
                             <?php endif; ?>
                         </td>
-                        <td style="font-size:12px;color:#6b7280;"><?= $e($u['upn']) ?></td>
+                        <td style="font-size:12px;color:#6b7280;">
+                            <?php if (!empty($u['id'])): ?>
+                                <a href="/mailboxes/<?= $e($u['id']) ?>" class="text-decoration-none" style="color:#6b7280;">
+                                    <?= $e($u['upn']) ?>
+                                </a>
+                            <?php else: ?>
+                                <?= $e($u['upn']) ?>
+                            <?php endif; ?>
+                        </td>
                         <td class="text-end" style="font-size:13px;font-weight:500;">
                             <?= $fmtBytes($u['storageUsedBytes']) ?>
                         </td>
@@ -117,6 +133,15 @@ $fmtBytes = function (int $bytes): string {
                         </td>
                         <td class="text-end" style="font-size:12px;color:#9ca3af;">
                             <?= $fmtBytes($u['deletedItemSizeBytes']) ?>
+                        </td>
+                        <td style="font-size:12px;">
+                            <?php if ($fwdAddr !== ''): ?>
+                                <span class="badge-warning badge-pill" title="<?= $e($fwdAddr) ?>">
+                                    <i class="bi bi-forward-fill me-1"></i>Weiterleitung aktiv &rarr; <?= $e($fwdAddr) ?>
+                                </span>
+                            <?php else: ?>
+                                <span class="text-muted">—</span>
+                            <?php endif; ?>
                         </td>
                         <td style="min-width:120px;">
                             <div class="progress-custom" style="margin-bottom:0;">

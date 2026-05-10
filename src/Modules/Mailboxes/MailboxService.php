@@ -8,6 +8,102 @@ class MailboxService
 {
     public function __construct(private GraphClient $graph) {}
 
+    // ── New detail / settings methods ─────────────────────────────────────────
+
+    /**
+     * Fetch raw mailboxSettings for a user (no cache).
+     * Returns the full settings object or [] on error.
+     */
+    public function getMailboxSettings(string $userId): array
+    {
+        try {
+            return $this->graph->get("/users/{$userId}/mailboxSettings", [], null, 0);
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    /**
+     * Enable email forwarding for a user.
+     * Requires MailboxSettings.ReadWrite on the Azure App.
+     */
+    public function setForwarding(string $userId, string $forwardTo): void
+    {
+        $this->graph->patch("/users/{$userId}", [
+            'forwardingSmtpAddress'    => $forwardTo,
+            'deliverToMailboxAndForward' => true,
+        ]);
+    }
+
+    /**
+     * Remove email forwarding for a user.
+     */
+    public function removeForwarding(string $userId): void
+    {
+        $this->graph->patch("/users/{$userId}", [
+            'forwardingSmtpAddress'    => null,
+            'deliverToMailboxAndForward' => false,
+        ]);
+    }
+
+    /**
+     * Enable or disable the automatic-reply (Out-of-Office) setting.
+     */
+    public function setAutoReply(string $userId, string $message, bool $enabled): void
+    {
+        $this->graph->patch("/users/{$userId}/mailboxSettings", [
+            'automaticRepliesSetting' => [
+                'status'               => $enabled ? 'alwaysEnabled' : 'disabled',
+                'internalReplyMessage' => $message,
+                'externalReplyMessage' => $message,
+            ],
+        ]);
+    }
+
+    /**
+     * Return a merged array of basic user fields + mailboxSettings.
+     * Always fresh (no cache).
+     */
+    public function getMailboxDetail(string $userId): array
+    {
+        try {
+            $user = $this->graph->get(
+                "/users/{$userId}",
+                ['$select' => 'id,displayName,userPrincipalName,mail,assignedLicenses,accountEnabled,jobTitle,department,forwardingSmtpAddress,deliverToMailboxAndForward'],
+                null,
+                0
+            );
+        } catch (\Throwable) {
+            $user = [];
+        }
+
+        $settings = $this->getMailboxSettings($userId);
+
+        return array_merge($user, $settings);
+    }
+
+    /**
+     * Return the top-20 mail folders for a user (no cache).
+     *
+     * @return array<int, array{id: string, displayName: string, totalItemCount: int, unreadItemCount: int}>
+     */
+    public function getMailFolders(string $userId): array
+    {
+        try {
+            $data = $this->graph->get(
+                "/users/{$userId}/mailFolders",
+                ['$select' => 'id,displayName,totalItemCount,unreadItemCount', '$top' => 20],
+                null,
+                0
+            );
+            return $data['value'] ?? [];
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    // ── Existing usage-report methods ─────────────────────────────────────────
+
     /**
      * Fetch mailbox usage for the last 30 days via the reports API.
      * The endpoint returns CSV text; we parse it into a structured array.

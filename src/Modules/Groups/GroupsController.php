@@ -66,6 +66,72 @@ class GroupsController
         Redirect::to('/groups/' . $groupId);
     }
 
+    public function create(): void
+    {
+        LocalAuth::requireAdmin();
+        $displayName  = trim($_POST['displayName'] ?? '');
+        $description  = trim($_POST['description'] ?? '');
+        $type         = trim($_POST['type'] ?? 'm365');
+        $mailNickname = trim($_POST['mailNickname'] ?? '');
+
+        if ($displayName === '') {
+            Session::flash('error', 'Anzeigename darf nicht leer sein.');
+            Redirect::to('/groups');
+        }
+
+        try {
+            $group = app_service(GroupsService::class)->createGroup(
+                $displayName,
+                $description,
+                $type,
+                false,
+                $mailNickname
+            );
+            Session::flash('success', 'Gruppe „' . $group['displayName'] . '" wurde erstellt.');
+        } catch (\Throwable $e) {
+            Session::flash('error', 'Fehler beim Erstellen: ' . $e->getMessage());
+        }
+        Redirect::to('/groups');
+    }
+
+    public function delete(string $id): void
+    {
+        LocalAuth::requireAdmin();
+        try {
+            app_service(GroupsService::class)->deleteGroup($id);
+            Session::flash('success', 'Gruppe wurde gelöscht.');
+        } catch (\Throwable $e) {
+            Session::flash('error', 'Fehler beim Löschen: ' . $e->getMessage());
+        }
+        Redirect::to('/groups');
+    }
+
+    public function addOwner(string $id): void
+    {
+        LocalAuth::requireAdmin();
+        $userId = trim($_POST['user_id'] ?? '');
+        if (!$userId) { Redirect::to('/groups/' . $id); }
+        try {
+            app_service(GroupsService::class)->addOwner($id, $userId);
+            Session::flash('success', 'Besitzer hinzugefügt.');
+        } catch (\Throwable $e) {
+            Session::flash('error', 'Fehler: ' . $e->getMessage());
+        }
+        Redirect::to('/groups/' . $id);
+    }
+
+    public function removeOwner(string $id, string $userId): void
+    {
+        LocalAuth::requireAdmin();
+        try {
+            app_service(GroupsService::class)->removeOwner($id, $userId);
+            Session::flash('success', 'Besitzer entfernt.');
+        } catch (\Throwable $e) {
+            Session::flash('error', 'Fehler: ' . $e->getMessage());
+        }
+        Redirect::to('/groups/' . $id);
+    }
+
     public function export(): void
     {
         LocalAuth::require();

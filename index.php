@@ -96,6 +96,9 @@ $router->post('/users/{id}/toggle-enabled',       [\App\Modules\Users\UsersContr
 $router->post('/users/{id}/reset-mfa',            [\App\Modules\Users\UsersController::class, 'resetMfa']);
 $router->post('/users/{id}/assign-license',       [\App\Modules\Users\UsersController::class, 'assignLicense']);
 $router->post('/users/{id}/remove-license',       [\App\Modules\Users\UsersController::class, 'removeLicense']);
+$router->get('/users/{id}/edit',                  [\App\Modules\Users\UsersController::class, 'editForm']);
+$router->post('/users/{id}/update',               [\App\Modules\Users\UsersController::class, 'updateUser']);
+$router->post('/users/{id}/offboarding',          [\App\Modules\Users\UsersController::class, 'offboarding']);
 
 // OneDrive
 $router->get('/onedrive',                         [\App\Modules\OneDrive\OneDriveController::class, 'index']);
@@ -130,6 +133,10 @@ $router->get('/groups/export',                    [\App\Modules\Groups\GroupsCon
 $router->get('/groups/{id}',                      [\App\Modules\Groups\GroupsController::class, 'show']);
 $router->post('/groups/{id}/add-member',          [\App\Modules\Groups\GroupsController::class, 'addMember']);
 $router->post('/groups/{id}/remove-member/{uid}', [\App\Modules\Groups\GroupsController::class, 'removeMember']);
+$router->post('/groups/create',                   [\App\Modules\Groups\GroupsController::class, 'create']);
+$router->post('/groups/{id}/delete',              [\App\Modules\Groups\GroupsController::class, 'delete']);
+$router->post('/groups/{id}/add-owner',           [\App\Modules\Groups\GroupsController::class, 'addOwner']);
+$router->post('/groups/{id}/remove-owner/{uid}',  [\App\Modules\Groups\GroupsController::class, 'removeOwner']);
 
 // Licenses
 $router->get('/licenses',                         [\App\Modules\Licenses\LicensesController::class, 'index']);

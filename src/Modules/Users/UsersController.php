@@ -3,6 +3,7 @@
 namespace App\Modules\Users;
 
 use App\Auth\LocalAuth;
+use App\Core\Config;
 use App\Core\Redirect;
 use App\Core\Session;
 use App\Core\View;
@@ -37,18 +38,115 @@ class UsersController
         LocalAuth::require();
         $service = app_service(UsersService::class);
 
-        $user   = $service->getOne($id);
-        $groups = $service->getMemberOf($id);
-        $skus   = app_service(LicensesService::class)->getSkus();
+        $user     = $service->getOne($id);
+        $groups   = $service->getMemberOf($id);
+        $skus     = app_service(LicensesService::class)->getSkus();
+        $signIns  = $service->getSignInHistory($id);
 
         View::render('users/detail', [
             'pageTitle' => $user['displayName'] ?? 'Benutzer',
             'user'      => $user,
             'groups'    => $groups,
             'skus'      => $skus,
+            'signIns'   => $signIns,
             'flash'     => Session::getFlash('success'),
             'error'     => Session::getFlash('error'),
         ]);
+    }
+
+    public function editForm(string $id): void
+    {
+        LocalAuth::require();
+        $service = app_service(UsersService::class);
+        $user    = $service->getOne($id);
+
+        View::render('users/edit', [
+            'pageTitle' => 'Benutzer bearbeiten',
+            'user'      => $user,
+            'flash'     => Session::getFlash('success'),
+            'error'     => Session::getFlash('error'),
+        ]);
+    }
+
+    public function updateUser(string $id): void
+    {
+        LocalAuth::require();
+        $allowed = ['displayName', 'jobTitle', 'department', 'mobilePhone', 'officeLocation'];
+        $data    = [];
+        foreach ($allowed as $field) {
+            if (isset($_POST[$field])) {
+                $data[$field] = trim($_POST[$field]);
+            }
+        }
+        try {
+            app_service(UsersService::class)->updateUser($id, $data);
+            Session::flash('success', 'Benutzer erfolgreich aktualisiert.');
+        } catch (\Throwable $e) {
+            Session::flash('error', 'Fehler beim Speichern: ' . $e->getMessage());
+        }
+        Redirect::to('/users/' . $id);
+    }
+
+    public function offboarding(string $id): void
+    {
+        LocalAuth::requireAdmin();
+        $service  = app_service(UsersService::class);
+        $completed = [];
+
+        if (!empty($_POST['revoke_sessions'])) {
+            try {
+                $service->revokeSignInSessions($id);
+                $completed[] = 'Sitzungen beendet';
+            } catch (\Throwable $e) {
+                Session::flash('error', 'Sitzungen beenden fehlgeschlagen: ' . $e->getMessage());
+            }
+        }
+
+        if (!empty($_POST['remove_licenses'])) {
+            try {
+                $service->removeAllLicenses($id);
+                $completed[] = 'Lizenzen entzogen';
+            } catch (\Throwable $e) {
+                Session::flash('error', 'Lizenzen entziehen fehlgeschlagen: ' . $e->getMessage());
+            }
+        }
+
+        if (!empty($_POST['set_forwarding'])) {
+            $forwardTo = trim($_POST['forward_to'] ?? '');
+            if ($forwardTo !== '') {
+                try {
+                    app_graph()->patch("/users/{$id}/mailboxSettings", [
+                        'forwardingSmtpAddress' => $forwardTo,
+                    ]);
+                    $completed[] = 'E-Mail-Weiterleitung gesetzt';
+                } catch (\Throwable) {
+                    // silently skip — may require MailboxSettings.ReadWrite permission
+                }
+            }
+        }
+
+        if (!empty($_POST['set_ooo'])) {
+            $oooMessage = trim($_POST['ooo_message'] ?? '');
+            if ($oooMessage !== '') {
+                try {
+                    app_graph()->patch("/users/{$id}/mailboxSettings", [
+                        'automaticRepliesSetting' => [
+                            'status'               => 'alwaysEnabled',
+                            'internalReplyMessage' => $oooMessage,
+                            'externalReplyMessage' => $oooMessage,
+                        ],
+                    ]);
+                    $completed[] = 'Abwesenheitsnotiz aktiviert';
+                } catch (\Throwable $e) {
+                    Session::flash('error', 'Abwesenheitsnotiz fehlgeschlagen: ' . $e->getMessage());
+                }
+            }
+        }
+
+        if (!empty($completed)) {
+            Session::flash('success', 'Cloud-Cleanup abgeschlossen: ' . implode(', ', $completed) . '.');
+        }
+        Redirect::to('/users/' . $id);
     }
 
     public function export(): void

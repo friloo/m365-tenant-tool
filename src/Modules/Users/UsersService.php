@@ -117,4 +117,81 @@ class UsersService
             );
         } catch (\Throwable) { return []; }
     }
+
+    public function getSignInHistory(string $userId): array
+    {
+        try {
+            $result = $this->graph->get(
+                '/auditLogs/signIns',
+                [
+                    '$filter'  => "userId eq '{$userId}'",
+                    '$top'     => '25',
+                    '$orderby' => 'createdDateTime desc',
+                    '$select'  => 'createdDateTime,appDisplayName,ipAddress,location,status,deviceDetail,conditionalAccessStatus,riskEventTypesV2',
+                ],
+                null,
+                0
+            );
+            return $result['value'] ?? [];
+        } catch (\Throwable) { return []; }
+    }
+
+    public function updateUser(string $userId, array $data): void
+    {
+        $this->graph->patch("/users/{$userId}", $data);
+        $this->graph->getCache()->forget('users_all');
+        $this->graph->getCache()->forget("user_{$userId}");
+    }
+
+    public function revokeSignInSessions(string $userId): void
+    {
+        $this->graph->post("/users/{$userId}/revokeSignInSessions", []);
+    }
+
+    public function removeAllLicenses(string $userId): void
+    {
+        $user = $this->graph->get(
+            "/users/{$userId}",
+            ['$select' => 'assignedLicenses'],
+            null,
+            0
+        );
+        $licenses = $user['assignedLicenses'] ?? [];
+        if (empty($licenses)) {
+            return;
+        }
+        $skuIds = array_column($licenses, 'skuId');
+        $this->graph->post("/users/{$userId}/assignLicense", [
+            'addLicenses'    => [],
+            'removeLicenses' => $skuIds,
+        ]);
+        $this->graph->getCache()->forget('users_all');
+        $this->graph->getCache()->forget("user_{$userId}");
+        $this->graph->getCache()->forget('licenses_users');
+    }
+
+    public function removeFromAllGroups(string $userId): array
+    {
+        $result = $this->graph->get(
+            "/users/{$userId}/memberOf",
+            ['$select' => 'id,displayName,groupTypes,onPremisesSyncEnabled'],
+            null,
+            0
+        );
+        $memberships = $result['value'] ?? [];
+        $removed = [];
+        foreach ($memberships as $group) {
+            if (($group['onPremisesSyncEnabled'] ?? null) === true) {
+                continue;
+            }
+            $groupId = $group['id'] ?? '';
+            if (!$groupId) continue;
+            try {
+                $this->graph->delete("/groups/{$groupId}/members/{$userId}/\$ref");
+                $removed[] = $group['displayName'] ?? $groupId;
+            } catch (\Throwable) {}
+        }
+        $this->graph->getCache()->forget("user_groups_{$userId}");
+        return $removed;
+    }
 }

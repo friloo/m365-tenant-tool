@@ -43,13 +43,13 @@ class GroupsService
     public function getOwners(string $id): array
     {
         try {
-            return $this->graph->paginate(
+            $data = $this->graph->get(
                 "/groups/{$id}/owners",
-                ['$select' => 'id,displayName,userPrincipalName'],
-                5,
-                "group_owners_{$id}",
-                600
+                ['$select' => 'id,displayName,userPrincipalName,mail'],
+                null,
+                0
             );
+            return $data['value'] ?? [];
         } catch (\Throwable) { return []; }
     }
 
@@ -65,6 +65,65 @@ class GroupsService
     {
         $this->graph->delete("/groups/{$groupId}/members/{$userId}/\$ref");
         $this->graph->getCache()->forget("group_members_{$groupId}");
+    }
+
+    public function createGroup(
+        string $displayName,
+        string $description,
+        string $type,
+        bool   $mailEnabled,
+        string $mailNickname
+    ): array {
+        if ($mailNickname === '') {
+            $mailNickname = preg_replace('/[^a-z0-9\-]/', '', strtolower(str_replace(' ', '-', $displayName)));
+        }
+
+        $payload = [
+            'displayName'  => $displayName,
+            'description'  => $description,
+            'mailNickname' => $mailNickname,
+        ];
+
+        switch ($type) {
+            case 'm365':
+                $payload['groupTypes']      = ['Unified'];
+                $payload['mailEnabled']     = true;
+                $payload['securityEnabled'] = false;
+                break;
+            case 'security':
+                $payload['groupTypes']      = [];
+                $payload['mailEnabled']     = false;
+                $payload['securityEnabled'] = true;
+                break;
+            case 'mail_security':
+            default:
+                $payload['groupTypes']      = [];
+                $payload['mailEnabled']     = true;
+                $payload['securityEnabled'] = true;
+                break;
+        }
+
+        $result = $this->graph->post('/groups', $payload);
+        $this->graph->getCache()->forget('groups_all');
+        return $result;
+    }
+
+    public function deleteGroup(string $groupId): void
+    {
+        $this->graph->delete("/groups/{$groupId}");
+        $this->graph->getCache()->forget('groups_all');
+    }
+
+    public function addOwner(string $groupId, string $userId): void
+    {
+        $this->graph->post("/groups/{$groupId}/owners/\$ref", [
+            '@odata.id' => "https://graph.microsoft.com/v1.0/users/{$userId}",
+        ]);
+    }
+
+    public function removeOwner(string $groupId, string $userId): void
+    {
+        $this->graph->delete("/groups/{$groupId}/owners/{$userId}/\$ref");
     }
 
     public function searchUsers(string $query): array
