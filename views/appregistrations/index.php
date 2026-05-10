@@ -1,5 +1,28 @@
 <?php use App\Core\View; $e = fn($v) => View::escape($v); ?>
 
+<?php
+// Check for secrets expiring within 30 days across all apps
+$soonExpiring = [];
+$now = time();
+foreach ($apps as $app) {
+    foreach ($app['passwordCredentials'] ?? [] as $cred) {
+        $expTs = !empty($cred['endDateTime']) ? strtotime($cred['endDateTime']) : null;
+        if ($expTs !== null && $expTs > $now && ($expTs - $now) < 30 * 86400) {
+            $soonExpiring[] = $app['displayName'] ?? $app['id'];
+            break;
+        }
+    }
+}
+?>
+
+<?php if (!empty($soonExpiring)): ?>
+    <div class="alert alert-danger mb-4">
+        <i class="bi bi-clock-fill me-2"></i>
+        <strong><?= count($soonExpiring) ?> App<?= count($soonExpiring) !== 1 ? 's' : '' ?> mit ablaufenden Secrets (< 30 Tage):</strong>
+        <?= implode(', ', array_map($e, $soonExpiring)) ?>
+    </div>
+<?php endif; ?>
+
 <?php if (!empty($highRiskApps)): ?>
     <div class="alert alert-danger mb-4">
         <i class="bi bi-shield-exclamation me-2"></i>
@@ -84,24 +107,55 @@
                             <th>Erstellt</th>
                             <th>Zielgruppe</th>
                             <th>Berechtigungen</th>
+                            <th>Secrets</th>
                             <th>Risiko</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($apps as $app):
                             $appId       = $app['appId'] ?? '';
+                            $objId       = $app['id'] ?? '';
                             $truncatedId = strlen($appId) > 16 ? substr($appId, 0, 8) . '…' . substr($appId, -4) : $appId;
-                            $isHighRisk  = isset($highRiskAppIds[$app['id']]);
+                            $isHighRisk  = isset($highRiskAppIds[$objId]);
                             $permCount   = $service->countPermissions($app);
                             $audience    = $app['signInAudience'] ?? 'AzureADMyOrg';
                             $created     = $app['createdDateTime'] ?? null;
+                            // Determine worst-case secret expiry status
+                            $secretStatus = 'none'; // none | ok | warn | critical
+                            $secretExpiry = null;
+                            $nowTs = time();
+                            foreach ($app['passwordCredentials'] ?? [] as $cred) {
+                                $expTs = !empty($cred['endDateTime']) ? strtotime($cred['endDateTime']) : null;
+                                if ($expTs === null) continue;
+                                $diff = $expTs - $nowTs;
+                                if ($diff <= 0) {
+                                    $secretStatus = 'critical';
+                                    $secretExpiry = $expTs;
+                                    break;
+                                } elseif ($diff < 30 * 86400) {
+                                    $secretStatus = 'critical';
+                                    $secretExpiry = $expTs;
+                                } elseif ($diff < 90 * 86400 && $secretStatus !== 'critical') {
+                                    $secretStatus = 'warn';
+                                    $secretExpiry = $expTs;
+                                } elseif ($secretStatus === 'none') {
+                                    $secretStatus = 'ok';
+                                    $secretExpiry = $expTs;
+                                }
+                            }
                         ?>
                         <tr>
                             <td>
-                                <div style="font-size:13px;font-weight:500;"><?= $e($app['displayName'] ?? '') ?></div>
+                                <div style="font-size:13px;font-weight:500;">
+                                    <?php if ($objId !== ''): ?>
+                                        <a href="/appregistrations/<?= $e($objId) ?>" class="text-decoration-none"><?= $e($app['displayName'] ?? '') ?></a>
+                                    <?php else: ?>
+                                        <?= $e($app['displayName'] ?? '') ?>
+                                    <?php endif; ?>
+                                </div>
                                 <?php if ($isHighRisk): ?>
                                     <div style="font-size:11px;color:#dc2626;margin-top:2px;">
-                                        <i class="bi bi-exclamation-triangle-fill me-1"></i><?= implode(', ', array_map($e, $highRiskAppIds[$app['id']])) ?>
+                                        <i class="bi bi-exclamation-triangle-fill me-1"></i><?= implode(', ', array_map($e, $highRiskAppIds[$objId])) ?>
                                     </div>
                                 <?php endif; ?>
                             </td>
@@ -134,6 +188,27 @@
                                 <?php endif; ?>
                             </td>
                             <td>
+                                <?php if ($secretStatus === 'none'): ?>
+                                    <span class="text-muted" style="font-size:11px;">–</span>
+                                <?php elseif ($secretStatus === 'critical'): ?>
+                                    <span class="badge-danger badge-pill" title="<?= $secretExpiry !== null ? date('d.m.Y', $secretExpiry) : '' ?>">
+                                        <?php if ($secretExpiry !== null && $secretExpiry <= $nowTs): ?>
+                                            Abgelaufen
+                                        <?php else: ?>
+                                            <?= $secretExpiry !== null ? date('d.m.Y', $secretExpiry) : '!' ?>
+                                        <?php endif; ?>
+                                    </span>
+                                <?php elseif ($secretStatus === 'warn'): ?>
+                                    <span class="badge-warning badge-pill" title="<?= $secretExpiry !== null ? date('d.m.Y', $secretExpiry) : '' ?>">
+                                        <?= $secretExpiry !== null ? date('d.m.Y', $secretExpiry) : '?' ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="badge-enabled badge-pill" title="<?= $secretExpiry !== null ? date('d.m.Y', $secretExpiry) : '' ?>">
+                                        <?= $secretExpiry !== null ? date('d.m.Y', $secretExpiry) : 'OK' ?>
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
                                 <?php if ($isHighRisk): ?>
                                     <span class="badge-danger">Hoch</span>
                                 <?php else: ?>
@@ -144,7 +219,7 @@
                         <?php endforeach; ?>
                         <?php if (empty($apps)): ?>
                             <tr>
-                                <td colspan="6">
+                                <td colspan="7">
                                     <div class="empty-state">
                                         <i class="bi bi-code-square"></i>
                                         <p>Keine App-Registrierungen gefunden</p>

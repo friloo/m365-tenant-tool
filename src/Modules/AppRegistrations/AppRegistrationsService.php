@@ -104,4 +104,41 @@ class AppRegistrationsService
         }
         return $count;
     }
+
+    public function getAppDetail(string $appId): array
+    {
+        $data = $this->graph->get(
+            '/applications/' . $appId,
+            ['$select' => 'id,appId,displayName,passwordCredentials,keyCredentials,createdDateTime,signInAudience,web'],
+            null,
+            null
+        );
+        return $data ?? [];
+    }
+
+    public function addSecret(string $appId, string $displayName, int $expiryMonths): array
+    {
+        $endDateTime = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))
+            ->modify("+{$expiryMonths} months")
+            ->format('Y-m-d\TH:i:s\Z');
+
+        $result = $this->graph->post(
+            '/applications/' . $appId . '/addPassword',
+            [
+                'passwordCredential' => [
+                    'displayName' => $displayName,
+                    'endDateTime' => $endDateTime,
+                ],
+            ]
+        );
+        return $result ?? [];
+    }
+
+    public function deleteSecret(string $appId, string $keyId): void
+    {
+        $this->graph->post(
+            '/applications/' . $appId . '/removePassword',
+            ['keyId' => $keyId]
+        );
+    }
 }
