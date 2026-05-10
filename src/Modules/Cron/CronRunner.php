@@ -7,6 +7,7 @@ use App\Database\DB;
 use App\Graph\GraphClient;
 use App\Modules\ShareReview\ShareReviewService;
 use App\Modules\StaleAccounts\StaleAccountsService;
+use App\Modules\WeeklyReport\WeeklyReportService;
 use App\Queue\QueueWorker;
 
 class CronRunner
@@ -311,6 +312,24 @@ class CronRunner
                     \App\Queue\QueueDispatcher::pruneCompleted(24);
                     $n = (int)DB::rowCount();
                     return "{$n} abgeschlossene Job(s) gelöscht";
+                },
+            ],
+
+            'weekly_report' => [
+                'label'            => 'Wöchentlicher E-Mail-Report',
+                'description'      => 'Sendet einen wöchentlichen Zusammenfassungsbericht per E-Mail (konfigurierbar: Wochentag, Empfänger). Läuft täglich und prüft selbst, ob heute der richtige Tag ist.',
+                'default_interval' => 1440,
+                'handler'          => function () use ($graph): string {
+                    $config = Config::getInstance();
+                    if ($config->get('weekly_report_enabled', '0') !== '1') {
+                        return 'Wöchentlicher Report deaktiviert — übersprungen';
+                    }
+                    $reportDay = (int)$config->get('weekly_report_day', '1');
+                    if ((int)date('N') !== $reportDay) {
+                        return 'Heute kein Report-Tag — übersprungen';
+                    }
+                    $service = new WeeklyReportService($graph);
+                    return $service->generate();
                 },
             ],
         ];

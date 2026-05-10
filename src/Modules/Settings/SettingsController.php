@@ -42,6 +42,15 @@ class SettingsController
             'stale_auto_release_enabled'     => $config->get('stale_auto_release_enabled', '0'),
             'stale_auto_release_days'        => $config->get('stale_auto_release_days', '180'),
             'stale_warn_days_before'         => $config->get('stale_warn_days_before', '14'),
+            'password_expiry_days'           => $config->get('password_expiry_days', '90'),
+            'weekly_report_enabled'          => $config->get('weekly_report_enabled', '0'),
+            'weekly_report_day'              => $config->get('weekly_report_day', '1'),
+            'lic_need_exchange_online'       => $config->get('lic_need_exchange_online', '0'),
+            'lic_need_office_desktop'        => $config->get('lic_need_office_desktop', '0'),
+            'lic_need_teams'                 => $config->get('lic_need_teams', '0'),
+            'lic_need_sharepoint'            => $config->get('lic_need_sharepoint', '0'),
+            'lic_need_onedrive'              => $config->get('lic_need_onedrive', '0'),
+            'lic_need_intune'                => $config->get('lic_need_intune', '0'),
         ];
 
         $flash = Session::getFlash('success');
@@ -85,6 +94,15 @@ class SettingsController
             $config->set('stale_auto_release_enabled',    isset($_POST['stale_auto_release_enabled']) ? '1' : '0');
             $config->set('stale_auto_release_days',       (string)max(1, (int)($_POST['stale_auto_release_days'] ?? 180)));
             $config->set('stale_warn_days_before',        (string)max(0, (int)($_POST['stale_warn_days_before'] ?? 14)));
+            $config->set('password_expiry_days',          (string)max(1, (int)($_POST['password_expiry_days'] ?? 90)));
+            $config->set('weekly_report_enabled',         isset($_POST['weekly_report_enabled']) ? '1' : '0');
+            $config->set('weekly_report_day',             (string)max(1, min(7, (int)($_POST['weekly_report_day'] ?? 1))));
+            $config->set('lic_need_exchange_online',      isset($_POST['lic_need_exchange_online']) ? '1' : '0');
+            $config->set('lic_need_office_desktop',       isset($_POST['lic_need_office_desktop']) ? '1' : '0');
+            $config->set('lic_need_teams',                isset($_POST['lic_need_teams']) ? '1' : '0');
+            $config->set('lic_need_sharepoint',           isset($_POST['lic_need_sharepoint']) ? '1' : '0');
+            $config->set('lic_need_onedrive',             isset($_POST['lic_need_onedrive']) ? '1' : '0');
+            $config->set('lic_need_intune',               isset($_POST['lic_need_intune']) ? '1' : '0');
 
             if (!empty($_POST['smtp_password'])) {
                 $config->set('smtp_password', trim($_POST['smtp_password']), true);

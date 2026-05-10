@@ -148,6 +148,27 @@ $router->get('/staleaccounts',                              [\App\Modules\StaleA
 $router->get('/staleaccounts/export',                       [\App\Modules\StaleAccounts\StaleAccountsController::class, 'export']);
 $router->post('/staleaccounts/{userId}/remove-license',     [\App\Modules\StaleAccounts\StaleAccountsController::class, 'removeLicense']);
 
+// License Advisor
+$router->get('/licenseadvisor',                   [\App\Modules\LicenseAdvisor\LicenseAdvisorController::class, 'index']);
+$router->post('/licenseadvisor/save-criteria',    [\App\Modules\LicenseAdvisor\LicenseAdvisorController::class, 'saveCriteria']);
+$router->get('/licenseadvisor/export',            [\App\Modules\LicenseAdvisor\LicenseAdvisorController::class, 'exportUncovered']);
+
+// MFA Methods
+$router->get('/mfamethods',                       [\App\Modules\MfaMethods\MfaMethodsController::class, 'index']);
+
+// Password Expiry
+$router->get('/passwordexpiry',                   [\App\Modules\PasswordExpiry\PasswordExpiryController::class, 'index']);
+
+// Defender Alerts
+$router->get('/defenderalerts',                   [\App\Modules\DefenderAlerts\DefenderAlertsController::class, 'index']);
+$router->post('/defenderalerts/{alertId}/resolve', [\App\Modules\DefenderAlerts\DefenderAlertsController::class, 'resolve']);
+
+// Security Posture
+$router->get('/securityposture',                  [\App\Modules\SecurityPosture\SecurityPostureController::class, 'index']);
+
+// Teams Usage
+$router->get('/teamsusage',                       [\App\Modules\TeamsUsage\TeamsUsageController::class, 'index']);
+
 // Security
 $router->get('/security',                         [\App\Modules\Security\SecurityController::class, 'index']);
 

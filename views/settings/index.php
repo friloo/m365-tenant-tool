@@ -281,6 +281,104 @@
             </div>
         </div>
 
+        <!-- Password Expiry -->
+        <div class="content-card mb-4" id="password-expiry">
+            <div class="card-header-custom">
+                <i class="bi bi-key text-primary"></i>
+                <h6>Passwort-Ablauf</h6>
+            </div>
+            <div class="card-body-custom">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Passwort-Gültigkeitsdauer</label>
+                        <div class="input-group">
+                            <input type="number" name="password_expiry_days" class="form-control"
+                                   value="<?= (int)($s['password_expiry_days'] ?? 90) ?>" min="1" max="365">
+                            <span class="input-group-text">Tage</span>
+                        </div>
+                        <div class="form-text">Standard: 90 Tage. Gilt für alle Benutzer ohne <code>DisablePasswordExpiration</code>-Richtlinie.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Report -->
+        <div class="content-card mb-4" id="weekly-report">
+            <div class="card-header-custom">
+                <i class="bi bi-envelope-paper text-primary"></i>
+                <h6>Wöchentlicher E-Mail-Report</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted small mb-3">
+                    Sendet jeden Woche einen Zusammenfassungsbericht mit Benutzer-, Lizenz-, Sicherheits- und Freigabe-Kennzahlen.
+                    Voraussetzung: Alert-E-Mail muss konfiguriert sein.
+                </p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="weekly_report_enabled"
+                                   id="weeklyReportEnabled" role="switch"
+                                   <?= ($s['weekly_report_enabled'] ?? '0') === '1' ? 'checked' : '' ?>
+                                   onchange="document.getElementById('weeklyReportOptions').style.display=this.checked?'block':'none'">
+                            <label class="form-check-label fw-medium" for="weeklyReportEnabled">Wöchentlichen Report aktivieren</label>
+                        </div>
+                    </div>
+                    <div id="weeklyReportOptions" <?= ($s['weekly_report_enabled'] ?? '0') !== '1' ? 'style="display:none"' : '' ?>>
+                        <div class="col-md-4 mt-2">
+                            <label class="form-label fw-medium">Versandtag</label>
+                            <select name="weekly_report_day" class="form-select">
+                                <?php
+                                $days = ['1'=>'Montag','2'=>'Dienstag','3'=>'Mittwoch','4'=>'Donnerstag','5'=>'Freitag','6'=>'Samstag','7'=>'Sonntag'];
+                                $sel  = (string)($s['weekly_report_day'] ?? '1');
+                                foreach ($days as $val => $label): ?>
+                                    <option value="<?= $val ?>" <?= $val === $sel ? 'selected' : '' ?>><?= $label ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="form-text">Der Cron-Job läuft täglich und prüft, ob heute der konfigurierte Tag ist.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- License Criteria -->
+        <div class="content-card mb-4" id="license-criteria">
+            <div class="card-header-custom">
+                <i class="bi bi-lightbulb text-primary"></i>
+                <h6>Lizenz-Berater — Kriterien</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted small mb-3">
+                    Diese Kriterien bestimmen, welche Lizenzpläne im <a href="/licenseadvisor">Lizenz-Berater</a> als
+                    „passend" eingestuft werden. Aktiviere nur die Dienste, die für euren Tenant relevant sind.
+                    Die Einstellungen können auch direkt im Lizenz-Berater geändert werden.
+                </p>
+                <div class="row g-3">
+                    <?php
+                    $licCriteria = [
+                        'lic_need_exchange_online' => ['Exchange Online', 'envelope'],
+                        'lic_need_office_desktop'  => ['Office Desktop (Apps)', 'grid'],
+                        'lic_need_teams'           => ['Microsoft Teams', 'chat-dots'],
+                        'lic_need_sharepoint'      => ['SharePoint Online', 'share'],
+                        'lic_need_onedrive'        => ['OneDrive for Business', 'cloud'],
+                        'lic_need_intune'          => ['Intune (Geräteverwaltung)', 'phone'],
+                    ];
+                    foreach ($licCriteria as $key => [$label, $icon]): ?>
+                    <div class="col-md-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="<?= $key ?>"
+                                   id="<?= $key ?>" role="switch"
+                                   <?= ($s[$key] ?? '0') === '1' ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="<?= $key ?>">
+                                <i class="bi bi-<?= $icon ?> me-1 text-primary"></i><?= $label ?>
+                            </label>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+
         <!-- Branding: public review page -->
         <div class="content-card mb-4" id="branding">
             <div class="card-header-custom">
