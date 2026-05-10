@@ -64,6 +64,7 @@ $_navDefs = [
     // ── Virtual routes (not rendered, but needed for active-state resolution)
     // Sub-routes that have no nav item of their own but would otherwise cause
     // their parent to stay active incorrectly.
+    ['section' => null, 'icon' => null, 'label' => null, 'route' => 'onedrive/personal',            'admin' => false],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'groups/inactive',              'admin' => false],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'licenses/expiry',              'admin' => false],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'mailboxes/shared',             'admin' => false],

@@ -8,22 +8,33 @@ function fmtBytes(int $bytes): string {
 $totalUsed = array_sum(array_column($drives, 'used'));
 ?>
 
+<!-- Sub-nav tabs -->
+<div class="module-tabs mb-4">
+    <a href="/onedrive" class="module-tab active">
+        <i class="bi bi-cloud me-1"></i> Speicher-Übersicht
+    </a>
+    <a href="/onedrive/personal" class="module-tab">
+        <i class="bi bi-person-circle me-1"></i> Persönliche Laufwerke
+    </a>
+</div>
+
 <div class="row g-3 mb-4">
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">OneDrives geladen</div>
+            <div class="metric-label">OneDrives (Stichprobe)</div>
             <div class="metric-value"><?= count($drives) ?></div>
+            <div class="metric-sub">von max. 50 Benutzern</div>
         </div>
     </div>
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Gesamt Speicher belegt</div>
+            <div class="metric-label">Gesamt belegt</div>
             <div class="metric-value"><?= fmtBytes($totalUsed) ?></div>
         </div>
     </div>
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Top Verbraucher</div>
+            <div class="metric-label">Top-Verbraucher</div>
             <div class="metric-value" style="font-size:1.2rem;">
                 <?= $e($drives[0]['user'] ?? '–') ?>
             </div>
@@ -35,17 +46,26 @@ $totalUsed = array_sum(array_column($drives, 'used'));
 <div class="content-card">
     <div class="table-toolbar">
         <input type="text" id="odSearch" class="search-box" placeholder="Benutzer suchen…">
-        <span class="ms-auto text-muted small">Zeigt max. 50 Benutzer (API-Limit)</span>
+        <a href="/onedrive/personal" class="btn btn-sm btn-outline-primary ms-auto">
+            <i class="bi bi-person-circle me-1"></i> Alle persönlichen Laufwerke
+        </a>
     </div>
     <div class="table-responsive">
         <table class="data-table" id="odTable">
             <thead>
-                <tr><th>Benutzer</th><th>UPN</th><th>Belegt</th><th>Gesamt</th><th>Nutzung</th><th>Status</th></tr>
+                <tr>
+                    <th>Benutzer</th>
+                    <th>UPN</th>
+                    <th>Belegt</th>
+                    <th>Gesamt</th>
+                    <th>Nutzung</th>
+                    <th>Status</th>
+                </tr>
             </thead>
             <tbody>
                 <?php foreach ($drives as $d): ?>
                     <?php
-                    $pct = $d['total'] > 0 ? round(($d['used'] / $d['total']) * 100) : 0;
+                    $pct    = $d['total'] > 0 ? round(($d['used'] / $d['total']) * 100) : 0;
                     $barCls = $pct >= 90 ? 'danger' : ($pct >= 75 ? 'warning' : '');
                     ?>
                     <tr>
@@ -79,4 +99,8 @@ $totalUsed = array_sum(array_column($drives, 'used'));
         </table>
     </div>
 </div>
-<script>initTableSearch('odSearch', 'odTable');</script>
+
+<script>
+initTableSearch('odSearch', 'odTable');
+initPagination('odTable', 25);
+</script>

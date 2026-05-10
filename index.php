@@ -118,6 +118,9 @@ $router->post('/users/{id}/offboarding',          [\App\Modules\Users\UsersContr
 
 // OneDrive
 $router->get('/onedrive',                         [\App\Modules\OneDrive\OneDriveController::class, 'index']);
+$router->get('/onedrive/personal',                [\App\Modules\OneDrive\OneDriveController::class, 'personal']);
+$router->post('/onedrive/provision/{id}',         [\App\Modules\OneDrive\OneDriveController::class, 'provision']);
+$router->post('/onedrive/deprovision/{id}',       [\App\Modules\OneDrive\OneDriveController::class, 'deprovision']);
 
 // SharePoint
 $router->get('/sharepoint',                       [\App\Modules\SharePoint\SharePointController::class, 'index']);
