@@ -32,17 +32,53 @@ class MailboxController
     {
         LocalAuth::require();
 
-        $service = app_service(MailboxService::class);
-        $detail  = $service->getMailboxDetail($id);
-        $folders = $service->getMailFolders($id);
+        $service             = app_service(MailboxService::class);
+        $detail              = $service->getMailboxDetail($id);
+        $folders             = $service->getMailFolders($id);
+        $calendarPermissions = $service->getCalendarPermissions($id);
 
         View::render('mailboxes/detail', [
-            'pageTitle' => $detail['displayName'] ?? 'Postfach',
-            'detail'    => $detail,
-            'folders'   => $folders,
-            'flash'     => Session::getFlash('success'),
-            'error'     => Session::getFlash('error'),
+            'pageTitle'           => $detail['displayName'] ?? 'Postfach',
+            'detail'              => $detail,
+            'folders'             => $folders,
+            'calendarPermissions' => $calendarPermissions,
+            'flash'               => Session::getFlash('success'),
+            'error'               => Session::getFlash('error'),
         ]);
+    }
+
+    public function createSharedMailbox(): void
+    {
+        LocalAuth::requireAdmin();
+
+        $displayName = trim($_POST['display_name'] ?? '');
+        $alias       = trim($_POST['alias'] ?? '');
+        $domain      = trim($_POST['domain'] ?? '');
+
+        // Sanitize alias: lowercase, only alphanumeric and hyphens.
+        $alias = preg_replace('/[^a-z0-9\-]/', '', strtolower($alias));
+
+        if ($displayName === '' || $alias === '') {
+            Session::flash('error', 'Anzeigename und Alias dürfen nicht leer sein.');
+            Redirect::to('/mailboxes');
+            return;
+        }
+
+        $service = app_service(MailboxService::class);
+
+        try {
+            $service->createSharedMailbox($displayName, $alias, $domain);
+            Session::flash('success', "Shared Mailbox '{$displayName}' wird angelegt. Exchange Online benötigt einige Minuten zur Bereitstellung.");
+        } catch (\Throwable $e) {
+            $msg = $e->getMessage();
+            if (str_contains($msg, 'Authorization') || str_contains($msg, 'Forbidden') || str_contains($msg, '403') || str_contains($msg, 'permission') || str_contains($msg, 'Permission')) {
+                Session::flash('error', 'Fehlende Berechtigung: User.ReadWrite.All ist in der Azure App nicht erteilt.');
+            } else {
+                Session::flash('error', 'Fehler beim Anlegen des Shared Mailbox: ' . $msg);
+            }
+        }
+
+        Redirect::to('/mailboxes');
     }
 
     public function setForwarding(string $id): void

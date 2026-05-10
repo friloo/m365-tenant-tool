@@ -235,6 +235,70 @@ class MailboxService
     }
 
     /**
+     * Create a shared mailbox by provisioning a disabled user account.
+     *
+     * Exchange Online provisions the mailbox asynchronously after user creation,
+     * so only Step 1 (POST /users) is performed here.  The caller should inform
+     * the user that it may take a few minutes before the mailbox is ready.
+     *
+     * @throws \Throwable  Re-throws on Graph API errors so the controller can
+     *                     surface a meaningful flash message.
+     */
+    public function createSharedMailbox(string $displayName, string $alias, string $domain): array
+    {
+        $upn      = "{$alias}@{$domain}";
+        $password = bin2hex(random_bytes(10)); // 20 hex chars
+
+        $user = $this->graph->post('/users', [
+            'accountEnabled'    => false,
+            'displayName'       => $displayName,
+            'mailNickname'      => $alias,
+            'userPrincipalName' => $upn,
+            'passwordProfile'   => [
+                'forceChangePasswordNextSignIn' => false,
+                'password'                      => $password,
+            ],
+            'usageLocation' => 'DE',
+        ]);
+
+        // Invalidate cached usage report so the next load picks up the new account.
+        try {
+            // GraphClient caches by key; bust the usage key if the client exposes a
+            // clearCache helper — otherwise silently skip (cache will expire naturally).
+            if (method_exists($this->graph, 'clearCache')) {
+                $this->graph->clearCache('mailboxes_usage');
+            }
+        } catch (\Throwable) {
+            // Non-critical — ignore.
+        }
+
+        return is_array($user) ? $user : [];
+    }
+
+    /**
+     * Fetch calendar permissions for a user.
+     *
+     * NOTE: GET /users/{id}/calendar/calendarPermissions typically requires
+     * delegated permissions (Calendars.Read) and will fail with application-only
+     * (client credentials) auth.  Returns [] gracefully on any error so the
+     * detail view can show an informational empty state instead.
+     */
+    public function getCalendarPermissions(string $userId): array
+    {
+        try {
+            $data = $this->graph->get(
+                "/users/{$userId}/calendar/calendarPermissions",
+                [],
+                null,
+                0
+            );
+            return $data['value'] ?? [];
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    /**
      * Compute summary statistics from the usage rows.
      *
      * @param  array $usage  Output of getUsageSummary()

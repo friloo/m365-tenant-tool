@@ -68,6 +68,12 @@ $fmtBytes = function (int $bytes): string {
 <div class="content-card">
     <div class="table-toolbar">
         <input type="text" id="mbSearch" class="search-box" placeholder="Postfach suchen…">
+        <?php if (\App\Auth\LocalAuth::isAdmin()): ?>
+        <button type="button" class="btn btn-sm btn-primary ms-2"
+                data-bs-toggle="modal" data-bs-target="#createSharedMailboxModal">
+            <i class="bi bi-plus-circle me-1"></i>Shared Mailbox anlegen
+        </button>
+        <?php endif; ?>
         <a href="/mailboxes/export" class="btn btn-sm btn-outline-secondary ms-auto">
             <i class="bi bi-download"></i> CSV Export
         </a>
@@ -157,6 +163,116 @@ $fmtBytes = function (int $bytes): string {
 
 <?php endif; ?>
 
+<!-- ── Modal: Shared Mailbox anlegen ──────────────────────────────────────── -->
+<?php if (\App\Auth\LocalAuth::isAdmin()): ?>
+<div class="modal fade" id="createSharedMailboxModal" tabindex="-1"
+     aria-labelledby="createSharedMailboxModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="/mailboxes/create-shared" id="createSharedMailboxForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createSharedMailboxModalLabel">
+                        <i class="bi bi-envelope-plus me-2 text-primary"></i>Shared Mailbox anlegen
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="smb_display_name" class="form-label form-label-sm fw-medium">
+                            Anzeigename <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control form-control-sm"
+                               id="smb_display_name" name="display_name"
+                               required placeholder="z.B. Buchhaltung">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="smb_alias" class="form-label form-label-sm fw-medium">
+                            Alias <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control form-control-sm"
+                               id="smb_alias" name="alias"
+                               required placeholder="z.B. buchhaltung"
+                               pattern="[a-z0-9\-]+"
+                               title="Nur Kleinbuchstaben, Ziffern und Bindestriche">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="smb_domain" class="form-label form-label-sm fw-medium">
+                            Domain <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control form-control-sm"
+                               id="smb_domain" name="domain"
+                               required placeholder="firmaname.de">
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-arrow-right-circle me-1"></i>
+                            Ergebnis-Adresse:
+                            <strong id="smb_preview" class="text-primary">—</strong>
+                        </p>
+                    </div>
+
+                    <div class="alert alert-warning py-2 px-3 mb-0" style="font-size:12px;">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Das Konto wird ohne interaktiven Login-Zugriff angelegt
+                        (<code>accountEnabled=false</code>). Exchange Online stellt das
+                        Postfach innerhalb weniger Minuten bereit.
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                            data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Anlegen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <script>
 initTableSearch('mbSearch', 'mbTable');
+
+(function () {
+    var nameInput   = document.getElementById('smb_display_name');
+    var aliasInput  = document.getElementById('smb_alias');
+    var domainInput = document.getElementById('smb_domain');
+    var preview     = document.getElementById('smb_preview');
+
+    if (!nameInput) return;
+
+    function updatePreview() {
+        var alias  = aliasInput.value.trim();
+        var domain = domainInput.value.trim();
+        preview.textContent = (alias && domain) ? alias + '@' + domain : '—';
+    }
+
+    // Auto-fill alias from display name (lowercase, spaces → hyphens, strip special chars)
+    nameInput.addEventListener('input', function () {
+        var slug = nameInput.value
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9\-]/g, '');
+        aliasInput.value = slug;
+        updatePreview();
+    });
+
+    aliasInput.addEventListener('input', updatePreview);
+    domainInput.addEventListener('input', updatePreview);
+
+    // Reset form fields when modal is closed
+    var modal = document.getElementById('createSharedMailboxModal');
+    if (modal) {
+        modal.addEventListener('hidden.bs.modal', function () {
+            document.getElementById('createSharedMailboxForm').reset();
+            if (preview) preview.textContent = '—';
+        });
+    }
+})();
 </script>
