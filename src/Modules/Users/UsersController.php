@@ -140,14 +140,6 @@ class UsersController
             Redirect::to('/users');
         }
 
-        // Fetch display names for payload (best-effort, uses cache)
-        $upnMap = [];
-        try {
-            foreach (app_service(UsersService::class)->getAll() as $u) {
-                $upnMap[$u['id']] = $u['userPrincipalName'] ?? '';
-            }
-        } catch (\Throwable) {}
-
         // Map action → queue job type
         $jobType = match($action) {
             'disable'   => 'user_toggle',
@@ -155,8 +147,8 @@ class UsersController
             'reset_mfa' => 'mfa_reset',
         };
 
-        $payloads = array_map(function (string $uid) use ($action, $jobType, $upnMap): array {
-            $base = ['user_id' => $uid, 'user_upn' => $upnMap[$uid] ?? ''];
+        $payloads = array_map(function (string $uid) use ($action, $jobType): array {
+            $base = ['user_id' => $uid];
             if ($jobType === 'user_toggle') {
                 $base['enabled'] = $action === 'enable';
             }

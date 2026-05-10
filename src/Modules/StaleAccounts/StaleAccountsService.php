@@ -17,6 +17,9 @@ class StaleAccountsService
     public function getStaleUsers(int $days = 90): array
     {
         try {
+            // Cache the raw enabled-user list separately from the $days filter.
+            // Graph cannot $filter on signInActivity — PHP-side filtering is unavoidable.
+            // maxPages=50 handles up to 49,950 users (same ceiling as UsersService).
             $all = $this->graph->paginate(
                 '/users',
                 [
@@ -24,8 +27,8 @@ class StaleAccountsService
                     '$filter' => 'accountEnabled eq true',
                     '$top'    => '999',
                 ],
-                10,
-                'stale_users_enabled',
+                50,
+                'stale_users_base',
                 1800
             );
         } catch (\Throwable) {
