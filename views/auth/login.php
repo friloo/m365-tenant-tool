@@ -44,6 +44,18 @@
             </button>
         </form>
 
+        <?php if (!empty($msLoginEnabled)): ?>
+        <div class="d-flex align-items-center my-3 gap-2">
+            <hr class="flex-grow-1 m-0">
+            <span class="text-muted small px-2">oder</span>
+            <hr class="flex-grow-1 m-0">
+        </div>
+        <a href="/auth/microsoft" class="btn btn-outline-secondary w-100 py-2 d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-microsoft" style="color:#0078d4;font-size:16px;"></i>
+            <span class="fw-medium">Mit Microsoft anmelden</span>
+        </a>
+        <?php endif; ?>
+
         <p class="text-center text-muted mt-4 mb-0" style="font-size:11px;">
             Microsoft 365 Tenant Management Tool
         </p>

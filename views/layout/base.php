@@ -64,7 +64,11 @@
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>
                 <div class="d-flex align-items-center gap-2 ms-2 ps-2" style="border-left: 1px solid #e5e7eb;">
-                    <i class="bi bi-person-circle text-secondary"></i>
+                    <?php if (\App\Core\Session::get('auth_type') === 'microsoft'): ?>
+                        <i class="bi bi-microsoft" style="color:#0078d4;"></i>
+                    <?php else: ?>
+                        <i class="bi bi-person-circle text-secondary"></i>
+                    <?php endif; ?>
                     <span style="font-size:13px;font-weight:500;"><?= \App\Core\View::escape(\App\Auth\LocalAuth::username()) ?></span>
                     <?php if (\App\Auth\LocalAuth::role() === 'operator'): ?>
                         <span class="badge-warning" style="font-size:10px;">Operator</span>

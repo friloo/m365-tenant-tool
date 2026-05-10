@@ -34,6 +34,7 @@ class LocalAuth
     {
         Session::regenerate();
         Session::set('authenticated', true);
+        Session::set('auth_type', 'local');
         Session::set('username', $username);
         Session::set('role', $role);
         Session::set('login_time', time());

@@ -54,6 +54,20 @@ if (file_exists($bootstrapFile)) {
     die('Setup incomplete. Please run the <a href="/install/">installer</a>.');
 }
 
+// Ensure m365_users table exists
+DB::execute("CREATE TABLE IF NOT EXISTS m365_users (
+    id               INT AUTO_INCREMENT PRIMARY KEY,
+    azure_object_id  VARCHAR(100) DEFAULT NULL,
+    upn              VARCHAR(255) NOT NULL,
+    display_name     VARCHAR(255) DEFAULT NULL,
+    role             ENUM('operator','admin') NOT NULL DEFAULT 'operator',
+    is_active        TINYINT(1) NOT NULL DEFAULT 1,
+    last_login       DATETIME DEFAULT NULL,
+    created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_upn (upn),
+    UNIQUE KEY uq_oid (azure_object_id)
+)");
+
 // Configure Config singleton with encryptor
 $config = Config::getInstance();
 $config->setEncryptor($encryptor);
@@ -84,6 +98,8 @@ $router = new Router();
 $router->get('/login',  [\App\Modules\Auth\AuthController::class, 'login']);
 $router->post('/login', [\App\Modules\Auth\AuthController::class, 'doLogin']);
 $router->get('/logout', [\App\Modules\Auth\AuthController::class, 'logout']);
+$router->get('/auth/microsoft',          [\App\Modules\Auth\MicrosoftAuthController::class, 'redirect']);
+$router->get('/auth/microsoft/callback', [\App\Modules\Auth\MicrosoftAuthController::class, 'callback']);
 
 // Dashboard
 $router->get('/',        [\App\Modules\Dashboard\DashboardController::class, 'index']);
@@ -256,6 +272,12 @@ $router->get('/settings/clear-cache',             [\App\Modules\Settings\Setting
 $router->get('/settings/test-mail',               [\App\Modules\Settings\SettingsController::class, 'testMail']);
 $router->get('/settings/permissions',             [\App\Modules\Settings\SettingsController::class, 'permissions']);
 $router->get('/settings/refresh-token',           [\App\Modules\Settings\SettingsController::class, 'refreshToken']);
+
+// User management (M365 users with tool access)
+$router->get('/settings/users',                 [\App\Modules\Settings\UserManagementController::class, 'index']);
+$router->post('/settings/users',                [\App\Modules\Settings\UserManagementController::class, 'add']);
+$router->post('/settings/users/{id}/update',    [\App\Modules\Settings\UserManagementController::class, 'update']);
+$router->post('/settings/users/{id}/delete',    [\App\Modules\Settings\UserManagementController::class, 'delete']);
 
 // Update system
 $router->get('/settings/update',                  [\App\Modules\Update\UpdateController::class, 'index']);
