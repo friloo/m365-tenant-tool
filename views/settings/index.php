@@ -483,6 +483,19 @@
     <div class="col-lg-4">
         <div class="content-card mb-3">
             <div class="card-header-custom">
+                <i class="bi bi-book text-primary"></i>
+                <h6>Handbuch</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="small text-muted mb-3">Vollständige Dokumentation aller Module, Funktionen und erforderlichen Graph-Berechtigungen.</p>
+                <a href="/manual" class="btn btn-primary btn-sm w-100">
+                    <i class="bi bi-book me-1"></i> Handbuch öffnen
+                </a>
+            </div>
+        </div>
+
+        <div class="content-card mb-3">
+            <div class="card-header-custom">
                 <i class="bi bi-shield-check text-primary"></i>
                 <h6>Graph API Berechtigungen</h6>
             </div>

@@ -182,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
         { label: 'Einstellungen: Branding',              icon: 'palette',        url: '/settings#branding',         cat: 'Einstellungen' },
         { label: 'Einstellungen: Berechtigungen prüfen', icon: 'shield-check',   url: '/settings/permissions',      cat: 'Einstellungen' },
         { label: 'Updates',                              icon: 'cloud-arrow-down', url: '/settings/update',           cat: 'Administration' },
+        { label: 'Handbuch',                             icon: 'book',             url: '/manual',                    cat: 'Administration' },
     ];
 
     const overlay  = document.getElementById('qsOverlay');

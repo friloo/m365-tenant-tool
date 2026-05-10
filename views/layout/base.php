@@ -26,6 +26,15 @@
                 <span class="nav-label">Abmelden</span>
             </a>
         </div>
+        <div style="padding: 10px 16px 14px; text-align:center; border-top: 1px solid rgba(255,255,255,0.04);">
+            <a href="https://loheide.eu" target="_blank" rel="noopener"
+               style="font-size:10px; color:rgba(255,255,255,0.28); text-decoration:none; line-height:1.6; display:block;"
+               title="Entwickelt von Friederich Loheide">
+                Entwickelt von<br>
+                <span style="color:rgba(255,255,255,0.45); font-weight:500;">Friederich Loheide</span><br>
+                <span style="color:rgba(255,255,255,0.28);">loheide.eu</span>
+            </a>
+        </div>
     </nav>
 
     <!-- Main content -->

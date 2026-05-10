@@ -245,6 +245,9 @@ $router->get('/servicehealth',                    [\App\Modules\ServiceHealth\Se
 // Users bulk actions
 $router->post('/users/bulk-action',               [\App\Modules\Users\UsersController::class, 'bulkAction']);
 
+// Manual
+$router->get('/manual',                           [\App\Modules\Settings\SettingsController::class, 'manual']);
+
 // Settings
 $router->get('/settings',                         [\App\Modules\Settings\SettingsController::class, 'index']);
 $router->post('/settings/save',                   [\App\Modules\Settings\SettingsController::class, 'save']);
