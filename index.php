@@ -39,7 +39,7 @@ $encryptor = new Encryptor($keyPath);
 // db_password stored encrypted). We read a bootstrap config from a small ini file written by installer.
 $bootstrapFile = __DIR__ . '/storage/db_bootstrap.ini';
 if (file_exists($bootstrapFile)) {
-    $ini = parse_ini_file($bootstrapFile);
+    $ini = parse_ini_file($bootstrapFile, false, INI_SCANNER_RAW);
     $dbPassword = $encryptor->decrypt($ini['db_password_enc']);
     DB::connect([
         'host'     => $ini['db_host'],
@@ -251,6 +251,15 @@ $router->post('/settings/save',                   [\App\Modules\Settings\Setting
 $router->get('/settings/clear-cache',             [\App\Modules\Settings\SettingsController::class, 'clearCache']);
 $router->get('/settings/test-mail',               [\App\Modules\Settings\SettingsController::class, 'testMail']);
 $router->get('/settings/permissions',             [\App\Modules\Settings\SettingsController::class, 'permissions']);
+$router->get('/settings/refresh-token',           [\App\Modules\Settings\SettingsController::class, 'refreshToken']);
+
+// Update system
+$router->get('/settings/update',                  [\App\Modules\Update\UpdateController::class, 'index']);
+$router->post('/settings/update/check',           [\App\Modules\Update\UpdateController::class, 'check']);
+$router->post('/settings/update/install',         [\App\Modules\Update\UpdateController::class, 'install']);
+$router->get('/settings/update/progress',         [\App\Modules\Update\UpdateController::class, 'progress']);
+$router->post('/settings/update/channel',         [\App\Modules\Update\UpdateController::class, 'setChannel']);
+$router->post('/settings/update/migrations',      [\App\Modules\Update\UpdateController::class, 'runMigrations']);
 
 // Cron & Queue management
 $router->get('/cron',                             [\App\Modules\Cron\CronController::class, 'index']);

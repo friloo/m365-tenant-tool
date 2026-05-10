@@ -13,7 +13,7 @@ class UsersService
         return $this->graph->paginate(
             '/users',
             [
-                '$select' => 'id,displayName,userPrincipalName,accountEnabled,assignedLicenses,signInActivity,createdDateTime,jobTitle,department,mail',
+                '$select' => 'id,displayName,userPrincipalName,accountEnabled,assignedLicenses,createdDateTime,jobTitle,department,mail',
                 '$top'    => '999',
             ],
             50,

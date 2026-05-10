@@ -110,6 +110,22 @@ class GraphClient
         if ($httpCode >= 400) {
             $err = json_decode($response, true);
             $msg = $err['error']['message'] ?? "HTTP {$httpCode}";
+            $code = $err['error']['code'] ?? '';
+
+            // 403 / insufficient privileges: return empty result so pages
+            // degrade gracefully instead of crashing. Write operations still throw.
+            if ($httpCode === 403 || $code === 'Authorization_RequestDenied' || $code === 'InsufficientPrivileges') {
+                if ($method === 'GET') {
+                    error_log("Graph 403 (missing permission) on {$url}: {$msg}");
+                    return ['value' => [], '@odata.count' => 0];
+                }
+            }
+
+            // 404: resource not found — return empty
+            if ($httpCode === 404) {
+                return ['value' => [], '@odata.count' => 0];
+            }
+
             throw new \RuntimeException("Graph API error on {$url}: {$msg}");
         }
 
