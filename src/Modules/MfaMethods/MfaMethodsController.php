@@ -14,7 +14,11 @@ class MfaMethodsController
         $service = app_service(MfaMethodsService::class);
 
         if (isset($_GET['refresh'])) {
+            // Clear both caches AND the access token — a stale token from
+            // before the permission was granted would still get HTTP 403
             app_graph()->getCache()->forget('mfa_methods_detail');
+            app_graph()->getCache()->forget('mfa_methods_legacy');
+            \App\Database\DB::execute('DELETE FROM graph_tokens');
         }
 
         $users     = $service->getAll();
