@@ -130,6 +130,8 @@ $router->post('/sharing/policies/site',           [\App\Modules\SharingPolicies\
 // Groups
 $router->get('/groups',                           [\App\Modules\Groups\GroupsController::class, 'index']);
 $router->get('/groups/export',                    [\App\Modules\Groups\GroupsController::class, 'export']);
+$router->get('/groups/inactive',                  [\App\Modules\Groups\GroupsController::class, 'inactive']);
+$router->get('/groups/inactive/export',           [\App\Modules\Groups\GroupsController::class, 'exportInactive']);
 $router->get('/groups/{id}',                      [\App\Modules\Groups\GroupsController::class, 'show']);
 $router->post('/groups/{id}/add-member',          [\App\Modules\Groups\GroupsController::class, 'addMember']);
 $router->post('/groups/{id}/remove-member/{uid}', [\App\Modules\Groups\GroupsController::class, 'removeMember']);
@@ -141,6 +143,7 @@ $router->post('/groups/{id}/remove-owner/{uid}',  [\App\Modules\Groups\GroupsCon
 // Licenses
 $router->get('/licenses',                         [\App\Modules\Licenses\LicensesController::class, 'index']);
 $router->get('/licenses/export',                  [\App\Modules\Licenses\LicensesController::class, 'export']);
+$router->get('/licenses/expiry',                  [\App\Modules\Licenses\LicensesController::class, 'expiry']);
 
 // App Registrations & Enterprise Apps
 $router->get('/appregistrations',                              [\App\Modules\AppRegistrations\AppRegistrationsController::class, 'index']);
@@ -178,6 +181,12 @@ $router->get('/securityposture',                  [\App\Modules\SecurityPosture\
 
 // Teams Usage
 $router->get('/teamsusage',                       [\App\Modules\TeamsUsage\TeamsUsageController::class, 'index']);
+
+// Message Center
+$router->get('/msgcenter',                        [\App\Modules\MessageCenter\MessageCenterController::class, 'index']);
+
+// Mail Flow & Schutz
+$router->get('/mailflow',                         [\App\Modules\MailFlow\MailFlowController::class, 'index']);
 
 // Security
 $router->get('/security',                                    [\App\Modules\Security\SecurityController::class, 'index']);
