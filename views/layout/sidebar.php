@@ -3,20 +3,78 @@ use App\Auth\LocalAuth;
 
 $currentPath = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
-// All sidebar routes — pre-declared so each navItem can detect more-specific matches
-$_allNavRoutes = [
-    '', 'users', 'guestusers', 'groups', 'licenses', 'licenseadvisor',
-    'onedrive', 'sharepoint', 'sharing', 'sharing/monitor', 'sharing/policies',
-    'security', 'securescore', 'riskysignins', 'devices', 'staleaccounts', 'auditlog',
-    'mailboxes', 'appregistrations', 'servicehealth', 'cron', 'settings',
-    'mfamethods', 'passwordexpiry', 'defenderalerts', 'securityposture', 'teamsusage',
-    'adminroles', 'signinlog', 'adoption',
-    'msgcenter', 'mailflow',
-    'groups/inactive', 'licenses/expiry',
-    'mailboxes/shared', 'mailboxes/external-forwards',
-    'settings/update', 'settings/users', 'manual',
+// ── Nav definitions ────────────────────────────────────────────────────────
+// Each entry: ['section' => string|null, 'icon' => string, 'label' => string,
+//              'route' => string, 'admin' => bool]
+// 'section' => non-null string inserts a section header before this item.
+// 'admin'   => true restricts the item (and its section header) to admins.
+// $_allNavRoutes is derived automatically — never maintain it by hand.
+$_navDefs = [
+    // ── Übersicht
+    ['section' => 'Übersicht',  'icon' => 'speedometer2',       'label' => 'Dashboard',            'route' => '',                     'admin' => false],
+
+    // ── Verzeichnis
+    ['section' => 'Verzeichnis','icon' => 'people',              'label' => 'Benutzer',             'route' => 'users',                'admin' => false],
+    ['section' => null,         'icon' => 'person-badge',        'label' => 'Gastbenutzer',         'route' => 'guestusers',           'admin' => false],
+    ['section' => null,         'icon' => 'diagram-3',           'label' => 'Gruppen & Teams',      'route' => 'groups',               'admin' => false],
+    ['section' => null,         'icon' => 'award',               'label' => 'Lizenzen',             'route' => 'licenses',             'admin' => false],
+    ['section' => null,         'icon' => 'lightbulb',           'label' => 'Lizenz-Berater',       'route' => 'licenseadvisor',       'admin' => false],
+    ['section' => null,         'icon' => 'shield-lock',         'label' => 'MFA-Methoden',         'route' => 'mfamethods',           'admin' => false],
+    ['section' => null,         'icon' => 'key',                 'label' => 'Passwort-Ablauf',      'route' => 'passwordexpiry',       'admin' => false],
+
+    // ── Speicher & Freigaben
+    ['section' => 'Speicher & Freigaben', 'icon' => 'cloud',    'label' => 'OneDrive',             'route' => 'onedrive',             'admin' => false],
+    ['section' => null,         'icon' => 'share',               'label' => 'SharePoint',           'route' => 'sharepoint',           'admin' => false],
+    ['section' => null,         'icon' => 'link-45deg',          'label' => 'Freigaben',            'route' => 'sharing',              'admin' => false],
+    ['section' => null,         'icon' => 'eye-slash',           'label' => 'Freigaben-Monitor',    'route' => 'sharing/monitor',      'admin' => false],
+    ['section' => null,         'icon' => 'sliders',             'label' => 'Freigaberichtlinien',  'route' => 'sharing/policies',     'admin' => false],
+
+    // ── Exchange & Kommunikation
+    ['section' => 'Exchange & Kommunikation', 'icon' => 'envelope', 'label' => 'Postfächer',       'route' => 'mailboxes',            'admin' => false],
+    ['section' => null,         'icon' => 'camera-video',        'label' => 'Teams-Nutzung',        'route' => 'teamsusage',           'admin' => false],
+    ['section' => null,         'icon' => 'graph-up-arrow',      'label' => 'Adoptions-Report',     'route' => 'adoption',             'admin' => false],
+    ['section' => null,         'icon' => 'megaphone',           'label' => 'Message Center',       'route' => 'msgcenter',            'admin' => false],
+    ['section' => null,         'icon' => 'arrow-left-right',    'label' => 'Mail Flow & Schutz',   'route' => 'mailflow',             'admin' => false],
+    ['section' => null,         'icon' => 'heart-pulse',         'label' => 'Dienststatus',         'route' => 'servicehealth',        'admin' => false],
+
+    // ── Sicherheit
+    ['section' => 'Sicherheit', 'icon' => 'shield-check',       'label' => 'Sicherheit',           'route' => 'security',             'admin' => false],
+    ['section' => null,         'icon' => 'shield-fill-check',   'label' => 'Security Posture',     'route' => 'securityposture',      'admin' => false],
+    ['section' => null,         'icon' => 'bar-chart-line',      'label' => 'Secure Score',         'route' => 'securescore',          'admin' => false],
+    ['section' => null,         'icon' => 'bell',                'label' => 'Defender Alerts',      'route' => 'defenderalerts',       'admin' => false],
+    ['section' => null,         'icon' => 'exclamation-triangle','label' => 'Risiko-Anmeldungen',   'route' => 'riskysignins',         'admin' => false],
+    ['section' => null,         'icon' => 'grid-3x3-gap',        'label' => 'App-Registrierungen',  'route' => 'appregistrations',     'admin' => false],
+    ['section' => null,         'icon' => 'person-lock',         'label' => 'Admin-Rollen',         'route' => 'adminroles',           'admin' => false],
+
+    // ── Compliance & Audit
+    ['section' => 'Compliance & Audit', 'icon' => 'phone',       'label' => 'Geräte',              'route' => 'devices',              'admin' => false],
+    ['section' => null,         'icon' => 'person-x',            'label' => 'Inaktive Konten',      'route' => 'staleaccounts',        'admin' => false],
+    ['section' => null,         'icon' => 'clock-history',       'label' => 'Audit-Log',            'route' => 'auditlog',             'admin' => false],
+    ['section' => null,         'icon' => 'journal-text',        'label' => 'Sign-in-Log',          'route' => 'signinlog',            'admin' => false],
+
+    // ── Handbuch (no section header)
+    ['section' => null,         'icon' => 'book',                'label' => 'Handbuch',             'route' => 'manual',               'admin' => false],
+
+    // ── Administration (admin-only)
+    ['section' => 'Administration', 'icon' => 'clock',           'label' => 'Cron & Automatisierung','route' => 'cron',               'admin' => true],
+    ['section' => null,         'icon' => 'gear',                'label' => 'Einstellungen',        'route' => 'settings',             'admin' => true],
+    ['section' => null,         'icon' => 'people-fill',         'label' => 'Benutzer-Zugang',      'route' => 'settings/users',       'admin' => true],
+    ['section' => null,         'icon' => 'cloud-arrow-down',    'label' => 'Updates',              'route' => 'settings/update',      'admin' => true],
+
+    // ── Virtual routes (not rendered, but needed for active-state resolution)
+    // Sub-routes that have no nav item of their own but would otherwise cause
+    // their parent to stay active incorrectly.
+    ['section' => null, 'icon' => null, 'label' => null, 'route' => 'groups/inactive',              'admin' => false],
+    ['section' => null, 'icon' => null, 'label' => null, 'route' => 'licenses/expiry',              'admin' => false],
+    ['section' => null, 'icon' => null, 'label' => null, 'route' => 'mailboxes/shared',             'admin' => false],
+    ['section' => null, 'icon' => null, 'label' => null, 'route' => 'mailboxes/external-forwards',  'admin' => false],
+    ['section' => null, 'icon' => null, 'label' => null, 'route' => 'settings/permissions',         'admin' => true],
 ];
 
+// Derive the full route list automatically — no manual maintenance needed
+$_allNavRoutes = array_column($_navDefs, 'route');
+
+// ── navItem renderer ───────────────────────────────────────────────────────
 function navItem(string $icon, string $label, string $route, string $current): void {
     global $_allNavRoutes;
 
@@ -27,11 +85,11 @@ function navItem(string $icon, string $label, string $route, string $current): v
     }
 
     if ($isMatch) {
-        // Only mark active if no more-specific nav route also matches the current path
         $hasMoreSpecific = false;
         foreach ($_allNavRoutes as $r) {
-            if ($r !== $route && str_starts_with($r, $route . '/') &&
-                ($current === $r || str_starts_with($current, $r . '/'))) {
+            if ($r !== $route
+                && str_starts_with($r, $route . '/')
+                && ($current === $r || str_starts_with($current, $r . '/'))) {
                 $hasMoreSpecific = true;
                 break;
             }
@@ -46,56 +104,22 @@ function navItem(string $icon, string $label, string $route, string $current): v
             <span class=\"nav-label\">{$label}</span>
           </a>";
 }
-?>
 
-<div class="sidebar-section">Übersicht</div>
-<?php navItem('speedometer2', 'Dashboard', '', $currentPath); ?>
+// ── Render ─────────────────────────────────────────────────────────────────
+$isAdmin = LocalAuth::isAdmin();
 
-<div class="sidebar-section">Verzeichnis</div>
-<?php navItem('people', 'Benutzer', 'users', $currentPath); ?>
-<?php navItem('person-badge', 'Gastbenutzer', 'guestusers', $currentPath); ?>
-<?php navItem('diagram-3', 'Gruppen & Teams', 'groups', $currentPath); ?>
-<?php navItem('award', 'Lizenzen', 'licenses', $currentPath); ?>
-<?php navItem('lightbulb', 'Lizenz-Berater', 'licenseadvisor', $currentPath); ?>
-<?php navItem('shield-lock', 'MFA-Methoden', 'mfamethods', $currentPath); ?>
-<?php navItem('key', 'Passwort-Ablauf', 'passwordexpiry', $currentPath); ?>
-
-<div class="sidebar-section">Speicher & Freigaben</div>
-<?php navItem('cloud', 'OneDrive', 'onedrive', $currentPath); ?>
-<?php navItem('share', 'SharePoint', 'sharepoint', $currentPath); ?>
-<?php navItem('link-45deg', 'Freigaben', 'sharing', $currentPath); ?>
-<?php navItem('eye-slash', 'Freigaben-Monitor', 'sharing/monitor', $currentPath); ?>
-<?php navItem('sliders', 'Freigaberichtlinien', 'sharing/policies', $currentPath); ?>
-
-<div class="sidebar-section">Exchange & Kommunikation</div>
-<?php navItem('envelope', 'Postfächer', 'mailboxes', $currentPath); ?>
-<?php navItem('camera-video', 'Teams-Nutzung', 'teamsusage', $currentPath); ?>
-<?php navItem('graph-up-arrow', 'Adoptions-Report', 'adoption', $currentPath); ?>
-<?php navItem('megaphone', 'Message Center', 'msgcenter', $currentPath); ?>
-<?php navItem('arrow-left-right', 'Mail Flow & Schutz', 'mailflow', $currentPath); ?>
-<?php navItem('heart-pulse', 'Dienststatus', 'servicehealth', $currentPath); ?>
-
-<div class="sidebar-section">Sicherheit</div>
-<?php navItem('shield-check', 'Sicherheit', 'security', $currentPath); ?>
-<?php navItem('shield-fill-check', 'Security Posture', 'securityposture', $currentPath); ?>
-<?php navItem('bar-chart-line', 'Secure Score', 'securescore', $currentPath); ?>
-<?php navItem('bell', 'Defender Alerts', 'defenderalerts', $currentPath); ?>
-<?php navItem('exclamation-triangle', 'Risiko-Anmeldungen', 'riskysignins', $currentPath); ?>
-<?php navItem('grid-3x3-gap', 'App-Registrierungen', 'appregistrations', $currentPath); ?>
-<?php navItem('person-lock', 'Admin-Rollen', 'adminroles', $currentPath); ?>
-
-<div class="sidebar-section">Compliance & Audit</div>
-<?php navItem('phone', 'Geräte', 'devices', $currentPath); ?>
-<?php navItem('person-x', 'Inaktive Konten', 'staleaccounts', $currentPath); ?>
-<?php navItem('clock-history', 'Audit-Log', 'auditlog', $currentPath); ?>
-<?php navItem('journal-text', 'Sign-in-Log', 'signinlog', $currentPath); ?>
-
-<?php navItem('book', 'Handbuch', 'manual', $currentPath); ?>
-
-<?php if (LocalAuth::isAdmin()): ?>
-<div class="sidebar-section">Administration</div>
-<?php navItem('clock', 'Cron & Automatisierung', 'cron', $currentPath); ?>
-<?php navItem('gear', 'Einstellungen', 'settings', $currentPath); ?>
-<?php navItem('people-fill', 'Benutzer-Zugang', 'settings/users', $currentPath); ?>
-<?php navItem('cloud-arrow-down', 'Updates', 'settings/update', $currentPath); ?>
-<?php endif; ?>
+foreach ($_navDefs as $item) {
+    // Skip virtual items (no icon/label)
+    if ($item['icon'] === null) {
+        continue;
+    }
+    // Skip admin-only items if not admin
+    if ($item['admin'] && !$isAdmin) {
+        continue;
+    }
+    // Section header
+    if ($item['section'] !== null) {
+        echo '<div class="sidebar-section">' . htmlspecialchars($item['section']) . '</div>';
+    }
+    navItem($item['icon'], $item['label'], $item['route'], $currentPath);
+}
