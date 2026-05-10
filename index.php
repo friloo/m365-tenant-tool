@@ -253,6 +253,14 @@ $router->get('/settings/test-mail',               [\App\Modules\Settings\Setting
 $router->get('/settings/permissions',             [\App\Modules\Settings\SettingsController::class, 'permissions']);
 $router->get('/settings/refresh-token',           [\App\Modules\Settings\SettingsController::class, 'refreshToken']);
 
+// Update system
+$router->get('/settings/update',                  [\App\Modules\Update\UpdateController::class, 'index']);
+$router->post('/settings/update/check',           [\App\Modules\Update\UpdateController::class, 'check']);
+$router->post('/settings/update/install',         [\App\Modules\Update\UpdateController::class, 'install']);
+$router->get('/settings/update/progress',         [\App\Modules\Update\UpdateController::class, 'progress']);
+$router->post('/settings/update/channel',         [\App\Modules\Update\UpdateController::class, 'setChannel']);
+$router->post('/settings/update/migrations',      [\App\Modules\Update\UpdateController::class, 'runMigrations']);
+
 // Cron & Queue management
 $router->get('/cron',                             [\App\Modules\Cron\CronController::class, 'index']);
 $router->post('/cron/update-job/{key}',           [\App\Modules\Cron\CronController::class, 'updateJob']);
