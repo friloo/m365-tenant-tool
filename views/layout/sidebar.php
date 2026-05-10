@@ -10,6 +10,7 @@ $_allNavRoutes = [
     'security', 'securescore', 'riskysignins', 'devices', 'staleaccounts', 'auditlog',
     'mailboxes', 'appregistrations', 'servicehealth', 'cron', 'settings',
     'mfamethods', 'passwordexpiry', 'defenderalerts', 'securityposture', 'teamsusage',
+    'adminroles', 'signinlog', 'adoption',
 ];
 
 function navItem(string $icon, string $label, string $route, string $current): void {
@@ -65,6 +66,7 @@ function navItem(string $icon, string $label, string $route, string $current): v
 <div class="sidebar-section">Exchange & Kommunikation</div>
 <?php navItem('envelope', 'Postfächer', 'mailboxes', $currentPath); ?>
 <?php navItem('camera-video', 'Teams-Nutzung', 'teamsusage', $currentPath); ?>
+<?php navItem('graph-up-arrow', 'Adoptions-Report', 'adoption', $currentPath); ?>
 <?php navItem('heart-pulse', 'Dienststatus', 'servicehealth', $currentPath); ?>
 
 <div class="sidebar-section">Sicherheit</div>
@@ -74,11 +76,13 @@ function navItem(string $icon, string $label, string $route, string $current): v
 <?php navItem('bell', 'Defender Alerts', 'defenderalerts', $currentPath); ?>
 <?php navItem('exclamation-triangle', 'Risiko-Anmeldungen', 'riskysignins', $currentPath); ?>
 <?php navItem('grid-3x3-gap', 'App-Registrierungen', 'appregistrations', $currentPath); ?>
+<?php navItem('person-lock', 'Admin-Rollen', 'adminroles', $currentPath); ?>
 
 <div class="sidebar-section">Compliance & Audit</div>
 <?php navItem('phone', 'Geräte', 'devices', $currentPath); ?>
 <?php navItem('person-x', 'Inaktive Konten', 'staleaccounts', $currentPath); ?>
 <?php navItem('clock-history', 'Audit-Log', 'auditlog', $currentPath); ?>
+<?php navItem('journal-text', 'Sign-in-Log', 'signinlog', $currentPath); ?>
 
 <?php if (LocalAuth::isAdmin()): ?>
 <div class="sidebar-section">Administration</div>

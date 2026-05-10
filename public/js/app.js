@@ -142,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Exchange & Kommunikation
         { label: 'Postfächer',              icon: 'envelope',            url: '/mailboxes',            cat: 'Exchange & Kommunikation' },
         { label: 'Teams-Nutzung',           icon: 'camera-video',        url: '/teamsusage',           cat: 'Exchange & Kommunikation' },
+        { label: 'Adoptions-Report',        icon: 'graph-up-arrow',      url: '/adoption',             cat: 'Exchange & Kommunikation' },
         { label: 'Dienststatus',            icon: 'heart-pulse',         url: '/servicehealth',        cat: 'Exchange & Kommunikation' },
         // Sicherheit
         { label: 'Sicherheit',              icon: 'shield-check',        url: '/security',             cat: 'Sicherheit' },
@@ -150,10 +151,12 @@ document.addEventListener('DOMContentLoaded', function () {
         { label: 'Defender Alerts',         icon: 'bell',                url: '/defenderalerts',       cat: 'Sicherheit' },
         { label: 'Risiko-Anmeldungen',      icon: 'exclamation-triangle', url: '/riskysignins',        cat: 'Sicherheit' },
         { label: 'App-Registrierungen',     icon: 'grid-3x3-gap',        url: '/appregistrations',     cat: 'Sicherheit' },
+        { label: 'Admin-Rollen',            icon: 'person-lock',         url: '/adminroles',           cat: 'Sicherheit' },
         // Compliance & Audit
         { label: 'Geräte',                  icon: 'phone',               url: '/devices',              cat: 'Compliance & Audit' },
         { label: 'Inaktive Konten',         icon: 'person-x',            url: '/staleaccounts',        cat: 'Compliance & Audit' },
         { label: 'Audit-Log',               icon: 'clock-history',       url: '/auditlog',             cat: 'Compliance & Audit' },
+        { label: 'Sign-in-Log',             icon: 'journal-text',        url: '/signinlog',            cat: 'Compliance & Audit' },
         // Administration
         { label: 'Cron & Automatisierung',  icon: 'clock',               url: '/cron',                 cat: 'Administration' },
         { label: 'Einstellungen',           icon: 'gear',                url: '/settings',             cat: 'Administration' },

@@ -211,6 +211,21 @@ $router->get('/mailboxes/{id}',                   [\App\Modules\Mailboxes\Mailbo
 $router->post('/mailboxes/{id}/forwarding',       [\App\Modules\Mailboxes\MailboxController::class, 'setForwarding']);
 $router->post('/mailboxes/{id}/auto-reply',       [\App\Modules\Mailboxes\MailboxController::class, 'setAutoReply']);
 
+// Admin Roles
+$router->get('/adminroles',                                   [\App\Modules\AdminRoles\AdminRolesController::class, 'index']);
+$router->post('/adminroles/assign',                           [\App\Modules\AdminRoles\AdminRolesController::class, 'assignRole']);
+$router->post('/adminroles/{assignmentId}/remove',            [\App\Modules\AdminRoles\AdminRolesController::class, 'removeAssignment']);
+
+// Tenant Sign-in Log
+$router->get('/signinlog',                        [\App\Modules\SignInLog\SignInLogController::class, 'index']);
+$router->get('/signinlog/export',                 [\App\Modules\SignInLog\SignInLogController::class, 'export']);
+
+// Adoption Dashboard
+$router->get('/adoption',                         [\App\Modules\Adoption\AdoptionController::class, 'index']);
+
+// Mailboxes — create shared
+$router->post('/mailboxes/create-shared',         [\App\Modules\Mailboxes\MailboxController::class, 'createSharedMailbox']);
+
 // Service Health
 $router->get('/servicehealth',                    [\App\Modules\ServiceHealth\ServiceHealthController::class, 'index']);
 
