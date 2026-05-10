@@ -19,8 +19,12 @@ class DashboardController
 
         $metrics  = $service->getMetrics();
         $licenses = $service->getLicenseSummary();
-        $licSkus  = app_service(\App\Modules\Licenses\LicensesService::class)->getSkus();
-        $recs     = $service->getLicenseRecommendations($licSkus);
+        try {
+            $licSkus = app_service(\App\Modules\Licenses\LicensesService::class)->getSkus();
+        } catch (\Throwable) {
+            $licSkus = [];
+        }
+        $recs = $service->getLicenseRecommendations($licSkus);
 
         View::render('dashboard/index', [
             'pageTitle'       => 'Dashboard',
