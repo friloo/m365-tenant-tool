@@ -7,6 +7,28 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/public/css/app.css">
+    <script>
+    // Defined in <head> so it's always available before any inline view script runs.
+    function initTableSearch(inputId, tableId) {
+        function attach() {
+            var input = document.getElementById(inputId);
+            var table = document.getElementById(tableId);
+            if (!input || !table) return;
+            input.addEventListener('input', function () {
+                var term = this.value.toLowerCase();
+                table.querySelectorAll('tbody tr').forEach(function (row) {
+                    var match = !term || row.textContent.toLowerCase().includes(term);
+                    row.dataset.searchMatch = match ? '1' : '0';
+                    // Direct fallback (when no initPagination is active)
+                    row.style.display = match && row.dataset.filterMatch !== '0' ? '' : 'none';
+                });
+                table.dispatchEvent(new CustomEvent('hs:filter'));
+            });
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attach);
+        else attach();
+    }
+    </script>
 </head>
 <body>
 <div class="app-wrapper">
@@ -79,11 +101,6 @@
 
         <!-- Page content -->
         <main class="page-content">
-            <script>
-            // Stub: queue initTableSearch calls that happen before app.js is ready
-            window._isqQ = [];
-            window.initTableSearch = function(a, b) { window._isqQ.push([a, b]); };
-            </script>
             <?php
             $flash = \App\Core\Session::getFlash('success');
             if ($flash): ?>

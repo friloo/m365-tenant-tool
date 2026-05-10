@@ -161,6 +161,7 @@ $total = count($users);
 
 <script>
 initTableSearch('userSearch', 'userTable');
+initPagination('userTable', 25);
 
 function filterUsers() {
     const val = document.getElementById('userFilter').value;
@@ -173,10 +174,11 @@ function filterUsers() {
         if (val === 'inactive-30') show = parseInt(d.days) > 30;
         if (val === 'inactive-90') show = parseInt(d.days) > 90;
         if (val === 'no-license')  show = d.licenses === '0' && d.enabled === '1';
-        r.style.display = show ? '' : 'none';
-        if (!show) r.querySelector('.row-check').checked = false;
+        r.dataset.filterMatch = show ? '1' : '0';
+        if (!show) { const cb = r.querySelector('.row-check'); if (cb) cb.checked = false; }
     });
     updateBulkBar();
+    document.getElementById('userTable').dispatchEvent(new CustomEvent('hs:filter'));
 }
 
 function updateBulkBar() {

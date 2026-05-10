@@ -491,6 +491,13 @@ body {
     box-shadow: 0 0 0 3px rgba(0,120,212,.1);
 }
 
+.pager-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px;
+    border-top: 1px solid #f3f4f6;
+    font-size: 13px;
+}
+
 /* ── Spinner ── */
 .spinner-overlay {
     display: flex; align-items: center; justify-content: center;

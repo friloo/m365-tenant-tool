@@ -93,6 +93,7 @@ class UserManagementController
                 '$search' => '"displayName:' . $q . '" OR "userPrincipalName:' . $q . '"',
                 '$select' => 'id,displayName,userPrincipalName',
                 '$top'    => '15',
+                '$count'  => 'true',
             ]);
             $users = $result['value'] ?? [];
         } catch (\Throwable $e) {
