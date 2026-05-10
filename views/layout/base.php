@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/public/css/app.css">
     <script>
-    // Defined in <head> so it's always available before any inline view script runs.
+    // Both functions live in <head> so they are always defined before any
+    // inline view script runs (app.js loads after the body content).
+
     function initTableSearch(inputId, tableId) {
         function attach() {
             var input = document.getElementById(inputId);
@@ -16,17 +18,106 @@
             if (!input || !table) return;
             input.addEventListener('input', function () {
                 var term = this.value.toLowerCase();
+                var hasPager = table.dataset.hasPager === '1';
                 table.querySelectorAll('tbody tr').forEach(function (row) {
                     var match = !term || row.textContent.toLowerCase().includes(term);
                     row.dataset.searchMatch = match ? '1' : '0';
-                    // Direct fallback (when no initPagination is active)
-                    row.style.display = match && row.dataset.filterMatch !== '0' ? '' : 'none';
+                    // Direct visibility fallback for tables without initPagination
+                    if (!hasPager) {
+                        row.style.display = match && row.dataset.filterMatch !== '0' ? '' : 'none';
+                    }
                 });
                 table.dispatchEvent(new CustomEvent('hs:filter'));
             });
         }
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attach);
         else attach();
+    }
+
+    function initPagination(tableId, initialSize) {
+        var table = document.getElementById(tableId);
+        if (!table) return;
+        table.dataset.hasPager = '1'; // signals initTableSearch to skip direct style.display
+        var pageSize = initialSize || 25;
+        var page = 1;
+
+        function allRows() {
+            return Array.from(table.querySelectorAll('tbody tr'));
+        }
+        function visibleRows() {
+            return allRows().filter(function (r) {
+                return r.dataset.searchMatch !== '0' && r.dataset.filterMatch !== '0';
+            });
+        }
+        function applyPage() {
+            var vr    = visibleRows();
+            var total = vr.length;
+            var totalPages = Math.max(1, Math.ceil(total / pageSize));
+            if (page > totalPages) page = totalPages;
+            var start = (page - 1) * pageSize;
+            var end   = start + pageSize;
+            allRows().forEach(function (r) {
+                if (r.dataset.searchMatch === '0' || r.dataset.filterMatch === '0') {
+                    r.style.display = 'none';
+                } else {
+                    r.style.display = (vr.indexOf(r) >= start && vr.indexOf(r) < end) ? '' : 'none';
+                }
+            });
+            renderPager(total, totalPages);
+        }
+        function renderPager(total, totalPages) {
+            var pagerId = tableId + '-pager';
+            var pager   = document.getElementById(pagerId);
+            if (!pager) {
+                pager = document.createElement('div');
+                pager.id = pagerId;
+                pager.className = 'pager-bar';
+                var card = table.closest('.content-card');
+                if (card) card.appendChild(pager);
+                else table.parentElement.insertAdjacentElement('afterend', pager);
+            }
+            if (total === 0) {
+                pager.innerHTML = '<span class="text-muted small">Keine Einträge gefunden</span>';
+                return;
+            }
+            var from = (page - 1) * pageSize + 1;
+            var to   = Math.min(page * pageSize, total);
+            var btns = '', lastEllipsis = false;
+            for (var i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || Math.abs(i - page) <= 1) {
+                    var cls = i === page ? 'btn-primary' : 'btn-outline-secondary';
+                    btns += '<button class="btn btn-sm ' + cls + ' pager-btn px-2 py-1" style="min-width:32px;" data-p="' + i + '">' + i + '</button>';
+                    lastEllipsis = false;
+                } else if (!lastEllipsis) {
+                    btns += '<span class="text-muted small px-1">…</span>';
+                    lastEllipsis = true;
+                }
+            }
+            pager.innerHTML =
+                '<span class="text-muted small">' + from + '–' + to + ' von ' + total + '</span>' +
+                '<div class="d-flex align-items-center gap-1">' +
+                '<button class="btn btn-sm btn-outline-secondary pager-btn px-2 py-1" data-p="prev"' + (page <= 1 ? ' disabled' : '') + '>‹</button>' +
+                btns +
+                '<button class="btn btn-sm btn-outline-secondary pager-btn px-2 py-1" data-p="next"' + (page >= totalPages ? ' disabled' : '') + '>›</button>' +
+                '</div>';
+            pager.querySelectorAll('.pager-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var v = btn.dataset.p;
+                    if      (v === 'prev') { if (page > 1) page--; }
+                    else if (v === 'next') { if (page < totalPages) page++; }
+                    else    page = parseInt(v, 10);
+                    applyPage();
+                });
+            });
+        }
+        // Initialise default match state on all rows
+        allRows().forEach(function (r) {
+            if (!r.dataset.searchMatch) r.dataset.searchMatch = '1';
+            if (!r.dataset.filterMatch) r.dataset.filterMatch = '1';
+        });
+        // Re-page whenever search or filter fires
+        table.addEventListener('hs:filter', function () { page = 1; applyPage(); });
+        applyPage();
     }
     </script>
 </head>
