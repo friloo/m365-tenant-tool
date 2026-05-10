@@ -39,7 +39,7 @@ $encryptor = new Encryptor($keyPath);
 // db_password stored encrypted). We read a bootstrap config from a small ini file written by installer.
 $bootstrapFile = __DIR__ . '/storage/db_bootstrap.ini';
 if (file_exists($bootstrapFile)) {
-    $ini = parse_ini_file($bootstrapFile);
+    $ini = parse_ini_file($bootstrapFile, false, INI_SCANNER_RAW);
     $dbPassword = $encryptor->decrypt($ini['db_password_enc']);
     DB::connect([
         'host'     => $ini['db_host'],

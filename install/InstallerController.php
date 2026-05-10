@@ -234,12 +234,13 @@ class InstallerController
 
         // Write bootstrap ini (DB connection info for index.php, password encrypted)
         $bootstrapPath = dirname(__DIR__) . '/storage/db_bootstrap.ini';
+        $encPass = $enc->encrypt($db['pass']);
         $bootstrapContent = implode("\n", [
             "db_host={$db['host']}",
             "db_port={$db['port']}",
             "db_name={$db['name']}",
             "db_user={$db['user']}",
-            "db_password_enc=" . $enc->encrypt($db['pass']),
+            "db_password_enc=\"{$encPass}\"",
         ]);
         file_put_contents($bootstrapPath, $bootstrapContent);
         chmod($bootstrapPath, 0600);
