@@ -119,3 +119,173 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+// ── Quick search / Command palette ────────────────────────────
+(function () {
+    const ITEMS = [
+        // Übersicht
+        { label: 'Dashboard',               icon: 'speedometer2',        url: '/',                     cat: 'Übersicht' },
+        // Verzeichnis
+        { label: 'Benutzer',                icon: 'people',              url: '/users',                cat: 'Verzeichnis' },
+        { label: 'Gastbenutzer',            icon: 'person-badge',        url: '/guestusers',           cat: 'Verzeichnis' },
+        { label: 'Gruppen & Teams',         icon: 'diagram-3',           url: '/groups',               cat: 'Verzeichnis' },
+        { label: 'Lizenzen',                icon: 'award',               url: '/licenses',             cat: 'Verzeichnis' },
+        { label: 'Lizenz-Berater',          icon: 'lightbulb',           url: '/licenseadvisor',       cat: 'Verzeichnis' },
+        { label: 'MFA-Methoden',            icon: 'shield-lock',         url: '/mfamethods',           cat: 'Verzeichnis' },
+        { label: 'Passwort-Ablauf',         icon: 'key',                 url: '/passwordexpiry',       cat: 'Verzeichnis' },
+        // Speicher & Freigaben
+        { label: 'OneDrive',                icon: 'cloud',               url: '/onedrive',             cat: 'Speicher & Freigaben' },
+        { label: 'SharePoint',              icon: 'share',               url: '/sharepoint',           cat: 'Speicher & Freigaben' },
+        { label: 'Freigaben',               icon: 'link-45deg',          url: '/sharing',              cat: 'Speicher & Freigaben' },
+        { label: 'Freigaben-Monitor',       icon: 'eye-slash',           url: '/sharing/monitor',      cat: 'Speicher & Freigaben' },
+        { label: 'Freigaberichtlinien',     icon: 'sliders',             url: '/sharing/policies',     cat: 'Speicher & Freigaben' },
+        // Exchange & Kommunikation
+        { label: 'Postfächer',              icon: 'envelope',            url: '/mailboxes',            cat: 'Exchange & Kommunikation' },
+        { label: 'Teams-Nutzung',           icon: 'camera-video',        url: '/teamsusage',           cat: 'Exchange & Kommunikation' },
+        { label: 'Dienststatus',            icon: 'heart-pulse',         url: '/servicehealth',        cat: 'Exchange & Kommunikation' },
+        // Sicherheit
+        { label: 'Sicherheit',              icon: 'shield-check',        url: '/security',             cat: 'Sicherheit' },
+        { label: 'Security Posture',        icon: 'shield-fill-check',   url: '/securityposture',      cat: 'Sicherheit' },
+        { label: 'Secure Score',            icon: 'bar-chart-line',      url: '/securescore',          cat: 'Sicherheit' },
+        { label: 'Defender Alerts',         icon: 'bell',                url: '/defenderalerts',       cat: 'Sicherheit' },
+        { label: 'Risiko-Anmeldungen',      icon: 'exclamation-triangle', url: '/riskysignins',        cat: 'Sicherheit' },
+        { label: 'App-Registrierungen',     icon: 'grid-3x3-gap',        url: '/appregistrations',     cat: 'Sicherheit' },
+        // Compliance & Audit
+        { label: 'Geräte',                  icon: 'phone',               url: '/devices',              cat: 'Compliance & Audit' },
+        { label: 'Inaktive Konten',         icon: 'person-x',            url: '/staleaccounts',        cat: 'Compliance & Audit' },
+        { label: 'Audit-Log',               icon: 'clock-history',       url: '/auditlog',             cat: 'Compliance & Audit' },
+        // Administration
+        { label: 'Cron & Automatisierung',  icon: 'clock',               url: '/cron',                 cat: 'Administration' },
+        { label: 'Einstellungen',           icon: 'gear',                url: '/settings',             cat: 'Administration' },
+        // Settings deep links
+        { label: 'Einstellungen: Allgemein',             icon: 'gear',           url: '/settings#general',          cat: 'Einstellungen' },
+        { label: 'Einstellungen: Admin-Passwort',        icon: 'person-lock',    url: '/settings#admin-password',   cat: 'Einstellungen' },
+        { label: 'Einstellungen: Operator-Konto',        icon: 'person-badge',   url: '/settings#operator',         cat: 'Einstellungen' },
+        { label: 'Einstellungen: E-Mail & SMTP',         icon: 'envelope',       url: '/settings#email',            cat: 'Einstellungen' },
+        { label: 'Einstellungen: Freigaben-Monitor',     icon: 'eye-slash',      url: '/settings#share-review',     cat: 'Einstellungen' },
+        { label: 'Einstellungen: Inaktive Konten',       icon: 'person-x',       url: '/settings#stale-accounts',   cat: 'Einstellungen' },
+        { label: 'Einstellungen: Passwort-Ablauf',       icon: 'key',            url: '/settings#password-expiry',  cat: 'Einstellungen' },
+        { label: 'Einstellungen: Wöchentlicher Report',  icon: 'envelope-paper', url: '/settings#weekly-report',    cat: 'Einstellungen' },
+        { label: 'Einstellungen: Lizenz-Kriterien',      icon: 'lightbulb',      url: '/settings#license-criteria', cat: 'Einstellungen' },
+        { label: 'Einstellungen: Branding',              icon: 'palette',        url: '/settings#branding',         cat: 'Einstellungen' },
+    ];
+
+    const overlay  = document.getElementById('qsOverlay');
+    const input    = document.getElementById('qsInput');
+    const results  = document.getElementById('qsResults');
+    const trigger  = document.getElementById('qsTrigger');
+    if (!overlay || !input || !results) return;
+
+    let activeIdx = -1;
+
+    function open() {
+        overlay.classList.add('open');
+        overlay.removeAttribute('aria-hidden');
+        input.value = '';
+        activeIdx = -1;
+        render('');
+        requestAnimationFrame(() => input.focus());
+    }
+
+    function close() {
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    function highlight(text, term) {
+        if (!term) return text;
+        const idx = text.toLowerCase().indexOf(term.toLowerCase());
+        if (idx === -1) return text;
+        return text.slice(0, idx) +
+               '<mark>' + text.slice(idx, idx + term.length) + '</mark>' +
+               text.slice(idx + term.length);
+    }
+
+    function score(item, term) {
+        const lbl = item.label.toLowerCase();
+        const t   = term.toLowerCase();
+        if (lbl.startsWith(t)) return 3;
+        if (lbl.includes(t))   return 2;
+        if (item.cat.toLowerCase().includes(t)) return 1;
+        return 0;
+    }
+
+    function render(term) {
+        const trimmed = term.trim();
+        const filtered = trimmed
+            ? ITEMS.filter(i => score(i, trimmed) > 0)
+                   .sort((a, b) => score(b, trimmed) - score(a, trimmed))
+            : ITEMS;
+
+        activeIdx = -1;
+
+        if (filtered.length === 0) {
+            results.innerHTML = `<div class="qs-empty"><i class="bi bi-search me-2"></i>Kein Ergebnis für „${trimmed}"</div>`;
+            return;
+        }
+
+        let html = '';
+        let lastCat = null;
+        filtered.forEach((item, i) => {
+            if (item.cat !== lastCat) {
+                html += `<div class="qs-category">${item.cat}</div>`;
+                lastCat = item.cat;
+            }
+            const lbl = highlight(item.label, trimmed);
+            html += `<a href="${item.url}" class="qs-item" data-idx="${i}" role="option">
+                <span class="qs-icon"><i class="bi bi-${item.icon}"></i></span>
+                <span class="qs-label">${lbl}</span>
+            </a>`;
+        });
+        results.innerHTML = html;
+    }
+
+    function getItems() {
+        return results.querySelectorAll('.qs-item');
+    }
+
+    function setActive(idx) {
+        const items = getItems();
+        items.forEach(el => el.classList.remove('active'));
+        if (idx >= 0 && idx < items.length) {
+            items[idx].classList.add('active');
+            items[idx].scrollIntoView({ block: 'nearest' });
+            activeIdx = idx;
+        } else {
+            activeIdx = -1;
+        }
+    }
+
+    // Events
+    trigger?.addEventListener('click', open);
+
+    document.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            overlay.classList.contains('open') ? close() : open();
+        }
+        if (!overlay.classList.contains('open')) return;
+
+        if (e.key === 'Escape') { e.preventDefault(); close(); }
+        if (e.key === 'ArrowDown') { e.preventDefault(); setActive(Math.min(activeIdx + 1, getItems().length - 1)); }
+        if (e.key === 'ArrowUp')   { e.preventDefault(); setActive(Math.max(activeIdx - 1, 0)); }
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const active = results.querySelector('.qs-item.active');
+            if (active) { close(); window.location.href = active.href; }
+        }
+    });
+
+    input.addEventListener('input', () => render(input.value));
+
+    // Click on result
+    results.addEventListener('click', e => {
+        const item = e.target.closest('.qs-item');
+        if (item) close();
+    });
+
+    // Click outside palette closes
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) close();
+    });
+})();

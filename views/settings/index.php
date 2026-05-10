@@ -18,7 +18,7 @@
         <form method="post" action="/settings/save">
 
         <!-- General -->
-        <div class="content-card mb-4">
+        <div class="content-card mb-4" id="general">
             <div class="card-header-custom">
                 <i class="bi bi-gear text-primary"></i>
                 <h6>Allgemein</h6>
@@ -50,7 +50,7 @@
         </div>
 
         <!-- Admin Password -->
-        <div class="content-card mb-4">
+        <div class="content-card mb-4" id="admin-password">
             <div class="card-header-custom">
                 <i class="bi bi-person-lock text-primary"></i>
                 <h6>Admin-Passwort ändern</h6>
@@ -70,7 +70,7 @@
         </div>
 
         <!-- Operator Account -->
-        <div class="content-card mb-4">
+        <div class="content-card mb-4" id="operator">
             <div class="card-header-custom">
                 <i class="bi bi-person-badge text-warning"></i>
                 <h6>Operator-Konto <span class="badge-warning ms-2">Schreibzugriff eingeschränkt</span></h6>
@@ -94,7 +94,7 @@
         </div>
 
         <!-- Email Alerts -->
-        <div class="content-card mb-4">
+        <div class="content-card mb-4" id="email">
             <div class="card-header-custom">
                 <i class="bi bi-envelope text-primary"></i>
                 <h6>E-Mail-Benachrichtigungen</h6>
