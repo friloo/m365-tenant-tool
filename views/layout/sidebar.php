@@ -77,6 +77,7 @@ $_navDefs = [
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'mailboxes/shared',             'admin' => false],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'mailboxes/external-forwards',  'admin' => false],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'settings/permissions',         'admin' => true],
+    ['section' => null, 'icon' => null, 'label' => null, 'route' => 'settings/license-prices',       'admin' => true],
 ];
 
 // Derive the full route list automatically — no manual maintenance needed

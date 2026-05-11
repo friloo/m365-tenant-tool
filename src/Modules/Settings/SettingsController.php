@@ -8,6 +8,7 @@ use App\Core\Redirect;
 use App\Core\Session;
 use App\Core\View;
 use App\Encryption\Encryptor;
+use App\Modules\LicenseAdvisor\LicenseAdvisorService;
 
 class SettingsController
 {
@@ -183,6 +184,42 @@ class SettingsController
         \App\Database\DB::execute('DELETE FROM graph_tokens');
         \App\Core\Session::setFlash('success', 'Token gelöscht — ein neues wird beim nächsten API-Aufruf geholt.');
         \App\Core\Redirect::to('/settings/permissions');
+    }
+
+    public function licensePrice(): void
+    {
+        LocalAuth::requireAdmin();
+        $config  = Config::getInstance();
+        $catalog = LicenseAdvisorService::LICENSE_CATALOG;
+        $prices  = [];
+        foreach ($catalog as $partNum => $def) {
+            $prices[$partNum] = [
+                'name'          => $def['name'],
+                'tier'          => $def['tier'] ?? '',
+                'price_eur'     => $config->get('lic_price_eur_' . $partNum, ''),
+                'price_npo_eur' => $config->get('lic_price_npo_eur_' . $partNum, ''),
+                'default_eur'   => $def['price_eur'] ?? null,
+                'default_npo'   => $def['price_npo_eur'] ?? null,
+            ];
+        }
+        View::render('settings/license_prices', [
+            'pageTitle' => 'Lizenzpreise konfigurieren',
+            'prices'    => $prices,
+            'flash'     => Session::getFlash('success'),
+            'error'     => Session::getFlash('error'),
+        ]);
+    }
+
+    public function saveLicensePrice(): void
+    {
+        LocalAuth::requireAdmin();
+        try {
+            app_service(LicenseAdvisorService::class)->savePrices($_POST);
+            Session::flash('success', 'Lizenzpreise gespeichert.');
+        } catch (\Throwable $e) {
+            Session::flash('error', 'Fehler: ' . $e->getMessage());
+        }
+        Redirect::to('/settings/license-prices');
     }
 
     public function permissions(): void

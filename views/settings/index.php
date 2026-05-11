@@ -379,6 +379,23 @@
             </div>
         </div>
 
+        <!-- License prices link -->
+        <div class="content-card mb-4" id="license-prices">
+            <div class="card-header-custom">
+                <i class="bi bi-currency-euro text-primary"></i>
+                <h6>Lizenzpreise konfigurieren</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted small mb-3">
+                    Überschreibe die Katalog-Standardpreise (Listenpreise Mai 2025) mit deinen tatsächlichen
+                    Partner- oder CSP-Netto-Preisen. Die angepassten Preise gelten für Lizenz-Berater und Lizenzkosten.
+                </p>
+                <a href="/settings/license-prices" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-pencil-square me-1"></i>Preise bearbeiten
+                </a>
+            </div>
+        </div>
+
         <!-- Branding: public review page -->
         <div class="content-card mb-4" id="branding">
             <div class="card-header-custom">
