@@ -228,7 +228,11 @@ class GraphClient
         $data   = json_decode($response, true) ?: [];
         $result = $data['value'] ?? [];
 
-        if ($cacheKey) $this->cache->set($cacheKey, $result, $ttl);
+        // Don't cache empty results — a 403/empty-response could be stored
+        // and then served indefinitely even after the permission is fixed.
+        if ($cacheKey && !empty($result)) {
+            $this->cache->set($cacheKey, $result, $ttl);
+        }
         return $result;
     }
 

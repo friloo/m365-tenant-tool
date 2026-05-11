@@ -16,8 +16,7 @@ if ($pct >= 70) {
         <div class="empty-state">
             <i class="bi bi-shield-exclamation text-muted" style="font-size:2.5rem;"></i>
             <p class="mt-3 mb-1 fw-medium">Keine Secure Score-Daten verfügbar</p>
-            <p class="text-muted small">Stellen Sie sicher, dass die Berechtigung <code>SecurityEvents.Read.All</code> oder
-               <code>SecurityActions.Read.All</code> erteilt wurde. Die Rolle <strong>Security Reader</strong> ist erforderlich.</p>
+            <p class="text-muted small">Stellen Sie sicher, dass die Berechtigung <code>SecurityEvents.Read.All</code> erteilt und der Admin-Consent durchgeführt wurde.</p>
         </div>
     </div>
 </div>

@@ -87,8 +87,8 @@ class AdminRolesService
             $data = $this->graph->get(
                 '/roleManagement/directory/roleDefinitions',
                 [
-                    '$select' => 'id,displayName,description,isBuiltIn',
-                    '$filter' => 'isEnabled eq true',
+                    '$select' => 'id,displayName,description,isBuiltIn,isEnabled',
+                    '$top'    => '500',
                 ],
                 'admin_role_definitions',
                 3600
@@ -97,6 +97,9 @@ class AdminRolesService
         } catch (\Throwable) {
             return [];
         }
+
+        // Filter disabled roles in PHP to avoid OData $filter header requirements
+        $definitions = array_values(array_filter($definitions, fn($d) => $d['isEnabled'] ?? true));
 
         usort($definitions, fn($a, $b) => strcmp($a['displayName'] ?? '', $b['displayName'] ?? ''));
 

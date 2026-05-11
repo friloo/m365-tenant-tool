@@ -34,14 +34,22 @@ class GraphCache
         );
     }
 
-    public function remember(string $key, callable $callback, ?int $ttlSeconds = null): mixed
+    /**
+     * @param bool $skipEmpty  When true (default), empty arrays are returned but NOT
+     *                         written to cache — so the next request retries the callback.
+     *                         Set to false only when an empty result is genuinely valid
+     *                         and should be cached (rare).
+     */
+    public function remember(string $key, callable $callback, ?int $ttlSeconds = null, bool $skipEmpty = true): mixed
     {
         $cached = $this->get($key);
         if ($cached !== null) {
             return $cached;
         }
         $data = $callback();
-        $this->set($key, $data, $ttlSeconds);
+        if (!$skipEmpty || !empty($data)) {
+            $this->set($key, $data, $ttlSeconds);
+        }
         return $data;
     }
 
