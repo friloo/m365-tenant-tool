@@ -90,6 +90,62 @@ class OneDriveService
     }
 
     /**
+     * Per-user fallback for getPersonalDrivesReport() when the report API returns empty.
+     * Checks up to $limit users individually via /users/{id}/drive.
+     * Results are cached for 30 minutes (cache key: od_personal_drives).
+     *
+     * Returns the same UPN-keyed map as getPersonalDrivesReport().
+     *
+     * @param  array $allUsers  Full user list from UsersService::getAll()
+     * @param  int   $limit     Max users to check (default 150 to keep response time < 30s)
+     * @return array<string, array>
+     */
+    public function getPersonalDrivesPerUser(array $allUsers, int $limit = 150): array
+    {
+        $cacheKey = 'od_personal_drives';
+        $cached   = $this->graph->getCache()->get($cacheKey);
+        if (!empty($cached)) {
+            return $cached;
+        }
+
+        $map    = [];
+        $sample = array_slice($allUsers, 0, $limit);
+
+        foreach ($sample as $user) {
+            $upn = strtolower($user['userPrincipalName'] ?? '');
+            $id  = $user['id'] ?? '';
+            if ($upn === '' || $id === '') {
+                continue;
+            }
+            try {
+                $drive = $this->graph->get(
+                    "/users/{$id}/drive",
+                    ['$select' => 'id,webUrl,quota'],
+                    null,
+                    0
+                );
+                if (!empty($drive['id'])) {
+                    $quota = $drive['quota'] ?? [];
+                    $map[$upn] = [
+                        'storageUsed'      => (int)($quota['used']      ?? 0),
+                        'storageAllocated' => (int)($quota['total']     ?? 0),
+                        'fileCount'        => 0,
+                        'lastActivity'     => null,
+                        'siteUrl'          => $drive['webUrl'] ?? null,
+                    ];
+                }
+            } catch (\Throwable) {
+                // Drive not provisioned or inaccessible — skip
+            }
+        }
+
+        if (!empty($map)) {
+            $this->graph->getCache()->set($cacheKey, $map, 1800);
+        }
+        return $map;
+    }
+
+    /**
      * Provision a personal OneDrive for a user by accessing their drive endpoint.
      * Returns true if the drive exists/was just created.
      */

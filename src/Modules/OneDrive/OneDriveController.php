@@ -31,12 +31,19 @@ class OneDriveController
 
         if (isset($_GET['refresh'])) {
             app_graph()->getCache()->forget('od_personal_report');
+            app_graph()->getCache()->forget('od_personal_drives');
             app_graph()->getCache()->forget('users_all');
         }
 
-        $allUsers  = app_service(UsersService::class)->getAll();
+        $allUsers = app_service(UsersService::class)->getAll();
+        $driveMap = $service->getPersonalDrivesReport();
+        $reportMode = !empty($driveMap); // false = fell back to per-user check
 
-        $driveMap  = $service->getPersonalDrivesReport();
+        if (!$reportMode) {
+            // Report API returned empty (permission issue, anonymisation, or $format problem).
+            // Fall back to per-user drive checks for the first 150 users.
+            $driveMap = $service->getPersonalDrivesPerUser($allUsers, 150);
+        }
 
         $list = [];
         foreach ($allUsers as $user) {
@@ -64,6 +71,7 @@ class OneDriveController
             'list'           => $list,
             'provisioned'    => $provisioned,
             'notProvisioned' => $notProvisioned,
+            'reportMode'     => $reportMode,
             'flash'          => Session::getFlash('success'),
             'error'          => Session::getFlash('error'),
         ]);
