@@ -53,29 +53,7 @@ class SecurityService
 
     public function getMfaSummary(): array
     {
-        // Legacy endpoint first (works without portal-side enablement)
-        try {
-            $data = $this->graph->paginate(
-                '/reports/credentialUserRegistrationDetails',
-                [],
-                50,
-                'security_mfa_legacy',
-                1800
-            );
-            if (!empty($data)) {
-                $total      = count($data);
-                $registered = count(array_filter($data, fn($u) => $u['isMfaRegistered'] ?? false));
-                $capable    = count(array_filter($data, fn($u) => $u['isCapable']       ?? ($u['isMfaRegistered'] ?? false)));
-                return [
-                    'total'      => $total,
-                    'registered' => $registered,
-                    'capable'    => $capable,
-                    'pct'        => $total > 0 ? round(($registered / $total) * 100) : 0,
-                ];
-            }
-        } catch (\Throwable) {}
-
-        // Modern endpoint fallback (requires tenant-side enablement in Entra portal)
+        // Modern endpoint first
         try {
             $data = $this->graph->paginate(
                 '/reports/authenticationMethods/userRegistrationDetails',
@@ -88,6 +66,28 @@ class SecurityService
                 $total      = count($data);
                 $registered = count(array_filter($data, fn($u) => $u['isMfaRegistered'] ?? false));
                 $capable    = count(array_filter($data, fn($u) => $u['isMfaCapable']    ?? false));
+                return [
+                    'total'      => $total,
+                    'registered' => $registered,
+                    'capable'    => $capable,
+                    'pct'        => $total > 0 ? round(($registered / $total) * 100) : 0,
+                ];
+            }
+        } catch (\Throwable) {}
+
+        // Legacy endpoint fallback (deprecated on newer tenants — may return 404)
+        try {
+            $data = $this->graph->paginate(
+                '/reports/credentialUserRegistrationDetails',
+                [],
+                50,
+                'security_mfa_legacy',
+                1800
+            );
+            if (!empty($data)) {
+                $total      = count($data);
+                $registered = count(array_filter($data, fn($u) => $u['isMfaRegistered'] ?? false));
+                $capable    = count(array_filter($data, fn($u) => $u['isCapable']       ?? ($u['isMfaRegistered'] ?? false)));
                 return [
                     'total'      => $total,
                     'registered' => $registered,

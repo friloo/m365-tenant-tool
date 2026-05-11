@@ -33,8 +33,26 @@ class MfaMethodsService
      */
     public function getAll(): array
     {
-        // Try the legacy endpoint first — works with AuditLog.Read.All + Reports.Read.All + Entra P1.
-        // Does NOT require the "Authentication Methods Activity" feature to be enabled in the portal.
+        // Try the modern endpoint first — defaultMfaMethod is not a valid field on this API version.
+        try {
+            $users = $this->graph->paginate(
+                '/reports/authenticationMethods/userRegistrationDetails',
+                [
+                    '$select' => 'id,userPrincipalName,userDisplayName,isMfaRegistered,isMfaCapable,methodsRegistered',
+                    '$top'    => '999',
+                ],
+                50,
+                'mfa_methods_detail',
+                1800
+            );
+            if (!empty($users)) {
+                return $users;
+            }
+        } catch (\Throwable $e) {
+            error_log('MFA methods (modern endpoint) failed: ' . $e->getMessage());
+        }
+
+        // Legacy endpoint fallback (deprecated on newer tenants — may return 404)
         try {
             $rows = $this->graph->paginate(
                 '/reports/credentialUserRegistrationDetails',
@@ -51,30 +69,10 @@ class MfaMethodsService
                     'isMfaRegistered'   => $r['isMfaRegistered'] ?? false,
                     'isMfaCapable'      => $r['isCapable']       ?? ($r['isMfaRegistered'] ?? false),
                     'methodsRegistered' => $r['authMethods']     ?? [],
-                    'defaultMfaMethod'  => '',
                 ], $rows);
             }
         } catch (\Throwable $e) {
             error_log('MFA methods (legacy endpoint) failed: ' . $e->getMessage());
-        }
-
-        // Fall back to the modern endpoint (requires tenant-side enablement in Entra portal)
-        try {
-            $users = $this->graph->paginate(
-                '/reports/authenticationMethods/userRegistrationDetails',
-                [
-                    '$select' => 'id,userPrincipalName,userDisplayName,isMfaRegistered,isMfaCapable,methodsRegistered,defaultMfaMethod',
-                    '$top'    => '999',
-                ],
-                50,
-                'mfa_methods_detail',
-                1800
-            );
-            if (!empty($users)) {
-                return $users;
-            }
-        } catch (\Throwable $e) {
-            error_log('MFA methods (modern endpoint) failed: ' . $e->getMessage());
         }
 
         return [];
