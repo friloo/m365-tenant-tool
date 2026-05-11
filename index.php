@@ -75,6 +75,7 @@ $config->setEncryptor($encryptor);
 // Set timezone
 $tz = $config->get('timezone', 'Europe/Berlin');
 date_default_timezone_set($tz);
+DB::get()->exec("SET time_zone = '" . (new \DateTime())->format('P') . "'");
 
 // ── Service container helpers ──────────────────────────────
 $graphCache   = new GraphCache((int)$config->get('cache_ttl', 15));

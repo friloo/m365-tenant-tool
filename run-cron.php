@@ -59,6 +59,7 @@ DB::connect([
 $config = Config::getInstance();
 $config->setEncryptor($encryptor);
 date_default_timezone_set($config->get('timezone', 'Europe/Berlin'));
+DB::get()->exec("SET time_zone = '" . (new \DateTime())->format('P') . "'");
 
 $graphClient = new GraphClient(
     new GraphTokenManager($encryptor),
