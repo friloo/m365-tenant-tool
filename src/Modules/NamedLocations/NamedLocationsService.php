@@ -34,6 +34,54 @@ class NamedLocationsService
     }
 
     /**
+     * Create a country-based Named Location.
+     *
+     * @param string[] $countries ISO 3166-1 alpha-2 country codes
+     */
+    public function createCountryLocation(string $name, array $countries, bool $includeUnknown = false): array
+    {
+        $this->graph->getCache()->forget('named_locations');
+        return $this->graph->post('/identity/conditionalAccess/namedLocations', [
+            '@odata.type'                       => '#microsoft.graph.countryNamedLocation',
+            'displayName'                       => $name,
+            'countriesAndRegions'               => array_values($countries),
+            'includeUnknownCountriesAndRegions' => $includeUnknown,
+        ]);
+    }
+
+    /**
+     * Create an IP-based Named Location.
+     *
+     * @param string[] $cidrs CIDR addresses, e.g. ['10.0.0.0/8', '192.168.1.0/24']
+     */
+    public function createIpLocation(string $name, array $cidrs, bool $trusted = false): array
+    {
+        $ranges = [];
+        foreach ($cidrs as $cidr) {
+            $cidr = trim($cidr);
+            if ($cidr === '') continue;
+            $type = str_contains($cidr, ':') ? '#microsoft.graph.iPv6CidrRange' : '#microsoft.graph.iPv4CidrRange';
+            $ranges[] = ['@odata.type' => $type, 'cidrAddress' => $cidr];
+        }
+        $this->graph->getCache()->forget('named_locations');
+        return $this->graph->post('/identity/conditionalAccess/namedLocations', [
+            '@odata.type' => '#microsoft.graph.ipNamedLocation',
+            'displayName' => $name,
+            'isTrusted'   => $trusted,
+            'ipRanges'    => $ranges,
+        ]);
+    }
+
+    /**
+     * Delete a Named Location by ID.
+     */
+    public function delete(string $id): void
+    {
+        $this->graph->delete('/identity/conditionalAccess/namedLocations/' . $id);
+        $this->graph->getCache()->forget('named_locations');
+    }
+
+    /**
      * Split locations into IP-based and country-based.
      */
     public function classify(array $locations): array
