@@ -309,8 +309,7 @@ class CronRunner
                 'description'      => 'Löscht abgeschlossene Jobs aus der Warteschlange, die älter als 24 Stunden sind.',
                 'default_interval' => 1440,
                 'handler'          => function (): string {
-                    \App\Queue\QueueDispatcher::pruneCompleted(24);
-                    $n = (int)DB::rowCount();
+                    $n = \App\Queue\QueueDispatcher::pruneCompleted(24);
                     return "{$n} abgeschlossene Job(s) gelöscht";
                 },
             ],
