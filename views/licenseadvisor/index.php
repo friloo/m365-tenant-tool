@@ -42,6 +42,18 @@ if (!empty($matchingSkus)) {
     }
     $recommendedSkuId = $best['skuId'];
 }
+
+$priceMode    = $priceMode    ?? 'npo';
+$showCatalog  = $showCatalog  ?? false;
+$matchingCatalog = $matchingCatalog ?? [];
+$priceKey     = $priceMode === 'standard' ? 'price_eur' : 'price_npo_eur';
+$priceLabel   = $priceMode === 'standard' ? 'Listenpreis' : 'NPO-Preis';
+
+$fmtPrice = function ($val) {
+    if ($val === null) return '<span class="text-muted">–</span>';
+    if ((float)$val === 0.0) return '<span class="badge-success badge-pill" style="font-size:11px;">kostenlos*</span>';
+    return number_format((float)$val, 2, ',', '.') . ' €';
+};
 ?>
 
 <?php if (!empty($flash)): ?>
@@ -154,7 +166,35 @@ if (!empty($matchingSkus)) {
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════
-     3. Passende Lizenzen im Tenant
+     3. Display toggles (catalog + price mode)
+     ═══════════════════════════════════════════════════════════ -->
+<div class="content-card mb-4" style="background:#f8fafc;">
+    <div class="card-body-custom py-3">
+        <form method="get" action="/licenseadvisor" class="d-flex flex-wrap align-items-center gap-3" style="font-size:13px;">
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-muted">Preise:</span>
+                <select name="price_mode" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
+                    <option value="npo"      <?= $priceMode === 'npo'      ? 'selected' : '' ?>>NPO (Non-Profit)</option>
+                    <option value="standard" <?= $priceMode === 'standard' ? 'selected' : '' ?>>Standard (Listenpreis)</option>
+                </select>
+            </div>
+            <div class="form-check form-switch m-0">
+                <input class="form-check-input" type="checkbox" id="show_catalog_toggle"
+                       name="show_catalog" value="1" <?= $showCatalog ? 'checked' : '' ?>
+                       onchange="this.form.submit()">
+                <label class="form-check-label" for="show_catalog_toggle">
+                    Auch nicht-gekaufte Lizenzen als Vorschlag anzeigen
+                </label>
+            </div>
+            <span class="ms-auto text-muted" style="font-size:11px;">
+                Preise sind Richtwerte (€/User/Monat, jährliche Abrechnung). Stand 2024 — bitte mit dem Microsoft-Partner verifizieren.
+            </span>
+        </form>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     4. Passende Lizenzen im Tenant
      ═══════════════════════════════════════════════════════════ -->
 <div class="content-card mb-4">
     <div class="card-header-custom">
@@ -180,6 +220,7 @@ if (!empty($matchingSkus)) {
                             <th>Plan-Name</th>
                             <th>Verfügbar</th>
                             <th>Verbraucht</th>
+                            <th><?= $e($priceLabel) ?></th>
                             <th>Features</th>
                         </tr>
                     </thead>
@@ -211,6 +252,7 @@ if (!empty($matchingSkus)) {
                                     <?php endif; ?>
                                 </td>
                                 <td><?= number_format($sku['consumed']) ?> / <?= number_format($sku['total']) ?></td>
+                                <td style="font-size:13px;font-weight:500;"><?= $fmtPrice($sku[$priceKey] ?? null) ?></td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         <?php foreach ($sku['metCriteria'] as $criterionKey): ?>
@@ -231,6 +273,98 @@ if (!empty($matchingSkus)) {
         <?php endif; ?>
     </div>
 </div>
+
+<?php if ($showCatalog && !empty($matchingCatalog)): ?>
+<!-- ═══════════════════════════════════════════════════════════
+     4b. Alternative Lizenzen aus dem Katalog (nicht gekauft)
+     ═══════════════════════════════════════════════════════════ -->
+<div class="content-card mb-4" style="border-left:3px solid #3b82f6;">
+    <div class="card-header-custom">
+        <i class="bi bi-lightbulb text-info"></i>
+        <h6>Alternative Lizenzen (nicht im Tenant)</h6>
+        <span class="ms-auto text-muted" style="font-size:12px;">
+            Pläne, die ebenfalls alle Kriterien erfüllen würden
+        </span>
+    </div>
+    <div class="card-body-custom p-0">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Plan-Name</th>
+                        <th>Tier</th>
+                        <th><?= $e($priceLabel) ?></th>
+                        <th>Kosten/Monat<br><small style="font-weight:normal;color:#9ca3af;">bei <?= number_format($coveredCount + $uncoveredCount) ?> Nutzer</small></th>
+                        <th>Features</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    // Sort by price (ascending)
+                    usort($matchingCatalog, function($a, $b) use ($priceKey) {
+                        $pa = $a[$priceKey] ?? PHP_INT_MAX;
+                        $pb = $b[$priceKey] ?? PHP_INT_MAX;
+                        return $pa <=> $pb;
+                    });
+                    foreach ($matchingCatalog as $sku):
+                        $price       = $sku[$priceKey] ?? null;
+                        $monthlyCost = $price !== null ? $price * ($coveredCount + $uncoveredCount) : null;
+                    ?>
+                        <tr>
+                            <td>
+                                <div class="fw-medium"><?= $e($sku['name']) ?></div>
+                                <div style="font-size:11px;color:#9ca3af;font-family:monospace;">
+                                    <?= $e($sku['partNumber']) ?>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge-neutral badge-pill" style="font-size:11px;">
+                                    <?= $e($sku['tier'] ?? '–') ?>
+                                </span>
+                            </td>
+                            <td style="font-size:13px;font-weight:500;"><?= $fmtPrice($price) ?></td>
+                            <td style="font-size:13px;">
+                                <?php if ($monthlyCost === null): ?>
+                                    <span class="text-muted">–</span>
+                                <?php elseif ($monthlyCost === 0.0): ?>
+                                    <span class="badge-success badge-pill" style="font-size:11px;">kostenlos*</span>
+                                <?php else: ?>
+                                    <?= number_format($monthlyCost, 2, ',', '.') ?> €
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <?php foreach ($sku['metCriteria'] as $criterionKey): ?>
+                                        <?php if (isset($criteriaMap[$criterionKey])): ?>
+                                            <span class="badge-info badge-pill" style="font-size:11px;">
+                                                <i class="bi <?= $e($criteriaIcons[$criterionKey] ?? 'bi-check') ?> me-1"></i>
+                                                <?= $e($criteriaMap[$criterionKey]['label']) ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="p-3" style="background:#f8fafc;border-top:1px solid #e5e7eb;font-size:11px;color:#6b7280;">
+            * "kostenlos" gilt typischerweise für die ersten 10 Nutzer im NPO-Programm. Bei Microsoft 365 Business Basic / Office 365 E1.
+            Preise sind ungefähre Richtwerte ohne Gewähr. Bitte beim Microsoft-Partner verifizieren.
+        </div>
+    </div>
+</div>
+<?php elseif ($showCatalog && empty($matchingCatalog) && !empty($activeCriteria)): ?>
+<div class="content-card mb-4">
+    <div class="card-body-custom">
+        <div class="empty-state">
+            <i class="bi bi-info-circle"></i>
+            <p>Keine weiteren Lizenzen im Katalog erfüllen alle gewählten Kriterien.</p>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- ═══════════════════════════════════════════════════════════
      4. Benutzer ohne Abdeckung
