@@ -187,6 +187,9 @@ $router->get('/licenseadvisor',                   [\App\Modules\LicenseAdvisor\L
 $router->post('/licenseadvisor/save-criteria',    [\App\Modules\LicenseAdvisor\LicenseAdvisorController::class, 'saveCriteria']);
 $router->get('/licenseadvisor/export',            [\App\Modules\LicenseAdvisor\LicenseAdvisorController::class, 'exportUncovered']);
 
+// Exchange Online Migration Readiness
+$router->get('/exchangemigration',                [\App\Modules\ExchangeMigration\ExchangeMigrationController::class, 'index']);
+
 // MFA Methods
 $router->get('/mfamethods',                       [\App\Modules\MfaMethods\MfaMethodsController::class, 'index']);
 
