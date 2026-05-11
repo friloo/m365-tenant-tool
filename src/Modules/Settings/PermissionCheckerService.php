@@ -127,8 +127,8 @@ class PermissionCheckerService
                 'section'  => 'Sicherheit',
                 'write'    => true,
             ],
-            'SecureScore.Read.All' => [
-                'desc'     => 'Secure Score lesen',
+            'SecurityEvents.Read.All' => [
+                'desc'     => 'Sicherheitsereignisse und Secure Score lesen',
                 'features' => ['Secure Score', 'Security Posture'],
                 'section'  => 'Sicherheit',
                 'write'    => false,

@@ -24,8 +24,9 @@ $hasSpError = isset($sp['_error']);
 <div class="alert alert-info d-flex align-items-center gap-2 mb-4" style="font-size:13px;">
     <i class="bi bi-info-circle-fill flex-shrink-0"></i>
     <div>
-        Zum <strong>Ändern</strong> von SharePoint-Einstellungen ist die Azure-App-Berechtigung
-        <code>SharePoint.ReadWrite.All</code> erforderlich. Zum reinen Lesen reicht <code>Sites.Read.All</code>.
+        Zum <strong>Lesen und Ändern</strong> der SharePoint-Mandanteneinstellungen ist
+        <code>SharePointTenantSettings.ReadWrite.All</code> erforderlich.
+        Für Site-Freigabe-Übersichten reicht <code>Sites.Read.All</code>.
     </div>
 </div>
 
@@ -56,7 +57,7 @@ $hasSpError = isset($sp['_error']);
             <div class="alert alert-warning">
                 <i class="bi bi-exclamation-triangle me-2"></i>
                 SharePoint-Einstellungen konnten nicht geladen werden.
-                Möglicherweise fehlt die Berechtigung <code>SharePoint.ReadWrite.All</code>.<br>
+                Möglicherweise fehlt die Berechtigung <code>SharePointTenantSettings.ReadWrite.All</code>.<br>
                 <small class="text-muted"><?= $e($sp['_error']) ?></small>
             </div>
         <?php else: ?>

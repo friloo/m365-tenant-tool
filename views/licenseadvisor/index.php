@@ -412,6 +412,7 @@ $gapUsers = array_merge($uncovered, $noLicense);
 
 <script>
 <?php if (!empty($gapUsers)): ?>
+initPagination('gapTable', 25);
 initTableSearch('gapSearch', 'gapTable');
 <?php endif; ?>
 </script>

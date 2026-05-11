@@ -161,23 +161,34 @@
                     <?php foreach ($members as $member):
                         $displayName = $member['displayName'] ?? '';
                         $upn         = $member['userPrincipalName'] ?? '';
-                        $enabled     = $member['accountEnabled'] ?? true;
+                        $enabled     = $member['accountEnabled'] ?? null;
+                        $isSp        = $member['isServicePrincipal'] ?? false;
                         $initial     = strtoupper(mb_substr($displayName ?: '?', 0, 1));
                         $assignId    = $member['assignmentId'] ?? '';
+                        $avatarBg    = $isSp ? '#f3e8ff' : '#e3f0fb';
+                        $avatarColor = $isSp ? '#7c3aed' : '#0078d4';
                     ?>
                     <tr>
                         <td>
-                            <div style="width:32px;height:32px;border-radius:50%;background:#e3f0fb;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#0078d4;flex-shrink:0;">
+                            <div style="width:32px;height:32px;border-radius:50%;background:<?= $avatarBg ?>;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:<?= $avatarColor ?>;flex-shrink:0;" title="<?= $isSp ? 'Service Principal' : 'Benutzer' ?>">
                                 <?= $e($initial) ?>
                             </div>
                         </td>
                         <td style="font-weight:500;font-size:13px;"><?= $e($displayName) ?></td>
-                        <td style="color:#6b7280;font-size:12px;"><?= $e($upn) ?></td>
-                        <td>
-                            <?php if ($enabled): ?>
-                                <span class="badge-enabled">Aktiv</span>
+                        <td style="color:#6b7280;font-size:12px;">
+                            <?php if ($isSp): ?>
+                                <span style="font-size:11px;color:#7c3aed;background:#f3e8ff;padding:1px 6px;border-radius:4px;">Service-Konto</span>
                             <?php else: ?>
+                                <?= $e($upn) ?>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php if ($isSp): ?>
+                                <span class="badge-pill" style="background:#f3e8ff;color:#7c3aed;font-size:11px;">App</span>
+                            <?php elseif ($enabled === false): ?>
                                 <span class="badge-disabled">Deaktiviert</span>
+                            <?php else: ?>
+                                <span class="badge-enabled">Aktiv</span>
                             <?php endif; ?>
                         </td>
                         <?php if (LocalAuth::isAdmin()): ?>

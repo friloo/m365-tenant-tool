@@ -28,6 +28,12 @@ class AdminRolesController
     {
         LocalAuth::require();
 
+        if (isset($_GET['refresh'])) {
+            app_graph()->getCache()->forget('admin_role_definitions');
+            app_graph()->getCache()->forget('admin_role_assignments');
+            app_graph()->getCache()->forget('admin_roles_list');
+        }
+
         $service     = app_service(AdminRolesService::class);
         $assignments = $service->getRoleAssignmentsWithPrincipals();
         $definitions = $service->getAllRoleDefinitions();
@@ -59,6 +65,10 @@ class AdminRolesController
             $principal = $assignment['principal'] ?? null;
             if ($principal !== null) {
                 $principal['assignmentId'] = $assignment['id'] ?? '';
+                // Identify service principals (they have no userPrincipalName)
+                $odataType = $principal['@odata.type'] ?? '';
+                $principal['isServicePrincipal'] = str_contains($odataType, 'servicePrincipal')
+                    || (($principal['userPrincipalName'] ?? '') === '' && ($principal['displayName'] ?? '') !== '');
                 $byRole[$roleDefId]['members'][] = $principal;
             }
         }
