@@ -47,7 +47,7 @@ $priceMode    = $priceMode    ?? 'npo';
 $showCatalog  = $showCatalog  ?? false;
 $matchingCatalog = $matchingCatalog ?? [];
 $priceKey     = $priceMode === 'standard' ? 'price_eur' : 'price_npo_eur';
-$priceLabel   = $priceMode === 'standard' ? 'Listenpreis' : 'NPO-Preis';
+$priceLabel   = $priceMode === 'standard' ? 'Listenpreis (Netto)' : 'NPO-Preis (Netto)';
 
 $fmtPrice = function ($val) {
     if ($val === null) return '<span class="text-muted">–</span>';
@@ -187,7 +187,7 @@ $fmtPrice = function ($val) {
                 </label>
             </div>
             <span class="ms-auto text-muted" style="font-size:11px;">
-                Preise sind Richtwerte (€/User/Monat, jährliche Abrechnung). Stand 2024 — bitte mit dem Microsoft-Partner verifizieren.
+                Alle Preise <strong>netto</strong> (ohne 19 % MwSt.), pro Nutzer/Monat, Jahresabo, DE-Listenpreis. Stand Mai 2025 — bitte beim Microsoft-Partner verifizieren.
             </span>
         </form>
     </div>
@@ -351,7 +351,7 @@ $fmtPrice = function ($val) {
         </div>
         <div class="p-3" style="background:#f8fafc;border-top:1px solid #e5e7eb;font-size:11px;color:#6b7280;">
             * "kostenlos" gilt typischerweise für die ersten 10 Nutzer im NPO-Programm. Bei Microsoft 365 Business Basic / Office 365 E1.
-            Preise sind ungefähre Richtwerte ohne Gewähr. Bitte beim Microsoft-Partner verifizieren.
+            Netto-Listenpreise (ohne MwSt.), Stand Mai 2025. Partnerrabatte und CSP-Preise können abweichen. Bitte beim Microsoft-Partner verifizieren.
         </div>
     </div>
 </div>

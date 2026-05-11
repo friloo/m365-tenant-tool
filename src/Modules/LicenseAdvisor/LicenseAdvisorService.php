@@ -72,119 +72,120 @@ class LicenseAdvisorService
 
     /**
      * Static catalog of common Microsoft 365 SKUs with their feature coverage
-     * and approximate list prices (€/user/month, annual commitment).
+     * and list prices in EUR (NETTO, ohne MwSt., pro Nutzer/Monat, Jahresabo).
      *
-     * Sources: Microsoft official pricing pages (stand: 2024).
-     * NPO prices: Microsoft Tech for Social Impact / 365 for Nonprofits.
-     * Values are approximations — verify with your Microsoft partner.
+     * Quellen: Microsoft Deutschland Preisseite, Stand Mai 2025.
+     * NPO-Preise: Microsoft for Nonprofits / Tech for Social Impact (DE).
+     * Angaben sind Netto-Listenpreise — Partnerrabatte und CSP-Preise können abweichen.
+     * Bitte beim Microsoft-Partner verifizieren.
      */
     const LICENSE_CATALOG = [
         'SPB' => [
             'name'          => 'Microsoft 365 Business Premium',
             'criteria'      => ['exchange_online', 'office_desktop', 'teams', 'sharepoint', 'onedrive', 'intune'],
-            'price_eur'     => 20.60,
-            'price_npo_eur' => 4.50,
+            'price_eur'     => 22.00,
+            'price_npo_eur' => 5.50,
             'tier'          => 'Business',
             'max_users'     => 300,
         ],
         'O365_BUSINESS_PREMIUM' => [
             'name'          => 'Microsoft 365 Business Standard',
             'criteria'      => ['exchange_online', 'office_desktop', 'teams', 'sharepoint', 'onedrive'],
-            'price_eur'     => 11.70,
-            'price_npo_eur' => 2.30,
+            'price_eur'     => 12.50,
+            'price_npo_eur' => 3.00,
             'tier'          => 'Business',
             'max_users'     => 300,
         ],
         'O365_BUSINESS_ESSENTIALS' => [
             'name'          => 'Microsoft 365 Business Basic',
             'criteria'      => ['exchange_online', 'teams', 'sharepoint', 'onedrive'],
-            'price_eur'     => 5.60,
-            'price_npo_eur' => 0.00, // gratis für die ersten 10, dann reduziert
+            'price_eur'     => 6.00,
+            'price_npo_eur' => 1.60, // erste 10 Seats gratis, danach ca. 1,60 €
             'tier'          => 'Business',
             'max_users'     => 300,
         ],
         'O365_BUSINESS' => [
             'name'          => 'Microsoft 365 Apps for Business',
             'criteria'      => ['office_desktop'],
-            'price_eur'     => 9.80,
-            'price_npo_eur' => 2.00,
+            'price_eur'     => 10.50,
+            'price_npo_eur' => 4.50,
             'tier'          => 'Business',
             'max_users'     => 300,
         ],
         'SPE_E3' => [
             'name'          => 'Microsoft 365 E3',
             'criteria'      => ['exchange_online', 'office_desktop', 'teams', 'sharepoint', 'onedrive', 'intune'],
-            'price_eur'     => 33.00,
-            'price_npo_eur' => 7.20,
+            'price_eur'     => 36.00,
+            'price_npo_eur' => 10.50,
             'tier'          => 'Enterprise',
         ],
         'SPE_E5' => [
             'name'          => 'Microsoft 365 E5',
             'criteria'      => ['exchange_online', 'office_desktop', 'teams', 'sharepoint', 'onedrive', 'intune'],
-            'price_eur'     => 54.10,
-            'price_npo_eur' => 13.30,
+            'price_eur'     => 57.00,
+            'price_npo_eur' => 16.10,
             'tier'          => 'Enterprise',
         ],
         'ENTERPRISEPACK' => [
             'name'          => 'Office 365 E3',
             'criteria'      => ['exchange_online', 'office_desktop', 'teams', 'sharepoint', 'onedrive'],
-            'price_eur'     => 22.60,
-            'price_npo_eur' => 4.00,
+            'price_eur'     => 24.00,
+            'price_npo_eur' => 4.50,
             'tier'          => 'Enterprise',
         ],
         'ENTERPRISEPREMIUM' => [
             'name'          => 'Office 365 E5',
             'criteria'      => ['exchange_online', 'office_desktop', 'teams', 'sharepoint', 'onedrive'],
-            'price_eur'     => 37.50,
-            'price_npo_eur' => 11.00,
+            'price_eur'     => 38.00,
+            'price_npo_eur' => 11.80,
             'tier'          => 'Enterprise',
         ],
         'STANDARDPACK' => [
             'name'          => 'Office 365 E1',
             'criteria'      => ['exchange_online', 'teams', 'sharepoint', 'onedrive'],
-            'price_eur'     => 7.50,
-            'price_npo_eur' => 0.00, // gratis für die ersten 10
+            'price_eur'     => 8.00,
+            'price_npo_eur' => 1.60, // erste 10 Seats gratis
             'tier'          => 'Enterprise',
         ],
         'SPE_F1' => [
             'name'          => 'Microsoft 365 F1',
             'criteria'      => ['exchange_online', 'teams', 'sharepoint', 'onedrive', 'intune'],
-            'price_eur'     => 2.10,
-            'price_npo_eur' => 1.10,
+            'price_eur'     => 2.25,
+            'price_npo_eur' => 0.00, // gratis für NPO
             'tier'          => 'Frontline',
         ],
         'SPE_F3' => [
             'name'          => 'Microsoft 365 F3',
             'criteria'      => ['exchange_online', 'office_desktop', 'teams', 'sharepoint', 'onedrive', 'intune'],
-            'price_eur'     => 7.50,
-            'price_npo_eur' => 2.10,
+            'price_eur'     => 8.00,
+            'price_npo_eur' => 2.25,
             'tier'          => 'Frontline',
         ],
         'EXCHANGESTANDARD' => [
             'name'          => 'Exchange Online Plan 1',
             'criteria'      => ['exchange_online'],
-            'price_eur'     => 3.90,
-            'price_npo_eur' => 1.30,
+            'price_eur'     => 4.20,
+            'price_npo_eur' => 1.60,
             'tier'          => 'Standalone',
         ],
         'EXCHANGEENTERPRISE' => [
             'name'          => 'Exchange Online Plan 2',
             'criteria'      => ['exchange_online'],
-            'price_eur'     => 7.80,
-            'price_npo_eur' => 2.60,
+            'price_eur'     => 8.40,
+            'price_npo_eur' => 3.00,
             'tier'          => 'Standalone',
         ],
         'TEAMS_ESSENTIALS' => [
             'name'          => 'Microsoft Teams Essentials',
             'criteria'      => ['teams'],
-            'price_eur'     => 3.70,
+            'price_eur'     => 4.20,
             'price_npo_eur' => null,
             'tier'          => 'Standalone',
         ],
         'INTUNE_A' => [
             'name'          => 'Microsoft Intune Plan 1',
             'criteria'      => ['intune'],
-            'price_eur'     => 6.99,
+            'price_eur'     => 8.00,
             'price_npo_eur' => null,
             'tier'          => 'Standalone',
         ],
@@ -192,7 +193,7 @@ class LicenseAdvisorService
             'name'          => 'Enterprise Mobility + Security E3',
             'criteria'      => ['intune'],
             'price_eur'     => 9.40,
-            'price_npo_eur' => 2.00,
+            'price_npo_eur' => 2.10,
             'tier'          => 'Standalone',
         ],
     ];

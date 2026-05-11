@@ -17,6 +17,7 @@ class AdoptionController
         // Bust caches when ?refresh=1 is passed
         if (isset($_GET['refresh'])) {
             $cache = app_graph()->getCache();
+            $cache->forget('adoption_active_user_counts');
             $cache->forget('adoption_active_users');
             $cache->forget('adoption_email_counts');
             $cache->forget('adoption_teams_counts');

@@ -18,9 +18,11 @@ $_navDefs = [
     ['section' => null,         'icon' => 'person-badge',        'label' => 'Gastbenutzer',         'route' => 'guestusers',           'admin' => false],
     ['section' => null,         'icon' => 'diagram-3',           'label' => 'Gruppen & Teams',      'route' => 'groups',               'admin' => false],
     ['section' => null,         'icon' => 'award',               'label' => 'Lizenzen',             'route' => 'licenses',             'admin' => false],
+    ['section' => null,         'icon' => 'currency-euro',       'label' => 'Lizenzkosten',         'route' => 'licensecosts',         'admin' => false],
     ['section' => null,         'icon' => 'lightbulb',           'label' => 'Lizenz-Berater',       'route' => 'licenseadvisor',       'admin' => false],
     ['section' => null,         'icon' => 'shield-lock',         'label' => 'MFA-Methoden',         'route' => 'mfamethods',           'admin' => false],
     ['section' => null,         'icon' => 'key',                 'label' => 'Passwort-Ablauf',      'route' => 'passwordexpiry',       'admin' => false],
+    ['section' => null,         'icon' => 'person-dash',         'label' => 'Offboarding',          'route' => 'offboarding',          'admin' => false],
 
     // ── Speicher & Freigaben
     ['section' => 'Speicher & Freigaben', 'icon' => 'cloud',    'label' => 'OneDrive',             'route' => 'onedrive',             'admin' => false],
@@ -33,6 +35,7 @@ $_navDefs = [
     ['section' => 'Exchange & Kommunikation', 'icon' => 'envelope', 'label' => 'Postfächer',       'route' => 'mailboxes',            'admin' => false],
     ['section' => null,         'icon' => 'airplane',            'label' => 'EXO Migration',        'route' => 'exchangemigration',    'admin' => false],
     ['section' => null,         'icon' => 'camera-video',        'label' => 'Teams-Nutzung',        'route' => 'teamsusage',           'admin' => false],
+    ['section' => null,         'icon' => 'collection',          'label' => 'Teams-Übersicht',      'route' => 'teamspolicies',        'admin' => false],
     ['section' => null,         'icon' => 'graph-up-arrow',      'label' => 'Adoptions-Report',     'route' => 'adoption',             'admin' => false],
     ['section' => null,         'icon' => 'megaphone',           'label' => 'Message Center',       'route' => 'msgcenter',            'admin' => false],
     ['section' => null,         'icon' => 'arrow-left-right',    'label' => 'Mail Flow & Schutz',   'route' => 'mailflow',             'admin' => false],
@@ -44,6 +47,9 @@ $_navDefs = [
     ['section' => null,         'icon' => 'bar-chart-line',      'label' => 'Secure Score',         'route' => 'securescore',          'admin' => false],
     ['section' => null,         'icon' => 'bell',                'label' => 'Defender Alerts',      'route' => 'defenderalerts',       'admin' => false],
     ['section' => null,         'icon' => 'exclamation-triangle','label' => 'Risiko-Anmeldungen',   'route' => 'riskysignins',         'admin' => false],
+    ['section' => null,         'icon' => 'shield-shaded',       'label' => 'Conditional Access',   'route' => 'conditionalaccess',    'admin' => false],
+    ['section' => null,         'icon' => 'geo-alt',             'label' => 'Named Locations',      'route' => 'namedlocations',       'admin' => false],
+    ['section' => null,         'icon' => 'tags',                'label' => 'Sensitivity Labels',   'route' => 'sensitivitylabels',    'admin' => false],
     ['section' => null,         'icon' => 'grid-3x3-gap',        'label' => 'App-Registrierungen',  'route' => 'appregistrations',     'admin' => false],
     ['section' => null,         'icon' => 'person-lock',         'label' => 'Admin-Rollen',         'route' => 'adminroles',           'admin' => false],
 

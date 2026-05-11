@@ -357,6 +357,25 @@ class GraphClient
             'Synced File Count'                          => 'syncedFileCount',
             'Shared Internally File Count'               => 'sharedInternallyFileCount',
             'Shared Externally File Count'               => 'sharedExternallyFileCount',
+            // Aggregate report column names (getOffice365ActiveUserCounts etc.)
+            'Report Date'                                => 'reportDate',
+            'OneDrive'                                   => 'oneDrive',
+            'SharePoint'                                 => 'sharePoint',
+            'Skype For Business'                         => 'skypeForBusiness',
+            // Email activity counts
+            'Send'                                       => 'send',
+            'Receive'                                    => 'receive',
+            'Read'                                       => 'read',
+            // Teams activity counts
+            'Team Chat Messages'                         => 'teamChatMessages',
+            'Private Chat Messages'                      => 'privateChatMessages',
+            'Calls'                                      => 'calls',
+            'Meetings'                                   => 'meetings',
+            // OneDrive activity counts
+            'Viewed Or Edited'                           => 'viewedOrEdited',
+            'Synced'                                     => 'synced',
+            'Shared Internally'                          => 'sharedInternally',
+            'Shared Externally'                          => 'sharedExternally',
         ];
         if (isset($map[$h])) return $map[$h];
         // Generic fallback: "Foo Bar" → "fooBar"

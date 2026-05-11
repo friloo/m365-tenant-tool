@@ -74,10 +74,23 @@ $readinessIcon = match($score['readiness']) {
 
     <!-- DNS Checks per domain -->
     <?php if (empty($domains)): ?>
-    <div class="card mb-4">
-      <div class="card-header fw-semibold"><i class="bi bi-globe me-2"></i>DNS-Prüfung</div>
-      <div class="card-body text-muted">
-        Keine verifizierten Custom-Domains gefunden (nur <code>*.onmicrosoft.com</code>). Füge deine Domain zuerst in Entra ID hinzu und verifiziere sie.
+    <div class="card mb-4 border-danger">
+      <div class="card-header fw-semibold text-danger-emphasis bg-danger-subtle">
+        <i class="bi bi-x-circle-fill me-2"></i>Keine Custom-Domain gefunden
+      </div>
+      <div class="card-body">
+        <p class="mb-2">
+          Es wurden keine verifizierten Custom-Domains gefunden — nur <code>*.onmicrosoft.com</code>.
+          Für Exchange Online benötigst du mindestens eine eigene Domain (z.B. <code>deinefirma.de</code>).
+        </p>
+        <p class="text-muted small mb-3">
+          <strong>Was zu tun ist:</strong> Domain im Microsoft 365 Admin Center hinzufügen,
+          den angezeigten TXT-Eintrag bei deinem DNS-Provider eintragen, dann verifizieren.
+        </p>
+        <a href="https://admin.microsoft.com/AdminPortal/Home#/Domains" target="_blank" rel="noopener noreferrer"
+           class="btn btn-primary btn-sm">
+          <i class="bi bi-box-arrow-up-right me-1"></i>Domains im Admin Center öffnen
+        </a>
       </div>
     </div>
     <?php else: ?>
@@ -115,9 +128,14 @@ $readinessIcon = match($score['readiness']) {
                 <?php endif ?>
                 <?php if ($mx['status'] !== 'ok'): ?>
                 <div class="text-muted small mt-1">
-                  Erwartet: <code>*.mail.protection.outlook.com</code>
-                  — Bitte im DNS-Verwaltungsportal auf den von Microsoft vorgegebenen MX-Wert umstellen.
+                  Erwartet: <code>*.mail.protection.outlook.com</code> —
                   <strong>Achtung:</strong> Erst nach Abschluss der Migration umstellen!
+                </div>
+                <div class="mt-2">
+                  <a href="https://admin.microsoft.com/AdminPortal/Home#/Domains" target="_blank" rel="noopener noreferrer"
+                     class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>Admin Center → Domains (MX-Wert anzeigen)
+                  </a>
                 </div>
                 <?php endif ?>
               </td>
@@ -137,6 +155,12 @@ $readinessIcon = match($score['readiness']) {
                 <?php if ($spf['status'] !== 'ok'): ?>
                 <div class="text-muted small mt-1">
                   Empfehlung: <code>v=spf1 include:spf.protection.outlook.com -all</code>
+                </div>
+                <div class="mt-2">
+                  <a href="https://admin.microsoft.com/AdminPortal/Home#/Domains" target="_blank" rel="noopener noreferrer"
+                     class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>Admin Center → Domains (DNS-Einträge prüfen)
+                  </a>
                 </div>
                 <?php endif ?>
               </td>
@@ -164,7 +188,17 @@ $readinessIcon = match($score['readiness']) {
                 <?php if ($dkim['status'] !== 'ok'): ?>
                 <div class="text-muted small mt-1">
                   DKIM in Exchange Online aktivieren: Admin Center → E-Mail-Sicherheit → DKIM.
-                  Danach die generierten CNAME-Einträge in deinem DNS anlegen.
+                  Danach die generierten CNAME-Einträge im DNS anlegen.
+                </div>
+                <div class="mt-2 d-flex gap-2 flex-wrap">
+                  <a href="https://admin.exchange.microsoft.com/#/dkimsettings" target="_blank" rel="noopener noreferrer"
+                     class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>Exchange Admin → DKIM aktivieren
+                  </a>
+                  <a href="https://admin.microsoft.com/AdminPortal/Home#/Domains" target="_blank" rel="noopener noreferrer"
+                     class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>Admin Center → Domains (CNAME eintragen)
+                  </a>
                 </div>
                 <?php endif ?>
               </td>
@@ -183,8 +217,14 @@ $readinessIcon = match($score['readiness']) {
                 <?php endif ?>
                 <?php if ($dmarc['status'] === 'missing'): ?>
                 <div class="text-muted small mt-1">
-                  Empfehlung: TXT-Eintrag <code>_dmarc.<?= $e($dc['domain']) ?></code> mit
+                  Empfehlung: TXT-Eintrag <code>_dmarc.<?= $e($dc['domain']) ?></code> mit<br>
                   <code>v=DMARC1; p=quarantine; rua=mailto:dmarc@<?= $e($dc['domain']) ?></code>
+                </div>
+                <div class="mt-2">
+                  <a href="https://mxtoolbox.com/dmarc/<?= $e($dc['domain']) ?>" target="_blank" rel="noopener noreferrer"
+                     class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-tools me-1"></i>DMARC-Generator (MXToolbox)
+                  </a>
                 </div>
                 <?php elseif (($dmarc['policy'] ?? 'none') === 'none'): ?>
                 <div class="text-muted small mt-1">
@@ -213,6 +253,12 @@ $readinessIcon = match($score['readiness']) {
                   Empfehlung: CNAME <code>autodiscover.<?= $e($dc['domain']) ?></code>
                   → <code>autodiscover.outlook.com</code>
                   (erst nach Migration umstellen, damit Outlook-Clients noch auf on-prem zeigen).
+                </div>
+                <div class="mt-2">
+                  <a href="https://admin.microsoft.com/AdminPortal/Home#/Domains" target="_blank" rel="noopener noreferrer"
+                     class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>Admin Center → Domains (Autodiscover CNAME)
+                  </a>
                 </div>
                 <?php endif ?>
               </td>

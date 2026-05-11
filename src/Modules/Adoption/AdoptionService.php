@@ -12,49 +12,74 @@ class AdoptionService
 
     /**
      * Return active-user counts per service for the last 30 days.
-     * Uses getOffice365ActiveUserDetail(period='D30') in JSON format.
+     *
+     * Primary: getOffice365ActiveUserCounts aggregate endpoint (not affected by
+     *   anonymized-report settings; returns the most-recent day's counts).
+     * Fallback: getOffice365ActiveUserDetail per-user CSV (requires non-anonymized reports).
      *
      * @return array{total: int, exchange: int, teams: int, sharepoint: int, onedrive: int, yammer: int}
      */
     public function getActiveUserSummary(): array
     {
-        $rows = $this->graph->getReport(
-            "/reports/getOffice365ActiveUserDetail(period='D30')",
-            [],
-            'adoption_active_users',
-            3600
-        );
-
-        if (empty($rows)) {
-            return ['total' => 0, 'exchange' => 0, 'teams' => 0, 'sharepoint' => 0, 'onedrive' => 0, 'yammer' => 0];
+        // ── Primary: aggregate counts (most recent day in the 30-day window) ──
+        try {
+            $rows = $this->graph->getReport(
+                "/reports/getOffice365ActiveUserCounts(period='D30')",
+                [],
+                'adoption_active_user_counts',
+                3600
+            );
+            if (!empty($rows)) {
+                // Sort descending by date; take the most-recent row
+                usort($rows, fn($a, $b) => strcmp(
+                    $b['reportDate'] ?? $b['Report Date'] ?? '',
+                    $a['reportDate'] ?? $a['Report Date'] ?? ''
+                ));
+                $latest = $rows[0];
+                return [
+                    'total'      => 0, // aggregate endpoint has no "total users" — SKU data used instead
+                    'exchange'   => (int)($latest['exchange']   ?? 0),
+                    'teams'      => (int)($latest['teams']      ?? 0),
+                    'sharepoint' => (int)($latest['sharePoint'] ?? $latest['sharepoint'] ?? 0),
+                    'onedrive'   => (int)($latest['oneDrive']   ?? $latest['onedrive']   ?? 0),
+                    'yammer'     => (int)($latest['yammer']     ?? 0),
+                ];
+            }
+        } catch (\Throwable $e) {
+            error_log('Adoption getActiveUserSummary (aggregate): ' . $e->getMessage());
         }
 
-        $total            = count($rows);
-        $exchangeActive   = 0;
-        $teamsActive      = 0;
-        $sharepointActive = 0;
-        $onedriveActive   = 0;
-        $yammerActive     = 0;
-
-        foreach ($rows as $row) {
-            // JSON format: non-empty lastActivityDate means active in the period.
-            // Also support the older CSV-style boolean columns (TRUE/FALSE strings)
-            // in case the endpoint ever returns that format.
-            if ($this->isActive($row, 'exchangeLastActivityDate', 'Exchange Active')) $exchangeActive++;
-            if ($this->isActive($row, 'teamsLastActivityDate',    'Teams Active'))    $teamsActive++;
-            if ($this->isActive($row, 'sharePointLastActivityDate', 'SharePoint Active')) $sharepointActive++;
-            if ($this->isActive($row, 'oneDriveLastActivityDate', 'OneDrive Active')) $onedriveActive++;
-            if ($this->isActive($row, 'yammerLastActivityDate',   'Yammer Active'))   $yammerActive++;
+        // ── Fallback: per-user detail report ───────────────────────────────────
+        try {
+            $rows = $this->graph->getReport(
+                "/reports/getOffice365ActiveUserDetail(period='D30')",
+                [],
+                'adoption_active_users',
+                3600
+            );
+            if (!empty($rows)) {
+                $exchangeActive = $teamsActive = $sharepointActive = $onedriveActive = $yammerActive = 0;
+                foreach ($rows as $row) {
+                    if ($this->isActive($row, 'exchangeLastActivityDate',   'Exchange Active'))   $exchangeActive++;
+                    if ($this->isActive($row, 'teamsLastActivityDate',      'Teams Active'))      $teamsActive++;
+                    if ($this->isActive($row, 'sharePointLastActivityDate', 'SharePoint Active')) $sharepointActive++;
+                    if ($this->isActive($row, 'oneDriveLastActivityDate',   'OneDrive Active'))   $onedriveActive++;
+                    if ($this->isActive($row, 'yammerLastActivityDate',     'Yammer Active'))     $yammerActive++;
+                }
+                return [
+                    'total'      => count($rows),
+                    'exchange'   => $exchangeActive,
+                    'teams'      => $teamsActive,
+                    'sharepoint' => $sharepointActive,
+                    'onedrive'   => $onedriveActive,
+                    'yammer'     => $yammerActive,
+                ];
+            }
+        } catch (\Throwable $e) {
+            error_log('Adoption getActiveUserSummary (detail): ' . $e->getMessage());
         }
 
-        return [
-            'total'      => $total,
-            'exchange'   => $exchangeActive,
-            'teams'      => $teamsActive,
-            'sharepoint' => $sharepointActive,
-            'onedrive'   => $onedriveActive,
-            'yammer'     => $yammerActive,
-        ];
+        return ['total' => 0, 'exchange' => 0, 'teams' => 0, 'sharepoint' => 0, 'onedrive' => 0, 'yammer' => 0];
     }
 
     /**
