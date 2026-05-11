@@ -222,20 +222,17 @@ class GraphClient
 
         $token = $this->tokenManager->getToken();
 
-        // Step 1: hit Graph with auth — do NOT auto-follow the redirect so that
-        // we can strip the Authorization header before hitting the CDN location.
+        // Step 1: hit Graph — capture redirect location without following it,
+        // so we can strip Authorization before hitting the CDN.
         $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_HEADER         => true,
-            CURLOPT_HTTPHEADER     => [
-                'Authorization: Bearer ' . $token,
-                'Accept: application/json',
-            ],
+            CURLOPT_HTTPHEADER     => ['Authorization: Bearer ' . $token],
             CURLOPT_TIMEOUT        => 30,
         ]);
-        $raw      = curl_exec($ch);
+        $raw      = (string)curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $hdrSize  = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close($ch);
@@ -243,15 +240,14 @@ class GraphClient
         $response = '';
 
         if ($httpCode === 302 || $httpCode === 301) {
-            // Extract Location header and follow without Authorization
-            $headers  = substr((string)$raw, 0, $hdrSize);
+            $headers = substr($raw, 0, $hdrSize);
             if (preg_match('/^Location:\s*(\S+)/im', $headers, $m)) {
                 $location = trim($m[1]);
+                error_log("Graph Reports: following redirect to " . substr($location, 0, 80));
                 $ch2 = curl_init($location);
                 curl_setopt_array($ch2, [
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_HTTPHEADER     => ['Accept: application/json'],
                     CURLOPT_TIMEOUT        => 60,
                 ]);
                 $response = (string)curl_exec($ch2);
@@ -259,29 +255,94 @@ class GraphClient
                 curl_close($ch2);
             }
         } elseif ($httpCode === 200) {
-            $response = (string)substr((string)$raw, $hdrSize);
+            $response = substr($raw, $hdrSize);
         }
 
         if ($httpCode >= 400 || $response === '') {
-            error_log("Graph Reports API error ({$httpCode}) on {$url}");
+            error_log("Graph Reports API error (step1={$httpCode}) on {$url}");
             return [];
         }
 
-        $data   = json_decode($response, true) ?: [];
+        // Try JSON first
+        $data   = json_decode($response, true) ?? [];
         $result = $data['value'] ?? [];
 
-        // If we got a non-empty response body but value is empty, the API likely
-        // returned CSV instead of JSON (format param not recognised → redirect).
-        // Log a snippet to help diagnose.
-        if (empty($result) && strlen((string)$response) > 50) {
-            error_log('GraphClient::getReport() non-empty body but empty result on ' . $url
-                . ' | snippet: ' . substr((string)$response, 0, 200));
+        // If JSON parse failed or no 'value' key, try CSV (Graph CDN always serves CSV)
+        if (empty($result) && strlen($response) > 50) {
+            $result = $this->parseCsvReport($response);
+            if (empty($result)) {
+                error_log('GraphClient::getReport() unparseable response on ' . $url
+                    . ' | snippet: ' . substr($response, 0, 200));
+            }
         }
 
         if ($cacheKey && !empty($result)) {
             $this->cache->set($cacheKey, $result, $ttl);
         }
         return $result;
+    }
+
+    private function parseCsvReport(string $csv): array
+    {
+        $lines = explode("\n", str_replace("\r\n", "\n", trim($csv)));
+        if (count($lines) < 2) return [];
+
+        $rawHeaders = str_getcsv(array_shift($lines));
+        $headers    = array_map([$this, 'normaliseCsvHeader'], $rawHeaders);
+
+        $rows = [];
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '') continue;
+            $values = str_getcsv($line);
+            if (count($values) !== count($headers)) continue;
+            $rows[] = array_combine($headers, $values);
+        }
+        return $rows;
+    }
+
+    private function normaliseCsvHeader(string $h): string
+    {
+        static $map = [
+            'Report Refresh Date'                        => 'reportRefreshDate',
+            'Report Period'                              => 'reportPeriod',
+            'Site URL'                                   => 'siteUrl',
+            'Owner Display Name'                         => 'ownerDisplayName',
+            'Owner Principal Name'                       => 'ownerPrincipalName',
+            'Is Deleted'                                 => 'isDeleted',
+            'Last Activity Date'                         => 'lastActivityDate',
+            'File Count'                                 => 'fileCount',
+            'Active File Count'                          => 'activeFileCount',
+            'Storage Used (Byte)'                        => 'storageUsedInBytes',
+            'Storage Allocated (Byte)'                   => 'storageAllocatedInBytes',
+            'User Principal Name'                        => 'userPrincipalName',
+            'Display Name'                               => 'displayName',
+            'Exchange Last Activity Date'                => 'exchangeLastActivityDate',
+            'OneDrive Last Activity Date'                => 'oneDriveLastActivityDate',
+            'SharePoint Last Activity Date'              => 'sharePointLastActivityDate',
+            'Teams Last Activity Date'                   => 'teamsLastActivityDate',
+            'Yammer Last Activity Date'                  => 'yammerLastActivityDate',
+            'Skype For Business Last Activity Date'      => 'skypeForBusinessLastActivityDate',
+            'Has Exchange License'                       => 'hasExchangeLicense',
+            'Has OneDrive License'                       => 'hasOneDriveLicense',
+            'Has SharePoint License'                     => 'hasSharePointLicense',
+            'Has Teams License'                          => 'hasTeamsLicense',
+            'Has Yammer License'                         => 'hasYammerLicense',
+            'Send Count'                                 => 'sendCount',
+            'Receive Count'                              => 'receiveCount',
+            'Read Count'                                 => 'readCount',
+            'Team Chat Message Count'                    => 'teamChatMessageCount',
+            'Private Chat Message Count'                 => 'privateChatMessageCount',
+            'Call Count'                                 => 'callCount',
+            'Meeting Count'                              => 'meetingCount',
+            'Viewed Or Edited File Count'                => 'viewedOrEditedFileCount',
+            'Synced File Count'                          => 'syncedFileCount',
+            'Shared Internally File Count'               => 'sharedInternallyFileCount',
+            'Shared Externally File Count'               => 'sharedExternallyFileCount',
+        ];
+        if (isset($map[$h])) return $map[$h];
+        // Generic fallback: "Foo Bar" → "fooBar"
+        return lcfirst(str_replace(' ', '', ucwords(strtolower($h))));
     }
 
     public function getCache(): GraphCache
