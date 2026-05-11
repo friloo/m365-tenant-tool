@@ -300,7 +300,14 @@ class GraphClient
             if ($line === '') continue;
             $values = str_getcsv($line);
             if (count($values) !== count($headers)) continue;
-            $rows[] = array_combine($headers, $values);
+            $row = array_combine($headers, $values);
+            // Normalise CSV boolean strings to PHP booleans (matches JSON API behaviour)
+            foreach ($row as &$v) {
+                if ($v === 'TRUE')  $v = true;
+                elseif ($v === 'FALSE') $v = false;
+            }
+            unset($v);
+            $rows[] = $row;
         }
         return $rows;
     }
