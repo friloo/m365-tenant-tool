@@ -31,6 +31,7 @@ $_navDefs = [
 
     // ── Exchange & Kommunikation
     ['section' => 'Exchange & Kommunikation', 'icon' => 'envelope', 'label' => 'Postfächer',       'route' => 'mailboxes',            'admin' => false],
+    ['section' => null,         'icon' => 'airplane',            'label' => 'EXO Migration',        'route' => 'exchangemigration',    'admin' => false],
     ['section' => null,         'icon' => 'camera-video',        'label' => 'Teams-Nutzung',        'route' => 'teamsusage',           'admin' => false],
     ['section' => null,         'icon' => 'graph-up-arrow',      'label' => 'Adoptions-Report',     'route' => 'adoption',             'admin' => false],
     ['section' => null,         'icon' => 'megaphone',           'label' => 'Message Center',       'route' => 'msgcenter',            'admin' => false],
