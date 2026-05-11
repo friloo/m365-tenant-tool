@@ -214,8 +214,17 @@ class GraphClient
             if ($cached === []) $this->cache->forget($cacheKey);
         }
 
-        $query['$format'] = 'application/json';
-        $url   = $this->buildUrl($endpoint, $query);
+        // Build URL manually so $format=application/json is NOT URL-encoded.
+        // http_build_query() encodes '$' as %24 and '/' as %2F; some Graph
+        // proxy layers do not URL-decode query-string values, which causes
+        // the format parameter to be silently ignored → CSV redirect → empty result.
+        $base = str_starts_with($endpoint, 'https://') ? $endpoint : ($this->baseUrl . $endpoint);
+        $sep  = str_contains($base, '?') ? '&' : '?';
+        $url  = $base . $sep . '$format=application/json';
+        if (!empty($query)) {
+            $url .= '&' . http_build_query($query);
+        }
+
         $token = $this->tokenManager->getToken();
 
         $ch = curl_init($url);
@@ -237,8 +246,14 @@ class GraphClient
         $data   = json_decode($response, true) ?: [];
         $result = $data['value'] ?? [];
 
-        // Don't cache empty results — a 403/empty-response could be stored
-        // and then served indefinitely even after the permission is fixed.
+        // If we got a non-empty response body but value is empty, the API likely
+        // returned CSV instead of JSON (format param not recognised → redirect).
+        // Log a snippet to help diagnose.
+        if (empty($result) && strlen((string)$response) > 50) {
+            error_log('GraphClient::getReport() non-empty body but empty result on ' . $url
+                . ' | snippet: ' . substr((string)$response, 0, 200));
+        }
+
         if ($cacheKey && !empty($result)) {
             $this->cache->set($cacheKey, $result, $ttl);
         }

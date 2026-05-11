@@ -25,6 +25,17 @@ $total = count($list);
     <div class="alert alert-danger mb-3"><i class="bi bi-exclamation-triangle me-2"></i><?= $e($error) ?></div>
 <?php endif; ?>
 
+<?php if (!($reportMode ?? true)): ?>
+<div class="alert mb-3" style="background:#fefce8;border:1px solid #fde047;border-radius:8px;padding:12px 16px;font-size:13px;">
+    <i class="bi bi-exclamation-triangle me-2" style="color:#ca8a04;"></i>
+    <strong>Eingeschränkte Ansicht:</strong> Der OneDrive-Nutzungsbericht (<code>Reports.Read.All</code>) ist
+    nicht verfügbar. Die Daten werden per Einzelabfrage ermittelt (erste 150 Benutzer).
+    Mögliche Ursachen: Berechtigung fehlt, Berichtsverschleierung aktiv (M365 Admin Center →
+    Einstellungen → Dienste → Berichte → „Anonymisierte Benutzerberichte" deaktivieren),
+    oder <a href="?refresh=1">Cache aktualisieren</a>.
+</div>
+<?php endif; ?>
+
 <!-- Stats -->
 <div class="row g-3 mb-4">
     <div class="col-sm-4">
