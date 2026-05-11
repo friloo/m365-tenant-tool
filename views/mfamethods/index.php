@@ -181,12 +181,20 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
 <div class="content-card">
     <div class="table-toolbar">
         <input type="text" id="mfaSearch" class="search-box" placeholder="Benutzer suchen…">
-        <select id="mfaFilter" class="form-select form-select-sm ms-2" style="max-width:200px;"
+        <select id="mfaFilter" class="form-select form-select-sm ms-2" style="max-width:260px;"
                 onchange="filterMfaTable()">
             <option value="">Alle</option>
             <option value="no-mfa">Kein MFA</option>
-            <option value="sms">SMS (unsicher)</option>
-            <option value="fido2">FIDO2</option>
+            <?php
+            // Build filter options dynamically from methods actually present in the data
+            $presentMethods = array_keys($byMethod);
+            sort($presentMethods);
+            foreach ($presentMethods as $methodKey):
+                $label = $labels[$methodKey] ?? $methodKey;
+                $count = $byMethod[$methodKey] ?? 0;
+            ?>
+                <option value="<?= $e($methodKey) ?>"><?= $e($label) ?> (<?= $count ?>)</option>
+            <?php endforeach; ?>
         </select>
         <a href="?refresh=1" class="btn btn-sm btn-outline-secondary ms-2">
             <i class="bi bi-arrow-clockwise"></i> Aktualisieren
@@ -225,14 +233,10 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
                     $defaultKey    = trim((string)($user['defaultMfaMethod'] ?? ''));
                     $defaultLabel  = $defaultKey !== '' ? ($labels[$defaultKey] ?? $defaultKey) : '–';
 
-                    $hasSmsOnly    = in_array('phoneAuthentication', (array)$methods, true)
-                                     && count((array)$methods) === 1;
-                    $hasFido2      = in_array('fido2SecurityKey', (array)$methods, true);
-                    $hasSms        = in_array('phoneAuthentication', (array)$methods, true);
+                    $methodKeys    = array_values(array_map(fn($m) => trim((string)$m), (array)$methods));
                 ?>
                 <tr data-mfa="<?= $isMfaRegistered ? '1' : '0' ?>"
-                    data-sms="<?= $hasSms ? '1' : '0' ?>"
-                    data-fido2="<?= $hasFido2 ? '1' : '0' ?>">
+                    data-methods="<?= $e(implode(',', $methodKeys)) ?>">
                     <td>
                         <div style="width:32px;height:32px;border-radius:50%;background:#e3f0fb;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#0078d4;flex-shrink:0;">
                             <?= $e($initial) ?>
@@ -294,9 +298,12 @@ function filterMfaTable() {
     document.querySelectorAll('#mfaTable tbody tr').forEach(function(row) {
         const d = row.dataset;
         let show = true;
-        if (val === 'no-mfa')  show = d.mfa  === '0';
-        if (val === 'sms')     show = d.sms   === '1';
-        if (val === 'fido2')   show = d.fido2 === '1';
+        if (val === 'no-mfa') {
+            show = d.mfa === '0';
+        } else if (val !== '') {
+            const methods = (d.methods || '').split(',').filter(Boolean);
+            show = methods.includes(val);
+        }
         row.style.display = show ? '' : 'none';
     });
 }
