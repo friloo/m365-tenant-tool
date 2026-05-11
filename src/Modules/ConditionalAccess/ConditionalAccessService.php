@@ -1,0 +1,236 @@
+<?php
+
+namespace App\Modules\ConditionalAccess;
+
+use App\Graph\GraphClient;
+
+class ConditionalAccessService
+{
+    public function __construct(private GraphClient $graph) {}
+
+    /**
+     * Fetch all Conditional Access policies.
+     */
+    public function getPolicies(): array
+    {
+        try {
+            $data = $this->graph->get(
+                '/identity/conditionalAccessPolicies',
+                ['$top' => '200'],
+                'ca_policies',
+                900
+            );
+            return $data['value'] ?? [];
+        } catch (\Throwable $e) {
+            error_log('ConditionalAccess getPolicies: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /** Returns the last Graph error, or null. */
+    public function getLastError(): ?array
+    {
+        return $this->graph->getLastError();
+    }
+
+    /**
+     * Analyse policies for common security gaps.
+     * Returns an array of findings, each with: type (ok/warning/missing), title, detail.
+     */
+    public function analyseGaps(array $policies): array
+    {
+        $enabled     = array_filter($policies, fn($p) => ($p['state'] ?? '') === 'enabled');
+        $reportOnly  = array_filter($policies, fn($p) => ($p['state'] ?? '') === 'enabledForReportingButNotEnforced');
+
+        $findings = [];
+
+        // ── Helper: does any enabled policy require MFA?
+        $hasMfaGrant = function (array $set) {
+            foreach ($set as $p) {
+                $grants = $p['grantControls']['builtInControls'] ?? [];
+                if (in_array('mfa', $grants, true)) return true;
+                // strength-based (Authentication Strength)
+                if (!empty($p['grantControls']['authenticationStrength'])) return true;
+            }
+            return false;
+        };
+
+        // ── 1. MFA for All Users
+        $mfaForAll = array_filter($enabled, function ($p) {
+            $users = $p['conditions']['users'] ?? [];
+            $allIncluded = in_array('All', $users['includeUsers'] ?? [], true)
+                        || in_array('All', $users['includeGroups'] ?? [], true);
+            $grants = $p['grantControls']['builtInControls'] ?? [];
+            $hasMfa = in_array('mfa', $grants, true) || !empty($p['grantControls']['authenticationStrength']);
+            return $allIncluded && $hasMfa;
+        });
+
+        if (!empty($mfaForAll)) {
+            $findings[] = ['type' => 'ok', 'category' => 'MFA', 'title' => 'MFA für alle Benutzer',
+                'detail' => 'Mindestens eine aktive Richtlinie erzwingt MFA für alle Benutzer.'];
+        } else {
+            // Check report-only
+            $mfaReportOnly = array_filter($reportOnly, function ($p) {
+                $users = $p['conditions']['users'] ?? [];
+                $allIncluded = in_array('All', $users['includeUsers'] ?? [], true);
+                $grants = $p['grantControls']['builtInControls'] ?? [];
+                return $allIncluded && in_array('mfa', $grants, true);
+            });
+            if (!empty($mfaReportOnly)) {
+                $findings[] = ['type' => 'warning', 'category' => 'MFA', 'title' => 'MFA für alle Benutzer (nur Report-Modus)',
+                    'detail' => 'Eine MFA-Richtlinie für alle Benutzer existiert, ist aber nur im Report-Modus. Zum Aktivieren wechseln.'];
+            } else {
+                $findings[] = ['type' => 'missing', 'category' => 'MFA', 'title' => 'Keine MFA-Pflicht für alle Benutzer',
+                    'detail' => 'Keine aktive Richtlinie, die MFA für alle Benutzer erzwingt. Empfehlung: Richtlinie "Require MFA for all users" anlegen.'];
+            }
+        }
+
+        // ── 2. MFA for Admins
+        $adminRoles = [
+            '62e90394-69f5-4237-9190-012177145e10', // Global Admin
+            'e8611ab8-c189-46e8-94e1-60213ab1f814', // Privileged Auth Admin
+            '194ae4cb-b126-40b2-bd5b-6091b380977d', // Security Admin
+        ];
+        $mfaForAdmins = array_filter($enabled, function ($p) use ($adminRoles) {
+            $roles  = $p['conditions']['users']['includeRoles'] ?? [];
+            $hasAdm = !empty(array_intersect($roles, $adminRoles));
+            $grants = $p['grantControls']['builtInControls'] ?? [];
+            $hasMfa = in_array('mfa', $grants, true) || !empty($p['grantControls']['authenticationStrength']);
+            return $hasAdm && $hasMfa;
+        });
+        if (!empty($mfaForAdmins)) {
+            $findings[] = ['type' => 'ok', 'category' => 'MFA', 'title' => 'MFA für Administratoren',
+                'detail' => 'Mindestens eine Richtlinie erzwingt MFA für privilegierte Rollen.'];
+        } else {
+            $findings[] = ['type' => 'missing', 'category' => 'MFA', 'title' => 'Keine MFA-Pflicht für Administratoren',
+                'detail' => 'Keine Richtlinie erzwingt MFA speziell für Admin-Rollen. Besonders kritisch — Admins sollten immer MFA verwenden.'];
+        }
+
+        // ── 3. Block Legacy Auth
+        $blockLegacy = array_filter($enabled, function ($p) {
+            $clients = $p['conditions']['clientAppTypes'] ?? [];
+            $hasLegacy = in_array('exchangeActiveSync', $clients, true)
+                      || in_array('other', $clients, true);
+            $block = ($p['grantControls']['operator'] ?? '') === 'OR'
+                  && in_array('block', $p['grantControls']['builtInControls'] ?? [], true);
+            // Also check if operator is null but builtInControls has block
+            $block = $block || in_array('block', $p['grantControls']['builtInControls'] ?? [], true);
+            return $hasLegacy && $block;
+        });
+        if (!empty($blockLegacy)) {
+            $findings[] = ['type' => 'ok', 'category' => 'Sicherheit', 'title' => 'Legacy-Authentifizierung blockiert',
+                'detail' => 'Eine aktive Richtlinie blockiert Legacy-Auth (Exchange ActiveSync / andere Clients).'];
+        } else {
+            $findings[] = ['type' => 'warning', 'category' => 'Sicherheit', 'title' => 'Legacy-Authentifizierung nicht blockiert',
+                'detail' => 'Keine Richtlinie blockiert alte Protokolle (Basic Auth, IMAP, POP, SMTP AUTH). Diese umgehen MFA und sind ein häufiger Angriffsvektor.'];
+        }
+
+        // ── 4. Compliant Device / Hybrid Join required
+        $deviceCompliant = array_filter($enabled, function ($p) {
+            $grants = $p['grantControls']['builtInControls'] ?? [];
+            return in_array('compliantDevice', $grants, true)
+                || in_array('domainJoinedDevice', $grants, true);
+        });
+        if (!empty($deviceCompliant)) {
+            $findings[] = ['type' => 'ok', 'category' => 'Gerät', 'title' => 'Gerätecompliance oder Hybrid Join gefordert',
+                'detail' => 'Mindestens eine Richtlinie verlangt ein konformes oder Hybrid-verbundenes Gerät.'];
+        } else {
+            $findings[] = ['type' => 'warning', 'category' => 'Gerät', 'title' => 'Keine Gerätecompliance-Anforderung',
+                'detail' => 'Kein Conditional Access fordert ein Intune-konformes Gerät. Empfehlung für sensible Apps/Daten.'];
+        }
+
+        // ── 5. Sign-in Risk (Requires Entra ID P2)
+        $riskPolicy = array_filter($enabled, function ($p) {
+            $levels = $p['conditions']['signInRiskLevels'] ?? [];
+            return in_array('high', $levels, true) || in_array('medium', $levels, true);
+        });
+        if (!empty($riskPolicy)) {
+            $findings[] = ['type' => 'ok', 'category' => 'Risiko', 'title' => 'Risikobewertung bei Anmeldung aktiv',
+                'detail' => 'Sign-in Risk Policy vorhanden (erfordert Entra ID P2 / Microsoft 365 E5).'];
+        } else {
+            $findings[] = ['type' => 'warning', 'category' => 'Risiko', 'title' => 'Keine Sign-in Risk Policy',
+                'detail' => 'Keine Richtlinie reagiert auf risikoreiche Anmeldungen. Mit Entra ID P2 ist Echtzeit-Risikoschutz möglich.'];
+        }
+
+        // ── 6. No policy at all
+        if (empty($policies)) {
+            $findings = [['type' => 'missing', 'category' => 'Allgemein', 'title' => 'Keine Conditional-Access-Richtlinien',
+                'detail' => 'Im Tenant sind keinerlei CA-Richtlinien konfiguriert. Zugriff auf Microsoft 365 ist ohne Einschränkungen möglich.']];
+        }
+
+        // Sort: missing first, warning second, ok last
+        usort($findings, function ($a, $b) {
+            $order = ['missing' => 0, 'warning' => 1, 'ok' => 2];
+            return ($order[$a['type']] ?? 1) <=> ($order[$b['type']] ?? 1);
+        });
+
+        return $findings;
+    }
+
+    /**
+     * Build a human-readable summary of users/groups/apps covered by a policy.
+     */
+    public function summariseConditions(array $policy): array
+    {
+        $cond = $policy['conditions'] ?? [];
+
+        return [
+            'users'       => $this->summariseUsers($cond['users'] ?? []),
+            'apps'        => $this->summariseApps($cond['applications'] ?? []),
+            'platforms'   => implode(', ', $cond['platforms']['includePlatforms'] ?? []) ?: 'Alle',
+            'locations'   => implode(', ', $cond['locations']['includeLocations'] ?? []) ?: 'Alle',
+            'clientTypes' => implode(', ', $cond['clientAppTypes'] ?? []) ?: 'Alle',
+            'grant'       => $this->summariseGrant($policy['grantControls'] ?? []),
+            'session'     => $this->summariseSession($policy['sessionControls'] ?? []),
+        ];
+    }
+
+    private function summariseUsers(array $users): string
+    {
+        $include = $users['includeUsers'] ?? [];
+        if (in_array('All', $include, true)) return 'Alle Benutzer';
+        if (in_array('GuestsOrExternalUsers', $include, true)) return 'Gäste / externe Benutzer';
+        $roles  = count($users['includeRoles']  ?? []);
+        $groups = count($users['includeGroups'] ?? []);
+        $parts  = [];
+        if ($roles)  $parts[] = "{$roles} Rollen";
+        if ($groups) $parts[] = "{$groups} Gruppen";
+        if (count($include)) $parts[] = count($include) . ' Benutzer';
+        return implode(', ', $parts) ?: '–';
+    }
+
+    private function summariseApps(array $apps): string
+    {
+        $include = $apps['includeApplications'] ?? [];
+        if (in_array('All', $include, true)) return 'Alle Cloud-Apps';
+        if (in_array('Office365', $include, true)) return 'Office 365';
+        return count($include) . ' App(s)';
+    }
+
+    private function summariseGrant(array $grant): string
+    {
+        $controls = $grant['builtInControls'] ?? [];
+        if (in_array('block', $controls, true)) return 'Blockieren';
+        $parts = [];
+        if (in_array('mfa', $controls, true))                $parts[] = 'MFA';
+        if (in_array('compliantDevice', $controls, true))    $parts[] = 'Konformes Gerät';
+        if (in_array('domainJoinedDevice', $controls, true)) $parts[] = 'Hybrid Join';
+        if (in_array('approvedApplication', $controls, true))$parts[] = 'Genehmigte App';
+        if (!empty($grant['authenticationStrength']))         $parts[] = 'Auth-Stärke';
+        if (empty($parts)) return 'Zugriff erlauben';
+        return 'Erfordern: ' . implode(' + ', $parts);
+    }
+
+    private function summariseSession(array $session): string
+    {
+        $parts = [];
+        if (!empty($session['signInFrequency']['value'])) {
+            $parts[] = 'Sitzungshäufigkeit: ' . $session['signInFrequency']['value'] . ' ' . ($session['signInFrequency']['type'] ?? '');
+        }
+        if (!empty($session['persistentBrowser']['mode'])) {
+            $parts[] = 'Persist. Browser: ' . $session['persistentBrowser']['mode'];
+        }
+        if (!empty($session['cloudAppSecurity'])) $parts[] = 'App Control';
+        return implode(', ', $parts) ?: '–';
+    }
+}

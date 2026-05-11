@@ -190,6 +190,29 @@ $router->get('/licenseadvisor/export',            [\App\Modules\LicenseAdvisor\L
 // Exchange Online Migration Readiness
 $router->get('/exchangemigration',                [\App\Modules\ExchangeMigration\ExchangeMigrationController::class, 'index']);
 
+// Conditional Access
+$router->get('/conditionalaccess',                [\App\Modules\ConditionalAccess\ConditionalAccessController::class, 'index']);
+
+// Named Locations
+$router->get('/namedlocations',                   [\App\Modules\NamedLocations\NamedLocationsController::class, 'index']);
+
+// License Costs
+$router->get('/licensecosts',                     [\App\Modules\LicenseCosts\LicenseCostsController::class, 'index']);
+
+// Offboarding
+$router->get('/offboarding',                      [\App\Modules\Offboarding\OffboardingController::class, 'index']);
+$router->get('/offboarding/search',               [\App\Modules\Offboarding\OffboardingController::class, 'search']);
+$router->post('/offboarding/disable-account',     [\App\Modules\Offboarding\OffboardingController::class, 'disableAccount']);
+$router->post('/offboarding/revoke-sessions',     [\App\Modules\Offboarding\OffboardingController::class, 'revokeSessions']);
+$router->post('/offboarding/remove-licenses',     [\App\Modules\Offboarding\OffboardingController::class, 'removeLicenses']);
+$router->post('/offboarding/remove-groups',       [\App\Modules\Offboarding\OffboardingController::class, 'removeGroups']);
+
+// Teams Overview & Policies
+$router->get('/teamspolicies',                    [\App\Modules\TeamsPolicies\TeamsPoliciesController::class, 'index']);
+
+// Sensitivity Labels
+$router->get('/sensitivitylabels',                [\App\Modules\SensitivityLabels\SensitivityLabelsController::class, 'index']);
+
 // MFA Methods
 $router->get('/mfamethods',                       [\App\Modules\MfaMethods\MfaMethodsController::class, 'index']);
 
