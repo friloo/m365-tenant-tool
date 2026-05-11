@@ -17,24 +17,32 @@ class LicenseAdvisorController
         /** @var LicenseAdvisorService $service */
         $service = app_service(LicenseAdvisorService::class);
 
-        $activeCriteria = $service->getActiveCriteria();
-        $allSkus        = $service->getSkusWithCriteria();
-        $matchingSkus   = $service->getMatchingSkus($allSkus, $activeCriteria);
-        $allUsers       = $service->getAllUsers();
-        $analysis       = $service->analyzeUsers($allUsers, $allSkus, $activeCriteria);
+        $activeCriteria  = $service->getActiveCriteria();
+        $tenantSkus      = $service->getSkusWithCriteria();
+        $matchingSkus    = $service->getMatchingSkus($tenantSkus, $activeCriteria);
+        $catalogSkus     = $service->getCatalogOnlySkus($tenantSkus);
+        $matchingCatalog = $service->getMatchingSkus($catalogSkus, $activeCriteria);
+        $allUsers        = $service->getAllUsers();
+        $analysis        = $service->analyzeUsers($allUsers, $tenantSkus, $activeCriteria);
+
+        $showCatalog = ($_GET['show_catalog'] ?? '0') === '1';
+        $priceMode   = ($_GET['price_mode'] ?? 'npo') === 'standard' ? 'standard' : 'npo';
 
         $flash = Session::getFlash('success');
         $error = Session::getFlash('error');
 
         View::render('licenseadvisor/index', [
-            'pageTitle'      => 'Lizenz-Advisor',
-            'activeCriteria' => $activeCriteria,
-            'criteriaMap'    => LicenseAdvisorService::CRITERIA_MAP,
-            'allSkus'        => $allSkus,
-            'matchingSkus'   => $matchingSkus,
-            'analysis'       => $analysis,
-            'flash'          => $flash,
-            'error'          => $error,
+            'pageTitle'       => 'Lizenz-Advisor',
+            'activeCriteria'  => $activeCriteria,
+            'criteriaMap'     => LicenseAdvisorService::CRITERIA_MAP,
+            'allSkus'         => $tenantSkus,
+            'matchingSkus'    => $matchingSkus,
+            'matchingCatalog' => $matchingCatalog,
+            'analysis'        => $analysis,
+            'showCatalog'     => $showCatalog,
+            'priceMode'       => $priceMode,
+            'flash'           => $flash,
+            'error'           => $error,
         ]);
     }
 
