@@ -81,7 +81,7 @@ class ConditionalAccessController
 
         try {
             app_service(ConditionalAccessService::class)->createPolicy($def);
-            Session::flash('success', "Richtlinie „{$def['displayName']}" wurde angelegt (im Report-Modus — zum Aktivieren umschalten).");
+            Session::flash('success', 'Richtlinie "' . $def['displayName'] . '" wurde angelegt (im Report-Modus — zum Aktivieren umschalten).');
         } catch (\Throwable $e) {
             Session::flash('error', 'Richtlinie konnte nicht erstellt werden: ' . $e->getMessage());
         }

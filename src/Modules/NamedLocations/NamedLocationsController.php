@@ -46,7 +46,7 @@ class NamedLocationsController
 
         try {
             app_service(NamedLocationsService::class)->createCountryLocation($name, $codes, $unknown);
-            Session::flash('success', "Länder-Standort „{$name}" wurde angelegt.");
+            Session::flash('success', 'Länder-Standort "' . $name . '" wurde angelegt.');
         } catch (\Throwable $e) {
             Session::flash('error', 'Fehler: ' . $e->getMessage());
         }
@@ -67,7 +67,7 @@ class NamedLocationsController
 
         try {
             app_service(NamedLocationsService::class)->createIpLocation($name, $cidrs, $trusted);
-            Session::flash('success', "IP-Standort „{$name}" wurde angelegt.");
+            Session::flash('success', 'IP-Standort "' . $name . '" wurde angelegt.');
         } catch (\Throwable $e) {
             Session::flash('error', 'Fehler: ' . $e->getMessage());
         }
