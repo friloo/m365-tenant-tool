@@ -284,6 +284,10 @@ class GraphClient
 
     private function parseCsvReport(string $csv): array
     {
+        // Strip UTF-8 BOM (\xef\xbb\xbf) that Graph CDN prepends to CSV files
+        if (str_starts_with($csv, "\xef\xbb\xbf")) {
+            $csv = substr($csv, 3);
+        }
         $lines = explode("\n", str_replace("\r\n", "\n", trim($csv)));
         if (count($lines) < 2) return [];
 
@@ -306,6 +310,7 @@ class GraphClient
         static $map = [
             'Report Refresh Date'                        => 'reportRefreshDate',
             'Report Period'                              => 'reportPeriod',
+            'Site Id'                                    => 'siteId',
             'Site URL'                                   => 'siteUrl',
             'Owner Display Name'                         => 'ownerDisplayName',
             'Owner Principal Name'                       => 'ownerPrincipalName',
