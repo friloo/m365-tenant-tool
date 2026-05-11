@@ -273,6 +273,12 @@ class GraphClient
             if (empty($result)) {
                 error_log('GraphClient::getReport() unparseable response on ' . $url
                     . ' | snippet: ' . substr($response, 0, 200));
+            } else {
+                $first = $result[0];
+                error_log('GraphClient::getReport() parsed CSV: ' . count($result) . ' rows'
+                    . ' | keys: ' . implode(',', array_keys($first))
+                    . ' | upn=' . ($first['ownerPrincipalName'] ?? $first['userPrincipalName'] ?? 'MISSING')
+                    . ' | isDeleted=' . var_export($first['isDeleted'] ?? 'MISSING', true));
             }
         }
 
