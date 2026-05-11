@@ -309,8 +309,8 @@ class GraphClient
             $row = array_combine($headers, $values);
             // Normalise CSV boolean strings to PHP booleans (matches JSON API behaviour)
             foreach ($row as &$v) {
-                if ($v === 'TRUE')  $v = true;
-                elseif ($v === 'FALSE') $v = false;
+                if (strcasecmp((string)$v, 'TRUE') === 0)  $v = true;
+                elseif (strcasecmp((string)$v, 'FALSE') === 0) $v = false;
             }
             unset($v);
             $rows[] = $row;
