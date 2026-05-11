@@ -214,15 +214,10 @@ class GraphClient
             if ($cached === []) $this->cache->forget($cacheKey);
         }
 
-        // Build URL manually so $format=application/json is NOT URL-encoded.
-        // http_build_query() encodes '$' as %24 and '/' as %2F; some Graph
-        // proxy layers do not URL-decode query-string values, which causes
-        // the format parameter to be silently ignored → CSV redirect → empty result.
         $base = str_starts_with($endpoint, 'https://') ? $endpoint : ($this->baseUrl . $endpoint);
-        $sep  = str_contains($base, '?') ? '&' : '?';
-        $url  = $base . $sep . '$format=application/json';
+        $url  = $base;
         if (!empty($query)) {
-            $url .= '&' . http_build_query($query);
+            $url .= (str_contains($url, '?') ? '&' : '?') . http_build_query($query);
         }
 
         $token = $this->tokenManager->getToken();
@@ -231,7 +226,10 @@ class GraphClient
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTPHEADER     => ['Authorization: Bearer ' . $token, 'Accept: application/json'],
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Bearer ' . $token,
+                'Accept: application/json',
+            ],
             CURLOPT_TIMEOUT        => 60,
         ]);
         $response = curl_exec($ch);
