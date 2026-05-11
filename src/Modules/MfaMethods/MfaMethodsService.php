@@ -33,7 +33,32 @@ class MfaMethodsService
      */
     public function getAll(): array
     {
-        // Try the modern endpoint first
+        // Try the legacy endpoint first — works with AuditLog.Read.All + Reports.Read.All + Entra P1.
+        // Does NOT require the "Authentication Methods Activity" feature to be enabled in the portal.
+        try {
+            $rows = $this->graph->paginate(
+                '/reports/credentialUserRegistrationDetails',
+                [],
+                50,
+                'mfa_methods_legacy',
+                1800
+            );
+            if (!empty($rows)) {
+                return array_map(fn($r) => [
+                    'id'                => $r['id'] ?? '',
+                    'userPrincipalName' => $r['userPrincipalName'] ?? '',
+                    'userDisplayName'   => $r['userDisplayName'] ?? '',
+                    'isMfaRegistered'   => $r['isMfaRegistered'] ?? false,
+                    'isMfaCapable'      => $r['isCapable']       ?? ($r['isMfaRegistered'] ?? false),
+                    'methodsRegistered' => $r['authMethods']     ?? [],
+                    'defaultMfaMethod'  => '',
+                ], $rows);
+            }
+        } catch (\Throwable $e) {
+            error_log('MFA methods (legacy endpoint) failed: ' . $e->getMessage());
+        }
+
+        // Fall back to the modern endpoint (requires tenant-side enablement in Entra portal)
         try {
             $users = $this->graph->paginate(
                 '/reports/authenticationMethods/userRegistrationDetails',
@@ -49,34 +74,10 @@ class MfaMethodsService
                 return $users;
             }
         } catch (\Throwable $e) {
-            error_log('MFA methods (new endpoint) failed: ' . $e->getMessage());
+            error_log('MFA methods (modern endpoint) failed: ' . $e->getMessage());
         }
 
-        // Fallback to the legacy report endpoint — same data, different shape
-        try {
-            $rows = $this->graph->paginate(
-                '/reports/credentialUserRegistrationDetails',
-                [],
-                50,
-                'mfa_methods_legacy',
-                1800
-            );
-            if (empty($rows)) return [];
-
-            // Normalise legacy shape to match what the view expects
-            return array_map(fn($r) => [
-                'id'                => $r['id'] ?? '',
-                'userPrincipalName' => $r['userPrincipalName'] ?? '',
-                'userDisplayName'   => $r['userDisplayName'] ?? '',
-                'isMfaRegistered'   => $r['isMfaRegistered'] ?? false,
-                'isMfaCapable'      => $r['isCapable']       ?? ($r['isMfaRegistered'] ?? false),
-                'methodsRegistered' => $r['authMethods']     ?? [],
-                'defaultMfaMethod'  => '',
-            ], $rows);
-        } catch (\Throwable $e) {
-            error_log('MFA methods (legacy endpoint) failed: ' . $e->getMessage());
-            return [];
-        }
+        return [];
     }
 
     /** Returns the last Graph error (e.g. 403 missing permission), or null. */

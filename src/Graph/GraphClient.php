@@ -28,8 +28,12 @@ class GraphClient
     {
         if ($cacheKey) {
             $cached = $this->cache->get($cacheKey);
-            if ($cached !== null) {
+            if (!empty($cached)) {
                 return $cached;
+            }
+            // Auto-invalidate stale empty entries (cached before the no-empty-cache fix)
+            if ($cached === []) {
+                $this->cache->forget($cacheKey);
             }
         }
 
@@ -48,8 +52,11 @@ class GraphClient
     {
         if ($cacheKey) {
             $cached = $this->cache->get($cacheKey);
-            if ($cached !== null) {
+            if (!empty($cached)) {
                 return $cached;
+            }
+            if ($cached === []) {
+                $this->cache->forget($cacheKey);
             }
         }
 
@@ -186,7 +193,8 @@ class GraphClient
     {
         if ($cacheKey) {
             $cached = $this->cache->get($cacheKey);
-            if ($cached !== null) return $cached;
+            if (!empty($cached)) return $cached;
+            if ($cached === []) $this->cache->forget($cacheKey);
         }
         $url    = $this->buildUrl($endpoint, $query);
         $result = $this->request('GET', $url, true);
@@ -202,7 +210,8 @@ class GraphClient
     {
         if ($cacheKey) {
             $cached = $this->cache->get($cacheKey);
-            if ($cached !== null) return $cached;
+            if (!empty($cached)) return $cached;
+            if ($cached === []) $this->cache->forget($cacheKey);
         }
 
         $query['$format'] = 'application/json';

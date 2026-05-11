@@ -48,11 +48,20 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
         <div style="flex:1;">
             <div class="fw-semibold mb-1" style="color:#92400e;">Keine Daten verfügbar</div>
             <div class="small" style="color:#78350f;">
-                Microsoft Graph hat den Aufruf akzeptiert, aber eine leere Antwort geliefert.
-                Klicke auf <a href="?refresh=1"><strong>Aktualisieren</strong></a> um Token und Cache neu zu laden.
-                Falls die Liste danach weiterhin leer ist, kontrolliere die Berechtigungen
-                <code>AuditLog.Read.All</code> + <code>Reports.Read.All</code> und stelle sicher,
-                dass der Tenant eine <strong>Entra ID P1/P2-Lizenz</strong> besitzt.
+                Microsoft Graph hat den Aufruf akzeptiert, aber eine leere Antwort geliefert. Mögliche Ursachen:
+                <ul class="mb-2 mt-1">
+                    <li><strong>Cache noch veraltet:</strong> Klicke auf <a href="?refresh=1"><strong>Aktualisieren</strong></a>
+                        um Token und Cache neu zu laden.</li>
+                    <li><strong>Berichtsdaten noch nicht verfügbar:</strong> Der Bericht
+                        <code>credentialUserRegistrationDetails</code> kann im Tenant einige Stunden
+                        brauchen, bevor er nach der ersten Aktivierung Daten liefert.</li>
+                    <li><strong>Entra ID P1/P2-Lizenz:</strong> Der Bericht setzt mindestens eine
+                        <strong>Entra ID P1 oder P2</strong>-Lizenz im Tenant voraus.</li>
+                    <li><strong>Berichtsverschleierung aktiv:</strong> Wenn im Microsoft 365 Admin Center
+                        unter <em>Einstellungen → Dienste → Berichte</em> die Option
+                        „Anonymisierte Benutzerberichte" aktiviert ist, sind Berichte für Apps gesperrt.
+                        Diese Einstellung muss deaktiviert sein.</li>
+                </ul>
             </div>
         </div>
     </div>
