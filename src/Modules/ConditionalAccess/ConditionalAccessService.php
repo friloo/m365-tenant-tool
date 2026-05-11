@@ -34,6 +34,82 @@ class ConditionalAccessService
     }
 
     /**
+     * Create a new Conditional Access policy from a structured definition.
+     *
+     * @param array $def Keys: displayName, state, template, namedLocationId, excludeUserId,
+     *                        mfaStrength, clientAppTypes
+     */
+    public function createPolicy(array $def): array
+    {
+        $state = $def['state'] ?? 'enabledForReportingButNotEnforced';
+
+        $excludeUsers = [];
+        if (!empty($def['excludeUserId'])) {
+            $excludeUsers = array_filter(array_map('trim', explode(',', $def['excludeUserId'])));
+        }
+
+        $body = [
+            'displayName' => $def['displayName'],
+            'state'       => $state,
+            'conditions'  => [],
+            'grantControls' => null,
+        ];
+
+        $body['conditions']['users'] = [
+            'includeUsers' => ['All'],
+            'excludeUsers' => array_values($excludeUsers),
+        ];
+
+        switch ($def['template'] ?? 'custom') {
+            case 'country_block':
+                $body['conditions']['applications'] = ['includeApplications' => ['All']];
+                $body['conditions']['locations'] = [
+                    'includeLocations' => ['All'],
+                    'excludeLocations' => [$def['namedLocationId']],
+                ];
+                $body['grantControls'] = ['operator' => 'OR', 'builtInControls' => ['block']];
+                break;
+
+            case 'mfa_all':
+                $body['conditions']['applications'] = ['includeApplications' => ['All']];
+                $body['grantControls'] = ['operator' => 'OR', 'builtInControls' => ['mfa']];
+                break;
+
+            case 'block_legacy':
+                $body['conditions']['applications'] = ['includeApplications' => ['All']];
+                $body['conditions']['clientAppTypes'] = ['exchangeActiveSync', 'other'];
+                $body['grantControls'] = ['operator' => 'OR', 'builtInControls' => ['block']];
+                break;
+        }
+
+        $result = $this->graph->post('/identity/conditionalAccessPolicies', $body);
+        $this->graph->getCache()->forget('ca_policies');
+        return $result;
+    }
+
+    /**
+     * Toggle policy state: enabled | disabled | enabledForReportingButNotEnforced.
+     */
+    public function toggleState(string $id, string $newState): void
+    {
+        $allowed = ['enabled', 'disabled', 'enabledForReportingButNotEnforced'];
+        if (!in_array($newState, $allowed, true)) {
+            throw new \InvalidArgumentException('Ungültiger Status: ' . $newState);
+        }
+        $this->graph->patch('/identity/conditionalAccessPolicies/' . $id, ['state' => $newState]);
+        $this->graph->getCache()->forget('ca_policies');
+    }
+
+    /**
+     * Delete a Conditional Access policy by ID.
+     */
+    public function deletePolicy(string $id): void
+    {
+        $this->graph->delete('/identity/conditionalAccessPolicies/' . $id);
+        $this->graph->getCache()->forget('ca_policies');
+    }
+
+    /**
      * Analyse policies for common security gaps.
      * Returns an array of findings, each with: type (ok/warning/missing), title, detail.
      */
@@ -152,7 +228,23 @@ class ConditionalAccessService
                 'detail' => 'Keine Richtlinie reagiert auf risikoreiche Anmeldungen. Mit Entra ID P2 ist Echtzeit-Risikoschutz möglich.'];
         }
 
-        // ── 6. No policy at all
+        // ── 6. Country / Location block
+        $countryBlock = array_filter($enabled, function ($p) {
+            $locations = $p['conditions']['locations'] ?? [];
+            $grants    = $p['grantControls']['builtInControls'] ?? [];
+            $hasBlock  = in_array('block', $grants, true);
+            $hasLoc    = !empty($locations['excludeLocations']) && in_array('All', $locations['includeLocations'] ?? [], true);
+            return $hasBlock && $hasLoc;
+        });
+        if (!empty($countryBlock)) {
+            $findings[] = ['type' => 'ok', 'category' => 'Standort', 'title' => 'Länder-Blockierung aktiv',
+                'detail' => 'Mindestens eine Richtlinie blockiert Anmeldungen basierend auf dem geografischen Standort.'];
+        } else {
+            $findings[] = ['type' => 'warning', 'category' => 'Standort', 'title' => 'Keine Länder-Blockierung',
+                'detail' => 'Keine Richtlinie beschränkt Anmeldungen auf bestimmte Länder. Empfohlen wenn Anmeldungen aus fremden Ländern unerwünscht sind.'];
+        }
+
+        // ── 7. No policy at all
         if (empty($policies)) {
             $findings = [['type' => 'missing', 'category' => 'Allgemein', 'title' => 'Keine Conditional-Access-Richtlinien',
                 'detail' => 'Im Tenant sind keinerlei CA-Richtlinien konfiguriert. Zugriff auf Microsoft 365 ist ohne Einschränkungen möglich.']];

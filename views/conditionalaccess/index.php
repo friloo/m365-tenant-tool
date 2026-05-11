@@ -2,13 +2,26 @@
 $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 
 $stateLabel = [
-    'enabled'                                => ['label' => 'Aktiv',        'class' => 'success'],
-    'enabledForReportingButNotEnforced'      => ['label' => 'Report-only',  'class' => 'warning'],
-    'disabled'                               => ['label' => 'Deaktiviert',  'class' => 'secondary'],
+    'enabled'                           => ['label' => 'Aktiv',       'class' => 'success'],
+    'enabledForReportingButNotEnforced' => ['label' => 'Report-only', 'class' => 'warning'],
+    'disabled'                          => ['label' => 'Deaktiviert', 'class' => 'secondary'],
 ];
-$gapIcon = ['ok' => 'check-circle-fill', 'warning' => 'exclamation-triangle-fill', 'missing' => 'x-circle-fill'];
-$gapClass = ['ok' => 'success', 'warning' => 'warning', 'missing' => 'danger'];
+$gapIcon  = ['ok' => 'check-circle-fill',         'warning' => 'exclamation-triangle-fill', 'missing' => 'x-circle-fill'];
+$gapClass = ['ok' => 'success',                    'warning' => 'warning',                   'missing' => 'danger'];
 ?>
+
+<?php if ($flash ?? null): ?>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <i class="bi bi-check-circle-fill me-2"></i><?= $e($flash) ?>
+  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<?php endif ?>
+<?php if ($error ?? null): ?>
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <i class="bi bi-x-circle-fill me-2"></i><?= $e($error) ?>
+  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<?php endif ?>
 
 <?php if ($lastError): ?>
 <div class="alert alert-warning mb-3">
@@ -46,7 +59,10 @@ $gapClass = ['ok' => 'success', 'warning' => 'warning', 'missing' => 'danger'];
   </div>
 </div>
 
-<div class="d-flex justify-content-end mb-3">
+<div class="d-flex gap-2 justify-content-end mb-3">
+  <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCreate">
+    <i class="bi bi-plus-circle me-1"></i>Neue Richtlinie
+  </button>
   <a href="?refresh=1" class="btn btn-outline-secondary btn-sm">
     <i class="bi bi-arrow-clockwise"></i> Neu laden
   </a>
@@ -63,13 +79,24 @@ $gapClass = ['ok' => 'success', 'warning' => 'warning', 'missing' => 'danger'];
         <div class="text-<?= $gapClass[$gap['type']] ?> fs-5 mt-1">
           <i class="bi bi-<?= $gapIcon[$gap['type']] ?>"></i>
         </div>
-        <div>
+        <div class="flex-grow-1">
           <div class="fw-semibold">
             <span class="badge bg-light text-dark border me-1 small"><?= $e($gap['category']) ?></span>
             <?= $e($gap['title']) ?>
           </div>
           <div class="text-muted small mt-1"><?= $e($gap['detail']) ?></div>
         </div>
+        <?php if ($gap['type'] === 'missing'): ?>
+        <button class="btn btn-outline-primary btn-sm flex-shrink-0"
+                data-bs-toggle="modal" data-bs-target="#modalCreate"
+                data-template="<?= match(true) {
+                    str_contains($gap['title'], 'MFA für alle')  => 'mfa_all',
+                    str_contains($gap['title'], 'Legacy')         => 'block_legacy',
+                    default                                        => 'mfa_all',
+                } ?>">
+          <i class="bi bi-plus-circle me-1"></i>Anlegen
+        </button>
+        <?php endif ?>
       </div>
     </li>
     <?php endforeach ?>
@@ -84,7 +111,10 @@ $gapClass = ['ok' => 'success', 'warning' => 'warning', 'missing' => 'danger'];
     <span class="badge bg-secondary"><?= count($policies) ?></span>
   </div>
   <?php if (empty($policies)): ?>
-  <div class="card-body text-muted">Keine Conditional-Access-Richtlinien gefunden.</div>
+  <div class="card-body text-muted">
+    Keine Conditional-Access-Richtlinien gefunden.
+    <a href="#" data-bs-toggle="modal" data-bs-target="#modalCreate">Jetzt anlegen →</a>
+  </div>
   <?php else: ?>
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0" id="tblCa">
@@ -105,22 +135,56 @@ $gapClass = ['ok' => 'success', 'warning' => 'warning', 'missing' => 'danger'];
           $state = $p['state'] ?? 'disabled';
           $sc    = $stateLabel[$state] ?? ['label' => $state, 'class' => 'secondary'];
           $sum   = $p['_summary'];
+          $pid   = $e($p['id']);
         ?>
         <tr>
           <td class="fw-semibold"><?= $e($p['displayName'] ?? '–') ?></td>
-          <td><span class="badge bg-<?= $sc['class'] ?>"><?= $e($sc['label']) ?></span></td>
+          <td>
+            <div class="dropdown">
+              <button class="btn btn-<?= $sc['class'] ?> btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                <?= $e($sc['label']) ?>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-sm">
+                <?php
+                $stateOptions = [
+                    'enabled'                           => 'Aktivieren',
+                    'enabledForReportingButNotEnforced' => 'Report-only',
+                    'disabled'                          => 'Deaktivieren',
+                ];
+                foreach ($stateOptions as $val => $label): ?>
+                <li>
+                  <form method="POST" action="/conditionalaccess/<?= $pid ?>/toggle">
+                    <input type="hidden" name="state" value="<?= $e($val) ?>">
+                    <button class="dropdown-item <?= $val === $state ? 'active' : '' ?>" type="submit"
+                            <?= $val === 'enabled' ? 'onclick="return confirm(\'Richtlinie jetzt aktivieren? Teste sie zuerst im Report-Modus.\')"' : '' ?>>
+                      <?= $e($label) ?>
+                    </button>
+                  </form>
+                </li>
+                <?php endforeach ?>
+              </ul>
+            </div>
+          </td>
           <td class="small"><?= $e($sum['users']) ?></td>
           <td class="small"><?= $e($sum['apps']) ?></td>
           <td class="small"><?= $e($sum['grant']) ?></td>
           <td class="text-muted small"><?= $p['createdDateTime'] ? date('d.m.Y', strtotime($p['createdDateTime'])) : '–' ?></td>
-          <td>
-            <button class="btn btn-outline-secondary btn-sm" type="button"
-                    data-bs-toggle="collapse" data-bs-target="#ca-<?= $e($p['id']) ?>">
-              <i class="bi bi-chevron-down"></i>
-            </button>
+          <td class="text-end">
+            <div class="d-flex gap-1 justify-content-end">
+              <button class="btn btn-outline-secondary btn-sm" type="button"
+                      data-bs-toggle="collapse" data-bs-target="#ca-<?= $pid ?>" title="Details">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+              <form method="POST" action="/conditionalaccess/<?= $pid ?>/delete"
+                    onsubmit="return confirm('Richtlinie «<?= $e(addslashes($p['displayName'] ?? '')) ?>» wirklich löschen?\nDieser Vorgang kann nicht rückgängig gemacht werden.')">
+                <button class="btn btn-outline-danger btn-sm" title="Löschen">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </form>
+            </div>
           </td>
         </tr>
-        <tr class="collapse" id="ca-<?= $e($p['id']) ?>">
+        <tr class="collapse" id="ca-<?= $pid ?>">
           <td colspan="7" class="bg-light py-3 px-4">
             <div class="row g-3 small">
               <div class="col-md-6">
@@ -155,6 +219,160 @@ $gapClass = ['ok' => 'success', 'warning' => 'warning', 'missing' => 'danger'];
 
 <div class="alert alert-info small mb-0">
   <i class="bi bi-info-circle-fill me-1"></i>
-  Verwaltung im <a href="https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Overview" target="_blank" rel="noopener noreferrer">Microsoft Entra Admin Center → Conditional Access</a>.
-  Für Änderungen wird <code>Policy.ReadWrite.ConditionalAccess</code> benötigt.
+  Verwaltung auch im <a href="https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Overview" target="_blank" rel="noopener noreferrer">Microsoft Entra Admin Center → Conditional Access</a>.
+  Neue Richtlinien werden immer im <strong>Report-only Modus</strong> angelegt — erst testen, dann aktivieren.
 </div>
+
+<!-- ── Modal: Neue CA-Richtlinie ─────────────────────────────── -->
+<div class="modal fade" id="modalCreate" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form method="POST" action="/conditionalaccess/create" id="formCreateCa">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-shield-plus me-2"></i>Neue Richtlinie anlegen</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+
+          <!-- Template picker -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Vorlage</label>
+            <div class="row g-2">
+              <div class="col-md-4">
+                <input type="radio" class="btn-check" name="template" id="tplCountry" value="country_block">
+                <label class="btn btn-outline-danger w-100 h-100 text-start p-3" for="tplCountry">
+                  <i class="bi bi-geo-alt-fill d-block fs-4 mb-1"></i>
+                  <strong>Länder blockieren</strong>
+                  <div class="small text-muted mt-1">Alle Anmeldungen außerhalb erlaubter Länder blockieren.</div>
+                </label>
+              </div>
+              <div class="col-md-4">
+                <input type="radio" class="btn-check" name="template" id="tplMfa" value="mfa_all" checked>
+                <label class="btn btn-outline-primary w-100 h-100 text-start p-3" for="tplMfa">
+                  <i class="bi bi-shield-check d-block fs-4 mb-1"></i>
+                  <strong>MFA für alle</strong>
+                  <div class="small text-muted mt-1">Multi-Faktor-Authentifizierung für alle Benutzer erzwingen.</div>
+                </label>
+              </div>
+              <div class="col-md-4">
+                <input type="radio" class="btn-check" name="template" id="tplLegacy" value="block_legacy">
+                <label class="btn btn-outline-warning w-100 h-100 text-start p-3" for="tplLegacy">
+                  <i class="bi bi-ban d-block fs-4 mb-1"></i>
+                  <strong>Legacy-Auth blockieren</strong>
+                  <div class="small text-muted mt-1">Alte Protokolle (IMAP, POP, SMTP Auth) blockieren.</div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Country location picker (only for country_block) -->
+          <div id="rowLocation" class="mb-3" style="display:none">
+            <label class="form-label fw-semibold">
+              Erlaubter Länder-Standort <span class="text-danger">*</span>
+            </label>
+            <?php if (empty($countryLocations)): ?>
+            <div class="alert alert-warning small">
+              <i class="bi bi-exclamation-triangle-fill me-1"></i>
+              Kein Länder-Standort vorhanden. Erst auf der
+              <a href="/namedlocations">Named Locations Seite</a> einen Länder-Standort anlegen.
+            </div>
+            <?php else: ?>
+            <select name="namedLocationId" class="form-select" id="selLocation">
+              <option value="">– Bitte wählen –</option>
+              <?php foreach ($countryLocations as $loc): ?>
+              <option value="<?= $e($loc['id']) ?>">
+                <?= $e($loc['displayName']) ?>
+                (<?= $e(implode(', ', $loc['countriesAndRegions'] ?? [])) ?>)
+              </option>
+              <?php endforeach ?>
+            </select>
+            <div class="form-text">
+              Anmeldungen aus Ländern, die in dieser Liste stehen, werden erlaubt — alle anderen blockiert.
+            </div>
+            <?php endif ?>
+          </div>
+
+          <!-- Name -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Name der Richtlinie <span class="text-danger">*</span></label>
+            <input type="text" name="displayName" id="inpName" class="form-control" required
+                   maxlength="256" placeholder="z.B. Block: Nicht-DACH-Länder">
+          </div>
+
+          <!-- Break-glass exclusion -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Break-Glass-Konto ausschließen</label>
+            <input type="text" name="excludeUserId" class="form-control font-monospace" id="inpExclude"
+                   placeholder="Object-ID des Notfall-Admins (optional, empfohlen)">
+            <div class="form-text">
+              Die Object-ID findest du in
+              <a href="https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers" target="_blank" rel="noopener noreferrer">Entra ID → Benutzer</a>.
+              Mehrere IDs kommagetrennt.
+            </div>
+          </div>
+
+          <!-- Initial state -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Anfangsstatus</label>
+            <select name="state" class="form-select">
+              <option value="enabledForReportingButNotEnforced" selected>
+                Report-only (empfohlen — erst testen!)
+              </option>
+              <option value="disabled">Deaktiviert</option>
+              <option value="enabled">Sofort aktivieren (Vorsicht!)</option>
+            </select>
+          </div>
+
+          <div class="alert alert-warning small mb-0">
+            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+            Neue Richtlinien sollten immer im <strong>Report-only-Modus</strong> gestartet werden.
+            Im Report-Modus kannst du im Sign-in-Log prüfen, wen die Richtlinie betreffen würde,
+            bevor du sie aktivierst. Sorgfältig: Ein Break-Glass-Konto ausschließen ist Pflicht!
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>Richtlinie erstellen
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // Show/hide location picker based on template
+  const radios = document.querySelectorAll('[name="template"]');
+  const rowLoc = document.getElementById('rowLocation');
+  const inpName = document.getElementById('inpName');
+
+  const templates = {
+    country_block: 'Block: Nicht-DACH-Länder',
+    mfa_all:       'Require MFA – Alle Benutzer',
+    block_legacy:  'Block: Legacy-Authentifizierung',
+  };
+
+  function onTemplateChange() {
+    const val = document.querySelector('[name="template"]:checked')?.value;
+    rowLoc.style.display = val === 'country_block' ? '' : 'none';
+    if (inpName.value === '' || Object.values(templates).includes(inpName.value)) {
+      inpName.value = templates[val] ?? '';
+    }
+  }
+
+  radios.forEach(r => r.addEventListener('change', onTemplateChange));
+  onTemplateChange();
+
+  // Pre-select template when opened from gap analysis buttons
+  const modal = document.getElementById('modalCreate');
+  modal.addEventListener('show.bs.modal', function (ev) {
+    const tpl = ev.relatedTarget?.dataset?.template;
+    if (tpl) {
+      const radio = document.getElementById({ country_block: 'tplCountry', mfa_all: 'tplMfa', block_legacy: 'tplLegacy' }[tpl]);
+      if (radio) { radio.checked = true; onTemplateChange(); }
+    }
+  });
+})();
+</script>

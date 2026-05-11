@@ -192,9 +192,15 @@ $router->get('/exchangemigration',                [\App\Modules\ExchangeMigratio
 
 // Conditional Access
 $router->get('/conditionalaccess',                [\App\Modules\ConditionalAccess\ConditionalAccessController::class, 'index']);
+$router->post('/conditionalaccess/create',        [\App\Modules\ConditionalAccess\ConditionalAccessController::class, 'create']);
+$router->post('/conditionalaccess/{id}/toggle',   [\App\Modules\ConditionalAccess\ConditionalAccessController::class, 'toggleState']);
+$router->post('/conditionalaccess/{id}/delete',   [\App\Modules\ConditionalAccess\ConditionalAccessController::class, 'deletePolicy']);
 
 // Named Locations
-$router->get('/namedlocations',                   [\App\Modules\NamedLocations\NamedLocationsController::class, 'index']);
+$router->get('/namedlocations',                          [\App\Modules\NamedLocations\NamedLocationsController::class, 'index']);
+$router->post('/namedlocations/create-country',          [\App\Modules\NamedLocations\NamedLocationsController::class, 'createCountry']);
+$router->post('/namedlocations/create-ip',               [\App\Modules\NamedLocations\NamedLocationsController::class, 'createIp']);
+$router->post('/namedlocations/{id}/delete',             [\App\Modules\NamedLocations\NamedLocationsController::class, 'delete']);
 
 // License Costs
 $router->get('/licensecosts',                     [\App\Modules\LicenseCosts\LicenseCostsController::class, 'index']);
