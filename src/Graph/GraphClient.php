@@ -222,21 +222,47 @@ class GraphClient
 
         $token = $this->tokenManager->getToken();
 
+        // Step 1: hit Graph with auth — do NOT auto-follow the redirect so that
+        // we can strip the Authorization header before hitting the CDN location.
         $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_HEADER         => true,
             CURLOPT_HTTPHEADER     => [
                 'Authorization: Bearer ' . $token,
                 'Accept: application/json',
             ],
-            CURLOPT_TIMEOUT        => 60,
+            CURLOPT_TIMEOUT        => 30,
         ]);
-        $response = curl_exec($ch);
+        $raw      = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $hdrSize  = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close($ch);
 
-        if ($httpCode >= 400 || !$response) {
+        $response = '';
+
+        if ($httpCode === 302 || $httpCode === 301) {
+            // Extract Location header and follow without Authorization
+            $headers  = substr((string)$raw, 0, $hdrSize);
+            if (preg_match('/^Location:\s*(\S+)/im', $headers, $m)) {
+                $location = trim($m[1]);
+                $ch2 = curl_init($location);
+                curl_setopt_array($ch2, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTPHEADER     => ['Accept: application/json'],
+                    CURLOPT_TIMEOUT        => 60,
+                ]);
+                $response = (string)curl_exec($ch2);
+                $httpCode = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
+                curl_close($ch2);
+            }
+        } elseif ($httpCode === 200) {
+            $response = (string)substr((string)$raw, $hdrSize);
+        }
+
+        if ($httpCode >= 400 || $response === '') {
             error_log("Graph Reports API error ({$httpCode}) on {$url}");
             return [];
         }
