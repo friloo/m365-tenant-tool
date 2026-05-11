@@ -14,14 +14,25 @@ class MfaMethodsService
     public static function methodLabels(): array
     {
         return [
-            'microsoftAuthenticatorPush' => 'Microsoft Authenticator (Push)',
-            'softwareOneTimePasscode'    => 'Authenticator App (TOTP)',
-            'phoneAuthentication'        => 'SMS / Anruf',
-            'hardwareOneTimePasscode'    => 'Hardware-Token (TOTP)',
-            'fido2SecurityKey'           => 'FIDO2-Sicherheitsschlüssel',
-            'windowsHelloForBusiness'    => 'Windows Hello',
-            'email'                      => 'E-Mail OTP',
-            'temporaryAccessPass'        => 'Temporärer Zugangscode',
+            'microsoftAuthenticatorPush'         => 'Microsoft Authenticator (Push)',
+            'microsoftAuthenticatorPasswordless' => 'Microsoft Authenticator (Passwordless)',
+            'softwareOneTimePasscode'            => 'Authenticator App (TOTP)',
+            'hardwareOneTimePasscode'            => 'Hardware-Token (TOTP)',
+            'phoneAuthentication'                => 'SMS / Anruf',
+            'mobilePhone'                        => 'SMS / Anruf (Mobil)',
+            'alternateMobilePhone'               => 'SMS / Anruf (Alt. Mobil)',
+            'officePhone'                        => 'Bürotelefon',
+            'voiceCall'                          => 'Sprachanruf',
+            'fido2SecurityKey'                   => 'FIDO2-Sicherheitsschlüssel',
+            'passKey'                            => 'Passkey',
+            'passKeyDeviceBound'                 => 'Passkey (gerätegebunden)',
+            'windowsHelloForBusiness'            => 'Windows Hello',
+            'email'                              => 'E-Mail OTP',
+            'temporaryAccessPass'                => 'Temporärer Zugangscode',
+            'securityQuestion'                   => 'Sicherheitsfrage',
+            'appNotification'                    => 'App-Benachrichtigung',
+            'appCode'                            => 'App-Code',
+            'appPassword'                        => 'App-Passwort',
         ];
     }
 
