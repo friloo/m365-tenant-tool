@@ -33,7 +33,7 @@ class QueueWorker
     private function fetchNext(): ?array
     {
         // Claim the job atomically: update first, then fetch
-        DB::execute(
+        $affected = DB::execute(
             "UPDATE job_queue
              SET status = 'processing', attempts = attempts + 1, updated_at = NOW()
              WHERE status = 'pending'
@@ -42,7 +42,7 @@ class QueueWorker
              LIMIT 1"
         );
 
-        if (DB::rowCount() === 0) return null;
+        if ($affected === 0) return null;
 
         return DB::fetchOne(
             "SELECT * FROM job_queue WHERE status = 'processing' ORDER BY id ASC LIMIT 1"

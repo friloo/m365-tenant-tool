@@ -70,21 +70,19 @@ class QueueDispatcher
     /** Retry all failed jobs (reset to pending, clear error). */
     public static function retryFailed(): int
     {
-        DB::execute(
+        return DB::execute(
             "UPDATE job_queue SET status = 'pending', attempts = 0, last_error = NULL,
              available_at = NOW() WHERE status = 'failed'"
         );
-        return (int)DB::rowCount();
     }
 
     /** Delete completed jobs older than X hours (housekeeping). */
     public static function pruneCompleted(int $olderThanHours = 24): int
     {
-        DB::execute(
+        return DB::execute(
             "DELETE FROM job_queue WHERE status = 'done'
              AND processed_at < DATE_SUB(NOW(), INTERVAL ? HOUR)",
             [$olderThanHours]
         );
-        return (int)DB::rowCount();
     }
 }
