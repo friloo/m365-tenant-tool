@@ -210,7 +210,7 @@ class CronRunner
                 'default_interval' => 60,
                 'handler'          => function () use ($graph): string {
                     $service = new ShareReviewService($graph);
-                    $n = $service->sendDueReviewEmails();
+                    $n = count($service->sendDueReviewEmails());
                     return "{$n} E-Mail(s) gesendet";
                 },
             ],
@@ -221,7 +221,7 @@ class CronRunner
                 'default_interval' => 60,
                 'handler'          => function () use ($graph): string {
                     $service = new ShareReviewService($graph);
-                    $n = $service->autoRevokeOverdue();
+                    $n = count($service->autoRevokeOverdue());
                     return "{$n} Freigabe(n) widerrufen";
                 },
             ],
