@@ -57,7 +57,16 @@ class DevicesController
             app_service(DevicesService::class)->syncDevice($id);
             Session::flash('success', 'Synchronisation angefordert. Das Gerät wird sich beim nächsten Check-In aktualisieren.');
         } catch (\Throwable $e) {
-            Session::flash('error', 'Synchronisation fehlgeschlagen: ' . $e->getMessage());
+            $msg = $e->getMessage();
+            if (str_contains($msg, 'PrivilegedOperations') || str_contains($msg, 'not authorized')) {
+                Session::flash('error',
+                    'Synchronisation fehlgeschlagen: Fehlende Berechtigung <strong>DeviceManagementManagedDevices.PrivilegedOperations.All</strong>. ' .
+                    'Bitte in Azure AD → App-Registrierungen → deine App → API-Berechtigungen hinzufügen und Admin-Consent erteilen. ' .
+                    '<a href="https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/CallAnAPI" target="_blank" rel="noopener noreferrer">Azure AD öffnen →</a>'
+                );
+            } else {
+                Session::flash('error', 'Synchronisation fehlgeschlagen: ' . $msg);
+            }
         }
         Redirect::to('/devices/' . $id);
     }

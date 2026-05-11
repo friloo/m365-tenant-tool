@@ -302,6 +302,8 @@ $router->get('/settings/clear-cache',             [\App\Modules\Settings\Setting
 $router->get('/settings/test-mail',               [\App\Modules\Settings\SettingsController::class, 'testMail']);
 $router->get('/settings/permissions',             [\App\Modules\Settings\SettingsController::class, 'permissions']);
 $router->get('/settings/refresh-token',           [\App\Modules\Settings\SettingsController::class, 'refreshToken']);
+$router->get('/settings/license-prices',          [\App\Modules\Settings\SettingsController::class, 'licensePrice']);
+$router->post('/settings/license-prices/save',    [\App\Modules\Settings\SettingsController::class, 'saveLicensePrice']);
 
 // User management (M365 users with tool access)
 $router->get('/settings/users',                 [\App\Modules\Settings\UserManagementController::class, 'index']);

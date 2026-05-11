@@ -142,7 +142,11 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
         <?php endif; ?>
     </div>
     <div class="card-body-custom">
-        <?php if (empty($activeUsers) || $activeUsers['total'] === 0): ?>
+        <?php
+        $hasAnyServiceData = ($activeUsers['exchange'] ?? 0) + ($activeUsers['teams'] ?? 0)
+                           + ($activeUsers['sharepoint'] ?? 0) + ($activeUsers['onedrive'] ?? 0) > 0;
+        ?>
+        <?php if (empty($activeUsers) || !$hasAnyServiceData): ?>
             <div class="empty-state">
                 <i class="bi bi-shield-exclamation text-muted" style="font-size:2.5rem;"></i>
                 <p class="mt-3 mb-1 fw-medium">Keine Adoption-Daten verfügbar</p>

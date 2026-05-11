@@ -201,6 +201,40 @@ class LicenseAdvisorService
     public function __construct(private GraphClient $graph) {}
 
     /**
+     * Returns price_eur and price_npo_eur for a SKU part number,
+     * preferring admin-configured values from Config over catalog defaults.
+     */
+    public function resolvePrice(string $partNum): array
+    {
+        $config  = Config::getInstance();
+        $catalog = self::LICENSE_CATALOG[$partNum] ?? null;
+
+        $eur    = $config->get('lic_price_eur_' . $partNum, '');
+        $npo    = $config->get('lic_price_npo_eur_' . $partNum, '');
+
+        return [
+            'price_eur'     => $eur !== '' ? (float)$eur : ($catalog['price_eur']     ?? null),
+            'price_npo_eur' => $npo !== '' ? (float)$npo : ($catalog['price_npo_eur'] ?? null),
+        ];
+    }
+
+    /**
+     * Save admin-configured prices for all catalog SKUs.
+     * Called from Settings controller.
+     */
+    public function savePrices(array $post): void
+    {
+        $config = Config::getInstance();
+        foreach (array_keys(self::LICENSE_CATALOG) as $partNum) {
+            $eur = trim($post['price_eur'][$partNum] ?? '');
+            $npo = trim($post['price_npo_eur'][$partNum] ?? '');
+            // Allow empty string to mean "use catalog default"
+            $config->set('lic_price_eur_' . $partNum,     $eur);
+            $config->set('lic_price_npo_eur_' . $partNum, $npo);
+        }
+    }
+
+    /**
      * Fetches all subscribed SKUs and enriches each with the criteria keys it satisfies.
      */
     public function getSkusWithCriteria(): array
@@ -228,6 +262,7 @@ class LicenseAdvisorService
             $enabled   = (int)($sku['prepaidUnits']['enabled'] ?? 0);
             $partNum   = $sku['skuPartNumber'] ?? '';
             $catalog   = self::LICENSE_CATALOG[$partNum] ?? null;
+            $prices    = $this->resolvePrice($partNum);
 
             $result[] = [
                 'skuId'         => $sku['skuId'] ?? '',
@@ -240,9 +275,9 @@ class LicenseAdvisorService
                 'pct'           => $enabled > 0 ? round(($consumed / $enabled) * 100) : 0,
                 'metCriteria'   => $metCriteria,
                 'inTenant'      => true,
-                'price_eur'     => $catalog['price_eur']     ?? null,
-                'price_npo_eur' => $catalog['price_npo_eur'] ?? null,
-                'tier'          => $catalog['tier']          ?? null,
+                'price_eur'     => $prices['price_eur'],
+                'price_npo_eur' => $prices['price_npo_eur'],
+                'tier'          => $catalog['tier'] ?? null,
             ];
         }
 
@@ -262,6 +297,7 @@ class LicenseAdvisorService
         $result = [];
         foreach (self::LICENSE_CATALOG as $partNum => $def) {
             if (isset($owned[$partNum])) continue;
+            $prices = $this->resolvePrice($partNum);
             $result[] = [
                 'skuId'         => '',
                 'partNumber'    => $partNum,
@@ -273,9 +309,9 @@ class LicenseAdvisorService
                 'pct'           => 0,
                 'metCriteria'   => $def['criteria'],
                 'inTenant'      => false,
-                'price_eur'     => $def['price_eur']     ?? null,
-                'price_npo_eur' => $def['price_npo_eur'] ?? null,
-                'tier'          => $def['tier']          ?? null,
+                'price_eur'     => $prices['price_eur'],
+                'price_npo_eur' => $prices['price_npo_eur'],
+                'tier'          => $def['tier'] ?? null,
             ];
         }
         return $result;

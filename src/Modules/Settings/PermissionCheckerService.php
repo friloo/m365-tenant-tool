@@ -109,6 +109,12 @@ class PermissionCheckerService
                 'write'    => false,
             ],
             // ── Security ──────────────────────────────────────────────
+            'Policy.Read.All' => [
+                'desc'     => 'Alle Richtlinien lesen (CA, Named Locations)',
+                'features' => ['Conditional Access (Übersicht & Analyse)', 'Named Locations', 'Sicherheit (CA-Richtlinien)'],
+                'section'  => 'Sicherheit',
+                'write'    => false,
+            ],
             'Policy.ReadWrite.ConditionalAccess' => [
                 'desc'     => 'Conditional Access Richtlinien lesen und schreiben',
                 'features' => ['Sicherheit (CA-Richtlinien anzeigen)', 'CA-Richtlinie aktivieren/deaktivieren'],
@@ -148,11 +154,17 @@ class PermissionCheckerService
             // ── Devices ──────────────────────────────────────────────
             'DeviceManagementManagedDevices.ReadWrite.All' => [
                 'desc'     => 'Intune-Geräte lesen und verwalten',
-                'features' => ['Geräte (Liste & Detail)', 'Gerät synchronisieren', 'Gerät zurücksetzen (Retire)', 'Gerät wischen (Wipe)'],
+                'features' => ['Geräte (Liste & Detail)', 'Gerät zurücksetzen (Retire)', 'Gerät wischen (Wipe)'],
                 'section'  => 'Geräte & Compliance',
                 'write'    => true,
             ],
-            'BitlockerKey.Read.All' => [
+            'DeviceManagementManagedDevices.PrivilegedOperations.All' => [
+                'desc'     => 'Privilegierte Intune-Aktionen (Sync, Retire, Wipe)',
+                'features' => ['Gerät synchronisieren (syncDevice)', 'Retire / Wipe'],
+                'section'  => 'Geräte & Compliance',
+                'write'    => true,
+            ],
+            'BitLockerKey.Read.All' => [
                 'desc'     => 'BitLocker-Wiederherstellungsschlüssel lesen',
                 'features' => ['Gerät: BitLocker-Schlüssel anzeigen'],
                 'section'  => 'Geräte & Compliance',
