@@ -40,7 +40,7 @@ class UsersService
         try {
             $data = $this->graph->paginate(
                 '/reports/authenticationMethods/userRegistrationDetails',
-                ['$select' => 'id,userPrincipalName,userDisplayName,isMfaRegistered,isMfaCapable,methodsRegistered,defaultMfaMethod', '$top' => '999'],
+                ['$top' => '999'],
                 50,
                 'mfa_methods_detail',
                 1800

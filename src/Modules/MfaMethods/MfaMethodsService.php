@@ -44,12 +44,12 @@ class MfaMethodsService
      */
     public function getAll(): array
     {
-        // Try the modern endpoint first — defaultMfaMethod is not a valid field on this API version.
+        // Try the modern endpoint first. No $select so all fields (incl. defaultMfaMethod) are returned.
         try {
             $users = $this->graph->paginate(
                 '/reports/authenticationMethods/userRegistrationDetails',
                 [
-                    '$select' => 'id,userPrincipalName,userDisplayName,isMfaRegistered,isMfaCapable,methodsRegistered,defaultMfaMethod',
+                    // no $select → Graph returns all fields incl. defaultMfaMethod
                     '$top'    => '999',
                 ],
                 50,
