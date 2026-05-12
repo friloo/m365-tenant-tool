@@ -8,6 +8,74 @@ class DashboardService
 {
     public function __construct(private GraphClient $graph) {}
 
+    public function getSecurityStatus(): array
+    {
+        $status = [
+            'mfa_registered'   => null,
+            'mfa_total'        => null,
+            'mfa_pct'          => null,
+            'ca_enabled'       => null,
+            'ca_report_only'   => null,
+            'non_compliant'    => null,
+            'unresolved_alerts'=> null,
+        ];
+
+        // MFA: reuse cache already populated by MfaMethods module
+        try {
+            $mfaData = $this->graph->paginate(
+                '/reports/authenticationMethods/userRegistrationDetails',
+                ['$select' => 'isMfaRegistered', '$top' => '999'],
+                50,
+                'mfa_methods_detail',
+                1800
+            );
+            if (!empty($mfaData)) {
+                $status['mfa_total']      = count($mfaData);
+                $status['mfa_registered'] = count(array_filter($mfaData, fn($r) => $r['isMfaRegistered'] ?? false));
+                $status['mfa_pct']        = $status['mfa_total'] > 0
+                    ? round(($status['mfa_registered'] / $status['mfa_total']) * 100)
+                    : 0;
+            }
+        } catch (\Throwable) {}
+
+        // CA policies: reuse cache populated by CA module
+        try {
+            $caPolicies = $this->graph->get(
+                '/identity/conditionalAccessPolicies',
+                ['$top' => '200'],
+                'ca_policies',
+                900
+            );
+            $policies = $caPolicies['value'] ?? [];
+            $status['ca_enabled']     = count(array_filter($policies, fn($p) => ($p['state'] ?? '') === 'enabled'));
+            $status['ca_report_only'] = count(array_filter($policies, fn($p) => ($p['state'] ?? '') === 'enabledForReportingButNotEnforced'));
+        } catch (\Throwable) {}
+
+        // Non-compliant Intune devices
+        try {
+            $nonComp = $this->graph->getEventual(
+                '/deviceManagement/managedDevices',
+                ['$count' => 'true', '$top' => '1', '$select' => 'id', '$filter' => "complianceState eq 'noncompliant'"],
+                'dash_noncompliant',
+                600
+            );
+            $status['non_compliant'] = (int)($nonComp['@odata.count'] ?? count($nonComp['value'] ?? []));
+        } catch (\Throwable) {}
+
+        // Unresolved Defender alerts
+        try {
+            $alerts = $this->graph->get(
+                '/security/alerts_v2',
+                ['$filter' => "status eq 'new' or status eq 'inProgress'", '$top' => '1', '$count' => 'true'],
+                'dash_alerts',
+                300
+            );
+            $status['unresolved_alerts'] = (int)($alerts['@odata.count'] ?? count($alerts['value'] ?? []));
+        } catch (\Throwable) {}
+
+        return $status;
+    }
+
     public function getMetrics(): array
     {
         $metrics = [];
