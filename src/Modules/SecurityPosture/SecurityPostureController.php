@@ -11,21 +11,26 @@ class SecurityPostureController
     {
         LocalAuth::require();
 
-        $service = app_service(SecurityPostureService::class);
-        $checks  = $service->runChecks();
-        $score   = $service->getScore($checks);
+        if (isset($_GET['refresh'])) {
+            app_graph()->getCache()->flush();
+        }
 
-        // Group checks by category
+        $service         = app_service(SecurityPostureService::class);
+        $checks          = $service->runChecks();
+        $score           = $service->getScore($checks);
+        $recommendations = $service->getRecommendations($checks);
+
         $byCategory = [];
         foreach ($checks as $check) {
             $byCategory[$check['category']][] = $check;
         }
 
         View::render('securityposture/index', [
-            'pageTitle'   => 'Security Posture',
-            'checks'      => $checks,
-            'score'       => $score,
-            'byCategory'  => $byCategory,
+            'pageTitle'       => 'Security Posture',
+            'checks'          => $checks,
+            'score'           => $score,
+            'byCategory'      => $byCategory,
+            'recommendations' => $recommendations,
         ]);
     }
 }
