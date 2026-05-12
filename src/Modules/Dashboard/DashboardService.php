@@ -145,7 +145,6 @@ class DashboardService
         $s = [
             'guests'             => null,
             'teams_count'        => null,
-            'stale_count'        => null,
             'admin_assignments'  => null,
             'service_incidents'  => null,
             'incident_services'  => [],
@@ -158,102 +157,88 @@ class DashboardService
             'adoption_sharepoint'=> null,
         ];
 
-        // Guest users — reuse GuestUsersService cache
+        // Guest users — fast $count query, dedicated cache key
         try {
-            $r = $this->graph->paginate(
-                '/users', ['$select' => 'id', '$filter' => "userType eq 'Guest' and accountEnabled eq true", '$top' => '999'],
-                50, 'guests_all', 900
-            );
-            $s['guests'] = count($r);
-        } catch (\Throwable) {}
+            $r = $this->graph->getEventual('/users', [
+                '$count' => 'true', '$top' => '1', '$select' => 'id',
+                '$filter' => "userType eq 'Guest'",
+            ], 'dash_guests_count', 1800);
+            $s['guests'] = (int)($r['@odata.count'] ?? count($r['value'] ?? []));
+        } catch (\Throwable $e) { error_log('Dashboard guests: ' . $e->getMessage()); }
 
-        // Teams count — reuse TeamsPolicies cache
+        // Teams count — fast $count query, dedicated cache key
         try {
-            $r = $this->graph->paginate(
-                '/groups',
-                ['$select' => 'id', '$filter' => "resourceProvisioningOptions/Any(x:x eq 'Team')", '$top' => '999'],
-                50, 'teams_group_list', 900
-            );
-            $s['teams_count'] = count($r);
-        } catch (\Throwable) {}
+            $r = $this->graph->getEventual('/groups', [
+                '$count' => 'true', '$top' => '1', '$select' => 'id',
+                '$filter' => "resourceProvisioningOptions/Any(x:x eq 'Team')",
+            ], 'dash_teams_count', 1800);
+            $s['teams_count'] = (int)($r['@odata.count'] ?? count($r['value'] ?? []));
+        } catch (\Throwable $e) { error_log('Dashboard teams: ' . $e->getMessage()); }
 
-        // Stale accounts — reuse StaleAccounts cache (only if already warm)
+        // Admin role assignments — fast $count query, dedicated cache key
         try {
-            $r = $this->graph->paginate(
-                '/users',
-                ['$select' => 'id,signInActivity', '$filter' => 'accountEnabled eq true', '$top' => '999'],
-                50, 'stale_users_base', 3600
-            );
-            $threshold = new \DateTimeImmutable('-90 days');
-            $count = 0;
-            foreach ($r as $u) {
-                $last = $u['signInActivity']['lastSignInDateTime'] ?? null;
-                if ($last === null || new \DateTimeImmutable($last) < $threshold) $count++;
-            }
-            $s['stale_count'] = $count;
-        } catch (\Throwable) {}
+            $r = $this->graph->getEventual('/roleManagement/directory/roleAssignments', [
+                '$count' => 'true', '$top' => '1', '$select' => 'id',
+            ], 'dash_admin_count', 1800);
+            $s['admin_assignments'] = (int)($r['@odata.count'] ?? count($r['value'] ?? []));
+        } catch (\Throwable $e) { error_log('Dashboard adminroles: ' . $e->getMessage()); }
 
-        // Admin role assignments — reuse AdminRoles cache
-        try {
-            $r = $this->graph->paginate(
-                '/roleManagement/directory/roleAssignments',
-                ['$select' => 'id', '$top' => '999'],
-                50, 'admin_role_assignments', 1800
-            );
-            $s['admin_assignments'] = count($r);
-        } catch (\Throwable) {}
-
-        // Service health incidents — reuse ServiceHealth cache
+        // Service health — reuse ServiceHealth module cache (same key + format)
         try {
             $r = $this->graph->get(
                 '/admin/serviceAnnouncement/healthOverviews',
                 ['$select' => 'service,status'],
                 'servicehealth_overview', 300
             );
-            $incidents = array_filter($r['value'] ?? [], fn($i) => ($i['status'] ?? '') !== 'serviceOperational');
+            $all = is_array($r) && isset($r['value']) ? $r['value'] : (array)$r;
+            $incidents = array_filter($all, fn($i) => ($i['status'] ?? '') !== 'serviceOperational');
             $s['service_incidents'] = count($incidents);
             $s['incident_services'] = array_slice(array_column(array_values($incidents), 'service'), 0, 3);
-        } catch (\Throwable) {}
+        } catch (\Throwable $e) { error_log('Dashboard servicehealth: ' . $e->getMessage()); }
 
-        // Message Center — reuse MessageCenter cache
+        // Message Center count — reuse MessageCenter module cache (same key + format)
         try {
             $r = $this->graph->get(
                 '/admin/serviceAnnouncement/messages',
-                ['$select' => 'id', '$top' => '999'],
-                'msgcenter_messages', 1800
+                ['$select' => 'id', '$top' => '100'],
+                'msgcenter_messages', 900
             );
-            $s['msg_center_count'] = count($r['value'] ?? []);
-        } catch (\Throwable) {}
+            $msgs = is_array($r) && isset($r['value']) ? $r['value'] : [];
+            $s['msg_center_count'] = count($msgs);
+        } catch (\Throwable $e) { error_log('Dashboard msgcenter: ' . $e->getMessage()); }
 
-        // Secure Score — reuse SecureScore cache
+        // Secure Score — reuse SecureScore module cache (same key + format)
         try {
             $r = $this->graph->get(
                 '/security/secureScores',
                 ['$top' => '1', '$select' => 'currentScore,maxScore'],
                 'securescore_latest', 3600
             );
-            $latest = ($r['value'] ?? [])[0] ?? null;
-            if ($latest) {
-                $s['secure_score']     = round((float)($latest['currentScore'] ?? 0));
-                $s['secure_score_max'] = round((float)($latest['maxScore'] ?? 0));
+            $items = is_array($r) && isset($r['value']) ? $r['value'] : [];
+            if (!empty($items)) {
+                $s['secure_score']     = round((float)($items[0]['currentScore'] ?? 0));
+                $s['secure_score_max'] = round((float)($items[0]['maxScore']     ?? 0));
             }
-        } catch (\Throwable) {}
+        } catch (\Throwable $e) { error_log('Dashboard securescore: ' . $e->getMessage()); }
 
-        // Adoption — reuse AdoptionService cache
+        // Adoption — reuse AdoptionService cache (getReport returns flat array)
         try {
             $rows = $this->graph->getReport(
                 "/reports/getOffice365ActiveUserCounts(period='D30')",
                 [], 'adoption_active_user_counts', 3600
             );
             if (!empty($rows)) {
-                usort($rows, fn($a, $b) => strcmp($b['reportDate'] ?? $b['Report Date'] ?? '', $a['reportDate'] ?? $a['Report Date'] ?? ''));
+                usort($rows, fn($a, $b) => strcmp(
+                    $b['reportDate'] ?? $b['Report Date'] ?? '',
+                    $a['reportDate'] ?? $a['Report Date'] ?? ''
+                ));
                 $latest = $rows[0];
                 $s['adoption_exchange']   = (int)($latest['exchange']   ?? 0);
                 $s['adoption_teams']      = (int)($latest['teams']      ?? 0);
                 $s['adoption_onedrive']   = (int)($latest['oneDrive']   ?? $latest['onedrive']   ?? 0);
                 $s['adoption_sharepoint'] = (int)($latest['sharePoint'] ?? $latest['sharepoint'] ?? 0);
             }
-        } catch (\Throwable) {}
+        } catch (\Throwable $e) { error_log('Dashboard adoption: ' . $e->getMessage()); }
 
         return $s;
     }
