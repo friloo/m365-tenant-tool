@@ -1,6 +1,7 @@
 <?php use App\Core\View; $e = fn($v) => View::escape($v);
-$items = $summary['items'] ?? [];
-$byType = $summary['byType'] ?? [];
+$items      = $summary['items']  ?? [];
+$byType     = $summary['byType'] ?? [];
+$hasScanned = $summary['hasScanned'] ?? false;
 ?>
 
 <?php if (!empty($flash)): ?>
@@ -10,10 +11,22 @@ $byType = $summary['byType'] ?? [];
     <div class="alert alert-danger alert-dismissible mb-3"><i class="bi bi-exclamation-triangle me-2"></i><?= $e($error) ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 <?php endif; ?>
 
+<?php if (!$hasScanned): ?>
+<div class="alert alert-info mb-4">
+    <i class="bi bi-info-circle me-2"></i>
+    <strong>Noch kein Freigaben-Scan durchgeführt.</strong>
+    Starten Sie den Scan unter <a href="/cron" class="alert-link">Cron &amp; Automatisierung</a> (Job: <code>share_scan</code>),
+    um alle SharePoint-Freigaben zu erfassen. Der erste Scan kann einige Minuten dauern.
+    <div class="mt-2">
+        <a href="/cron" class="btn btn-sm btn-primary"><i class="bi bi-play-circle me-1"></i> Zum Cron-Dashboard</a>
+    </div>
+</div>
+<?php endif; ?>
+
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Externe Freigaben</div>
+            <div class="metric-label">Aktive Freigaben</div>
             <div class="metric-value"><?= number_format($summary['total'] ?? 0) ?></div>
         </div>
     </div>
@@ -49,11 +62,18 @@ $byType = $summary['byType'] ?? [];
 <div class="content-card">
     <div class="table-toolbar">
         <input type="text" id="sharingSearch" class="search-box" placeholder="Freigaben suchen…">
-        <select id="scopeFilter" class="form-select form-select-sm ms-2" style="max-width:160px;" onchange="filterSharing()">
+        <select id="scopeFilter" class="form-select form-select-sm ms-2" style="max-width:180px;" onchange="filterSharing()">
             <option value="">Alle Typen</option>
-            <option value="anonymous">Anonym</option>
-            <option value="users">Externe Benutzer</option>
-            <option value="organization">Organisation</option>
+            <option value="anonymous" <?= ($scopeFilter ?? '') === 'anonymous' ? 'selected' : '' ?>>Anonym</option>
+            <option value="users"     <?= ($scopeFilter ?? '') === 'users'     ? 'selected' : '' ?>>Externe Benutzer</option>
+            <option value="organization" <?= ($scopeFilter ?? '') === 'organization' ? 'selected' : '' ?>>Organisation</option>
+        </select>
+        <select id="statusFilter" class="form-select form-select-sm ms-2" style="max-width:180px;" onchange="applyStatusFilter()">
+            <option value=""         <?= ($statusFilter ?? '') === ''              ? 'selected' : '' ?>>Alle (ohne widerrufen)</option>
+            <option value="active"   <?= ($statusFilter ?? '') === 'active'        ? 'selected' : '' ?>>Aktiv</option>
+            <option value="confirmed"<?= ($statusFilter ?? '') === 'confirmed'     ? 'selected' : '' ?>>Bestätigt</option>
+            <option value="pending_review" <?= ($statusFilter ?? '') === 'pending_review' ? 'selected' : '' ?>>Ausstehend</option>
+            <option value="revoked"  <?= ($statusFilter ?? '') === 'revoked'       ? 'selected' : '' ?>>Widerrufen</option>
         </select>
         <a href="/sharing/export" class="btn btn-sm btn-outline-secondary ms-auto">
             <i class="bi bi-download me-1"></i> CSV
@@ -62,15 +82,24 @@ $byType = $summary['byType'] ?? [];
     <div class="table-responsive">
         <table class="data-table" id="sharingTable">
             <thead>
-                <tr><th>Typ</th><th>Name</th><th>Quelle</th><th>Freigabe-Typ</th><th>Besitzer</th><th>Geändert</th></tr>
+                <tr>
+                    <th>Name</th>
+                    <th>Standort</th>
+                    <th>Freigabe-Typ</th>
+                    <th>Besitzer</th>
+                    <th>Erstmals erkannt</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
             </thead>
             <tbody>
                 <?php foreach ($items as $item): ?>
                     <tr data-scope="<?= $e($item['scope']) ?>">
-                        <td><span class="badge-info"><?= $e($item['type']) ?></span></td>
                         <td class="fw-medium">
                             <?php if (!empty($item['url'])): ?>
-                                <a href="<?= $e($item['url']) ?>" target="_blank" class="text-decoration-none text-dark"><?= $e($item['name']) ?> <i class="bi bi-box-arrow-up-right" style="font-size:10px;"></i></a>
+                                <a href="<?= $e($item['url']) ?>" target="_blank" class="text-decoration-none text-dark">
+                                    <?= $e($item['name']) ?> <i class="bi bi-box-arrow-up-right" style="font-size:10px;"></i>
+                                </a>
                             <?php else: ?>
                                 <?= $e($item['name']) ?>
                             <?php endif; ?>
@@ -88,26 +117,104 @@ $byType = $summary['byType'] ?? [];
                                 <span class="badge-neutral"><?= $e($scope) ?></span>
                             <?php endif; ?>
                         </td>
-                        <td style="font-size:12px;"><?= $e($item['owner'] ?? '') ?></td>
+                        <td style="font-size:12px;">
+                            <?= $e($item['owner'] ?? '') ?>
+                            <?php if (!empty($item['owner_upn']) && $item['owner_upn'] !== $item['owner']): ?>
+                                <br><span style="color:#9ca3af;font-size:11px;"><?= $e($item['owner_upn']) ?></span>
+                            <?php endif; ?>
+                        </td>
                         <td style="font-size:12px;color:#6b7280;">
                             <?= !empty($item['modified']) ? date('d.m.Y', strtotime($item['modified'])) : '–' ?>
+                        </td>
+                        <td>
+                            <?php $status = $item['status'] ?? 'active'; ?>
+                            <?php if ($status === 'active'): ?>
+                                <span class="badge-info">Aktiv</span>
+                            <?php elseif ($status === 'confirmed'): ?>
+                                <span class="badge-ok">Bestätigt</span>
+                            <?php elseif ($status === 'pending_review'): ?>
+                                <span class="badge-warning">Ausstehend</span>
+                            <?php elseif ($status === 'revoked'): ?>
+                                <span class="badge-disabled">Widerrufen</span>
+                            <?php else: ?>
+                                <span class="badge-neutral"><?= $e($status) ?></span>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php if ($status !== 'revoked'): ?>
+                            <button class="btn btn-sm btn-outline-danger"
+                                    onclick="confirmRevoke(this)"
+                                    data-drive="<?= $e($item['drive_id']) ?>"
+                                    data-item="<?= $e($item['item_id']) ?>"
+                                    data-perm="<?= $e($item['permission_id']) ?>"
+                                    data-name="<?= $e($item['name']) ?>"
+                                    title="Freigabe widerrufen">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
                 <?php if (empty($items)): ?>
-                    <tr><td colspan="6" class="text-center text-muted py-4">Keine externen Freigaben gefunden</td></tr>
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <?= $hasScanned ? 'Keine Freigaben gefunden' : 'Noch kein Scan durchgeführt — siehe Hinweis oben.' ?>
+                        </td>
+                    </tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
 </div>
 
+<!-- Revoke confirmation modal -->
+<div class="modal fade" id="revokeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-x-circle text-danger me-2"></i>Freigabe widerrufen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Soll die Freigabe für <strong id="revokeName"></strong> widerrufen werden?</p>
+                <p class="text-muted" style="font-size:13px;">Diese Aktion entfernt die Berechtigung dauerhaft in SharePoint und kann nicht rückgängig gemacht werden.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <form id="revokeForm" method="post" action="/sharing/revoke">
+                    <input type="hidden" name="drive_id"      id="rDriveId">
+                    <input type="hidden" name="item_id"       id="rItemId">
+                    <input type="hidden" name="permission_id" id="rPermId">
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-x-circle me-1"></i>Widerrufen</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 initTableSearch('sharingSearch', 'sharingTable');
+
 function filterSharing() {
     const val = document.getElementById('scopeFilter').value;
-    document.querySelectorAll('#sharingTable tbody tr').forEach(r => {
+    document.querySelectorAll('#sharingTable tbody tr[data-scope]').forEach(r => {
         r.style.display = (!val || r.dataset.scope === val) ? '' : 'none';
     });
+}
+
+function applyStatusFilter() {
+    const val = document.getElementById('statusFilter').value;
+    const url = new URL(window.location.href);
+    if (val) url.searchParams.set('status', val);
+    else url.searchParams.delete('status');
+    window.location.href = url.toString();
+}
+
+function confirmRevoke(btn) {
+    document.getElementById('revokeName').textContent = btn.dataset.name;
+    document.getElementById('rDriveId').value = btn.dataset.drive;
+    document.getElementById('rItemId').value  = btn.dataset.item;
+    document.getElementById('rPermId').value  = btn.dataset.perm;
+    new bootstrap.Modal(document.getElementById('revokeModal')).show();
 }
 </script>
