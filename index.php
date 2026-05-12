@@ -78,6 +78,31 @@ DB::execute("CREATE TABLE IF NOT EXISTS user_notes (
     INDEX idx_user (user_azure_id)
 )");
 
+// Ensure access_reviews tables exist
+DB::execute("CREATE TABLE IF NOT EXISTS access_reviews (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    title        VARCHAR(255) NOT NULL,
+    type         VARCHAR(50) NOT NULL DEFAULT 'guests',
+    status       ENUM('open','completed') DEFAULT 'open',
+    created_by   VARCHAR(255) NOT NULL,
+    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at DATETIME DEFAULT NULL
+)");
+
+DB::execute("CREATE TABLE IF NOT EXISTS access_review_items (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    review_id    INT NOT NULL,
+    user_id      VARCHAR(100) NOT NULL,
+    user_upn     VARCHAR(255) NOT NULL,
+    user_name    VARCHAR(255) NOT NULL,
+    last_signin  DATETIME DEFAULT NULL,
+    decision     ENUM('pending','approve','revoke') DEFAULT 'pending',
+    decided_by   VARCHAR(255) DEFAULT NULL,
+    decided_at   DATETIME DEFAULT NULL,
+    FOREIGN KEY (review_id) REFERENCES access_reviews(id) ON DELETE CASCADE,
+    INDEX idx_review (review_id)
+)");
+
 // Configure Config singleton with encryptor
 $config = Config::getInstance();
 $config->setEncryptor($encryptor);
@@ -338,12 +363,23 @@ $router->get('/settings/update/progress',         [\App\Modules\Update\UpdateCon
 $router->post('/settings/update/channel',         [\App\Modules\Update\UpdateController::class, 'setChannel']);
 $router->post('/settings/update/migrations',      [\App\Modules\Update\UpdateController::class, 'runMigrations']);
 
+// Search API
+$router->get('/api/search',                       [\App\Modules\Search\SearchController::class, 'api']);
+
 // Cron & Queue management
 $router->get('/cron',                             [\App\Modules\Cron\CronController::class, 'index']);
 $router->post('/cron/update-job/{key}',           [\App\Modules\Cron\CronController::class, 'updateJob']);
 $router->post('/cron/run-job/{key}',              [\App\Modules\Cron\CronController::class, 'runJob']);
 $router->post('/cron/queue/retry',                [\App\Modules\Cron\CronController::class, 'retryFailed']);
 $router->post('/cron/queue/prune',                [\App\Modules\Cron\CronController::class, 'pruneQueue']);
+
+// Access Reviews
+$router->get('/accessreview',                [\App\Modules\AccessReview\AccessReviewController::class, 'index']);
+$router->post('/accessreview',               [\App\Modules\AccessReview\AccessReviewController::class, 'create']);
+$router->get('/accessreview/{id}',           [\App\Modules\AccessReview\AccessReviewController::class, 'show']);
+$router->post('/accessreview/{id}/decide/{itemId}', [\App\Modules\AccessReview\AccessReviewController::class, 'decide']);
+$router->post('/accessreview/{id}/bulk',     [\App\Modules\AccessReview\AccessReviewController::class, 'bulkDecide']);
+$router->post('/accessreview/{id}/apply',    [\App\Modules\AccessReview\AccessReviewController::class, 'apply']);
 
 // ── Dispatch ──────────────────────────────────────────────
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';

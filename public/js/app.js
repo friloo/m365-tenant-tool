@@ -159,12 +159,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let activeIdx = -1;
 
+    let apiDebounceTimer = null;
+    let lastApiResults   = [];
+
     function open() {
         overlay.classList.add('open');
         overlay.removeAttribute('aria-hidden');
         input.value = '';
         activeIdx = -1;
-        render('');
+        lastApiResults = [];
+        render('', []);
         requestAnimationFrame(() => input.focus());
     }
 
@@ -191,7 +195,29 @@ document.addEventListener('DOMContentLoaded', function () {
         return 0;
     }
 
-    function render(term) {
+    // Badge colours per API result type
+    const TYPE_COLORS = {
+        user:   '#0078d4',  // blue
+        group:  '#7c3aed',  // purple
+        device: '#059669',  // green
+    };
+
+    function renderApiItem(item, idx) {
+        const isDisabled = item.type === 'user' && item.enabled === false;
+        const color      = TYPE_COLORS[item.type] || '#6b7280';
+        const labelText  = isDisabled ? item.label + ' <span style="color:#9ca3af;font-weight:400;">(Deaktiviert)</span>' : item.label;
+        const itemStyle  = isDisabled ? ' style="opacity:.55;"' : '';
+        const iconStyle  = `background:${color}1a;color:${color};`;
+        const subtitle   = item.subtitle
+            ? `<span class="qs-subtitle" style="font-size:11px;color:#6b7280;display:block;line-height:1.3;">${item.subtitle}</span>`
+            : '';
+        return `<a href="${item.url}" class="qs-item" data-idx="${idx}" role="option"${itemStyle}>
+                <span class="qs-icon" style="${iconStyle}"><i class="bi bi-${item.icon}"></i></span>
+                <span class="qs-label" style="display:flex;flex-direction:column;gap:1px;">${labelText}${subtitle}</span>
+            </a>`;
+    }
+
+    function render(term, apiItems) {
         const trimmed = term.trim();
         const filtered = trimmed
             ? ITEMS.filter(i => score(i, trimmed) > 0)
@@ -200,24 +226,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
         activeIdx = -1;
 
-        if (filtered.length === 0) {
+        const hasApi  = apiItems && apiItems.length > 0;
+        const hasNav  = filtered.length > 0;
+
+        if (!hasApi && !hasNav) {
             results.innerHTML = `<div class="qs-empty"><i class="bi bi-search me-2"></i>Kein Ergebnis für „${trimmed}"</div>`;
             return;
         }
 
-        let html = '';
-        let lastCat = null;
-        filtered.forEach((item, i) => {
-            if (item.cat !== lastCat) {
-                html += `<div class="qs-category">${item.cat}</div>`;
-                lastCat = item.cat;
-            }
-            const lbl = highlight(item.label, trimmed);
-            html += `<a href="${item.url}" class="qs-item" data-idx="${i}" role="option">
-                <span class="qs-icon"><i class="bi bi-${item.icon}"></i></span>
-                <span class="qs-label">${lbl}</span>
-            </a>`;
-        });
+        let html  = '';
+        let idx   = 0;
+
+        // ── API results (users, groups, devices) ──────────────────
+        if (hasApi) {
+            html += `<div class="qs-category">Benutzer &amp; Objekte</div>`;
+            apiItems.forEach(item => {
+                html += renderApiItem(item, idx++);
+            });
+        }
+
+        // ── Navigation items ──────────────────────────────────────
+        if (hasNav) {
+            html += `<div class="qs-category">Navigation</div>`;
+            filtered.forEach(item => {
+                const lbl = highlight(item.label, trimmed);
+                html += `<a href="${item.url}" class="qs-item" data-idx="${idx}" role="option">
+                    <span class="qs-icon"><i class="bi bi-${item.icon}"></i></span>
+                    <span class="qs-label">${lbl}</span>
+                </a>`;
+                idx++;
+            });
+        }
+
         results.innerHTML = html;
     }
 
@@ -257,7 +297,32 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    input.addEventListener('input', () => render(input.value));
+    input.addEventListener('input', () => {
+        const term = input.value;
+        clearTimeout(apiDebounceTimer);
+
+        if (term.trim().length < 2) {
+            lastApiResults = [];
+            render(term, []);
+            return;
+        }
+
+        // Immediate render with cached API results while waiting for new ones
+        render(term, lastApiResults);
+
+        apiDebounceTimer = setTimeout(() => {
+            fetch('/api/search?q=' + encodeURIComponent(term.trim()))
+                .then(r => r.ok ? r.json() : { results: [] })
+                .then(data => {
+                    lastApiResults = data.results || [];
+                    // Only update if the term hasn't changed
+                    if (input.value === term) {
+                        render(term, lastApiResults);
+                    }
+                })
+                .catch(() => {});
+        }, 300);
+    });
 
     // Click on result
     results.addEventListener('click', e => {

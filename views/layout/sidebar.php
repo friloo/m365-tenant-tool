@@ -32,7 +32,8 @@ $_navDefs = [
     ['section' => null,         'icon' => 'sliders',             'label' => 'Freigaberichtlinien',  'route' => 'sharing/policies',     'admin' => false],
 
     // ── Exchange & Kommunikation
-    ['section' => 'Exchange & Kommunikation', 'icon' => 'envelope', 'label' => 'Postfächer',       'route' => 'mailboxes',            'admin' => false],
+    ['section' => 'Exchange & Kommunikation', 'icon' => 'envelope',      'label' => 'Postfächer',           'route' => 'mailboxes',                    'admin' => false],
+    ['section' => null,         'icon' => 'forward-fill',        'label' => 'Externe Weiterleitungen','route' => 'mailboxes/external-forwards',   'admin' => false],
     ['section' => null,         'icon' => 'airplane',            'label' => 'EXO Migration',        'route' => 'exchangemigration',    'admin' => false],
     ['section' => null,         'icon' => 'camera-video',        'label' => 'Teams-Nutzung',        'route' => 'teamsusage',           'admin' => false],
     ['section' => null,         'icon' => 'collection',          'label' => 'Teams-Übersicht',      'route' => 'teamspolicies',        'admin' => false],
@@ -56,6 +57,7 @@ $_navDefs = [
     // ── Compliance & Audit
     ['section' => 'Compliance & Audit', 'icon' => 'phone',       'label' => 'Geräte',              'route' => 'devices',              'admin' => false],
     ['section' => null,         'icon' => 'person-x',            'label' => 'Inaktive Konten',      'route' => 'staleaccounts',        'admin' => false],
+    ['section' => null,         'icon' => 'clipboard-check',     'label' => 'Access Reviews',       'route' => 'accessreview',         'admin' => false],
     ['section' => null,         'icon' => 'clock-history',       'label' => 'Audit-Log',            'route' => 'auditlog',             'admin' => false],
     ['section' => null,         'icon' => 'journal-text',        'label' => 'Sign-in-Log',          'route' => 'signinlog',            'admin' => false],
 
@@ -75,7 +77,6 @@ $_navDefs = [
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'groups/inactive',              'admin' => false],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'licenses/expiry',              'admin' => false],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'mailboxes/shared',             'admin' => false],
-    ['section' => null, 'icon' => null, 'label' => null, 'route' => 'mailboxes/external-forwards',  'admin' => false],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'settings/permissions',         'admin' => true],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'settings/license-prices',       'admin' => true],
 ];
