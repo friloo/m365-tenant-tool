@@ -49,7 +49,7 @@ class MfaMethodsService
             $users = $this->graph->paginate(
                 '/reports/authenticationMethods/userRegistrationDetails',
                 [
-                    '$select' => 'id,userPrincipalName,userDisplayName,isMfaRegistered,isMfaCapable,methodsRegistered',
+                    '$select' => 'id,userPrincipalName,userDisplayName,isMfaRegistered,isMfaCapable,methodsRegistered,defaultMfaMethod',
                     '$top'    => '999',
                 ],
                 50,
