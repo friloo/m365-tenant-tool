@@ -259,18 +259,19 @@ $ext = $extended ?? [];
             <div class="card-body-custom p-0">
                 <?php
                 $dirItems = [
-                    ['label' => 'Gastbenutzer',       'href' => '/guestusers',   'val' => $ext['guests'],           'warn' => $ext['guests'] > 20],
-                    ['label' => 'Inaktive Konten',     'href' => '/staleaccounts','val' => $ext['stale_count'],      'warn' => $ext['stale_count'] > 10],
-                    ['label' => 'Admin-Zuweisungen',   'href' => '/adminroles',   'val' => $ext['admin_assignments'],'warn' => $ext['admin_assignments'] > 15],
-                    ['label' => 'Teams im Tenant',     'href' => '/teamspolicies','val' => $ext['teams_count'],      'warn' => false],
-                    ['label' => 'Gesamtgruppen',       'href' => '/groups',       'val' => $metrics['total_groups'], 'warn' => false],
+                    ['label' => 'Gastbenutzer',       'href' => '/guestusers',   'val' => $ext['guests'],           'warn' => ($ext['guests'] ?? 0) > 20],
+                    ['label' => 'Admin-Zuweisungen',  'href' => '/adminroles',   'val' => $ext['admin_assignments'],'warn' => ($ext['admin_assignments'] ?? 0) > 20],
+                    ['label' => 'Teams im Tenant',    'href' => '/teamspolicies','val' => $ext['teams_count'],      'warn' => false],
+                    ['label' => 'Gruppen gesamt',     'href' => '/groups',       'val' => $metrics['total_groups'], 'warn' => false],
+                    ['label' => 'Inaktive Konten',    'href' => '/staleaccounts','val' => null,                     'warn' => false],
                 ];
                 foreach ($dirItems as $item):
-                    $color = ($item['val'] !== null && $item['warn']) ? '#ca8a04' : null;
+                    $color   = ($item['val'] !== null && $item['warn']) ? '#ca8a04' : null;
+                    $display = $item['val'] !== null ? number_format((int)$item['val']) : '<span class="text-muted small">→ öffnen</span>';
                 ?>
                 <a href="<?= $item['href'] ?>" class="list-group-item list-group-item-action py-2 px-3 d-flex align-items-center border-0 border-bottom">
                     <span class="flex-grow-1 text-muted" style="font-size:13px;"><?= $item['label'] ?></span>
-                    <span class="fw-semibold" style="font-size:14px;<?= $color ? "color:{$color};" : '' ?>"><?= $n($item['val']) ?></span>
+                    <span class="fw-semibold" style="font-size:14px;<?= $color ? "color:{$color};" : '' ?>"><?= $display ?></span>
                 </a>
                 <?php endforeach ?>
                 <div class="px-3 py-2 d-flex gap-2 flex-wrap">
