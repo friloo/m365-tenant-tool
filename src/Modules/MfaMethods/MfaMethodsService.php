@@ -44,12 +44,11 @@ class MfaMethodsService
      */
     public function getAll(): array
     {
-        // Try the modern endpoint first. No $select so all fields (incl. defaultMfaMethod) are returned.
         try {
             $users = $this->graph->paginate(
                 '/reports/authenticationMethods/userRegistrationDetails',
                 [
-                    // no $select → Graph returns all fields incl. defaultMfaMethod
+                    '$select' => 'id,userPrincipalName,userDisplayName,isMfaRegistered,isMfaCapable,methodsRegistered,defaultMfaMethod',
                     '$top'    => '999',
                 ],
                 50,
@@ -128,7 +127,7 @@ class MfaMethodsService
             }
 
             $default = trim((string)($u['defaultMfaMethod'] ?? ''));
-            if ($default !== '') {
+            if ($default !== '' && $default !== 'none') {
                 $byDefault[$default] = ($byDefault[$default] ?? 0) + 1;
             }
         }
