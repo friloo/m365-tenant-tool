@@ -20,13 +20,13 @@ class DashboardService
             'unresolved_alerts'=> null,
         ];
 
-        // MFA: reuse cache already populated by MfaMethods module
+        // MFA percentage — dedicated cache key to avoid overwriting full MfaMethods dataset
         try {
             $mfaData = $this->graph->paginate(
                 '/reports/authenticationMethods/userRegistrationDetails',
                 ['$select' => 'isMfaRegistered', '$top' => '999'],
                 50,
-                'mfa_methods_detail',
+                'dash_mfa_pct',
                 1800
             );
             if (!empty($mfaData)) {
