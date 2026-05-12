@@ -18,7 +18,7 @@ $_navDefs = [
     ['section' => null,         'icon' => 'person-badge',        'label' => 'Gastbenutzer',         'route' => 'guestusers',           'admin' => false],
     ['section' => null,         'icon' => 'diagram-3',           'label' => 'Gruppen & Teams',      'route' => 'groups',               'admin' => false],
     ['section' => null,         'icon' => 'award',               'label' => 'Lizenzen',             'route' => 'licenses',             'admin' => false],
-    ['section' => null,         'icon' => 'currency-euro',       'label' => 'Lizenzkosten',         'route' => 'licensecosts',         'admin' => false],
+    // ['section' => null,      'icon' => 'currency-euro',       'label' => 'Lizenzkosten',         'route' => 'licensecosts',         'admin' => false],
     ['section' => null,         'icon' => 'lightbulb',           'label' => 'Lizenz-Berater',       'route' => 'licenseadvisor',       'admin' => false],
     ['section' => null,         'icon' => 'shield-lock',         'label' => 'MFA-Methoden',         'route' => 'mfamethods',           'admin' => false],
     ['section' => null,         'icon' => 'key',                 'label' => 'Passwort-Ablauf',      'route' => 'passwordexpiry',       'admin' => false],
