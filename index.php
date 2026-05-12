@@ -68,6 +68,16 @@ DB::execute("CREATE TABLE IF NOT EXISTS m365_users (
     UNIQUE KEY uq_oid (azure_object_id)
 )");
 
+// Ensure user_notes table exists
+DB::execute("CREATE TABLE IF NOT EXISTS user_notes (
+    id            INT AUTO_INCREMENT PRIMARY KEY,
+    user_azure_id VARCHAR(100) NOT NULL,
+    note          TEXT NOT NULL,
+    created_by    VARCHAR(255) NOT NULL DEFAULT '',
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user (user_azure_id)
+)");
+
 // Configure Config singleton with encryptor
 $config = Config::getInstance();
 $config->setEncryptor($encryptor);
@@ -116,6 +126,8 @@ $router->post('/users/{id}/remove-license',       [\App\Modules\Users\UsersContr
 $router->get('/users/{id}/edit',                  [\App\Modules\Users\UsersController::class, 'editForm']);
 $router->post('/users/{id}/update',               [\App\Modules\Users\UsersController::class, 'updateUser']);
 $router->post('/users/{id}/offboarding',          [\App\Modules\Users\UsersController::class, 'offboarding']);
+$router->post('/users/{id}/notes',               [\App\Modules\Users\UsersController::class, 'addNote']);
+$router->delete('/users/{id}/notes/{noteId}',    [\App\Modules\Users\UsersController::class, 'deleteNote']);
 
 // OneDrive
 $router->get('/onedrive',                         [\App\Modules\OneDrive\OneDriveController::class, 'index']);
@@ -336,5 +348,13 @@ $router->post('/cron/queue/prune',                [\App\Modules\Cron\CronControl
 // ── Dispatch ──────────────────────────────────────────────
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $uri    = $_SERVER['REQUEST_URI'] ?? '/';
+
+// Support _method override for DELETE via HTML forms
+if ($method === 'POST' && isset($_POST['_method'])) {
+    $override = strtoupper(trim($_POST['_method']));
+    if (in_array($override, ['DELETE', 'PUT', 'PATCH'], true)) {
+        $method = $override;
+    }
+}
 
 $router->dispatch($method, $uri);

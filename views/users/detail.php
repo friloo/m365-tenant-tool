@@ -296,7 +296,7 @@ if ($neverExpires) {
         </div>
 
         <!-- Cloud-Cleanup (Offboarding) card -->
-        <div class="content-card">
+        <div class="content-card mb-3">
             <div class="card-header-custom" style="background: linear-gradient(135deg, #fff5f5 0%, #fff0e6 100%); border-bottom: 1px solid #ffd5cc;">
                 <i class="bi bi-box-arrow-right text-danger"></i>
                 <div>
@@ -308,6 +308,53 @@ if ($neverExpires) {
                 <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#offboardingModal">
                     <i class="bi bi-box-arrow-right me-1"></i>Cloud-Cleanup starten…
                 </button>
+            </div>
+        </div>
+
+        <!-- Internal Notes card -->
+        <div class="content-card">
+            <div class="card-header-custom">
+                <i class="bi bi-sticky text-warning"></i>
+                <h6>Interne Notizen</h6>
+            </div>
+            <div class="card-body-custom">
+                <?php if (!empty($notes)): ?>
+                    <ul class="list-unstyled mb-3">
+                        <?php foreach ($notes as $n): ?>
+                            <li class="d-flex align-items-start justify-content-between mb-2 p-2 rounded" style="background:#f9fafb;">
+                                <div>
+                                    <div class="small text-muted mb-1">
+                                        <?= $e($n['created_by']) ?> &middot; <?= $e(date('d.m.Y H:i', strtotime($n['created_at']))) ?>
+                                    </div>
+                                    <div class="small"><?= nl2br($e($n['note'])) ?></div>
+                                </div>
+                                <?php if (LocalAuth::role() === 'admin'): ?>
+                                    <form method="post" action="/users/<?= $e($user['id']) ?>/notes/<?= (int)$n['id'] ?>"
+                                          onsubmit="return confirm('Notiz wirklich löschen?')" class="ms-2 mb-0 flex-shrink-0">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size:11px;">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <p class="text-muted small mb-3">Noch keine Notizen vorhanden.</p>
+                <?php endif; ?>
+
+                <?php if (LocalAuth::role() === 'admin'): ?>
+                    <form method="post" action="/users/<?= $e($user['id']) ?>/notes">
+                        <div class="mb-2">
+                            <textarea name="note" class="form-control form-control-sm" rows="3"
+                                      placeholder="Interne Notiz eingeben…" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            <i class="bi bi-plus me-1"></i>Notiz hinzufügen
+                        </button>
+                    </form>
+                <?php endif; ?>
             </div>
         </div>
 
