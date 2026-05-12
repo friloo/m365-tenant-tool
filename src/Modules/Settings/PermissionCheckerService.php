@@ -98,7 +98,7 @@ class PermissionCheckerService
             // ── Reports ───────────────────────────────────────────────
             'Reports.Read.All' => [
                 'desc'     => 'Aktivitäts- und Nutzungsberichte lesen',
-                'features' => ['Teams-Nutzung', 'Adoptions-Report', 'Inaktive Gruppen', 'OneDrive-Bericht'],
+                'features' => ['Teams-Nutzung', 'Adoptions-Report', 'Inaktive Gruppen', 'OneDrive-Bericht', 'Security Posture (MFA-Registrierungsrate, SSPR-Adoption, Admin-MFA-Prüfung)'],
                 'section'  => 'Berichte',
                 'write'    => false,
             ],
@@ -110,8 +110,8 @@ class PermissionCheckerService
             ],
             // ── Security ──────────────────────────────────────────────
             'Policy.Read.All' => [
-                'desc'     => 'Alle Richtlinien lesen (CA, Named Locations)',
-                'features' => ['Conditional Access (Übersicht & Analyse)', 'Named Locations', 'Sicherheit (CA-Richtlinien)'],
+                'desc'     => 'Alle Richtlinien lesen (CA, Named Locations, Auth-Richtlinien)',
+                'features' => ['Conditional Access (Übersicht & Analyse)', 'Named Locations', 'Security Posture (Security Defaults, App-Zustimmungsrichtlinie, Gasteinladungsrichtlinie, CA-Sitzungssteuerung)'],
                 'section'  => 'Sicherheit',
                 'write'    => false,
             ],
@@ -141,7 +141,7 @@ class PermissionCheckerService
             ],
             'RoleManagement.ReadWrite.Directory' => [
                 'desc'     => 'Admin-Rollenzuweisungen lesen und schreiben',
-                'features' => ['Admin-Rollen (Übersicht)', 'Admin-Rolle zuweisen', 'Admin-Rolle entfernen'],
+                'features' => ['Admin-Rollen (Übersicht)', 'Admin-Rolle zuweisen', 'Admin-Rolle entfernen', 'Security Posture (Admin-MFA-Prüfung, PIM-Adoption)'],
                 'section'  => 'Sicherheit',
                 'write'    => true,
             ],
