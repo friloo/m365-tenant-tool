@@ -19,6 +19,7 @@ class DashboardController
 
         $metrics  = $service->getMetrics();
         $licenses = $service->getLicenseSummary();
+        $security = $service->getSecurityStatus();
         try {
             $licSkus = app_service(\App\Modules\Licenses\LicensesService::class)->getSkus();
         } catch (\Throwable) {
@@ -31,6 +32,7 @@ class DashboardController
             'metrics'         => $metrics,
             'licenses'        => $licenses,
             'recommendations' => $recs,
+            'security'        => $security,
         ]);
     }
 }
