@@ -20,19 +20,14 @@ class DashboardController
         $metrics  = $service->getMetrics();
         $licenses = $service->getLicenseSummary();
         $security = $service->getSecurityStatus();
-        try {
-            $licSkus = app_service(\App\Modules\Licenses\LicensesService::class)->getSkus();
-        } catch (\Throwable) {
-            $licSkus = [];
-        }
-        $recs = $service->getLicenseRecommendations($licSkus);
+        $extended = $service->getExtendedStats();
 
         View::render('dashboard/index', [
-            'pageTitle'       => 'Dashboard',
-            'metrics'         => $metrics,
-            'licenses'        => $licenses,
-            'recommendations' => $recs,
-            'security'        => $security,
+            'pageTitle' => 'Dashboard',
+            'metrics'   => $metrics,
+            'licenses'  => $licenses,
+            'security'  => $security,
+            'extended'  => $extended,
         ]);
     }
 }

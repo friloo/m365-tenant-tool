@@ -140,21 +140,122 @@ class DashboardService
         } catch (\Throwable) { return []; }
     }
 
-    public function getLicenseRecommendations(array $skus): array
+    public function getExtendedStats(): array
     {
-        $recs = [];
-        foreach ($skus as $sku) {
-            if ($sku['pct'] >= 90) {
-                $recs[] = ['type' => 'warning', 'msg' => "⚠️ <strong>{$sku['name']}</strong>: nur noch {$sku['available']} Lizenzen verfügbar ({$sku['pct']}% belegt)"];
+        $s = [
+            'guests'             => null,
+            'teams_count'        => null,
+            'stale_count'        => null,
+            'admin_assignments'  => null,
+            'service_incidents'  => null,
+            'incident_services'  => [],
+            'msg_center_count'   => null,
+            'secure_score'       => null,
+            'secure_score_max'   => null,
+            'adoption_exchange'  => null,
+            'adoption_teams'     => null,
+            'adoption_onedrive'  => null,
+            'adoption_sharepoint'=> null,
+        ];
+
+        // Guest users — reuse GuestUsersService cache
+        try {
+            $r = $this->graph->paginate(
+                '/users', ['$select' => 'id', '$filter' => "userType eq 'Guest' and accountEnabled eq true", '$top' => '999'],
+                50, 'guests_all', 900
+            );
+            $s['guests'] = count($r);
+        } catch (\Throwable) {}
+
+        // Teams count — reuse TeamsPolicies cache
+        try {
+            $r = $this->graph->paginate(
+                '/groups',
+                ['$select' => 'id', '$filter' => "resourceProvisioningOptions/Any(x:x eq 'Team')", '$top' => '999'],
+                50, 'teams_group_list', 900
+            );
+            $s['teams_count'] = count($r);
+        } catch (\Throwable) {}
+
+        // Stale accounts — reuse StaleAccounts cache (only if already warm)
+        try {
+            $r = $this->graph->paginate(
+                '/users',
+                ['$select' => 'id,signInActivity', '$filter' => 'accountEnabled eq true', '$top' => '999'],
+                50, 'stale_users_base', 3600
+            );
+            $threshold = new \DateTimeImmutable('-90 days');
+            $count = 0;
+            foreach ($r as $u) {
+                $last = $u['signInActivity']['lastSignInDateTime'] ?? null;
+                if ($last === null || new \DateTimeImmutable($last) < $threshold) $count++;
             }
-            if ($sku['pct'] <= 20 && $sku['consumed'] > 0 && $sku['total'] >= 10) {
-                $recs[] = ['type' => 'info', 'msg' => "💡 <strong>{$sku['name']}</strong>: {$sku['available']} ungenutzte Lizenzen ({$sku['pct']}% belegt) — Kontingent reduzierbar"];
+            $s['stale_count'] = $count;
+        } catch (\Throwable) {}
+
+        // Admin role assignments — reuse AdminRoles cache
+        try {
+            $r = $this->graph->paginate(
+                '/roleManagement/directory/roleAssignments',
+                ['$select' => 'id', '$top' => '999'],
+                50, 'admin_role_assignments', 1800
+            );
+            $s['admin_assignments'] = count($r);
+        } catch (\Throwable) {}
+
+        // Service health incidents — reuse ServiceHealth cache
+        try {
+            $r = $this->graph->get(
+                '/admin/serviceAnnouncement/healthOverviews',
+                ['$select' => 'service,status'],
+                'servicehealth_overview', 300
+            );
+            $incidents = array_filter($r['value'] ?? [], fn($i) => ($i['status'] ?? '') !== 'serviceOperational');
+            $s['service_incidents'] = count($incidents);
+            $s['incident_services'] = array_slice(array_column(array_values($incidents), 'service'), 0, 3);
+        } catch (\Throwable) {}
+
+        // Message Center — reuse MessageCenter cache
+        try {
+            $r = $this->graph->get(
+                '/admin/serviceAnnouncement/messages',
+                ['$select' => 'id', '$top' => '999'],
+                'msgcenter_messages', 1800
+            );
+            $s['msg_center_count'] = count($r['value'] ?? []);
+        } catch (\Throwable) {}
+
+        // Secure Score — reuse SecureScore cache
+        try {
+            $r = $this->graph->get(
+                '/security/secureScores',
+                ['$top' => '1', '$select' => 'currentScore,maxScore'],
+                'securescore_latest', 3600
+            );
+            $latest = ($r['value'] ?? [])[0] ?? null;
+            if ($latest) {
+                $s['secure_score']     = round((float)($latest['currentScore'] ?? 0));
+                $s['secure_score_max'] = round((float)($latest['maxScore'] ?? 0));
             }
-            if ($sku['suspended'] > 0) {
-                $recs[] = ['type' => 'danger', 'msg' => "🚫 <strong>{$sku['name']}</strong>: {$sku['suspended']} Lizenzen gesperrt"];
+        } catch (\Throwable) {}
+
+        // Adoption — reuse AdoptionService cache
+        try {
+            $rows = $this->graph->getReport(
+                "/reports/getOffice365ActiveUserCounts(period='D30')",
+                [], 'adoption_active_user_counts', 3600
+            );
+            if (!empty($rows)) {
+                usort($rows, fn($a, $b) => strcmp($b['reportDate'] ?? $b['Report Date'] ?? '', $a['reportDate'] ?? $a['Report Date'] ?? ''));
+                $latest = $rows[0];
+                $s['adoption_exchange']   = (int)($latest['exchange']   ?? 0);
+                $s['adoption_teams']      = (int)($latest['teams']      ?? 0);
+                $s['adoption_onedrive']   = (int)($latest['oneDrive']   ?? $latest['onedrive']   ?? 0);
+                $s['adoption_sharepoint'] = (int)($latest['sharePoint'] ?? $latest['sharepoint'] ?? 0);
             }
-        }
-        return $recs;
+        } catch (\Throwable) {}
+
+        return $s;
     }
 
     private function friendlySkuName(string $partNumber): string
