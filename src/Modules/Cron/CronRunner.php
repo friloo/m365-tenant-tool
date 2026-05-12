@@ -5,8 +5,18 @@ namespace App\Modules\Cron;
 use App\Core\Config;
 use App\Database\DB;
 use App\Graph\GraphClient;
+use App\Modules\ConditionalAccess\ConditionalAccessService;
+use App\Modules\Dashboard\DashboardService;
+use App\Modules\Devices\DevicesService;
+use App\Modules\Groups\GroupsService;
+use App\Modules\Licenses\LicensesService;
+use App\Modules\MfaMethods\MfaMethodsService;
+use App\Modules\NamedLocations\NamedLocationsService;
+use App\Modules\SecurityPosture\SecurityPostureService;
+use App\Modules\ServiceHealth\ServiceHealthService;
 use App\Modules\ShareReview\ShareReviewService;
 use App\Modules\StaleAccounts\StaleAccountsService;
+use App\Modules\Users\UsersService;
 use App\Modules\WeeklyReport\WeeklyReportService;
 use App\Queue\QueueWorker;
 
@@ -188,6 +198,50 @@ class CronRunner
                     $worker = new QueueWorker($graph);
                     $n = $worker->processNext(20);
                     return $n > 0 ? "{$n} Job(s) verarbeitet" : 'Keine ausstehenden Jobs';
+                },
+            ],
+
+            'cache_warm' => [
+                'label'            => 'Cache vorwärmen (alle Module)',
+                'description'      => 'Ruft alle Graph-API-Endpunkte im Hintergrund ab und füllt den DB-Cache. Seiten laden danach sofort aus der DB ohne API-Wartezeit.',
+                'default_interval' => 5,
+                'handler'          => function () use ($graph): string {
+                    $results = [];
+                    $ok = 0;
+                    $fail = 0;
+
+                    $jobs = [
+                        'Dashboard — Metriken'       => fn() => (new DashboardService($graph))->getMetrics(),
+                        'Dashboard — Lizenzübersicht'=> fn() => (new DashboardService($graph))->getLicenseSummary(),
+                        'Dashboard — Sicherheit'     => fn() => (new DashboardService($graph))->getSecurityStatus(),
+                        'Dashboard — Erweitert'      => fn() => (new DashboardService($graph))->getExtendedStats(),
+                        'Benutzer — Gesamtliste'     => fn() => (new UsersService($graph))->getAll(),
+                        'Benutzer — MFA-Status'      => fn() => (new UsersService($graph))->getMfaStatus(),
+                        'MFA-Methoden'               => fn() => (new MfaMethodsService($graph))->getAll(),
+                        'Conditional Access'         => fn() => (new ConditionalAccessService($graph))->getPolicies(),
+                        'Named Locations'            => fn() => (new NamedLocationsService($graph))->getAll(),
+                        'Geräte'                     => fn() => (new DevicesService($graph))->getAll(),
+                        'Gruppen'                    => fn() => (new GroupsService($graph))->getAll(),
+                        'Lizenzen'                   => fn() => (new LicensesService($graph))->getSkus(),
+                        'Dienststatus'               => fn() => (new ServiceHealthService($graph))->getOverview(),
+                        'Security Posture'           => fn() => (new SecurityPostureService($graph))->runChecks(),
+                    ];
+
+                    foreach ($jobs as $label => $fn) {
+                        try {
+                            $fn();
+                            $ok++;
+                        } catch (\Throwable $e) {
+                            $results[] = "{$label}: " . $e->getMessage();
+                            $fail++;
+                        }
+                    }
+
+                    $msg = "OK: {$ok}/" . count($jobs);
+                    if ($fail > 0) {
+                        $msg .= ", Fehler: {$fail} — " . implode('; ', array_slice($results, 0, 3));
+                    }
+                    return $msg;
                 },
             ],
 
