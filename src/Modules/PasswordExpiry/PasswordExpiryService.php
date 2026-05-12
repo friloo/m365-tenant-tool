@@ -19,7 +19,7 @@ class PasswordExpiryService
             return $this->graph->paginate(
                 '/users',
                 [
-                    '$select' => 'id,displayName,userPrincipalName,accountEnabled,passwordPolicies,lastPasswordChangeDateTime,signInActivity',
+                    '$select' => 'id,displayName,userPrincipalName,accountEnabled,passwordPolicies,lastPasswordChangeDateTime,signInActivity,onPremisesSyncEnabled',
                     '$top'    => '999',
                 ],
                 50,
@@ -79,6 +79,7 @@ class PasswordExpiryService
                     'daysUntilExpiry' => null,
                     'expiresAt'       => null,
                     'daysSinceChange' => null,
+                    'isHybrid'        => (bool)($user['onPremisesSyncEnabled'] ?? false),
                 ]);
                 continue;
             }
@@ -91,6 +92,7 @@ class PasswordExpiryService
                 'daysUntilExpiry' => $daysUntilExpiry,
                 'expiresAt'       => $expiresAt,
                 'daysSinceChange' => $daysSinceChange,
+                'isHybrid'        => (bool)($user['onPremisesSyncEnabled'] ?? false),
             ]);
 
             if ($daysUntilExpiry < 0) {
