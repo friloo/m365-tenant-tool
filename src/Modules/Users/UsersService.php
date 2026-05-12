@@ -34,24 +34,52 @@ class UsersService
 
     public function getMfaStatus(): array
     {
+        $map = [];
+
+        // Modern endpoint (works on all current tenants)
+        try {
+            $data = $this->graph->paginate(
+                '/reports/authenticationMethods/userRegistrationDetails',
+                ['$select' => 'id,userPrincipalName,isMfaRegistered,isMfaCapable,methodsRegistered', '$top' => '999'],
+                50,
+                'mfa_methods_detail',
+                1800
+            );
+            if (!empty($data)) {
+                foreach ($data as $row) {
+                    $upn = $row['userPrincipalName'] ?? '';
+                    if ($upn === '') continue;
+                    $map[$upn] = [
+                        'mfaRegistered' => $row['isMfaRegistered'] ?? false,
+                        'mfaCapable'    => $row['isMfaCapable']    ?? false,
+                        'methods'       => $row['methodsRegistered'] ?? [],
+                    ];
+                }
+                return $map;
+            }
+        } catch (\Throwable) {}
+
+        // Legacy fallback
         try {
             $data = $this->graph->paginate(
                 '/reports/credentialUserRegistrationDetails',
                 [],
                 50,
-                'users_mfa',
+                'mfa_methods_legacy',
                 1800
             );
-            $map = [];
             foreach ($data as $row) {
-                $map[$row['userPrincipalName']] = [
+                $upn = $row['userPrincipalName'] ?? '';
+                if ($upn === '') continue;
+                $map[$upn] = [
                     'mfaRegistered' => $row['isMfaRegistered'] ?? false,
-                    'mfaCapable'    => $row['isMfaCapable'] ?? false,
-                    'methods'       => $row['authMethods'] ?? [],
+                    'mfaCapable'    => $row['isCapable']       ?? ($row['isMfaRegistered'] ?? false),
+                    'methods'       => $row['authMethods']     ?? [],
                 ];
             }
-            return $map;
-        } catch (\Throwable) { return []; }
+        } catch (\Throwable) {}
+
+        return $map;
     }
 
     public function setAccountEnabled(string $userId, bool $enabled): void
