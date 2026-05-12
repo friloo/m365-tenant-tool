@@ -22,20 +22,26 @@ class SecurityPostureService
         // CA policies fetched once, shared across checks
         $policies = $this->fetchCaPolicies();
 
+        $authPolicy = $this->fetchAuthorizationPolicy();
+
         return [
             // Identität & MFA
             $this->checkMfaRegistrationRate(),
             $this->checkCaMfaAllUsers($policies),
             $this->checkCaAdminMfa($policies),
+            $this->checkAdminsMfaRegistered(),
             $this->checkPasswordlessCapable(),
+            $this->checkSsprAdoption(),
             $this->checkRiskyUsersOpen(),
 
             // Conditional Access
+            $this->checkSecurityDefaults($policies),
             $this->checkLegacyAuthBlocked($policies),
             $this->checkSignInRiskPolicy($policies),
             $this->checkUserRiskPolicy($policies),
             $this->checkCaDeviceCompliance($policies),
             $this->checkCaGuestRestriction($policies),
+            $this->checkCaSessionControls($policies),
 
             // Geräte & Compliance
             $this->checkDeviceComplianceRate(),
@@ -44,6 +50,9 @@ class SecurityPostureService
             // Konfiguration & Apps
             $this->checkSecureScore(),
             $this->checkAdminCount(),
+            $this->checkPimAdoption(),
+            $this->checkAppConsentPolicy($authPolicy),
+            $this->checkExternalCollabPolicy($authPolicy),
             $this->checkNamedLocations(),
             $this->checkAppSecretsExpiry(),
             $this->checkNoStaleLicensed(),
@@ -335,6 +344,116 @@ class SecurityPostureService
                     'description' => 'Noch keine Benutzer haben passwortlose Methoden (FIDO2, Windows Hello, Microsoft Authenticator Passwordless) registriert. Diese sind phishing-sicherer als klassische MFA.',
                     'action'      => 'MFA-Methoden',
                     'module_url'  => '/mfamethods',
+                    'ca_template' => null,
+                ],
+            ],
+            'security_defaults' => [
+                'fail' => [
+                    'priority'    => 'critical',
+                    'title'       => 'Basis-Schutz fehlt — weder Security Defaults noch CA aktiv',
+                    'description' => 'Weder Security Defaults noch Conditional-Access-Richtlinien sind aktiv. Der Tenant hat keinen automatisierten Basisschutz gegen gängige Angriffe.',
+                    'action'      => 'CA-Richtlinien einrichten',
+                    'module_url'  => '/conditionalaccess',
+                    'ca_template' => null,
+                ],
+                'warn' => [
+                    'priority'    => 'medium',
+                    'title'       => 'Security Defaults und CA gleichzeitig aktiv',
+                    'description' => 'Security Defaults und eigene CA-Richtlinien sind gleichzeitig aktiv. Dies kann zu Konflikten führen. Security Defaults deaktivieren und vollständig auf CA setzen.',
+                    'action'      => 'Zu CA-Richtlinien',
+                    'module_url'  => '/conditionalaccess',
+                    'ca_template' => null,
+                ],
+            ],
+            'admins_mfa_registered' => [
+                'fail' => [
+                    'priority'    => 'critical',
+                    'title'       => 'Globale Admins ohne MFA-Registrierung',
+                    'description' => 'Mindestens ein globaler Administrator hat keine MFA-Methode registriert. Admin-Konten ohne MFA sind das größte Einzelrisiko in einem M365-Tenant.',
+                    'action'      => 'MFA-Status prüfen',
+                    'module_url'  => '/mfamethods',
+                    'ca_template' => null,
+                ],
+                'warn' => [
+                    'priority'    => 'high',
+                    'title'       => 'Admin-MFA-Status überprüfen',
+                    'description' => 'MFA-Daten für globale Administratoren konnten nicht vollständig verifiziert werden.',
+                    'action'      => 'MFA-Status prüfen',
+                    'module_url'  => '/mfamethods',
+                    'ca_template' => null,
+                ],
+            ],
+            'app_consent_policy' => [
+                'fail' => [
+                    'priority'    => 'high',
+                    'title'       => 'Benutzer dürfen beliebigen Apps zustimmen',
+                    'description' => 'Die aktuelle App-Zustimmungsrichtlinie erlaubt Benutzern, OAuth-Berechtigungen an Drittanbieter-Apps zu vergeben. Dies ermöglicht OAuth-Phishing-Angriffe (Consent Phishing).',
+                    'action'      => 'Richtlinie prüfen',
+                    'module_url'  => '/settings',
+                    'ca_template' => null,
+                ],
+                'warn' => [
+                    'priority'    => 'medium',
+                    'title'       => 'App-Zustimmungsrichtlinie einschränken',
+                    'description' => 'Benutzer können bestimmten Apps ohne Admin-Genehmigung zustimmen. Admin-Consent-Workflow aktivieren um alle Zustimmungen zu kontrollieren.',
+                    'action'      => 'Richtlinie prüfen',
+                    'module_url'  => '/settings',
+                    'ca_template' => null,
+                ],
+            ],
+            'external_collab_policy' => [
+                'fail' => [
+                    'priority'    => 'medium',
+                    'title'       => 'Einladungsrichtlinie für Gäste einschränken',
+                    'description' => 'Jeder (auch externe Gäste) kann neue Gäste in den Tenant einladen. Einladungen sollten auf Admins und Gast-Einlader begrenzt werden.',
+                    'action'      => 'Richtlinie prüfen',
+                    'module_url'  => '/settings',
+                    'ca_template' => null,
+                ],
+                'warn' => [
+                    'priority'    => 'low',
+                    'title'       => 'Gasteinladungen nur durch Admins erlauben',
+                    'description' => 'Alle Benutzer dürfen Gäste einladen. Empfehlung: nur Admins und dedizierte Gast-Einlader.',
+                    'action'      => 'Richtlinie prüfen',
+                    'module_url'  => '/settings',
+                    'ca_template' => null,
+                ],
+            ],
+            'sspr_adoption' => [
+                'fail' => [
+                    'priority'    => 'medium',
+                    'title'       => 'Self-Service Password Reset (SSPR) einführen',
+                    'description' => 'Kein Benutzer hat SSPR registriert. SSPR reduziert Helpdesk-Aufwand und verhindert dass Benutzer unsichere Passwort-Reset-Wege nutzen.',
+                    'action'      => 'MFA-Methoden',
+                    'module_url'  => '/mfamethods',
+                    'ca_template' => null,
+                ],
+                'warn' => [
+                    'priority'    => 'low',
+                    'title'       => 'SSPR-Registrierungsrate verbessern',
+                    'description' => 'Weniger als 50% der Benutzer haben SSPR registriert. Fehlende Registrierungen erhöhen Helpdesk-Last.',
+                    'action'      => 'MFA-Methoden',
+                    'module_url'  => '/mfamethods',
+                    'ca_template' => null,
+                ],
+            ],
+            'ca_session_controls' => [
+                'fail' => [
+                    'priority'    => 'low',
+                    'title'       => 'Sitzungslebensdauer einschränken (CA)',
+                    'description' => 'Keine CA-Richtlinie erzwingt eine maximale Sitzungsdauer oder verhindert persistente Browser-Sitzungen. Lang lebende Tokens erhöhen das Risiko bei gestohlenen Refresh-Tokens.',
+                    'action'      => 'Zu CA-Richtlinien',
+                    'module_url'  => '/conditionalaccess',
+                    'ca_template' => null,
+                ],
+            ],
+            'pim_adoption' => [
+                'fail' => [
+                    'priority'    => 'medium',
+                    'title'       => 'Privileged Identity Management (PIM) einführen',
+                    'description' => 'Keine PIM-berechtigten Rollenzuweisungen gefunden. PIM ermöglicht Just-in-Time-Zugriff für Admin-Rollen — Admins sind nur aktiv wenn nötig, mit Genehmigungsprozess und Audit-Trail.',
+                    'action'      => 'Benutzer & Rollen',
+                    'module_url'  => '/users',
                     'ca_template' => null,
                 ],
             ],
@@ -894,6 +1013,241 @@ class SecurityPostureService
         }
     }
 
+    private function checkSecurityDefaults(array $policies): array
+    {
+        $base = [
+            'id'          => 'security_defaults',
+            'category'    => 'Conditional Access',
+            'label'       => 'Security Defaults vs. CA',
+            'description' => 'Security Defaults und Conditional Access sollten nicht gleichzeitig aktiv sein.',
+            'severity'    => 'high',
+        ];
+        try {
+            $data       = $this->graph->get('/policies/identitySecurityDefaultsEnforcementPolicy', [], 'security_defaults', 3600);
+            $sdEnabled  = (bool)($data['isEnabled'] ?? false);
+            $hasActiveCa = !empty(array_filter($policies, fn($p) => strtolower($p['state'] ?? '') === 'enabled'));
+
+            if ($sdEnabled && $hasActiveCa) {
+                return array_merge($base, ['status' => 'warn', 'detail' => 'Security Defaults ist aktiv, aber eigene CA-Richtlinien sind ebenfalls aktiviert — kann zu Konflikten führen.']);
+            }
+            if (!$sdEnabled && !$hasActiveCa) {
+                return array_merge($base, ['status' => 'fail', 'detail' => 'Weder Security Defaults noch aktive CA-Richtlinien vorhanden — kein Basisschutz.']);
+            }
+            if ($sdEnabled && !$hasActiveCa) {
+                return array_merge($base, ['status' => 'warn', 'detail' => 'Security Defaults aktiv — bietet Basisschutz, aber keine granulare Steuerung. CA-Migration empfohlen.']);
+            }
+            return array_merge($base, ['status' => 'pass', 'detail' => 'Security Defaults deaktiviert, eigene CA-Richtlinien aktiv — optimal.']);
+        } catch (\Throwable) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (Policy.Read.All erforderlich).']);
+        }
+    }
+
+    private function checkAdminsMfaRegistered(): array
+    {
+        $base = [
+            'id'          => 'admins_mfa_registered',
+            'category'    => 'Identität & MFA',
+            'label'       => 'Alle Admins haben MFA',
+            'description' => 'Alle globalen Administratoren haben eine MFA-Methode registriert.',
+            'severity'    => 'high',
+        ];
+        try {
+            // Get global admin role
+            $roles = $this->graph->get('/directoryRoles', ['$filter' => "roleTemplateId eq '" . self::ROLE_GLOBAL_ADMIN . "'", '$select' => 'id'], 'dir_role_global_admin', 3600);
+            $roleList = $roles['value'] ?? [];
+            if (empty($roleList)) {
+                return array_merge($base, ['status' => 'unknown', 'detail' => 'Globale Administratorrolle nicht gefunden.']);
+            }
+            $roleId  = $roleList[0]['id'];
+            $members = $this->graph->get("/directoryRoles/{$roleId}/members", ['$select' => 'id,userPrincipalName'], "dir_role_members_{$roleId}", 1800);
+            $admins  = $members['value'] ?? [];
+            if (empty($admins)) {
+                return array_merge($base, ['status' => 'unknown', 'detail' => 'Keine Mitglieder der Administratorrolle gefunden.']);
+            }
+
+            // Get MFA data — use existing cache if available
+            $mfaData = $this->graph->paginate(
+                '/reports/authenticationMethods/userRegistrationDetails',
+                ['$select' => 'id,userPrincipalName,isMfaRegistered', '$top' => '999'],
+                50, 'dash_mfa_pct', 1800
+            );
+            $mfaByUpn = [];
+            foreach ($mfaData as $row) {
+                $mfaByUpn[strtolower($row['userPrincipalName'] ?? '')] = $row['isMfaRegistered'] ?? false;
+            }
+
+            $noMfa = [];
+            foreach ($admins as $admin) {
+                $upn = strtolower($admin['userPrincipalName'] ?? '');
+                if ($upn && isset($mfaByUpn[$upn]) && !$mfaByUpn[$upn]) {
+                    $noMfa[] = $admin['userPrincipalName'];
+                }
+            }
+
+            if (empty($noMfa)) {
+                return array_merge($base, ['status' => 'pass', 'detail' => 'Alle ' . count($admins) . ' globale(n) Administrator(en) haben MFA registriert.']);
+            }
+            return array_merge($base, ['status' => 'fail', 'detail' => count($noMfa) . ' Admin(s) ohne MFA: ' . implode(', ', array_slice($noMfa, 0, 3)) . (count($noMfa) > 3 ? ' …' : '')]);
+        } catch (\Throwable) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+        }
+    }
+
+    private function checkSsprAdoption(): array
+    {
+        $base = [
+            'id'          => 'sspr_adoption',
+            'category'    => 'Identität & MFA',
+            'label'       => 'Self-Service Password Reset (SSPR)',
+            'description' => 'Anteil der Benutzer mit registrierter SSPR-Methode.',
+            'severity'    => 'medium',
+        ];
+        try {
+            $data  = $this->graph->get('/reports/authenticationMethods/usersRegisteredByFeature', [], 'sspr_feature_summary', 3600);
+            $total = (int)($data['totalUserCount'] ?? 0);
+            if ($total === 0) {
+                return array_merge($base, ['status' => 'unknown', 'detail' => 'Keine Benutzerdaten verfügbar.']);
+            }
+            $ssprCount = 0;
+            foreach ((array)($data['userRegistrationFeatureCounts'] ?? []) as $item) {
+                if (($item['feature'] ?? '') === 'ssprRegistered') {
+                    $ssprCount = (int)($item['userCount'] ?? 0);
+                    break;
+                }
+            }
+            $rate = round($ssprCount / $total * 100, 1);
+            if ($rate >= 70) {
+                return array_merge($base, ['status' => 'pass', 'detail' => "{$ssprCount}/{$total} Benutzer haben SSPR registriert ({$rate}%)."]);
+            }
+            if ($rate >= 1) {
+                return array_merge($base, ['status' => 'warn', 'detail' => "Nur {$rate}% ({$ssprCount}/{$total}) haben SSPR registriert — Ziel: >70%."]);
+            }
+            return array_merge($base, ['status' => 'fail', 'detail' => 'Kein Benutzer hat SSPR registriert. SSPR-Einführung empfohlen.']);
+        } catch (\Throwable) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (Reports.Read.All) oder SSPR nicht lizenziert.']);
+        }
+    }
+
+    private function checkCaSessionControls(array $policies): array
+    {
+        $base = [
+            'id'          => 'ca_session_controls',
+            'category'    => 'Conditional Access',
+            'label'       => 'CA-Sitzungssteuerung',
+            'description' => 'CA-Richtlinie begrenzt Sitzungsdauer oder verhindert persistente Browser-Sitzungen.',
+            'severity'    => 'low',
+        ];
+        foreach ($policies as $p) {
+            if (strtolower($p['state'] ?? '') !== 'enabled') {
+                continue;
+            }
+            $session = $p['sessionControls'] ?? [];
+            $signInFreq  = $session['signInFrequency'] ?? null;
+            $persistent  = $session['persistentBrowser'] ?? null;
+
+            $hasFreq = ($signInFreq['isEnabled'] ?? false) === true;
+            $hasNoPersist = strtolower($persistent['mode'] ?? '') === 'never';
+
+            if ($hasFreq || $hasNoPersist) {
+                return array_merge($base, ['status' => 'pass', 'detail' => 'Aktive CA-Richtlinie steuert Sitzungslebensdauer oder persistente Sitzungen.']);
+            }
+        }
+        return array_merge($base, ['status' => 'fail', 'detail' => 'Keine CA-Richtlinie kontrolliert Sitzungsdauer oder Browser-Persistenz.']);
+    }
+
+    private function checkPimAdoption(): array
+    {
+        $base = [
+            'id'          => 'pim_adoption',
+            'category'    => 'Konfiguration & Apps',
+            'label'       => 'Privileged Identity Management (PIM)',
+            'description' => 'Just-in-Time Admin-Zugriff durch PIM-berechtigte Rollenzuweisungen.',
+            'severity'    => 'medium',
+        ];
+        try {
+            $data  = $this->graph->getEventual(
+                '/roleManagement/directory/roleEligibilityScheduleInstances',
+                ['$count' => 'true', '$top' => '1', '$select' => 'id'],
+                'pim_eligibility_count', 1800
+            );
+            $count = (int)($data['@odata.count'] ?? count($data['value'] ?? []));
+            if ($count > 0) {
+                return array_merge($base, ['status' => 'pass', 'detail' => "{$count} PIM-berechtigte Rollenzuweisung(en) aktiv — Just-in-Time-Zugriff wird genutzt."]);
+            }
+            return array_merge($base, ['status' => 'fail', 'detail' => 'Keine PIM-berechtigten Rollenzuweisungen. Alle Admins haben dauerhaften Zugriff.']);
+        } catch (\Throwable) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (RoleManagement.Read.Directory) oder Entra ID P2 nicht lizenziert.']);
+        }
+    }
+
+    private function checkAppConsentPolicy(?array $authPolicy): array
+    {
+        $base = [
+            'id'          => 'app_consent_policy',
+            'category'    => 'Konfiguration & Apps',
+            'label'       => 'App-Zustimmungsrichtlinie',
+            'description' => 'Benutzer dürfen nicht ohne Admin-Genehmigung OAuth-Berechtigungen vergeben.',
+            'severity'    => 'high',
+        ];
+        if ($authPolicy === null) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (Policy.Read.All erforderlich).']);
+        }
+        try {
+            $policies  = (array)($authPolicy['permissionGrantPolicyIdsAssignedToDefaultUserRole'] ?? []);
+
+            if (empty($policies)) {
+                return array_merge($base, ['status' => 'pass', 'detail' => 'Benutzer können keinen Apps ohne Admin-Genehmigung zustimmen — optimal.']);
+            }
+            // Check for legacy broad consent
+            $hasLegacy = !empty(array_filter($policies, fn($p) => str_contains(strtolower($p), 'legacy') && !str_contains(strtolower($p), 'admin')));
+            $hasLowRisk = !empty(array_filter($policies, fn($p) => str_contains(strtolower($p), 'low-risk') || str_contains(strtolower($p), 'lowrisk')));
+
+            if ($hasLegacy) {
+                return array_merge($base, ['status' => 'fail', 'detail' => 'Benutzer dürfen beliebigen Apps zustimmen (legacy consent policy). Consent-Phishing-Risiko.']);
+            }
+            if ($hasLowRisk) {
+                return array_merge($base, ['status' => 'warn', 'detail' => 'Benutzer dürfen risikoarmen Apps zustimmen. Admin-Consent-Workflow für alle empfohlen.']);
+            }
+            return array_merge($base, ['status' => 'warn', 'detail' => 'Consent-Richtlinie vorhanden — manuelle Überprüfung empfohlen: ' . implode(', ', $policies)]);
+        } catch (\Throwable) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+        }
+    }
+
+    private function checkExternalCollabPolicy(?array $authPolicy): array
+    {
+        $base = [
+            'id'          => 'external_collab_policy',
+            'category'    => 'Konfiguration & Apps',
+            'label'       => 'Gasteinladungsrichtlinie',
+            'description' => 'Wer darf externe Gastbenutzer in den Tenant einladen.',
+            'severity'    => 'medium',
+        ];
+        if ($authPolicy === null) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (Policy.Read.All erforderlich).']);
+        }
+        try {
+            $setting = strtolower($authPolicy['allowInvitesFrom'] ?? '');
+            $labels  = [
+                'none'                                 => 'Niemand darf einladen — sehr restriktiv.',
+                'adminsandguestinviters'               => 'Nur Admins und Gast-Einlader dürfen einladen — empfohlen.',
+                'adminsguestinvitersandallmembers'     => 'Alle Mitglieder dürfen einladen — moderat.',
+                'everyone'                             => 'Jeder (inkl. Gäste) darf einladen — unsicher.',
+            ];
+            $detail = $labels[$setting] ?? "Einstellung: {$setting}";
+
+            if (in_array($setting, ['none', 'adminsandguestinviters'], true)) {
+                return array_merge($base, ['status' => 'pass', 'detail' => $detail]);
+            }
+            if ($setting === 'adminsguestinvitersandallmembers') {
+                return array_merge($base, ['status' => 'warn', 'detail' => $detail . ' Empfehlung: auf Admins und Gast-Einlader einschränken.']);
+            }
+            return array_merge($base, ['status' => 'fail', 'detail' => $detail . ' Einschränkung auf Admins dringend empfohlen.']);
+        } catch (\Throwable) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+        }
+    }
+
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
@@ -905,6 +1259,20 @@ class SecurityPostureService
             return $data['value'] ?? [];
         } catch (\Throwable) {
             return [];
+        }
+    }
+
+    private function fetchAuthorizationPolicy(): ?array
+    {
+        try {
+            $data = $this->graph->get('/policies/authorizationPolicy', [], 'authorization_policy', 3600);
+            // May be wrapped in value array or returned directly
+            if (isset($data['value']) && is_array($data['value'])) {
+                return $data['value'][0] ?? null;
+            }
+            return isset($data['allowInvitesFrom']) ? $data : null;
+        } catch (\Throwable) {
+            return null;
         }
     }
 }
