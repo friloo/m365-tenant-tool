@@ -385,6 +385,203 @@ class CronRunner
                     return $service->generate();
                 },
             ],
+
+            'alert_new_defender' => [
+                'label'            => 'Alert: Neue Defender-Warnungen',
+                'description'      => 'Sendet E-Mail wenn neue ungelöste Defender Alerts seit dem letzten Check aufgetreten sind.',
+                'default_interval' => 60,
+                'handler'          => function () use ($graph): string {
+                    $config  = Config::getInstance();
+                    $to      = $config->get('alert_email_to', '');
+                    if (!$to) {
+                        return 'Kein Empfänger konfiguriert';
+                    }
+
+                    $defaultLastCheck = (new \DateTimeImmutable('-24 hours'))->format('c');
+                    $lastCheck        = $config->get('alert_defender_last_check', $defaultLastCheck);
+                    $appName          = $config->get('app_name', 'M365 Tenant Tool');
+
+                    try {
+                        $data = $graph->get(
+                            '/security/alerts_v2',
+                            [
+                                '$filter' => "status eq 'new' and createdDateTime gt '{$lastCheck}'",
+                                '$top'    => 50,
+                                '$select' => 'id,title,severity,createdDateTime,alertWebUrl',
+                            ],
+                            null,
+                            0
+                        );
+                    } catch (\Throwable $e) {
+                        if (str_contains($e->getMessage(), '403')) {
+                            return 'Defender-API nicht verfügbar (403 — fehlende Lizenz oder Berechtigung)';
+                        }
+                        throw $e;
+                    }
+
+                    $alerts = $data['value'] ?? [];
+                    $config->set('alert_defender_last_check', (new \DateTimeImmutable())->format('c'));
+
+                    if (empty($alerts)) {
+                        return 'Keine neuen Alerts';
+                    }
+
+                    $rows = '';
+                    foreach ($alerts as $alert) {
+                        $title    = htmlspecialchars($alert['title'] ?? '—');
+                        $severity = htmlspecialchars($alert['severity'] ?? '—');
+                        $created  = htmlspecialchars($alert['createdDateTime'] ?? '—');
+                        $url      = htmlspecialchars($alert['alertWebUrl'] ?? '#');
+                        $rows .= "<tr><td>{$title}</td><td>{$severity}</td><td>{$created}</td>"
+                               . "<td><a href=\"{$url}\">Link</a></td></tr>";
+                    }
+
+                    $html = '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%">'
+                          . '<thead><tr><th>Titel</th><th>Schweregrad</th><th>Erstellt</th><th>Details</th></tr></thead>'
+                          . "<tbody>{$rows}</tbody></table>";
+
+                    $count = count($alerts);
+                    \App\Helpers\Mailer::send(
+                        $to,
+                        "Defender Alert: {$count} neue Warnung(en)",
+                        \App\Helpers\Mailer::alertTemplate(
+                            "Neue Defender-Warnungen ({$count})",
+                            "<p>Es wurden <strong>{$count}</strong> neue Defender-Alert(s) gefunden:</p>{$html}",
+                            $appName
+                        )
+                    );
+
+                    return "{$count} neue Alerts — E-Mail gesendet";
+                },
+            ],
+
+            'alert_service_incidents' => [
+                'label'            => 'Alert: Dienststörungen',
+                'description'      => 'Sendet E-Mail wenn Microsoft-Dienste mit Störungen gemeldet werden.',
+                'default_interval' => 30,
+                'handler'          => function () use ($graph): string {
+                    $config  = Config::getInstance();
+                    $to      = $config->get('alert_email_to', '');
+                    if (!$to) {
+                        return 'Kein Empfänger konfiguriert';
+                    }
+
+                    $appName      = $config->get('app_name', 'M365 Tenant Tool');
+                    $knownRaw     = $config->get('alert_service_known_incidents', '[]');
+                    $knownIds     = json_decode($knownRaw, true) ?? [];
+
+                    $data = $graph->get(
+                        '/admin/serviceAnnouncement/issues',
+                        [
+                            '$filter' => "status ne 'resolved'",
+                            '$select' => 'id,title,service,status,startDateTime',
+                            '$top'    => 50,
+                        ],
+                        null,
+                        0
+                    );
+
+                    $incidents  = $data['value'] ?? [];
+                    $currentIds = array_column($incidents, 'id');
+                    $newOnes    = array_filter(
+                        $incidents,
+                        fn(array $i) => !in_array($i['id'], $knownIds, true)
+                    );
+
+                    $config->set('alert_service_known_incidents', json_encode($currentIds));
+
+                    if (empty($newOnes)) {
+                        return 'Keine neuen Dienststörungen';
+                    }
+
+                    $rows = '';
+                    foreach ($newOnes as $inc) {
+                        $service = htmlspecialchars($inc['service'] ?? '—');
+                        $status  = htmlspecialchars($inc['status'] ?? '—');
+                        $title   = htmlspecialchars($inc['title'] ?? '—');
+                        $start   = htmlspecialchars($inc['startDateTime'] ?? '—');
+                        $rows .= "<tr><td>{$service}</td><td>{$status}</td><td>{$title}</td><td>{$start}</td></tr>";
+                    }
+
+                    $html = '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%">'
+                          . '<thead><tr><th>Dienst</th><th>Status</th><th>Titel</th><th>Beginn</th></tr></thead>'
+                          . "<tbody>{$rows}</tbody></table>";
+
+                    $count = count($newOnes);
+                    \App\Helpers\Mailer::send(
+                        $to,
+                        "Dienststörung: {$count} neue Incident(s)",
+                        \App\Helpers\Mailer::alertTemplate(
+                            "Neue Dienststörungen ({$count})",
+                            "<p>Es wurden <strong>{$count}</strong> neue Dienststörung(en) erkannt:</p>{$html}",
+                            $appName
+                        )
+                    );
+
+                    return "{$count} neue Incidents — E-Mail gesendet";
+                },
+            ],
+
+            'alert_new_risky_users' => [
+                'label'            => 'Alert: Neue Risiko-Benutzer',
+                'description'      => 'Sendet E-Mail wenn neue Benutzer einen aktiven Risikostatus erhalten haben.',
+                'default_interval' => 60,
+                'handler'          => function () use ($graph): string {
+                    $config  = Config::getInstance();
+                    $to      = $config->get('alert_email_to', '');
+                    if (!$to) {
+                        return 'Kein Empfänger konfiguriert';
+                    }
+
+                    $defaultLastCheck = (new \DateTimeImmutable('-24 hours'))->format('c');
+                    $lastCheck        = $config->get('alert_risky_last_check', $defaultLastCheck);
+                    $appName          = $config->get('app_name', 'M365 Tenant Tool');
+
+                    $data = $graph->getEventual(
+                        '/identityProtection/riskyUsers',
+                        [
+                            '$filter' => "riskState eq 'atRisk' and riskLastUpdatedDateTime gt '{$lastCheck}'",
+                            '$select' => 'userPrincipalName,riskLevel,riskState,riskLastUpdatedDateTime',
+                            '$top'    => 50,
+                        ],
+                        null,
+                        0
+                    );
+
+                    $users = $data['value'] ?? [];
+                    $config->set('alert_risky_last_check', (new \DateTimeImmutable())->format('c'));
+
+                    if (empty($users)) {
+                        return 'Keine neuen Risiko-Benutzer';
+                    }
+
+                    $rows = '';
+                    foreach ($users as $user) {
+                        $upn     = htmlspecialchars($user['userPrincipalName'] ?? '—');
+                        $level   = htmlspecialchars($user['riskLevel'] ?? '—');
+                        $state   = htmlspecialchars($user['riskState'] ?? '—');
+                        $updated = htmlspecialchars($user['riskLastUpdatedDateTime'] ?? '—');
+                        $rows .= "<tr><td>{$upn}</td><td>{$level}</td><td>{$state}</td><td>{$updated}</td></tr>";
+                    }
+
+                    $html = '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%">'
+                          . '<thead><tr><th>UPN</th><th>Risikostufe</th><th>Status</th><th>Aktualisiert</th></tr></thead>'
+                          . "<tbody>{$rows}</tbody></table>";
+
+                    $count = count($users);
+                    \App\Helpers\Mailer::send(
+                        $to,
+                        "Risiko-Benutzer: {$count} neue(r) Benutzer",
+                        \App\Helpers\Mailer::alertTemplate(
+                            "Neue Risiko-Benutzer ({$count})",
+                            "<p>Es wurden <strong>{$count}</strong> neue Risiko-Benutzer erkannt:</p>{$html}",
+                            $appName
+                        )
+                    );
+
+                    return "{$count} neue Risiko-Benutzer — E-Mail gesendet";
+                },
+            ],
         ];
     }
 
