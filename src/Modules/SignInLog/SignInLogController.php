@@ -32,7 +32,16 @@ class SignInLogController
             $filters['days'] = '7';
         }
 
-        $logs      = $service->getLogs($filters);
+        $diag = null;
+        try {
+            $logs = $service->getLogs($filters);
+            if (empty($logs)) {
+                $diag = \App\Graph\GraphErrorTranslator::translate(app_graph()->getLastError(), 'AuditLog.Read.All');
+            }
+        } catch (\Throwable $e) {
+            $logs = [];
+            $diag = \App\Graph\GraphErrorTranslator::fromThrowable($e, 'AuditLog.Read.All');
+        }
         $stats     = $service->getStats($logs);
         $apps      = $service->getDistinctApps($logs);
         $countries = $service->getDistinctCountries($logs);
@@ -44,6 +53,7 @@ class SignInLogController
             'apps'      => $apps,
             'countries' => $countries,
             'filters'   => $rawFilters,
+            'diag'      => $diag,
             'flash'     => Session::getFlash('success'),
             'error'     => Session::getFlash('error'),
         ]);

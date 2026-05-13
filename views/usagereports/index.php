@@ -64,11 +64,23 @@ $hasActivity = ($summary['emailsSent'] + $summary['emailsReceived'] + $summary['
     </div>
 </div>
 
-<?php if (!$hasData): ?>
-    <div class="alert alert-warning mb-4">
-        <i class="bi bi-exclamation-triangle me-2"></i>
-        <strong>Keine Daten verfügbar.</strong>
-        Möglicherweise fehlt die Berechtigung <code>Reports.Read.All</code> oder der Datenschutzmodus für Berichte ist aktiviert.
+<?php if (!$hasData && !empty($diag)): ?>
+    <div class="alert alert-warning d-flex gap-3 mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1" style="font-size:1.4rem;color:#b45309;"></i>
+        <div class="flex-grow-1">
+            <div class="fw-semibold mb-1"><?= $e($diag['short']) ?></div>
+            <div class="small text-muted"><?= $e($diag['detail']) ?></div>
+            <?php if (!empty($diag['fix_url'])): ?>
+                <a href="<?= $e($diag['fix_url']) ?>" class="btn btn-sm btn-outline-secondary mt-2">
+                    <i class="bi bi-arrow-right-circle me-1"></i>Zur Lösung
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+<?php elseif (!$hasData): ?>
+    <div class="alert alert-info mb-4">
+        <i class="bi bi-info-circle me-2"></i>
+        Keine Daten verfügbar. Microsoft braucht ca. 48 Stunden nach Tenant-Erstellung, bis Aktivitätsberichte aggregiert werden.
     </div>
 <?php endif; ?>
 
@@ -119,11 +131,10 @@ $hasActivity = ($summary['emailsSent'] + $summary['emailsReceived'] + $summary['
     </div>
 </div>
 
-<?php if (!$hasActivity): ?>
-    <div class="alert alert-warning mb-4">
-        <i class="bi bi-exclamation-triangle me-2"></i>
-        <strong>Keine Aktivitätsdaten verfügbar.</strong>
-        Möglicherweise fehlt die Berechtigung <code>Reports.Read.All</code>.
+<?php if (!$hasActivity && empty($diag)): ?>
+    <div class="alert alert-info mb-4">
+        <i class="bi bi-info-circle me-2"></i>
+        Keine Aktivitätsdaten in diesem Zeitraum.
     </div>
 <?php endif; ?>
 

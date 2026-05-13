@@ -87,10 +87,30 @@ class GraphErrorTranslator
             ];
         }
         if ($status === 404) {
+            $url = (string)($err['url'] ?? '');
+            // Reports-API spezifisch: hier ist 404 fast immer kein
+            // "Pfad existiert nicht", sondern eine der drei typischen
+            // Tenant-Konfigurationen — Microsoft gibt für alle drei
+            // denselben Statuscode zurück.
+            if (str_contains($url, '/reports/')) {
+                return [
+                    'type'   => 'reports_unavailable',
+                    'short'  => 'Reports-API liefert keine Daten (404)',
+                    'detail' => 'Der Endpunkt ' . self::trimMsg($url) . ' antwortet mit 404. '
+                              . 'Microsoft gibt diesen Statuscode aus drei Gründen — bitte einen davon prüfen: '
+                              . '(1) Tenant hat keinen Office-365-Plan, der Aktivitätsberichte unterstützt (E1/E3/E5 oder Business). '
+                              . '(2) Datenschutz für Berichte ist aktiviert — Admin Center → Einstellungen → Org-Einstellungen → Berichte → "Verborgene Namen anzeigen". '
+                              . '(3) Reports.Read.All-Permission fehlt im App-Token (zwar oft 403, aber bei manchen Lizenz-Kombinationen wird 404 gemeldet). '
+                              . 'Original-Antwort: ' . self::trimMsg($msg),
+                    'fix_url' => '/settings/permissions',
+                ];
+            }
             return [
                 'type'   => 'not_found',
-                'short'  => 'Endpunkt/Ressource nicht gefunden',
-                'detail' => 'Microsoft Graph kennt diese Ressource im Tenant nicht (404). Möglicherweise wurde der API-Pfad in einer neueren Version geändert oder die Ressource ist im Tenant nicht angelegt.',
+                'short'  => 'Endpunkt oder Ressource nicht gefunden (404)',
+                'detail' => 'Microsoft Graph antwortet mit 404 für ' . self::trimMsg($url) . '. '
+                          . 'Mögliche Gründe: API-Pfad in neuerer Graph-Version umbenannt, Ressource im Tenant nicht angelegt, oder Tenant-Typ unterstützt diesen Endpunkt nicht. '
+                          . 'Original-Antwort: ' . self::trimMsg($msg),
             ];
         }
         if ($status === 429) {
