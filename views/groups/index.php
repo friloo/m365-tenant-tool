@@ -69,6 +69,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="post" action="/groups/create">
+                <?= \App\Core\Csrf::field() ?>
                 <div class="modal-header">
                     <h5 class="modal-title" id="createGroupModalLabel"><i class="bi bi-people me-2"></i>Gruppe anlegen</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>

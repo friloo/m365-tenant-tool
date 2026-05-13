@@ -38,6 +38,7 @@
                                 <form method="post" action="/groups/<?= $e($group['id']) ?>/delete" class="mb-0"
                                       onsubmit="return confirm(this.dataset.confirm)"
                                       data-confirm="Gruppe wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.">
+                                    <?= \App\Core\Csrf::field() ?>
                                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Gruppe löschen">
                                         <i class="bi bi-trash"></i>
                                     </button>
@@ -52,6 +53,7 @@
             <div class="card-body-custom border-top">
                 <h6 class="small text-muted text-uppercase mb-3">Mitglied hinzufügen</h6>
                 <form method="post" action="/groups/<?= $e($group['id']) ?>/add-member">
+                    <?= \App\Core\Csrf::field() ?>
                     <div class="mb-2">
                         <input type="text" name="user_search" id="userSearchInput" class="form-control form-control-sm"
                                placeholder="Benutzer-ID oder UPN…" autocomplete="off">
@@ -111,6 +113,7 @@
                                     <form method="post"
                                           action="/groups/<?= $e($group['id']) ?>/remove-owner/<?= $e($o['id']) ?>"
                                           onsubmit="return confirm('Besitzer entfernen?')" class="mb-0 flex-shrink-0">
+                                        <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size:11px;" title="Besitzer entfernen">
                                             <i class="bi bi-person-dash"></i>
                                         </button>
@@ -126,6 +129,7 @@
                 <div class="card-body-custom border-top">
                     <h6 class="small text-muted text-uppercase mb-3">Besitzer hinzufügen</h6>
                     <form method="post" action="/groups/<?= $e($group['id']) ?>/add-owner">
+                        <?= \App\Core\Csrf::field() ?>
                         <div class="mb-2">
                             <input type="text" name="user_search" id="ownerSearchInput" class="form-control form-control-sm"
                                    placeholder="Benutzer-ID oder UPN…" autocomplete="off">
@@ -162,6 +166,7 @@
                                 <td>
                                     <form method="post" action="/groups/<?= $e($group['id']) ?>/remove-member/<?= $e($m['id']) ?>"
                                           onsubmit="return confirm('Mitglied entfernen?')" class="mb-0">
+                                        <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size:11px;">
                                             <i class="bi bi-person-dash"></i>
                                         </button>

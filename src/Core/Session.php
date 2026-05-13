@@ -13,7 +13,7 @@ class Session
                 'path'     => '/',
                 'secure'   => isset($_SERVER['HTTPS']),
                 'httponly' => true,
-                'samesite' => 'Lax',
+                'samesite' => 'Strict',
             ]);
             session_start();
         }

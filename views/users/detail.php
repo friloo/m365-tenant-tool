@@ -116,6 +116,7 @@ if ($neverExpires) {
                     <!-- Toggle enable/disable -->
                     <form method="post" action="/users/<?= $e($user['id']) ?>/toggle-enabled"
                           onsubmit="return confirm('Benutzer wirklich <?= $enabled ? 'deaktivieren' : 'aktivieren' ?>?')">
+                        <?= \App\Core\Csrf::field() ?>
                         <button type="submit" class="btn btn-sm w-100 <?= $enabled ? 'btn-outline-warning' : 'btn-outline-success' ?>">
                             <i class="bi bi-<?= $enabled ? 'person-x' : 'person-check' ?> me-1"></i>
                             <?= $enabled ? 'Benutzer deaktivieren' : 'Benutzer aktivieren' ?>
@@ -124,6 +125,7 @@ if ($neverExpires) {
                     <!-- MFA Reset -->
                     <form method="post" action="/users/<?= $e($user['id']) ?>/reset-mfa"
                           onsubmit="return confirm('MFA-Methoden für diesen Benutzer wirklich zurücksetzen? Der Benutzer muss MFA neu registrieren.')">
+                        <?= \App\Core\Csrf::field() ?>
                         <button type="submit" class="btn btn-sm btn-outline-danger w-100">
                             <i class="bi bi-shield-x me-1"></i> MFA zurücksetzen
                         </button>
@@ -158,6 +160,7 @@ if ($neverExpires) {
                                 <span class="small fw-medium"><?= $e($skuNameMap[$lic['skuId']] ?? $lic['skuId']) ?></span>
                                 <form method="post" action="/users/<?= $e($user['id']) ?>/remove-license"
                                       onsubmit="return confirm('Lizenz entfernen?')" class="mb-0">
+                                    <?= \App\Core\Csrf::field() ?>
                                     <input type="hidden" name="sku_id" value="<?= $e($lic['skuId']) ?>">
                                     <button type="submit" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size:11px;">
                                         <i class="bi bi-x"></i> Entfernen
@@ -174,6 +177,7 @@ if ($neverExpires) {
                 <?php $availableSkus = array_filter($skus, fn($s) => !in_array($s['skuId'], $assignedSkuIds) && $s['available'] > 0); ?>
                 <?php if ($availableSkus): ?>
                     <form method="post" action="/users/<?= $e($user['id']) ?>/assign-license" class="d-flex gap-2">
+                        <?= \App\Core\Csrf::field() ?>
                         <select name="sku_id" class="form-select form-select-sm">
                             <option value="">Lizenz auswählen…</option>
                             <?php foreach ($availableSkus as $sku): ?>
@@ -331,6 +335,7 @@ if ($neverExpires) {
                                 <?php if (LocalAuth::role() === 'admin'): ?>
                                     <form method="post" action="/users/<?= $e($user['id']) ?>/notes/<?= (int)$n['id'] ?>"
                                           onsubmit="return confirm('Notiz wirklich löschen?')" class="ms-2 mb-0 flex-shrink-0">
+                                        <?= \App\Core\Csrf::field() ?>
                                         <input type="hidden" name="_method" value="DELETE">
                                         <button type="submit" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size:11px;">
                                             <i class="bi bi-trash"></i>
@@ -346,6 +351,7 @@ if ($neverExpires) {
 
                 <?php if (LocalAuth::role() === 'admin'): ?>
                     <form method="post" action="/users/<?= $e($user['id']) ?>/notes">
+                        <?= \App\Core\Csrf::field() ?>
                         <div class="mb-2">
                             <textarea name="note" class="form-control form-control-sm" rows="3"
                                       placeholder="Interne Notiz eingeben…" required></textarea>
@@ -373,6 +379,7 @@ if ($neverExpires) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
             </div>
             <form method="post" action="/users/<?= $e($user['id']) ?>/offboarding">
+                <?= \App\Core\Csrf::field() ?>
                 <div class="modal-body">
                     <p class="text-muted small mb-3">Wähle die Aktionen, die ausgeführt werden sollen. Bereits abgeschlossene Schritte können übersprungen werden.</p>
 

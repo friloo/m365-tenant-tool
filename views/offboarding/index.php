@@ -99,6 +99,7 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
               <?php if ($enabled): ?>
               <form method="post" action="/offboarding/disable-account"
                     onsubmit="return confirm('Konto von <?= $e($displayName) ?> wirklich deaktivieren?')">
+                <?= \App\Core\Csrf::field() ?>
                 <input type="hidden" name="user_id" value="<?= $e($userId) ?>">
                 <button class="btn btn-danger btn-sm"><i class="bi bi-person-slash me-1"></i>Deaktivieren</button>
               </form>
@@ -119,6 +120,7 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
             </div>
             <div>
               <form method="post" action="/offboarding/revoke-sessions">
+                <?= \App\Core\Csrf::field() ?>
                 <input type="hidden" name="user_id" value="<?= $e($userId) ?>">
                 <button class="btn btn-warning btn-sm"><i class="bi bi-shield-x me-1"></i>Widerrufen</button>
               </form>
@@ -154,6 +156,7 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
               <?php if ($state['hasLicenses'] ?? false): ?>
               <form method="post" action="/offboarding/remove-licenses"
                     onsubmit="return confirm('Alle <?= $state['licenseCount'] ?> Lizenz(en) von <?= $e($displayName) ?> entfernen?')">
+                <?= \App\Core\Csrf::field() ?>
                 <input type="hidden" name="user_id" value="<?= $e($userId) ?>">
                 <button class="btn btn-outline-danger btn-sm"><i class="bi bi-award me-1"></i>Entfernen (<?= $state['licenseCount'] ?>)</button>
               </form>
@@ -192,6 +195,7 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
               <?php if (($state['groupCount'] ?? 0) > 0): ?>
               <form method="post" action="/offboarding/remove-groups"
                     onsubmit="return confirm('<?= $e($displayName) ?> aus <?= $state['groupCount'] ?> Gruppe(n) entfernen?')">
+                <?= \App\Core\Csrf::field() ?>
                 <input type="hidden" name="user_id" value="<?= $e($userId) ?>">
                 <button class="btn btn-outline-warning btn-sm"><i class="bi bi-diagram-3 me-1"></i>Entfernen</button>
               </form>

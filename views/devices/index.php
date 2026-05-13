@@ -105,6 +105,7 @@
                         </td>
                         <td class="text-nowrap">
                             <form method="post" action="/devices/<?= $e($deviceId) ?>/sync" class="d-inline">
+                                <?= \App\Core\Csrf::field() ?>
                                 <button type="submit" class="btn btn-sm btn-outline-primary py-0 px-2" title="Synchronisieren" style="font-size:12px;">
                                     <i class="bi bi-arrow-repeat"></i> Sync
                                 </button>
@@ -112,6 +113,7 @@
                             <?php if (LocalAuth::isAdmin()): ?>
                             <form method="post" action="/devices/<?= $e($deviceId) ?>/wipe" class="d-inline ms-1"
                                   onsubmit="return confirm('ACHTUNG: Alle Daten auf dem Gerät werden unwiderruflich gelöscht. Wirklich fortfahren?')">
+                                <?= \App\Core\Csrf::field() ?>
                                 <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Gerät löschen (Wipe)" style="font-size:12px;">
                                     <i class="bi bi-trash"></i> Wipe
                                 </button>

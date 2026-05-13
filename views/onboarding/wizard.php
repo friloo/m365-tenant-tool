@@ -27,6 +27,7 @@
 </style>
 
 <form method="post" action="/onboarding/create" id="onboardingForm">
+<?= \App\Core\Csrf::field() ?>
 
 <div class="step-indicator">
     <div class="step-wrapper">

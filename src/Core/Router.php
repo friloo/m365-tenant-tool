@@ -26,6 +26,17 @@ class Router
         $uri = strtok($uri, '?');
         $uri = rtrim($uri, '/') ?: '/';
 
+        if (in_array($method, ['POST', 'DELETE', 'PATCH'], true)) {
+            if (!\App\Core\Csrf::validate()) {
+                http_response_code(419);
+                if (!headers_sent()) {
+                    header('Content-Type: text/html; charset=utf-8');
+                }
+                echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Sicherheitsfehler</title></head><body style="font-family:system-ui;text-align:center;padding:80px;"><h2>&#128274; CSRF-Schutz</h2><p>Ungültiges oder abgelaufenes Sicherheits-Token.</p><p>Bitte <a href="javascript:history.back()">gehe zurück</a> und versuche es erneut.</p></body></html>';
+                exit;
+            }
+        }
+
         foreach ($this->routes[$method] ?? [] as $pattern => $handler) {
             $regex = $this->toRegex($pattern);
             if (preg_match($regex, $uri, $matches)) {

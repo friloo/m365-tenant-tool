@@ -363,6 +363,7 @@
         <?php endif; ?>
 
         <form method="post" action="/review/<?= htmlspecialchars($token ?? '') ?>">
+            <?= \App\Core\Csrf::field() ?>
             <div class="field-wrap">
                 <label class="field-label">
                     Begründung <span>*</span>

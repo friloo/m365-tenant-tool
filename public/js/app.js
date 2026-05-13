@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function () {
         render(term, lastApiResults);
 
         apiDebounceTimer = setTimeout(() => {
-            fetch('/api/search?q=' + encodeURIComponent(term.trim()))
+            fetch('/api/search?q=' + encodeURIComponent(term.trim()), { headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content ?? '' } })
                 .then(r => r.ok ? r.json() : { results: [] })
                 .then(data => {
                     lastApiResults = data.results || [];

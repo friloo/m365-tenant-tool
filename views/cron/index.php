@@ -88,6 +88,7 @@ function cronIn(?string $dt): string {
             <div class="metric-sub">
                 <?php if ($queueStats['failed'] > 0): ?>
                     <form method="post" action="/cron/queue/retry" class="d-inline">
+                        <?= \App\Core\Csrf::field() ?>
                         <button class="btn btn-link btn-sm p-0" style="font-size:11px;">Alle wiederholen</button>
                     </form>
                 <?php else: ?>
@@ -161,6 +162,7 @@ function cronIn(?string $dt): string {
                     <div class="d-flex gap-1 flex-wrap">
                         <!-- Run now -->
                         <form method="post" action="/cron/run-job/<?= $e($jobKey) ?>">
+                            <?= \App\Core\Csrf::field() ?>
                             <button type="submit" class="btn btn-sm btn-outline-primary"
                                     title="Jetzt ausführen"
                                     onclick="return confirm('Job jetzt ausführen?')">
@@ -189,6 +191,7 @@ function cronIn(?string $dt): string {
         <h6>Job-Warteschlange (letzte 30 Einträge)</h6>
         <?php if ($queueStats['done'] > 0): ?>
         <form method="post" action="/cron/queue/prune" class="ms-auto">
+            <?= \App\Core\Csrf::field() ?>
             <button type="submit" class="btn btn-sm btn-outline-secondary"
                     onclick="return confirm('Abgeschlossene Jobs löschen?')">
                 <i class="bi bi-trash me-1"></i> Erledigte löschen
@@ -253,6 +256,7 @@ function cronIn(?string $dt): string {
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="post" id="jobConfigForm" action="">
+                <?= \App\Core\Csrf::field() ?>
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label fw-medium">Intervall</label>

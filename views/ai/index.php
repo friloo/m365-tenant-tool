@@ -33,6 +33,7 @@
     <?php if ($enabled): ?>
     <div class="d-flex gap-2">
         <form method="post" action="/ai/analyze" id="analyzeFormTop">
+            <?= \App\Core\Csrf::field() ?>
             <button type="submit" class="btn btn-primary btn-sm" id="analyzeBtnTop"
                     onclick="startAnalysis(this)">
                 <i class="bi bi-arrow-clockwise me-1"></i>Analyse aktualisieren
@@ -41,6 +42,7 @@
         <?php if ((\App\Auth\LocalAuth::isAdmin())): ?>
         <form method="post" action="/ai/clear-cache"
               onsubmit="return confirm('Analyse-Cache wirklich löschen?')">
+            <?= \App\Core\Csrf::field() ?>
             <button type="submit" class="btn btn-outline-secondary btn-sm">
                 <i class="bi bi-trash me-1"></i>Cache leeren
             </button>
@@ -88,6 +90,7 @@ if ($analysis === null):
                     </div>
                 </div>
                 <form method="post" action="/ai/analyze" id="analyzeForm">
+                    <?= \App\Core\Csrf::field() ?>
                     <button type="submit" class="btn btn-primary" id="analyzeBtn"
                             onclick="startAnalysis(this)">
                         <i class="bi bi-play-fill me-1"></i>Analyse starten

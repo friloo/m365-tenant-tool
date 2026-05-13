@@ -30,6 +30,7 @@ $total = count($users);
 
 <!-- Bulk Action Form (wraps table) -->
 <form method="post" action="/users/bulk-action" id="bulkForm">
+<?= \App\Core\Csrf::field() ?>
 <div class="content-card">
     <div class="table-toolbar">
         <input type="checkbox" id="selectAll" class="form-check-input me-2" title="Alle auswählen">

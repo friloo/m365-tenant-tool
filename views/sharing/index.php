@@ -187,6 +187,7 @@ $hasScanned = $summary['hasScanned'] ?? false;
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 <form id="revokeForm" method="post" action="/sharing/revoke">
+                    <?= \App\Core\Csrf::field() ?>
                     <input type="hidden" name="drive_id"      id="rDriveId">
                     <input type="hidden" name="item_id"       id="rItemId">
                     <input type="hidden" name="permission_id" id="rPermId">

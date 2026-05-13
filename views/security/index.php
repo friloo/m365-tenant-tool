@@ -102,6 +102,7 @@
                                             <ul class="dropdown-menu dropdown-menu-end" style="min-width:170px;">
                                                 <li>
                                                     <form method="post" action="/security/ca/<?= $e($pId) ?>/toggle" class="mb-0">
+                                                        <?= \App\Core\Csrf::field() ?>
                                                         <input type="hidden" name="state" value="enabled">
                                                         <button type="submit"
                                                                 class="dropdown-item <?= $pState === 'enabled' ? 'active' : '' ?>"
@@ -112,6 +113,7 @@
                                                 </li>
                                                 <li>
                                                     <form method="post" action="/security/ca/<?= $e($pId) ?>/toggle" class="mb-0">
+                                                        <?= \App\Core\Csrf::field() ?>
                                                         <input type="hidden" name="state" value="enabledForReportingButNotEnforced">
                                                         <button type="submit"
                                                                 class="dropdown-item <?= $pState === 'enabledForReportingButNotEnforced' ? 'active' : '' ?>"
@@ -122,6 +124,7 @@
                                                 </li>
                                                 <li>
                                                     <form method="post" action="/security/ca/<?= $e($pId) ?>/toggle" class="mb-0">
+                                                        <?= \App\Core\Csrf::field() ?>
                                                         <input type="hidden" name="state" value="disabled">
                                                         <button type="submit"
                                                                 class="dropdown-item <?= $pState === 'disabled' ? 'active' : '' ?>"

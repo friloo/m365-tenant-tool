@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/public/css/app.css">
+    <meta name="csrf-token" content="<?= \App\Core\Csrf::token() ?>">
     <script>
     // Both functions live in <head> so they are always defined before any
     // inline view script runs (app.js loads after the body content).
