@@ -210,7 +210,7 @@ class SettingsController
     {
         LocalAuth::require();
         \App\Database\DB::execute('DELETE FROM graph_tokens');
-        \App\Core\Session::setFlash('success', 'Token gelöscht — ein neues wird beim nächsten API-Aufruf geholt.');
+        \App\Core\Session::flash('success', 'Token gelöscht — ein neues wird beim nächsten API-Aufruf geholt.');
         \App\Core\Redirect::to('/settings/permissions');
     }
 
