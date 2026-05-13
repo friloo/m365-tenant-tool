@@ -171,9 +171,11 @@ function app_service(string $class): object {
 $router = new Router();
 
 // Auth
-$router->get('/login',  [\App\Modules\Auth\AuthController::class, 'login']);
-$router->post('/login', [\App\Modules\Auth\AuthController::class, 'doLogin']);
-$router->get('/logout', [\App\Modules\Auth\AuthController::class, 'logout']);
+$router->get('/login',      [\App\Modules\Auth\AuthController::class, 'login']);
+$router->post('/login',     [\App\Modules\Auth\AuthController::class, 'doLogin']);
+$router->get('/login/2fa',  [\App\Modules\Auth\AuthController::class, 'twofa']);
+$router->post('/login/2fa', [\App\Modules\Auth\AuthController::class, 'doTwofa']);
+$router->get('/logout',     [\App\Modules\Auth\AuthController::class, 'logout']);
 $router->get('/auth/microsoft',          [\App\Modules\Auth\MicrosoftAuthController::class, 'redirect']);
 $router->get('/auth/microsoft/callback', [\App\Modules\Auth\MicrosoftAuthController::class, 'callback']);
 
@@ -389,6 +391,12 @@ $router->get('/settings/refresh-token',           [\App\Modules\Settings\Setting
 $router->get('/settings/license-prices',          [\App\Modules\Settings\SettingsController::class, 'licensePrice']);
 $router->post('/settings/license-prices/save',    [\App\Modules\Settings\SettingsController::class, 'saveLicensePrice']);
 $router->get('/settings/app-audit',              [\App\Modules\Settings\SettingsController::class, 'appAudit']);
+$router->get('/settings/2fa',                    [\App\Modules\Settings\SettingsController::class, 'twofa']);
+$router->post('/settings/2fa/setup',             [\App\Modules\Settings\SettingsController::class, 'twofaSetup']);
+$router->post('/settings/2fa/verify',            [\App\Modules\Settings\SettingsController::class, 'twofaVerify']);
+$router->post('/settings/2fa/disable',           [\App\Modules\Settings\SettingsController::class, 'twofaDisable']);
+$router->post('/settings/2fa/regen-codes',       [\App\Modules\Settings\SettingsController::class, 'twofaRegenCodes']);
+$router->post('/settings/2fa/cancel',            function() { \App\Core\Session::remove('_totp_setup_secret'); \App\Core\Redirect::to('/settings/2fa'); });
 
 // User management (M365 users with tool access)
 $router->get('/settings/users',                 [\App\Modules\Settings\UserManagementController::class, 'index']);

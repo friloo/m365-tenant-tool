@@ -10,6 +10,7 @@ use App\Core\Session;
 use App\Core\View;
 use App\Database\DB;
 use App\Encryption\Encryptor;
+use App\Auth\TotpService;
 use App\Modules\LicenseAdvisor\LicenseAdvisorService;
 
 class SettingsController
@@ -260,6 +261,98 @@ class SettingsController
             'rows'      => $rows,
             'flash'     => Session::getFlash('success'),
         ]);
+    }
+
+    public function twofa(): void
+    {
+        LocalAuth::requireAdmin();
+        $config        = Config::getInstance();
+        $enabled       = (bool)$config->get('admin_totp_secret');
+        $setupSecret   = Session::get('_totp_setup_secret');
+        $recoveryCodes = Session::getFlash('totp_recovery_codes');
+        $recoveryJson  = $enabled ? $config->get('admin_totp_recovery_codes') : null;
+        $codesLeft     = $recoveryJson ? count(json_decode($recoveryJson, true) ?? []) : 0;
+        $uri           = $setupSecret ? TotpService::getUri($setupSecret) : null;
+
+        View::render('settings/2fa', [
+            'pageTitle'     => 'Zwei-Faktor-Authentifizierung',
+            'enabled'       => $enabled,
+            'setupSecret'   => $setupSecret,
+            'totpUri'       => $uri,
+            'recoveryCodes' => $recoveryCodes,
+            'codesLeft'     => $codesLeft,
+            'flash'         => Session::getFlash('success'),
+            'error'         => Session::getFlash('error'),
+        ]);
+    }
+
+    public function twofaSetup(): void
+    {
+        LocalAuth::requireAdmin();
+        Session::set('_totp_setup_secret', TotpService::generateSecret());
+        Redirect::to('/settings/2fa');
+    }
+
+    public function twofaVerify(): void
+    {
+        LocalAuth::requireAdmin();
+        $secret = Session::get('_totp_setup_secret');
+        if (!$secret) {
+            Session::flash('error', 'Kein Setup-Geheimnis gefunden. Bitte beginne von vorne.');
+            Redirect::to('/settings/2fa');
+            return;
+        }
+        $code = trim($_POST['code'] ?? '');
+        if (!TotpService::verify($secret, $code)) {
+            Session::flash('error', 'Ungültiger Code. Bitte überprüfe deine Authenticator-App und versuche es erneut.');
+            Redirect::to('/settings/2fa');
+            return;
+        }
+        $config = Config::getInstance();
+        $config->set('admin_totp_secret', $secret, true);
+
+        $codes   = TotpService::generateRecoveryCodes(8);
+        $hashes  = array_map([TotpService::class, 'hashCode'], $codes);
+        $config->set('admin_totp_recovery_codes', json_encode($hashes), true);
+
+        Session::remove('_totp_setup_secret');
+        Session::flash('totp_recovery_codes', $codes);
+        AppAudit::log('totp_enabled', 'settings', 'TOTP 2FA aktiviert');
+        Redirect::to('/settings/2fa');
+    }
+
+    public function twofaDisable(): void
+    {
+        LocalAuth::requireAdmin();
+        $config   = Config::getInstance();
+        $password = $_POST['confirm_password'] ?? '';
+        $hash     = $config->get('admin_password');
+        if (!$hash || !password_verify($password, $hash)) {
+            Session::flash('error', 'Falsches Passwort — 2FA wurde nicht deaktiviert.');
+            Redirect::to('/settings/2fa');
+            return;
+        }
+        $config->delete('admin_totp_secret');
+        $config->delete('admin_totp_recovery_codes');
+        AppAudit::log('totp_disabled', 'settings', 'TOTP 2FA deaktiviert');
+        Session::flash('success', '2FA wurde erfolgreich deaktiviert.');
+        Redirect::to('/settings/2fa');
+    }
+
+    public function twofaRegenCodes(): void
+    {
+        LocalAuth::requireAdmin();
+        $config = Config::getInstance();
+        if (!$config->get('admin_totp_secret')) {
+            Redirect::to('/settings/2fa');
+            return;
+        }
+        $codes  = TotpService::generateRecoveryCodes(8);
+        $hashes = array_map([TotpService::class, 'hashCode'], $codes);
+        $config->set('admin_totp_recovery_codes', json_encode($hashes), true);
+        Session::flash('totp_recovery_codes', $codes);
+        AppAudit::log('totp_regen_codes', 'settings', 'TOTP Wiederherstellungscodes erneuert');
+        Redirect::to('/settings/2fa');
     }
 
     public function permissions(): void

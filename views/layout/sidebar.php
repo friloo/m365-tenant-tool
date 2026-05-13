@@ -74,6 +74,7 @@ $_navDefs = [
     ['section' => null,                  'icon' => 'people-fill',          'label' => 'Benutzer-Zugang',        'route' => 'settings/users',             'admin' => true],
     ['section' => null,                  'icon' => 'cloud-arrow-down',     'label' => 'Updates',                'route' => 'settings/update',            'admin' => true],
     ['section' => null,                  'icon' => 'journal-check',        'label' => 'App Audit-Log',          'route' => 'settings/app-audit',         'admin' => true],
+    ['section' => null,                  'icon' => 'shield-lock',          'label' => '2FA-Einstellungen',      'route' => 'settings/2fa',               'admin' => true],
 
     // ── Virtual routes (not rendered; needed for active-state resolution only)
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'onedrive/personal',         'admin' => false],
@@ -82,6 +83,7 @@ $_navDefs = [
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'mailboxes/shared',          'admin' => false],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'settings/permissions',      'admin' => true],
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'settings/license-prices',   'admin' => true],
+    ['section' => null, 'icon' => null, 'label' => null, 'route' => 'settings/2fa',              'admin' => true],
 ];
 
 $_allNavRoutes = array_column($_navDefs, 'route');

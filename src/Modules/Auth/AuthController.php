@@ -3,10 +3,13 @@
 namespace App\Modules\Auth;
 
 use App\Auth\LocalAuth;
+use App\Auth\TotpService;
 use App\Core\AppAudit;
+use App\Core\Config;
 use App\Core\Redirect;
 use App\Core\Session;
 use App\Core\View;
+use App\Database\DB;
 
 class AuthController
 {
@@ -24,12 +27,11 @@ class AuthController
 
     public function doLogin(): void
     {
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-        $window = 15; // minutes
+        $ip          = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $window      = 15;
         $maxAttempts = 5;
 
-        // Check if IP is locked out
-        $attempts = \App\Database\DB::getInstance()->fetchOne(
+        $attempts = DB::getInstance()->fetchOne(
             "SELECT COUNT(*) AS c FROM login_attempts
              WHERE ip_address = ? AND attempted_at > DATE_SUB(NOW(), INTERVAL ? MINUTE)",
             [$ip, $window]
@@ -47,25 +49,96 @@ class AuthController
         $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'] ?? '';
 
-        if (LocalAuth::attempt($username, $password)) {
-            // Clear attempts after successful login
-            \App\Database\DB::getInstance()->execute(
-                "DELETE FROM login_attempts WHERE ip_address = ?",
-                [$ip]
-            );
+        $creds = LocalAuth::attemptCredentials($username, $password);
+
+        if ($creds !== null) {
+            DB::getInstance()->execute("DELETE FROM login_attempts WHERE ip_address = ?", [$ip]);
+
+            // Check if TOTP 2FA is required (admin only when secret is configured)
+            $totpSecret = Config::getInstance()->get('admin_totp_secret');
+            if ($creds['role'] === 'admin' && $totpSecret) {
+                Session::set('_2fa_pending', true);
+                Session::set('_2fa_credentials', $creds);
+                Session::set('_2fa_ip', $ip);
+                Redirect::to('/login/2fa');
+                return;
+            }
+
+            LocalAuth::setSessionDirect($creds);
             AppAudit::log('login_success', 'auth', "User: {$username}");
             Redirect::to('/');
+            return;
         }
 
-        // Record failed attempt
-        \App\Database\DB::getInstance()->execute(
-            "INSERT INTO login_attempts (ip_address) VALUES (?)",
-            [$ip]
-        );
+        DB::getInstance()->execute("INSERT INTO login_attempts (ip_address) VALUES (?)", [$ip]);
         AppAudit::log('login_failed', 'auth', "IP: {$ip}");
 
         Session::flash('error', 'Ungültige Zugangsdaten.');
         Redirect::to('/login');
+    }
+
+    public function twofa(): void
+    {
+        if (!Session::get('_2fa_pending')) {
+            Redirect::to('/login');
+            return;
+        }
+        $error = Session::getFlash('error');
+        View::render('auth/2fa', ['error' => $error], false);
+    }
+
+    public function doTwofa(): void
+    {
+        if (!Session::get('_2fa_pending')) {
+            Redirect::to('/login');
+            return;
+        }
+
+        $creds      = Session::get('_2fa_credentials', []);
+        $code       = trim($_POST['code'] ?? '');
+        $config     = Config::getInstance();
+        $totpSecret = $config->get('admin_totp_secret');
+
+        // Verify TOTP code
+        if (strlen(preg_replace('/\s/', '', $code)) === 6 && $totpSecret && TotpService::verify($totpSecret, $code)) {
+            $this->completeTwofaLogin($creds, 'login_2fa_success');
+            return;
+        }
+
+        // Verify recovery code
+        $recoveryJson = $config->get('admin_totp_recovery_codes');
+        if ($recoveryJson) {
+            $hashes = json_decode($recoveryJson, true) ?? [];
+            $idx    = TotpService::verifyRecoveryCode($code, $hashes);
+            if ($idx !== false) {
+                array_splice($hashes, $idx, 1);
+                $config->set('admin_totp_recovery_codes', json_encode($hashes), true);
+                $remaining = count($hashes);
+                $this->completeTwofaLogin($creds, 'login_recovery_code');
+                if ($remaining <= 2) {
+                    Session::flash('success', "Wiederherstellungscode verwendet. Noch {$remaining} Code(s) übrig — bitte neue Codes generieren.");
+                }
+                return;
+            }
+        }
+
+        // Failed attempt
+        $ip = Session::get('_2fa_ip', $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
+        DB::getInstance()->execute("INSERT INTO login_attempts (ip_address) VALUES (?)", [$ip]);
+        AppAudit::log('login_2fa_failed', 'auth', "User: " . ($creds['username'] ?? '?'));
+
+        Session::flash('error', 'Ungültiger Code. Bitte erneut versuchen.');
+        Redirect::to('/login/2fa');
+    }
+
+    private function completeTwofaLogin(array $creds, string $auditAction): void
+    {
+        Session::remove('_2fa_pending');
+        Session::remove('_2fa_credentials');
+        Session::remove('_2fa_ip');
+        LocalAuth::setSessionDirect($creds);
+        AppAudit::log($auditAction, 'auth', "User: " . ($creds['username'] ?? '?'));
+        Redirect::to('/');
     }
 
     public function logout(): void
