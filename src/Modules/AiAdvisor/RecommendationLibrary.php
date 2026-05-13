@@ -28,10 +28,15 @@ class RecommendationLibrary
      *
      * @param string[] $failedCheckIds
      * @param string[] $warningCheckIds
-     * @param array    $metrics  Full context array from AiAdvisorService::buildContext()
+     * @param array    $metrics       Full context array from AiAdvisorService::buildContext()
+     * @param string[] $unknownIds    Check-IDs mit Status "unknown" — typischerweise
+     *                                weil die Daten nicht abrufbar waren (Permission,
+     *                                Lizenz, Endpunkt). Für DSGVO-Checks zeigen wir
+     *                                trotzdem die Empfehlung an, gekennzeichnet als
+     *                                "Status manuell verifizieren".
      * @return array[]
      */
-    public static function get(array $failedCheckIds, array $warningCheckIds, array $metrics): array
+    public static function get(array $failedCheckIds, array $warningCheckIds, array $metrics, array $unknownIds = []): array
     {
         $recs = [];
 
@@ -564,10 +569,25 @@ class RecommendationLibrary
         }
 
         // ── DSGVO / GDPR recommendations ──────────────────────────────────────
-        $gdprAll = array_merge($failedCheckIds, $warningCheckIds);
+        // Für DSGVO-Recs zählt jeder Status außer 'pass' — auch 'unknown'
+        // (= konnte nicht geprüft werden) ist für den Compliance-Beauftragten
+        // relevant, weil er manuell verifizieren muss.
+        $gdprFailWarn = array_merge($failedCheckIds, $warningCheckIds);
+        $gdprAll      = array_merge($gdprFailWarn, $unknownIds);
+
+        // Helper: liefert eine Severity-Anpassung und einen Unknown-Hinweis,
+        // falls die Check-ID nur im unknownIds-Bucket steht.
+        $gdprAnnotate = function (array $rec, string $checkId) use ($gdprFailWarn, $unknownIds): array {
+            if (in_array($checkId, $gdprFailWarn, true)) return $rec;
+            if (in_array($checkId, $unknownIds, true)) {
+                $rec['severity'] = 'medium';                      // Unknown ist weniger akut als fail
+                $rec['risk']    .= ' — Status konnte vom Tool nicht automatisiert geprüft werden (fehlende Berechtigung, Lizenz oder Endpunkt nicht erreichbar). Bitte manuell im Admin-Center verifizieren.';
+            }
+            return $rec;
+        };
 
         if (in_array('gdpr_tenant_region', $gdprAll, true)) {
-            $recs[] = [
+            $recs[] = $gdprAnnotate([
                 'id'            => 'gdpr_tenant_region',
                 'severity'      => 'high',
                 'title'         => 'Tenant-Region außerhalb EU/EWR — Drittlandtransfer prüfen',
@@ -582,11 +602,11 @@ class RecommendationLibrary
                 'ms_admin_url'  => 'https://admin.microsoft.com/Adminportal/Home#/companyprofile',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/microsoft-365/enterprise/o365-data-locations',
                 'gdpr_articles' => ['Art. 44', 'Art. 46', 'Art. 49'],
-            ];
+            ], 'gdpr_tenant_region');
         }
 
         if (in_array('gdpr_sharepoint_sharing', $gdprAll, true)) {
-            $recs[] = [
+            $recs[] = $gdprAnnotate([
                 'id'            => 'gdpr_sharepoint_sharing',
                 'severity'      => 'high',
                 'title'         => 'SharePoint-/OneDrive-Sharing einschränken',
@@ -601,11 +621,11 @@ class RecommendationLibrary
                 'ms_admin_url'  => 'https://admin.microsoft.com/sharepoint?page=sharing',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/sharepoint/turn-external-sharing-on-or-off',
                 'gdpr_articles' => ['Art. 25', 'Art. 32'],
-            ];
+            ], 'gdpr_sharepoint_sharing');
         }
 
         if (in_array('gdpr_anonymous_link_expiry', $gdprAll, true)) {
-            $recs[] = [
+            $recs[] = $gdprAnnotate([
                 'id'            => 'gdpr_anonymous_link_expiry',
                 'severity'      => 'medium',
                 'title'         => 'Ablauffrist für anonyme Links setzen',
@@ -619,11 +639,11 @@ class RecommendationLibrary
                 'ms_admin_url'  => 'https://admin.microsoft.com/sharepoint?page=sharing',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/sharepoint/file-and-folder-links',
                 'gdpr_articles' => ['Art. 5 Abs. 1e'],
-            ];
+            ], 'gdpr_anonymous_link_expiry');
         }
 
         if (in_array('gdpr_default_sharing_link', $gdprAll, true)) {
-            $recs[] = [
+            $recs[] = $gdprAnnotate([
                 'id'            => 'gdpr_default_sharing_link',
                 'severity'      => 'medium',
                 'title'         => 'Default-Freigabetyp auf intern stellen',
@@ -635,11 +655,14 @@ class RecommendationLibrary
                 'ms_admin_url'  => 'https://admin.microsoft.com/sharepoint?page=sharing',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/sharepoint/file-and-folder-links',
                 'gdpr_articles' => ['Art. 25'],
-            ];
+            ], 'gdpr_default_sharing_link');
         }
 
         if (in_array('gdpr_sensitivity_labels', $gdprAll, true) || in_array('gdpr_dlp_or_labels', $gdprAll, true)) {
-            $recs[] = [
+            $sensCheckId = in_array('gdpr_sensitivity_labels', $gdprFailWarn, true) ? 'gdpr_sensitivity_labels'
+                          : (in_array('gdpr_dlp_or_labels', $gdprFailWarn, true) ? 'gdpr_dlp_or_labels'
+                          : 'gdpr_sensitivity_labels');
+            $recs[] = $gdprAnnotate([
                 'id'            => 'gdpr_sensitivity_labels',
                 'severity'      => 'high',
                 'title'         => 'Sensitivity Labels einrichten & veröffentlichen',
@@ -655,11 +678,11 @@ class RecommendationLibrary
                 'ms_admin_url'  => 'https://purview.microsoft.com/informationprotection/sensitivitylabels',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/purview/sensitivity-labels',
                 'gdpr_articles' => ['Art. 25', 'Art. 32'],
-            ];
+            ], $sensCheckId);
         }
 
         if (in_array('gdpr_retention_policies', $gdprAll, true)) {
-            $recs[] = [
+            $recs[] = $gdprAnnotate([
                 'id'            => 'gdpr_retention_policies',
                 'severity'      => 'medium',
                 'title'         => 'Aufbewahrungsrichtlinien definieren',
@@ -674,11 +697,11 @@ class RecommendationLibrary
                 'ms_admin_url'  => 'https://purview.microsoft.com/datalifecyclemanagement',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/purview/retention',
                 'gdpr_articles' => ['Art. 5 Abs. 1e', 'Art. 17'],
-            ];
+            ], 'gdpr_retention_policies');
         }
 
         if (in_array('gdpr_audit_log', $gdprAll, true)) {
-            $recs[] = [
+            $recs[] = $gdprAnnotate([
                 'id'            => 'gdpr_audit_log',
                 'severity'      => 'high',
                 'title'         => 'Audit-Log aktivieren & Aufbewahrung sicherstellen',
@@ -693,7 +716,7 @@ class RecommendationLibrary
                 'ms_admin_url'  => 'https://purview.microsoft.com/audit',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/purview/audit-log-enable-disable',
                 'gdpr_articles' => ['Art. 5 Abs. 2', 'Art. 32'],
-            ];
+            ], 'gdpr_audit_log');
         }
 
         // ── Anomaly-driven recommendations ───────────────────────────────────
