@@ -2,6 +2,16 @@
 
 define('BASE_PATH', __DIR__);
 
+// Capture ALL output in a buffer from the very first byte. Some shared hosts
+// force display_errors=1 via php_admin_value and ini_set cannot turn it off;
+// without this buffer, any deprecated/warning would stream out before our
+// HTML and either corrupt headers or appear as a blank body in the browser.
+// We discard or flush this buffer in the shutdown handler depending on
+// outcome.
+if (ob_get_level() === 0) {
+    ob_start();
+}
+
 // Debug mode: set cookie m365_debug=1 to see full stack traces and PHP
 // warnings inline. Production default is errors hidden + logged only.
 $debugMode = (($_COOKIE['m365_debug'] ?? '') === '1') || (($_GET['m365_debug'] ?? '') === '1');
@@ -9,7 +19,6 @@ ini_set('log_errors', '1');
 if ($debugMode) {
     ini_set('display_errors', '1');
     error_reporting(E_ALL);
-    // Persist for the rest of the session even if ?m365_debug=1 was a one-off
     setcookie('m365_debug', '1', ['expires' => time() + 3600, 'path' => '/', 'httponly' => true, 'samesite' => 'Strict']);
 } else {
     // Some shared hosts force display_errors=1 via php_admin_value; ini_set is
@@ -23,14 +32,26 @@ if ($debugMode) {
 // Catch true fatal errors (E_ERROR, E_PARSE, memory exhausted) that don't
 // surface as Throwables and therefore bypass set_exception_handler. Without
 // this, those produce a literally blank response in production.
-register_shutdown_function(function () use ($debugMode): void {
+// Clear the output buffer chain back to empty. Used by error handlers so a
+// partial response (e.g. half-rendered template, leaked notice) doesn't leak
+// into the error page.
+$ob_reset = function (): void {
+    while (ob_get_level() > 0) {
+        @ob_end_clean();
+    }
+    ob_start();
+};
+
+register_shutdown_function(function () use ($debugMode, $ob_reset): void {
     $err = error_get_last();
     if (!$err || !in_array($err['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR], true)) {
         return;
     }
-    if (headers_sent()) return;
-    http_response_code(500);
-    header('Content-Type: text/html; charset=utf-8');
+    $ob_reset();
+    if (!headers_sent()) {
+        http_response_code(500);
+        header('Content-Type: text/html; charset=utf-8');
+    }
     $isAdmin = isset($_SESSION) && ($_SESSION['authenticated'] ?? false)
         && (($_SESSION['role'] ?? '') === 'admin');
     $showDetails = $debugMode || $isAdmin;
@@ -50,14 +71,14 @@ register_shutdown_function(function () use ($debugMode): void {
     echo '<p style="text-align:center;margin-top:30px;"><a href="/">Zur Startseite</a></p></body></html>';
 });
 
-set_exception_handler(function (\Throwable $e) use ($debugMode): void {
+set_exception_handler(function (\Throwable $e) use ($debugMode, $ob_reset): void {
     error_log('[M365Tool] Uncaught ' . get_class($e) . ': ' . $e->getMessage()
         . ' in ' . $e->getFile() . ':' . $e->getLine());
+    $ob_reset();
     if (!headers_sent()) {
         http_response_code(500);
         header('Content-Type: text/html; charset=utf-8');
     }
-    // Show admins the real error so they can diagnose without ssh-ing in.
     $isAdmin = isset($_SESSION) && ($_SESSION['authenticated'] ?? false)
         && (($_SESSION['role'] ?? '') === 'admin');
     $showDetails = $debugMode || $isAdmin;
