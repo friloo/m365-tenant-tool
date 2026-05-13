@@ -627,6 +627,7 @@ $router->post('/deletedobjects/{id}/permanent-delete', [\App\Modules\DeletedObje
 // ── Onboarding Wizard ──────────────────────────────────────
 $router->get('/onboarding',                 [\App\Modules\Onboarding\OnboardingController::class, 'wizard']);
 $router->post('/onboarding',                [\App\Modules\Onboarding\OnboardingController::class, 'create']);
+$router->post('/onboarding/create',         [\App\Modules\Onboarding\OnboardingController::class, 'create']);
 
 // ── DLP Policies ───────────────────────────────────────────
 $router->get('/dlppolicies',                [\App\Modules\DlpPolicies\DlpPoliciesController::class, 'index']);
