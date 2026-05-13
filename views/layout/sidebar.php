@@ -73,6 +73,7 @@ $_navDefs = [
     ['section' => null,                  'icon' => 'gear',                 'label' => 'Einstellungen',          'route' => 'settings',                   'admin' => true],
     ['section' => null,                  'icon' => 'people-fill',          'label' => 'Benutzer-Zugang',        'route' => 'settings/users',             'admin' => true],
     ['section' => null,                  'icon' => 'cloud-arrow-down',     'label' => 'Updates',                'route' => 'settings/update',            'admin' => true],
+    ['section' => null,                  'icon' => 'journal-check',        'label' => 'App Audit-Log',          'route' => 'settings/app-audit',         'admin' => true],
 
     // ── Virtual routes (not rendered; needed for active-state resolution only)
     ['section' => null, 'icon' => null, 'label' => null, 'route' => 'onedrive/personal',         'admin' => false],

@@ -3,10 +3,12 @@
 namespace App\Modules\Settings;
 
 use App\Auth\LocalAuth;
+use App\Core\AppAudit;
 use App\Core\Config;
 use App\Core\Redirect;
 use App\Core\Session;
 use App\Core\View;
+use App\Database\DB;
 use App\Encryption\Encryptor;
 use App\Modules\LicenseAdvisor\LicenseAdvisorService;
 
@@ -155,6 +157,7 @@ class SettingsController
             $config->clearCache();
             date_default_timezone_set($config->get('timezone', 'Europe/Berlin'));
 
+            AppAudit::log('settings_updated', 'settings');
             Session::flash('success', 'Einstellungen gespeichert.');
         } catch (\Throwable $e) {
             Session::flash('error', 'Fehler: ' . $e->getMessage());
@@ -244,6 +247,19 @@ class SettingsController
             Session::flash('error', 'Fehler: ' . $e->getMessage());
         }
         Redirect::to('/settings/license-prices');
+    }
+
+    public function appAudit(): void
+    {
+        LocalAuth::requireAdmin();
+        $rows = DB::getInstance()->fetchAll(
+            "SELECT * FROM app_audit_log ORDER BY created_at DESC LIMIT 200"
+        );
+        View::render('settings/app-audit', [
+            'pageTitle' => 'App Audit-Log',
+            'rows'      => $rows,
+            'flash'     => Session::getFlash('success'),
+        ]);
     }
 
     public function permissions(): void

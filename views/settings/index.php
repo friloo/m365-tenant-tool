@@ -16,6 +16,7 @@
 <div class="row g-4">
     <div class="col-lg-8">
         <form method="post" action="/settings/save">
+            <?= \App\Core\Csrf::field() ?>
 
         <!-- KI-Sicherheitsberater -->
         <div class="content-card mb-4" id="ai-advisor">
@@ -723,6 +724,19 @@ updateAiDefaults();
                 <p class="small text-muted mb-3">Sendet eine Test-E-Mail an den konfigurierten Alert-Empfänger.</p>
                 <a href="/settings/test-mail" class="btn btn-outline-primary btn-sm w-100">
                     <i class="bi bi-send me-1"></i> Test-E-Mail senden
+                </a>
+            </div>
+        </div>
+
+        <div class="content-card mb-3">
+            <div class="card-header-custom">
+                <i class="bi bi-journal-check text-primary"></i>
+                <h6>App Audit-Log</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="small text-muted mb-3">Protokoll aller sicherheitsrelevanten Aktionen (Anmeldungen, Einstellungsänderungen, Benutzeraktionen).</p>
+                <a href="/settings/app-audit" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="bi bi-journal-check me-1"></i> Audit-Log anzeigen
                 </a>
             </div>
         </div>

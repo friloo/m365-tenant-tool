@@ -2,6 +2,25 @@
 
 define('BASE_PATH', __DIR__);
 
+// Production error handler — hides details from users, logs to error_log
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
+set_exception_handler(function (\Throwable $e): void {
+    error_log('[M365Tool] Uncaught ' . get_class($e) . ': ' . $e->getMessage()
+        . ' in ' . $e->getFile() . ':' . $e->getLine());
+    if (!headers_sent()) {
+        http_response_code(500);
+        header('Content-Type: text/html; charset=utf-8');
+    }
+    echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Fehler</title></head>'
+       . '<body style="font-family:system-ui;text-align:center;padding:80px;">'
+       . '<h2>&#9888; Interner Fehler</h2>'
+       . '<p>Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut oder kontaktiere den Administrator.</p>'
+       . '<p><a href="/">Zur Startseite</a></p></body></html>';
+    exit;
+});
+
 // Redirect to installer if not installed
 if (!file_exists(__DIR__ . '/storage/installed.lock')) {
     if (!str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/install')) {
@@ -101,6 +120,27 @@ DB::execute("CREATE TABLE IF NOT EXISTS access_review_items (
     decided_at   DATETIME DEFAULT NULL,
     FOREIGN KEY (review_id) REFERENCES access_reviews(id) ON DELETE CASCADE,
     INDEX idx_review (review_id)
+)");
+
+// Login brute-force protection table
+DB::execute("CREATE TABLE IF NOT EXISTS login_attempts (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    ip_address   VARCHAR(45) NOT NULL,
+    attempted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_ip_time (ip_address, attempted_at)
+)");
+
+// Internal application audit log
+DB::execute("CREATE TABLE IF NOT EXISTS app_audit_log (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    actor      VARCHAR(255) NOT NULL DEFAULT '',
+    action     VARCHAR(255) NOT NULL,
+    module     VARCHAR(100) NOT NULL DEFAULT '',
+    detail     TEXT,
+    ip_address VARCHAR(45),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_created (created_at),
+    INDEX idx_actor (actor)
 )");
 
 // Configure Config singleton with encryptor
@@ -348,6 +388,7 @@ $router->get('/settings/permissions',             [\App\Modules\Settings\Setting
 $router->get('/settings/refresh-token',           [\App\Modules\Settings\SettingsController::class, 'refreshToken']);
 $router->get('/settings/license-prices',          [\App\Modules\Settings\SettingsController::class, 'licensePrice']);
 $router->post('/settings/license-prices/save',    [\App\Modules\Settings\SettingsController::class, 'saveLicensePrice']);
+$router->get('/settings/app-audit',              [\App\Modules\Settings\SettingsController::class, 'appAudit']);
 
 // User management (M365 users with tool access)
 $router->get('/settings/users',                 [\App\Modules\Settings\UserManagementController::class, 'index']);

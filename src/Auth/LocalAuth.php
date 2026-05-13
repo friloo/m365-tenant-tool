@@ -75,6 +75,16 @@ class LocalAuth
             header('Location: /login');
             exit;
         }
+
+        // Check idle timeout (30 minutes)
+        $timeout = 30 * 60; // 30 minutes in seconds
+        $lastActivity = Session::get('last_activity');
+        if ($lastActivity !== null && (time() - (int)$lastActivity) > $timeout) {
+            Session::destroy();
+            header('Location: /login?reason=timeout');
+            exit;
+        }
+        Session::set('last_activity', time());
     }
 
     public static function username(): string

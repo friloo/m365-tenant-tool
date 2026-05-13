@@ -3,6 +3,7 @@
 namespace App\Modules\Users;
 
 use App\Auth\LocalAuth;
+use App\Core\AppAudit;
 use App\Core\Config;
 use App\Core\Redirect;
 use App\Core\Session;
@@ -82,6 +83,7 @@ class UsersController
         }
         try {
             app_service(UsersService::class)->updateUser($id, $data);
+            AppAudit::log('user_updated', 'users', "User ID: {$id}");
             Session::flash('success', 'Benutzer erfolgreich aktualisiert.');
         } catch (\Throwable $e) {
             Session::flash('error', 'Fehler beim Speichern: ' . $e->getMessage());
@@ -146,6 +148,7 @@ class UsersController
         }
 
         if (!empty($completed)) {
+            AppAudit::log('offboarding', 'users', "User ID: {$id}, actions: " . implode(',', $completed));
             Session::flash('success', 'Cloud-Cleanup abgeschlossen: ' . implode(', ', $completed) . '.');
         }
         Redirect::to('/users/' . $id);
@@ -181,6 +184,7 @@ class UsersController
         $current = $user['accountEnabled'] ?? true;
         try {
             $service->setAccountEnabled($id, !$current);
+            AppAudit::log('user_' . ($current ? 'disabled' : 'enabled'), 'users', "User ID: {$id}");
             Session::flash('success', ($current ? 'Deaktiviert: ' : 'Aktiviert: ') . ($user['displayName'] ?? $id));
         } catch (\Throwable $e) {
             Session::flash('error', 'Fehler: ' . $e->getMessage());
@@ -193,6 +197,7 @@ class UsersController
         LocalAuth::require();
         try {
             app_service(UsersService::class)->resetMfa($id);
+            AppAudit::log('mfa_reset', 'users', "User ID: {$id}");
             Session::flash('success', 'MFA-Methoden wurden zurückgesetzt.');
         } catch (\Throwable $e) {
             Session::flash('error', 'MFA-Reset fehlgeschlagen: ' . $e->getMessage());
@@ -207,6 +212,7 @@ class UsersController
         if (!$skuId) { Redirect::to('/users/' . $id); }
         try {
             app_service(UsersService::class)->assignLicense($id, $skuId);
+            AppAudit::log('license_assign', 'users', "User: {$id}");
             Session::flash('success', 'Lizenz zugewiesen.');
         } catch (\Throwable $e) {
             Session::flash('error', 'Lizenz-Zuweisung fehlgeschlagen: ' . $e->getMessage());
@@ -221,6 +227,7 @@ class UsersController
         if (!$skuId) { Redirect::to('/users/' . $id); }
         try {
             app_service(UsersService::class)->removeLicense($id, $skuId);
+            AppAudit::log('license_remove', 'users', "User: {$id}");
             Session::flash('success', 'Lizenz entfernt.');
         } catch (\Throwable $e) {
             Session::flash('error', 'Lizenz-Entfernung fehlgeschlagen: ' . $e->getMessage());
@@ -278,6 +285,7 @@ class UsersController
                 } catch (\Throwable) { $errors++; }
             }
             $graph->getCache()->forget('users_all');
+            AppAudit::log('bulk_assign_license', 'users', count($userIds) . " users");
             Session::flash($errors ? 'error' : 'success',
                 "{$ok} Lizenzen zugewiesen" . ($errors ? ", {$errors} Fehler." : '.'));
             Redirect::to('/users');
@@ -300,6 +308,7 @@ class UsersController
                 } catch (\Throwable) { $errors++; }
             }
             $graph->getCache()->forget('users_all');
+            AppAudit::log('bulk_remove_license', 'users', count($userIds) . " users");
             Session::flash($errors ? 'error' : 'success',
                 "{$ok} Benutzer Lizenzen entfernt" . ($errors ? ", {$errors} Fehler." : '.'));
             Redirect::to('/users');
@@ -321,6 +330,8 @@ class UsersController
         }, $userIds);
 
         $count = QueueDispatcher::dispatchBatch($jobType, $payloads);
+
+        AppAudit::log('bulk_' . $action, 'users', count($userIds) . " users");
 
         $label = match($action) {
             'disable'   => 'Deaktivieren',
