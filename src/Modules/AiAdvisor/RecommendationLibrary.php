@@ -219,6 +219,8 @@ class RecommendationLibrary
                 'internal_path' => '/sharing/policies',
                 'ms_admin_url'  => 'https://admin.microsoft.com/sharepoint',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/sharepoint/turn-external-sharing-on-or-off',
+                'bsi_controls'  => ['APP.5.2.A4', 'ORP.4.A9', 'CON.2.A1'],
+                'nis2_articles' => ['Art. 21 Abs. 2(i)', 'Art. 21 Abs. 2(h)'],
             ];
         }
 
@@ -241,6 +243,8 @@ class RecommendationLibrary
                 'internal_path' => '/users',
                 'ms_admin_url'  => 'https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/entra/identity/role-based-access-control/security-emergency-access',
+                'bsi_controls'  => ['ORP.4.A23', 'ORP.4.A24', 'DER.2.1.A4'],
+                'nis2_articles' => ['Art. 21 Abs. 2(b)', 'Art. 21 Abs. 2(i)'],
             ];
         }
 
@@ -263,6 +267,8 @@ class RecommendationLibrary
                 'internal_path' => '/mailflow',
                 'ms_admin_url'  => 'https://security.microsoft.com/threatpolicy',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/microsoft-365/security/office-365-security/preset-security-policies',
+                'bsi_controls'  => ['APP.5.2.A4', 'APP.5.2.A5', 'DER.1.A1'],
+                'nis2_articles' => ['Art. 21 Abs. 2(e)', 'Art. 21 Abs. 2(g)'],
             ];
         }
 
@@ -284,6 +290,8 @@ class RecommendationLibrary
                 'internal_path' => '/auditlog',
                 'ms_admin_url'  => 'https://compliance.microsoft.com/auditlogsearch',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/purview/audit-log-enable-disable',
+                'bsi_controls'  => ['DER.1.A1', 'DER.1.A2', 'OPS.1.1.5.A1'],
+                'nis2_articles' => ['Art. 21 Abs. 2(a)', 'Art. 21 Abs. 2(f)'],
             ];
         }
 
@@ -306,6 +314,8 @@ class RecommendationLibrary
                 'internal_path' => '/devices',
                 'ms_admin_url'  => 'https://intune.microsoft.com/#view/Microsoft_Intune_DeviceSettings/DevicesMenu/~/compliance',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/mem/intune/protect/device-compliance-get-started',
+                'bsi_controls'  => ['SYS.2.1.A3', 'SYS.2.1.A36', 'SYS.2.1.A38'],
+                'nis2_articles' => ['Art. 21 Abs. 2(e)', 'Art. 21 Abs. 2(i)'],
             ];
         }
 
@@ -327,6 +337,8 @@ class RecommendationLibrary
                 'internal_path' => '/devices',
                 'ms_admin_url'  => 'https://intune.microsoft.com/#view/Microsoft_Intune_DeviceSettings/DevicesMenu/~/enrollment',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/mem/intune/enrollment/',
+                'bsi_controls'  => ['SYS.2.1.A36', 'ORP.4.A9'],
+                'nis2_articles' => ['Art. 21 Abs. 2(e)', 'Art. 21 Abs. 2(i)'],
             ];
         }
 
@@ -349,6 +361,8 @@ class RecommendationLibrary
                 'internal_path' => '/securescore',
                 'ms_admin_url'  => 'https://security.microsoft.com/securescore',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/microsoft-365/security/defender/microsoft-secure-score',
+                'bsi_controls'  => ['ISMS.1.A9', 'ISMS.1.A12'],
+                'nis2_articles' => ['Art. 21 Abs. 2(a)', 'Art. 21 Abs. 2(f)'],
             ];
         }
 
@@ -370,6 +384,8 @@ class RecommendationLibrary
                 'internal_path' => '/passwordexpiry',
                 'ms_admin_url'  => 'https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/entra/identity/authentication/concept-sspr-policy',
+                'bsi_controls'  => ['ORP.4.A8'],
+                'nis2_articles' => ['Art. 21 Abs. 2(i)'],
             ];
         }
 
@@ -391,6 +407,8 @@ class RecommendationLibrary
                 'internal_path' => '/defenderalerts',
                 'ms_admin_url'  => 'https://security.microsoft.com/alertpolicies',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/purview/alert-policies',
+                'bsi_controls'  => ['DER.1.A2', 'DER.2.1.A4'],
+                'nis2_articles' => ['Art. 21 Abs. 2(b)', 'Art. 21 Abs. 2(f)'],
             ];
         }
 
@@ -420,6 +438,8 @@ class RecommendationLibrary
                 'internal_path' => '/mfamethods',
                 'ms_admin_url'  => 'https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/entra/identity/conditional-access/howto-conditional-access-policy-all-users-mfa',
+                'bsi_controls'  => ['ORP.4.A9', 'ORP.4.A21'],
+                'nis2_articles' => ['Art. 21 Abs. 2(i)', 'Art. 21 Abs. 2(j)'],
             ];
         }
 
@@ -443,6 +463,8 @@ class RecommendationLibrary
                 'internal_path' => '/staleaccounts',
                 'ms_admin_url'  => 'https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers',
                 'ms_doc_url'    => null,
+                'bsi_controls'  => ['ORP.4.A9', 'ORP.2.A1'],
+                'nis2_articles' => ['Art. 21 Abs. 2(i)'],
             ];
         }
 
