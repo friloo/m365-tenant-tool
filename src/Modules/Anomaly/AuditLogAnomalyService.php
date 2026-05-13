@@ -44,11 +44,11 @@ class AuditLogAnomalyService
                 [
                     '$filter' => "activityDateTime ge {$sinceIso}",
                     '$select' => 'category,activityDateTime,result',
-                    '$top'    => '1000',
+                    '$top'    => '999',
                 ],
-                30,                          // up to 30 pages = 30k events
+                10,                          // up to 10 pages = 10k events — enough for anomaly detection on mid tenants, keeps the analyze() call below the proxy timeout
                 'audit_anomaly_30d',
-                900                          // 15 min cache
+                3600                         // 1h cache so repeated AI runs reuse the same source
             );
         } catch (\Throwable $e) {
             return $this->emptyResult($recentDays, 'Audit-Log nicht abrufbar: ' . $e->getMessage());

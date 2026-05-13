@@ -117,6 +117,8 @@ $summary       = $analysis['summary']         ?? null;
 $aiScore       = $analysis['score']           ?? null;
 $generatedAt   = $analysis['generated_at']    ?? null;
 $cachedAt      = $analysis['cached_at']       ?? null;
+$cacheExpires  = $analysis['expires_at']      ?? null;
+$isStale       = !empty($analysis['is_stale']);
 $ctx           = $analysis['context']         ?? [];
 
 $criticalCount = count(array_filter($recs, fn($r) => ($r['severity'] ?? '') === 'critical'));
@@ -137,6 +139,17 @@ if ($aiScore === null) {
     $scoreColor = '#dc2626';
 }
 ?>
+
+<?php if ($isStale && $cachedAt): ?>
+<div class="alert alert-warning d-flex align-items-center gap-2 mb-3" role="alert">
+    <i class="bi bi-clock-history flex-shrink-0"></i>
+    <div>
+        <strong>Ergebnis ist veraltet</strong> — letzte Analyse vom
+        <?= $e(date('d.m.Y H:i', strtotime($cachedAt))) ?>. Die Daten werden weiterhin angezeigt,
+        bis du eine neue Analyse startest.
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- ── Summary row (2 cols) ──────────────────────────────────────────────── -->
 <div class="row g-4 mb-4">
@@ -467,30 +480,74 @@ $sevOrder = ['critical', 'high', 'medium', 'low'];
 <!-- ── Spinner overlay ───────────────────────────────────────────────────── -->
 <div id="analyzeSpinner"
      style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:#fff;border-radius:12px;padding:32px 48px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+    <div style="background:#fff;border-radius:12px;padding:32px 48px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:420px;">
         <div class="spinner-border text-primary mb-3" role="status" style="width:40px;height:40px;"></div>
         <div style="font-size:16px;font-weight:600;color:#111827;">Analyse läuft…</div>
-        <div style="font-size:13px;color:#6b7280;margin-top:4px;">Dies kann bis zu 90 Sekunden dauern.</div>
+        <div id="analyzeHint" style="font-size:13px;color:#6b7280;margin-top:8px;line-height:1.5;">
+            Dies kann 1–3&nbsp;Minuten dauern. Du kannst diese Seite verlassen — die Analyse läuft im Hintergrund weiter und das Ergebnis ist beim nächsten Aufruf da.
+        </div>
+        <div id="analyzeElapsed" style="font-size:12px;color:#9ca3af;margin-top:8px;"></div>
     </div>
 </div>
 
 <script>
-function startAnalysis(btn) {
-    document.getElementById('analyzeSpinner').style.display = 'flex';
-    if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Läuft…';
-    }
-}
-
 document.addEventListener('DOMContentLoaded', function () {
-    ['analyzeForm', 'analyzeFormTop'].forEach(function(id) {
-        var form = document.getElementById(id);
-        if (form) {
-            form.addEventListener('submit', function () {
-                document.getElementById('analyzeSpinner').style.display = 'flex';
-            });
+    const spinner  = document.getElementById('analyzeSpinner');
+    const elapsed  = document.getElementById('analyzeElapsed');
+    const hint     = document.getElementById('analyzeHint');
+
+    function showSpinner(btn) {
+        spinner.style.display = 'flex';
+        if (btn) {
+            btn.disabled  = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Läuft…';
         }
+        const start = Date.now();
+        elapsed.textContent = '0 s vergangen';
+        const tick = setInterval(() => {
+            const s = Math.floor((Date.now() - start) / 1000);
+            elapsed.textContent = s + ' s vergangen';
+            if (s > 90)  hint.textContent = 'Großer Tenant — die Analyse braucht etwas länger. Bitte Geduld.';
+            if (s > 180) hint.textContent = 'Sehr großer Tenant. Du kannst die Seite zur Zwischenzeit schließen — die Daten werden gespeichert, wenn die Analyse fertig ist.';
+        }, 1000);
+        return tick;
+    }
+
+    ['analyzeForm', 'analyzeFormTop'].forEach(function (id) {
+        const form = document.getElementById(id);
+        if (!form) return;
+        form.addEventListener('submit', function (ev) {
+            ev.preventDefault();
+            const btn  = form.querySelector('button[type="submit"]');
+            const tick = showSpinner(btn);
+            const data = new FormData(form);
+            fetch(form.action, {
+                method:  'POST',
+                body:    data,
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                credentials: 'same-origin',
+                keepalive: true,                          // browser keeps the request alive even if tab closes
+            })
+            .then(r => r.json().catch(() => ({ ok: r.ok })))
+            .then(res => {
+                clearInterval(tick);
+                if (res && res.ok) {
+                    window.location.href = '/ai';         // reload to render fresh result
+                } else {
+                    spinner.style.display = 'none';
+                    alert('Analyse fehlgeschlagen: ' + (res && res.error ? res.error : 'unbekannter Fehler'));
+                    if (btn) { btn.disabled = false; btn.textContent = 'Erneut versuchen'; }
+                }
+            })
+            .catch(err => {
+                clearInterval(tick);
+                // Network error / browser-side timeout. Server probably still
+                // running thanks to ignore_user_abort — try a soft reload after
+                // a short delay so the user lands on the freshly cached page.
+                hint.textContent = 'Verbindung unterbrochen — lade Ergebnis nach…';
+                setTimeout(() => window.location.href = '/ai', 5000);
+            });
+        });
     });
 });
 </script>

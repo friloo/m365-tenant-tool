@@ -55,11 +55,11 @@ class SignInAnomalyService
                 '/auditLogs/signIns',
                 [
                     '$filter' => "createdDateTime ge {$recentIso}",
-                    '$top'    => '1000',
+                    '$top'    => '999',
                 ],
-                10,
+                5,                              // up to 5k events in 24h is plenty
                 'signin_anomaly_recent',
-                300                            // 5 min
+                1800                            // 30 min
             );
         } catch (\Throwable $e) {
             return $this->emptyResult($recentHours, 'Sign-in-Log nicht abrufbar: ' . $e->getMessage());
@@ -78,11 +78,11 @@ class SignInAnomalyService
                 [
                     '$filter' => "createdDateTime ge {$baselineIso} and status/errorCode eq 0",
                     '$select' => 'location',
-                    '$top'    => '1000',
+                    '$top'    => '999',
                 ],
-                30,
+                10,                            // 10k baseline events is enough to collect country codes
                 'signin_anomaly_baseline_countries',
-                3600                           // 1 h
+                21600                          // 6 h — country baseline doesn't change quickly
             );
             foreach ($baseline as $ev) {
                 $code = strtoupper($ev['location']['countryOrRegion'] ?? '');
