@@ -6,6 +6,13 @@
 <?php if (!empty($error)): ?>
     <div class="alert alert-danger mb-3"><i class="bi bi-exclamation-circle me-2"></i><?= $e($error) ?></div>
 <?php endif; ?>
+<?php if (!empty($diagnostic)): ?>
+    <div class="alert alert-warning mb-3">
+        <i class="bi bi-info-circle me-2"></i>
+        <strong>Warum sehe ich nichts?</strong>
+        <div class="small mt-1"><?= $e($diagnostic) ?></div>
+    </div>
+<?php endif; ?>
 
 <?php if ($highRiskCount > 0): ?>
     <div class="alert alert-danger mb-4">

@@ -127,11 +127,23 @@ class PermissionCheckerService
                 'section'  => 'Sicherheit',
                 'write'    => true,
             ],
+            'IdentityRiskyUser.Read.All' => [
+                'desc'     => 'Risiko-Benutzer lesen (Entra ID Protection)',
+                'features' => ['Risiko-Anmeldungen (Liste der gefährdeten Benutzer)', 'Dashboard-Kachel "Risikobenutzer"'],
+                'section'  => 'Sicherheit',
+                'write'    => false,
+            ],
             'IdentityRiskyUser.ReadWrite.All' => [
-                'desc'     => 'Risiko-Benutzer lesen und verwalten',
-                'features' => ['Risiko-Anmeldungen', 'Risiko bestätigen', 'Risiko verwerfen'],
+                'desc'     => 'Risiko-Benutzer verwalten (bestätigen / verwerfen)',
+                'features' => ['Risiko bestätigen', 'Risiko verwerfen'],
                 'section'  => 'Sicherheit',
                 'write'    => true,
+            ],
+            'IdentityRiskEvent.Read.All' => [
+                'desc'     => 'Risiko-Erkennungen lesen (Entra ID Protection)',
+                'features' => ['Risiko-Anmeldungen (Erkennungen / Risk Detections)'],
+                'section'  => 'Sicherheit',
+                'write'    => false,
             ],
             'SecurityEvents.Read.All' => [
                 'desc'     => 'Sicherheitsereignisse und Secure Score lesen',
@@ -147,9 +159,21 @@ class PermissionCheckerService
             ],
             'Application.ReadWrite.All' => [
                 'desc'     => 'App-Registrierungen lesen und verwalten',
-                'features' => ['App-Registrierungen (Detail)', 'App-Secret hinzufügen', 'App-Secret löschen'],
+                'features' => ['App-Registrierungen (Detail)', 'App-Secret hinzufügen', 'App-Secret löschen', 'Enterprise Apps (Service Principals)'],
                 'section'  => 'Sicherheit',
                 'write'    => true,
+            ],
+            'AppCatalog.Read.All' => [
+                'desc'     => 'Teams-App-Katalog lesen',
+                'features' => ['Teams Governance (App-Übersicht)', 'Teams Policies (App-Setup-Richtlinien)'],
+                'section'  => 'Sicherheit',
+                'write'    => false,
+            ],
+            'Teamwork.Read.All' => [
+                'desc'     => 'Tenant-weite Teams-Einstellungen lesen',
+                'features' => ['Teams Governance', 'Teams Policies (Tenant-Einstellungen)'],
+                'section'  => 'Sicherheit',
+                'write'    => false,
             ],
             // ── Devices ──────────────────────────────────────────────
             'DeviceManagementManagedDevices.ReadWrite.All' => [

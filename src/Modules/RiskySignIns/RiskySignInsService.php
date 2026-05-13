@@ -33,24 +33,37 @@ class RiskySignInsService
     /**
      * Fetch recent risk detections from Identity Protection.
      * Cached 5 minutes.
+     *
+     * Note: the endpoint is /identityProtection/riskDetections (not
+     * riskyDetections) — the latter returns 404 on Graph v1.0.
      */
     public function getRiskyDetections(int $limit = 50): array
     {
         try {
             $data = $this->graph->get(
-                '/identityProtection/riskyDetections',
+                '/identityProtection/riskDetections',
                 [
                     '$top'     => (string)min($limit, 100),
                     '$orderby' => 'activityDateTime desc',
                     '$select'  => 'id,userId,userDisplayName,userPrincipalName,riskDetail,riskEventType,riskLevel,riskState,activityDateTime,ipAddress,location',
                 ],
-                'riskydetections_list',
+                'riskdetections_list',
                 300
             );
             return $data['value'] ?? [];
         } catch (\Throwable) {
             return [];
         }
+    }
+
+    /**
+     * Last swallowed Graph error from getRiskyUsers / getRiskyDetections, or
+     * null. Used by the controller to surface "permission missing" vs
+     * "Azure AD P2 not licenced" to the operator.
+     */
+    public function getLastError(): ?array
+    {
+        return $this->graph->getLastError();
     }
 
     /**
