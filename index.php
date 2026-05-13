@@ -2,28 +2,70 @@
 
 define('BASE_PATH', __DIR__);
 
-// Production error handler — hides details from users, logs to error_log
-ini_set('display_errors', '0');
+// Debug mode: set cookie m365_debug=1 to see full stack traces and PHP
+// warnings inline. Production default is errors hidden + logged only.
+$debugMode = (($_COOKIE['m365_debug'] ?? '') === '1') || (($_GET['m365_debug'] ?? '') === '1');
+ini_set('display_errors', $debugMode ? '1' : '0');
 ini_set('log_errors', '1');
+if ($debugMode) {
+    error_reporting(E_ALL);
+    // Persist for the rest of the session even if ?m365_debug=1 was a one-off
+    setcookie('m365_debug', '1', ['expires' => time() + 3600, 'path' => '/', 'httponly' => true, 'samesite' => 'Strict']);
+}
 
-set_exception_handler(function (\Throwable $e): void {
+set_exception_handler(function (\Throwable $e) use ($debugMode): void {
     error_log('[M365Tool] Uncaught ' . get_class($e) . ': ' . $e->getMessage()
         . ' in ' . $e->getFile() . ':' . $e->getLine());
     if (!headers_sent()) {
         http_response_code(500);
         header('Content-Type: text/html; charset=utf-8');
     }
+    // Show admins the real error so they can diagnose without ssh-ing in.
+    $isAdmin = isset($_SESSION) && ($_SESSION['authenticated'] ?? false)
+        && (($_SESSION['role'] ?? '') === 'admin');
+    $showDetails = $debugMode || $isAdmin;
+
     echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Fehler</title></head>'
-       . '<body style="font-family:system-ui;text-align:center;padding:80px;">'
-       . '<h2>&#9888; Interner Fehler</h2>'
-       . '<p>Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut oder kontaktiere den Administrator.</p>'
-       . '<p><a href="/">Zur Startseite</a></p></body></html>';
+       . '<body style="font-family:system-ui;padding:40px;max-width:900px;margin:0 auto;">'
+       . '<h2 style="text-align:center;">&#9888; Interner Fehler</h2>'
+       . '<p style="text-align:center;">Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut oder kontaktiere den Administrator.</p>';
+    if ($showDetails) {
+        echo '<details style="margin-top:30px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:16px;" open>'
+           . '<summary style="cursor:pointer;font-weight:600;color:#991b1b;">Fehlerdetails (nur für Admins sichtbar)</summary>'
+           . '<p style="margin:12px 0 4px;"><strong>' . htmlspecialchars(get_class($e)) . ':</strong> '
+           . htmlspecialchars($e->getMessage()) . '</p>'
+           . '<p style="font-family:monospace;font-size:12px;color:#555;">' . htmlspecialchars($e->getFile()) . ':' . $e->getLine() . '</p>'
+           . '<pre style="background:#fff;padding:12px;border-radius:6px;overflow:auto;font-size:11px;max-height:400px;">'
+           . htmlspecialchars($e->getTraceAsString()) . '</pre>'
+           . '</details>';
+    }
+    echo '<p style="text-align:center;margin-top:30px;"><a href="/">Zur Startseite</a></p>'
+       . '</body></html>';
     exit;
 });
 
 // Redirect to installer if not installed
 $reqUri = $_SERVER['REQUEST_URI'] ?? '';
 $onInstallerRoute = str_starts_with($reqUri, '/install');
+
+// Early diagnostic endpoint — no DB, no auth, no autoload. Lets you confirm
+// PHP is reachable and shows what's broken in the rest of bootstrap.
+if (str_starts_with($reqUri, '/health')) {
+    header('Content-Type: text/plain; charset=utf-8');
+    echo "OK — PHP " . PHP_VERSION . " — " . date('c') . "\n";
+    echo "BASE_PATH: " . BASE_PATH . "\n";
+    echo "storage/installed.lock: " . (file_exists(__DIR__.'/storage/installed.lock') ? 'yes' : 'NO') . "\n";
+    echo "storage/app.key: " . (file_exists(__DIR__.'/storage/app.key') ? 'yes' : 'NO') . "\n";
+    echo "storage/db_bootstrap.ini: " . (file_exists(__DIR__.'/storage/db_bootstrap.ini') ? 'yes' : 'NO') . "\n";
+    echo "vendor/autoload.php: " . (file_exists(__DIR__.'/vendor/autoload.php') ? 'yes' : 'NO') . "\n";
+    echo "Loaded extensions (relevant): "
+        . (extension_loaded('pdo_mysql') ? 'pdo_mysql ' : '')
+        . (extension_loaded('curl') ? 'curl ' : '')
+        . (extension_loaded('openssl') ? 'openssl ' : '')
+        . (extension_loaded('mbstring') ? 'mbstring ' : '')
+        . (extension_loaded('json') ? 'json' : '') . "\n";
+    exit;
+}
 
 function setup_redirect(string $reason): never {
     error_log('[M365Tool] Setup redirect: ' . $reason);
@@ -220,21 +262,30 @@ function app_service(string $class): object {
 
 // ── Pre-flight: when the M365 tenant credentials aren't configured yet,
 // every Graph-API-driven page would crash with RuntimeException. Send the
-// logged-in user straight to /settings with a clear hint instead.
-$reqUriPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
-$preflightAllowed = false;
-foreach (['/settings', '/login', '/logout', '/auth/microsoft', '/install', '/cron'] as $prefix) {
-    if (str_starts_with($reqUriPath, $prefix)) { $preflightAllowed = true; break; }
-}
-if (!$preflightAllowed && Session::get('authenticated')) {
-    $tenantConfigured = !empty($config->get('tenant_id'))
-        && !empty($config->get('client_id'))
-        && !empty($config->get('client_secret'));
-    if (!$tenantConfigured) {
-        Session::flash('error', 'Microsoft 365 Verbindung ist noch nicht vollständig konfiguriert. Bitte ergänze die Tenant-Daten in den Einstellungen.');
-        header('Location: /settings');
-        exit;
+// logged-in user straight to /settings with a clear hint instead. The
+// check is wrapped in try/catch so any config-lookup glitch doesn't
+// take the whole app down.
+try {
+    $reqUriPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
+    $preflightAllowed = false;
+    foreach (['/settings', '/login', '/logout', '/auth/microsoft', '/install', '/cron', '/review/'] as $prefix) {
+        if (str_starts_with($reqUriPath, $prefix)) { $preflightAllowed = true; break; }
     }
+    if (!$preflightAllowed && Session::get('authenticated')) {
+        $tenantId     = $config->get('tenant_id');
+        $clientId     = $config->get('client_id');
+        $clientSecret = $config->get('client_secret');
+        $tenantConfigured = !empty($tenantId) && !empty($clientId) && !empty($clientSecret);
+        if (!$tenantConfigured) {
+            Session::flash('error', 'Microsoft 365 Verbindung ist noch nicht vollständig konfiguriert. Bitte ergänze die Tenant-Daten in den Einstellungen.');
+            if (!headers_sent()) {
+                header('Location: /settings');
+            }
+            exit;
+        }
+    }
+} catch (\Throwable $e) {
+    error_log('[M365Tool] Pre-flight check skipped: ' . $e->getMessage());
 }
 
 // ── Router ────────────────────────────────────────────────
