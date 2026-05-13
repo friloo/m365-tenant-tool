@@ -23,13 +23,7 @@ $gapClass = ['ok' => 'success',                    'warning' => 'warning',      
 </div>
 <?php endif ?>
 
-<?php if ($lastError): ?>
-<div class="alert alert-warning mb-3">
-  <i class="bi bi-exclamation-triangle-fill me-2"></i>
-  <?= $e($lastError['message'] ?? 'Unbekannter Fehler') ?>
-  — Fehlende Berechtigung: <code>Policy.Read.All</code>
-</div>
-<?php endif ?>
+<?php if (!empty($diag ?? null)) include BASE_PATH . '/views/partials/graph_diagnostic.php'; ?>
 
 <!-- Summary -->
 <div class="row g-3 mb-4">

@@ -36,11 +36,13 @@
         <span class="fw-semibold"><i class="bi bi-folder2-open me-2"></i>eDiscovery-Cases</span>
     </div>
 
-    <?php if (empty($cases)): ?>
+    <?php if (empty($cases) && !empty($diag ?? null)): ?>
+        <div class="m-3"><?php include BASE_PATH . '/views/partials/graph_diagnostic.php'; ?></div>
+    <?php elseif (empty($cases)): ?>
         <div class="alert alert-info m-3">
             <i class="bi bi-info-circle me-2"></i>
-            Keine eDiscovery-Cases gefunden oder die Berechtigung
-            <code>eDiscovery.Read.All</code> fehlt. Für die Anzeige werden entsprechende Graph-Berechtigungen benötigt.
+            Keine eDiscovery-Cases vorhanden. Im Microsoft Purview unter
+            <em>eDiscovery → Cases</em> können neue Aufbewahrungsverfahren angelegt werden.
         </div>
     <?php else: ?>
         <div class="table-responsive">

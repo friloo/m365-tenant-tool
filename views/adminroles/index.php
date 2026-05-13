@@ -53,14 +53,19 @@
     <!-- Permission error empty state -->
     <div class="content-card mb-4">
         <div class="card-body-custom">
-            <div class="empty-state">
-                <i class="bi bi-shield-lock" style="font-size:2.5rem;color:#d1d5db;"></i>
-                <div class="mt-3 fw-semibold">Keine Daten verfügbar</div>
-                <div class="text-muted small mt-1">
-                    Fehlende Microsoft Graph-Berechtigungen:<br>
-                    <code>RoleManagement.Read.All</code> und <code>RoleManagement.ReadWrite.All</code>
+            <?php
+            if (!empty($diag ?? null)) {
+                $diagStyle = 'empty';
+                $diagIcon  = 'shield-lock';
+                $diagTitle = 'Keine Daten verfügbar';
+                include BASE_PATH . '/views/partials/graph_diagnostic.php';
+            } else { ?>
+                <div class="empty-state">
+                    <i class="bi bi-shield-lock" style="font-size:2.5rem;color:#d1d5db;"></i>
+                    <div class="mt-3 fw-semibold">Keine Admin-Rollen zugewiesen</div>
+                    <div class="text-muted small mt-1">Der Tenant hat aktuell keine Direkt-Zuweisungen — eventuell wird PIM genutzt.</div>
                 </div>
-            </div>
+            <?php } ?>
         </div>
     </div>
 <?php else: ?>

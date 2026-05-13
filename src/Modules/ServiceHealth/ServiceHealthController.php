@@ -13,7 +13,11 @@ class ServiceHealthController
         LocalAuth::require();
 
         $service  = app_service(ServiceHealthService::class);
-        $overview = $service->getOverview();
+        ['data' => $overview, 'diag' => $diag] = \App\Graph\GraphErrorTranslator::guard(
+            fn() => $service->getOverview(),
+            'ServiceHealth.Read.All'
+        );
+        $overview ??= [];
         $issues   = $service->getActiveIssues();
         $messages = $service->getRecentMessages(10);
 
@@ -32,6 +36,7 @@ class ServiceHealthController
             'issues'     => $issues,
             'messages'   => $messages,
             'allHealthy' => $allHealthy,
+            'diag'       => $diag,
         ]);
     }
 }

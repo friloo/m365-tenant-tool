@@ -51,15 +51,19 @@ $fmtBytes = function (int $bytes): string {
 <!-- Empty / permission state -->
 <div class="content-card">
     <div class="card-body-custom">
-        <div class="empty-state">
-            <i class="bi bi-envelope-x text-muted" style="font-size:2.5rem;"></i>
-            <p class="mt-3 mb-1 fw-medium">Keine Postfachdaten verfügbar</p>
-            <p class="text-muted small">
-                Stellen Sie sicher, dass die Berechtigung <code>Reports.Read.All</code> erteilt wurde
-                und der Report-Datenschutz-Modus deaktiviert ist.<br>
-                <em>Einstellungen &rarr; Dienste &rarr; Berichte &rarr; „Ausgeblendete Benutzerdetails" deaktivieren.</em>
-            </p>
-        </div>
+        <?php
+        if (!empty($diag)) {
+            $diagStyle = 'empty';
+            $diagIcon  = 'envelope-x';
+            $diagTitle = 'Keine Postfachdaten verfügbar';
+            include BASE_PATH . '/views/partials/graph_diagnostic.php';
+        } else { ?>
+            <div class="empty-state">
+                <i class="bi bi-envelope-x text-muted" style="font-size:2.5rem;"></i>
+                <p class="mt-3 mb-1 fw-medium">Keine Postfachdaten verfügbar</p>
+                <p class="text-muted small">Es wurden keine Postfächer im Tenant gefunden.</p>
+            </div>
+        <?php } ?>
     </div>
 </div>
 <?php else: ?>

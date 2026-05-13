@@ -31,13 +31,7 @@ $countryCatalog = [
 </div>
 <?php endif ?>
 
-<?php if ($lastError): ?>
-<div class="alert alert-warning">
-  <i class="bi bi-exclamation-triangle-fill me-2"></i>
-  Graph-Fehler: <?= $e($lastError['message'] ?? 'Unbekannt') ?>
-  — Fehlende Berechtigung: <code>Policy.Read.All</code>
-</div>
-<?php endif ?>
+<?php if (!empty($diag ?? null)) include BASE_PATH . '/views/partials/graph_diagnostic.php'; ?>
 
 <!-- Summary -->
 <div class="row g-3 mb-4">

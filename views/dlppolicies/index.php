@@ -42,11 +42,25 @@
         <span class="fw-semibold"><i class="bi bi-tags me-2"></i>Sensitivity Labels</span>
     </div>
 
-    <?php if (empty($labels)): ?>
-        <div class="alert alert-warning m-3">
-            <i class="bi bi-exclamation-triangle me-2"></i>
-            Für die Anzeige von Sensitivity Labels wird die Berechtigung
-            <code>InformationProtectionPolicy.Read.All</code> benötigt.
+    <?php if (empty($labels) && !empty($diag)): ?>
+        <div class="alert alert-warning d-flex gap-3 m-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1" style="font-size:1.4rem;color:#b45309;"></i>
+            <div class="flex-grow-1">
+                <div class="fw-semibold mb-1"><?= $e($diag['short']) ?></div>
+                <div class="small text-muted"><?= $e($diag['detail']) ?></div>
+                <?php if (!empty($diag['fix_url'])): ?>
+                    <a href="<?= $e($diag['fix_url']) ?>" class="btn btn-sm btn-outline-secondary mt-2">
+                        <i class="bi bi-arrow-right-circle me-1"></i>Zur Lösung
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php elseif (empty($labels)): ?>
+        <div class="alert alert-info m-3">
+            <i class="bi bi-info-circle me-2"></i>
+            Es sind keine Sensitivity Labels im Tenant veröffentlicht. Im
+            <a href="https://purview.microsoft.com/informationprotection/sensitivitylabels" target="_blank">Microsoft Purview</a>
+            unter Information Protection → Labels lassen sich neue Labels anlegen und publizieren.
         </div>
     <?php else: ?>
         <div class="table-responsive">

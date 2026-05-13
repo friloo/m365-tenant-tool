@@ -18,8 +18,12 @@ class NamedLocationsController
         }
 
         /** @var NamedLocationsService $service */
-        $service    = app_service(NamedLocationsService::class);
-        $all        = $service->getAll();
+        $service = app_service(NamedLocationsService::class);
+        ['data' => $all, 'diag' => $diag] = \App\Graph\GraphErrorTranslator::guard(
+            fn() => $service->getAll(),
+            'Policy.Read.All'
+        );
+        $all        ??= [];
         $classified = $service->classify($all);
 
         View::render('namedlocations/index', [
@@ -27,6 +31,7 @@ class NamedLocationsController
             'ipLocations'      => $classified['ip'],
             'countryLocations' => $classified['country'],
             'lastError'        => $service->getLastError(),
+            'diag'             => $diag,
             'flash'            => Session::getFlash('success'),
             'error'            => Session::getFlash('error'),
         ]);

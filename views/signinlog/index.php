@@ -255,12 +255,18 @@ $exportParams = http_build_query(array_filter([
                 <?php if ($hasActiveFilter): ?>
                     <p>Keine Ergebnisse für diese Filter<br>
                     <a href="/signinlog" class="text-muted small">Filter zurücksetzen</a></p>
+                <?php elseif (!empty($diag)): ?>
+                    <p class="fw-semibold" style="color:#b45309;"><?= $e($diag['short']) ?></p>
+                    <p style="font-size:13px;color:#6b7280;max-width:560px;margin:0 auto;">
+                        <?= $e($diag['detail']) ?>
+                    </p>
+                    <?php if (!empty($diag['fix_url'])): ?>
+                        <a href="<?= $e($diag['fix_url']) ?>" class="btn btn-sm btn-outline-secondary mt-3">
+                            <i class="bi bi-arrow-right-circle me-1"></i>Zur Lösung
+                        </a>
+                    <?php endif; ?>
                 <?php else: ?>
-                    <p>Keine Anmeldedaten verfügbar<br>
-                    <span style="font-size:12px;color:#9ca3af;">
-                        Möglicherweise fehlt die Berechtigung <code>AuditLog.Read.All</code>.<br>
-                        Bitte in den App-Berechtigungen prüfen.
-                    </span></p>
+                    <p>Keine Anmeldedaten im gewählten Zeitraum</p>
                 <?php endif; ?>
             </div>
         </div>

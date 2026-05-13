@@ -13,7 +13,11 @@ class SecureScoreController
         LocalAuth::require();
 
         $service = app_service(SecureScoreService::class);
-        $latest  = $service->getLatest();
+        ['data' => $latest, 'diag' => $diag] = \App\Graph\GraphErrorTranslator::guard(
+            fn() => $service->getLatest(),
+            'SecurityEvents.Read.All'
+        );
+        $latest ??= [];
         $history = $service->getHistory(30);
 
         $controlScores = $latest['controlScores'] ?? [];
@@ -31,6 +35,7 @@ class SecureScoreController
             'currentScore' => $currentScore,
             'maxScore'     => $maxScore,
             'pct'          => $pct,
+            'diag'         => $diag,
         ]);
     }
 }

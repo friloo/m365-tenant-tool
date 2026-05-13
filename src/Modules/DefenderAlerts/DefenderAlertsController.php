@@ -14,7 +14,11 @@ class DefenderAlertsController
         LocalAuth::require();
 
         $service = app_service(DefenderAlertsService::class);
-        $alerts  = $service->getAlerts();
+        ['data' => $alerts, 'diag' => $diag] = \App\Graph\GraphErrorTranslator::guard(
+            fn() => $service->getAlerts(),
+            'SecurityAlert.Read.All'
+        );
+        $alerts ??= [];
         $stats   = $service->getStats($alerts);
 
         View::render('defenderalerts/index', [
@@ -22,6 +26,7 @@ class DefenderAlertsController
             'alerts'    => $alerts,
             'stats'     => $stats,
             'service'   => $service,
+            'diag'      => $diag,
             'flash'     => Session::getFlash('success'),
             'error'     => Session::getFlash('error'),
         ]);

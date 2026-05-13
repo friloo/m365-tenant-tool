@@ -15,16 +15,20 @@ class MailboxController
         LocalAuth::require();
 
         $service = app_service(MailboxService::class);
-        $usage   = $service->getUsageSummary();
-        $stats   = $service->getStats($usage);
+        ['data' => $usage, 'diag' => $diag] = \App\Graph\GraphErrorTranslator::guard(
+            fn() => $service->getUsageSummary(),
+            'Reports.Read.All'
+        );
+        $usage ??= [];
+        $stats = $service->getStats($usage);
 
-        // Sort by storage descending for the default table view
         usort($usage, fn($a, $b) => $b['storageUsedBytes'] <=> $a['storageUsedBytes']);
 
         View::render('mailboxes/index', [
             'pageTitle' => 'Postfächer',
             'usage'     => $usage,
             'stats'     => $stats,
+            'diag'      => $diag,
         ]);
     }
 

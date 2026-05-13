@@ -13,11 +13,19 @@ if ($pct >= 70) {
 <?php if (empty($latest)): ?>
 <div class="content-card mb-4">
     <div class="card-body-custom">
-        <div class="empty-state">
-            <i class="bi bi-shield-exclamation text-muted" style="font-size:2.5rem;"></i>
-            <p class="mt-3 mb-1 fw-medium">Keine Secure Score-Daten verfügbar</p>
-            <p class="text-muted small">Stellen Sie sicher, dass die Berechtigung <code>SecurityEvents.Read.All</code> erteilt und der Admin-Consent durchgeführt wurde.</p>
-        </div>
+        <?php
+        if (!empty($diag ?? null)) {
+            $diagStyle = 'empty';
+            $diagIcon  = 'shield-exclamation';
+            $diagTitle = 'Keine Secure-Score-Daten verfügbar';
+            include BASE_PATH . '/views/partials/graph_diagnostic.php';
+        } else { ?>
+            <div class="empty-state">
+                <i class="bi bi-shield-exclamation text-muted" style="font-size:2.5rem;"></i>
+                <p class="mt-3 mb-1 fw-medium">Keine Secure-Score-Daten verfügbar</p>
+                <p class="text-muted small">Microsoft hat noch keinen Secure-Score-Snapshot für diesen Tenant erzeugt.</p>
+            </div>
+        <?php } ?>
     </div>
 </div>
 <?php else: ?>

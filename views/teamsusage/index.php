@@ -3,18 +3,21 @@
 <meta http-equiv="refresh" content="3600">
 
 <?php if (empty($rows)): ?>
-<!-- Empty / permission state -->
 <div class="content-card">
     <div class="card-body-custom">
-        <div class="empty-state">
-            <i class="bi bi-microsoft-teams text-muted" style="font-size:2.5rem;"></i>
-            <p class="mt-3 mb-1 fw-medium">Keine Teams-Nutzungsdaten verfügbar</p>
-            <p class="text-muted small">
-                Stellen Sie sicher, dass die Berechtigung <code>Reports.Read.All</code> erteilt wurde
-                und der Report-Datenschutz-Modus deaktiviert ist.<br>
-                <em>Einstellungen &rarr; Dienste &rarr; Berichte &rarr; „Ausgeblendete Benutzerdetails" deaktivieren.</em>
-            </p>
-        </div>
+        <?php
+        if (!empty($diag ?? null)) {
+            $diagStyle = 'empty';
+            $diagIcon  = 'microsoft-teams';
+            $diagTitle = 'Keine Teams-Nutzungsdaten verfügbar';
+            include BASE_PATH . '/views/partials/graph_diagnostic.php';
+        } else { ?>
+            <div class="empty-state">
+                <i class="bi bi-microsoft-teams text-muted" style="font-size:2.5rem;"></i>
+                <p class="mt-3 mb-1 fw-medium">Keine Teams-Nutzungsdaten verfügbar</p>
+                <p class="text-muted small">Im gewählten Zeitraum wurde keine Teams-Aktivität erfasst.</p>
+            </div>
+        <?php } ?>
     </div>
 </div>
 <?php else: ?>

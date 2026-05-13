@@ -34,8 +34,12 @@ class AdminRolesController
             app_graph()->getCache()->forget('admin_roles_list');
         }
 
-        $service     = app_service(AdminRolesService::class);
-        $assignments = $service->getRoleAssignmentsWithPrincipals();
+        $service = app_service(AdminRolesService::class);
+        ['data' => $assignments, 'diag' => $diag] = \App\Graph\GraphErrorTranslator::guard(
+            fn() => $service->getRoleAssignmentsWithPrincipals(),
+            'RoleManagement.Read.Directory'
+        );
+        $assignments ??= [];
         $definitions = $service->getAllRoleDefinitions();
 
         // Build a lookup map: roleDefinitionId → definition metadata.
@@ -113,6 +117,7 @@ class AdminRolesController
             'totalAdmins'      => $totalAdmins,
             'globalAdminCount' => $globalAdminCount,
             'warningRoles'     => self::WARNING_ROLES,
+            'diag'             => $diag,
             'flash'            => Session::getFlash('success'),
             'error'            => Session::getFlash('error'),
         ]);
