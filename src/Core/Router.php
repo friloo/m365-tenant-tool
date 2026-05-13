@@ -16,6 +16,11 @@ class Router
         $this->routes['POST'][$path] = $handler;
     }
 
+    public function delete(string $path, callable|array $handler): void
+    {
+        $this->routes['DELETE'][$path] = $handler;
+    }
+
     public function dispatch(string $method, string $uri): void
     {
         $uri = strtok($uri, '?');

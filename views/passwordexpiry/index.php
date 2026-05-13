@@ -165,9 +165,11 @@ $never    = $analyzed['never']    ?? [];
         <i class="bi bi-info-circle me-1"></i>
         <strong>Hinweis:</strong> Passwörter mit <em>Läuft nie ab</em> sind in dieser Ansicht nicht aufgeführt
         (<?= number_format(count($never)) ?> Benutzer betroffen).
-        Zu empfehlen: Azure AD SSPR oder Passwortverwaltung über Conditional Access.
         Das Ablauf-Intervall kann in den <a href="/settings">Einstellungen</a> konfiguriert werden
-        (Schlüssel: <code>password_expiry_days</code>, aktuell: <?= (int)$expiryDays ?> Tage).
+        (aktuell: <?= (int)$expiryDays ?> Tage).<br>
+        <i class="bi bi-arrow-repeat me-1"></i><strong>Hybrid-Benutzer</strong> (AD Connect synchronisiert) haben ihre Passwortrichtlinie
+        im on-prem Active Directory. Der Ablauf wird hier auf Basis des konfigurierten Werts (<?= (int)$expiryDays ?> Tage)
+        geschätzt — die tatsächliche AD-Richtlinie kann abweichen.
     </p>
 </div>
 
@@ -191,6 +193,7 @@ function renderPwdTable(array $users, string $tableId, callable $e): string
                     <th style="width:40px;"></th>
                     <th>Name</th>
                     <th>UPN</th>
+                    <th>Typ</th>
                     <th>Geändert am</th>
                     <th>Läuft ab am</th>
                     <th>Verbleibend</th>
@@ -205,6 +208,7 @@ function renderPwdTable(array $users, string $tableId, callable $e): string
                     $lastChange      = $user['lastPasswordChangeDateTime'] ?? null;
                     $expiresAt       = $user['expiresAt'] ?? null;
                     $daysUntil       = $user['daysUntilExpiry'] ?? null;
+                    $isHybrid        = $user['isHybrid'] ?? false;
 
                     if ($daysUntil === null) {
                         $badgeClass = 'badge-neutral';
@@ -250,6 +254,15 @@ function renderPwdTable(array $users, string $tableId, callable $e): string
                         <div style="font-size:13px;font-weight:500;"><?= $e($displayName) ?></div>
                     </td>
                     <td style="font-size:12px;color:#6b7280;"><?= $e($upn) ?></td>
+                    <td style="font-size:12px;white-space:nowrap;">
+                        <?php if ($isHybrid): ?>
+                            <span class="badge-warning badge-pill" title="Passwort wird durch on-prem AD verwaltet. Ablauf basiert auf konfiguriertem Max-Alter.">
+                                <i class="bi bi-arrow-repeat me-1"></i>Hybrid
+                            </span>
+                        <?php else: ?>
+                            <span class="badge-info badge-pill"><i class="bi bi-cloud me-1"></i>Cloud</span>
+                        <?php endif; ?>
+                    </td>
                     <td style="font-size:12px;color:#6b7280;white-space:nowrap;">
                         <?= $lastChange ? htmlspecialchars(date('d.m.Y', strtotime($lastChange)), ENT_QUOTES, 'UTF-8') : '–' ?>
                     </td>
@@ -266,7 +279,7 @@ function renderPwdTable(array $users, string $tableId, callable $e): string
                 <?php endforeach; ?>
                 <?php if (empty($users)): ?>
                     <tr>
-                        <td colspan="7">
+                        <td colspan="8">
                             <div class="empty-state">
                                 <i class="bi bi-check-circle"></i>
                                 <p>Keine Benutzer in dieser Kategorie</p>

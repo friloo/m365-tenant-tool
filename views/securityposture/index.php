@@ -1,142 +1,151 @@
 <?php use App\Core\View; $e = fn($v) => View::escape($v); ?>
 
 <?php
-// Score color
-$pct = $score['percent'] ?? 0;
-$scoreColor = $pct >= 75 ? '#16a34a' : ($pct >= 50 ? '#d97706' : '#dc2626');
+$pct        = $score['percent'] ?? 0;
+$passed     = $score['passed']  ?? 0;
+$warned     = $score['warned']  ?? 0;
+$failed     = $score['failed']  ?? 0;
+$unknown    = $score['unknown'] ?? 0;
+$total      = $score['total']   ?? 0;
 
-// Check counts by status
-$passCnt    = count(array_filter($checks, fn($c) => $c['status'] === 'pass'));
-$warnCnt    = count(array_filter($checks, fn($c) => $c['status'] === 'warn'));
-$failCnt    = count(array_filter($checks, fn($c) => $c['status'] === 'fail'));
-$unknownCnt = count(array_filter($checks, fn($c) => $c['status'] === 'unknown'));
+$scoreColor = $pct >= 75 ? '#16a34a' : ($pct >= 50 ? '#d97706' : '#dc2626');
+$scoreLabel = $pct >= 75 ? 'Gut' : ($pct >= 50 ? 'Verbesserungsbedarf' : 'Kritisch');
+
+$categoryIcons = [
+    'Identität & MFA'      => 'bi-person-lock',
+    'Conditional Access'   => 'bi-shield-lock',
+    'Geräte & Compliance'  => 'bi-laptop',
+    'Konfiguration & Apps' => 'bi-gear',
+];
+
+$priorityColors = [
+    'critical' => ['bg' => '#fef2f2', 'border' => '#fecaca', 'badge' => '#dc2626', 'label' => 'Kritisch'],
+    'high'     => ['bg' => '#fff7ed', 'border' => '#fed7aa', 'badge' => '#ea580c', 'label' => 'Hoch'],
+    'medium'   => ['bg' => '#fffbeb', 'border' => '#fde68a', 'badge' => '#d97706', 'label' => 'Mittel'],
+    'low'      => ['bg' => '#f0f9ff', 'border' => '#bae6fd', 'badge' => '#0284c7', 'label' => 'Niedrig'],
+];
+
+$criticalRecs = array_filter($recommendations, fn($r) => $r['priority'] === 'critical');
+$highRecs     = array_filter($recommendations, fn($r) => $r['priority'] === 'high');
 ?>
 
-<!-- Score Overview Card -->
-<div class="content-card mb-4">
-    <div class="card-header-custom">
-        <span><i class="bi bi-shield-check me-2"></i>Security Posture Score</span>
-        <a href="?refresh=1" class="btn btn-sm btn-outline-secondary">
-            <i class="bi bi-arrow-clockwise me-1"></i>Aktualisieren
-        </a>
-    </div>
+<!-- Score banner -->
+<div class="content-card mb-4" style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);color:#fff;border:none;">
     <div class="card-body-custom">
         <div class="row align-items-center g-4">
-            <!-- Big score number -->
-            <div class="col-auto text-center" style="min-width:140px;">
-                <div style="font-size:56px;font-weight:700;line-height:1;color:<?= $scoreColor ?>;">
-                    <?= $pct ?>%
-                </div>
-                <div style="font-size:13px;color:#6b7280;margin-top:4px;">
-                    <?= $score['passed'] ?> von <?= $score['total'] ?> Prüfungen bestanden
+            <!-- Score circle -->
+            <div class="col-auto text-center" style="min-width:160px;">
+                <div style="position:relative;display:inline-block;">
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="10"/>
+                        <circle cx="60" cy="60" r="52" fill="none" stroke="<?= $scoreColor ?>" stroke-width="10"
+                                stroke-dasharray="<?= round(327 * $pct / 100) ?> 327"
+                                stroke-linecap="round"
+                                transform="rotate(-90 60 60)"/>
+                    </svg>
+                    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+                        <div style="font-size:28px;font-weight:700;line-height:1;color:<?= $scoreColor ?>;"><?= $pct ?>%</div>
+                        <div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:2px;"><?= $scoreLabel ?></div>
+                    </div>
                 </div>
             </div>
-            <!-- Status counters -->
+
+            <!-- Counters -->
             <div class="col">
+                <div style="font-size:18px;font-weight:600;margin-bottom:16px;">Security Posture Assessment</div>
                 <div class="row g-2">
                     <div class="col-6 col-sm-3">
-                        <div class="metric-card" style="background:#f0fdf4;">
-                            <div class="metric-label" style="color:#16a34a;">Bestanden</div>
-                            <div class="metric-value" style="color:#16a34a;"><?= $passCnt ?></div>
+                        <div style="background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);border-radius:8px;padding:10px;text-align:center;">
+                            <div style="font-size:22px;font-weight:700;color:#4ade80;"><?= $passed ?></div>
+                            <div style="font-size:11px;color:rgba(255,255,255,.6);">Bestanden</div>
                         </div>
                     </div>
                     <div class="col-6 col-sm-3">
-                        <div class="metric-card" style="background:#fffbeb;">
-                            <div class="metric-label" style="color:#d97706;">Warnung</div>
-                            <div class="metric-value" style="color:#d97706;"><?= $warnCnt ?></div>
+                        <div style="background:rgba(217,119,6,.15);border:1px solid rgba(217,119,6,.3);border-radius:8px;padding:10px;text-align:center;">
+                            <div style="font-size:22px;font-weight:700;color:#fbbf24;"><?= $warned ?></div>
+                            <div style="font-size:11px;color:rgba(255,255,255,.6);">Warnung</div>
                         </div>
                     </div>
                     <div class="col-6 col-sm-3">
-                        <div class="metric-card" style="background:#fef2f2;">
-                            <div class="metric-label" style="color:#dc2626;">Fehlgeschlagen</div>
-                            <div class="metric-value" style="color:#dc2626;"><?= $failCnt ?></div>
+                        <div style="background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);border-radius:8px;padding:10px;text-align:center;">
+                            <div style="font-size:22px;font-weight:700;color:#f87171;"><?= $failed ?></div>
+                            <div style="font-size:11px;color:rgba(255,255,255,.6);">Fehlgeschlagen</div>
                         </div>
                     </div>
                     <div class="col-6 col-sm-3">
-                        <div class="metric-card" style="background:#f9fafb;">
-                            <div class="metric-label" style="color:#9ca3af;">Unbekannt</div>
-                            <div class="metric-value" style="color:#9ca3af;"><?= $unknownCnt ?></div>
+                        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px;text-align:center;">
+                            <div style="font-size:22px;font-weight:700;color:rgba(255,255,255,.5);"><?= $unknown ?></div>
+                            <div style="font-size:11px;color:rgba(255,255,255,.4);">Unbekannt</div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Progress bar -->
-        <div class="mt-3">
-            <div class="progress-custom" style="height:10px;border-radius:5px;background:#e5e7eb;">
-                <div style="width:<?= $pct ?>%;height:100%;border-radius:5px;background:<?= $scoreColor ?>;transition:width .4s ease;"></div>
+                <div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,.5);">
+                    <?= $total ?> Prüfungen bewertet · gewichteter Score (Kritisch = 3×, Mittel = 2×, Niedrig = 1×) ·
+                    <a href="?refresh=1" style="color:rgba(255,255,255,.6);text-decoration:none;">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Neu laden
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Checks grouped by category -->
-<?php foreach ($byCategory as $category => $categoryChecks): ?>
-<div class="content-card mb-3">
+<!-- Empfehlungen -->
+<?php if (!empty($recommendations)): ?>
+<div class="content-card mb-4">
     <div class="card-header-custom">
-        <span>
-            <?php if ($category === 'Identität'): ?>
-                <i class="bi bi-person-lock me-2"></i>
-            <?php elseif ($category === 'Geräte'): ?>
-                <i class="bi bi-laptop me-2"></i>
-            <?php elseif ($category === 'Daten'): ?>
-                <i class="bi bi-database-lock me-2"></i>
-            <?php elseif ($category === 'Apps'): ?>
-                <i class="bi bi-app-indicator me-2"></i>
-            <?php else: ?>
-                <i class="bi bi-shield me-2"></i>
-            <?php endif; ?>
-            <?= $e($category) ?>
-        </span>
-        <span style="font-size:12px;color:#9ca3af;"><?= count($categoryChecks) ?> Prüfungen</span>
+        <span><i class="bi bi-lightning-charge-fill me-2" style="color:#f59e0b;"></i>Empfehlungen</span>
+        <span style="font-size:12px;color:#9ca3af;"><?= count($recommendations) ?> Maßnahme(n) · sortiert nach Priorität</span>
     </div>
     <div class="card-body-custom p-0">
-        <?php foreach ($categoryChecks as $idx => $check):
-            $status = $check['status'];
+        <?php foreach ($recommendations as $idx => $rec):
+            $p  = $rec['priority'];
+            $pc = $priorityColors[$p] ?? $priorityColors['low'];
         ?>
-        <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 20px;<?= $idx > 0 ? 'border-top:1px solid #f3f4f6;' : '' ?>">
+        <div style="display:flex;align-items:flex-start;gap:16px;padding:16px 20px;<?= $idx > 0 ? 'border-top:1px solid #f3f4f6;' : '' ?>background:<?= $idx === 0 && $p === 'critical' ? '#fffbeb' : '' ?>;">
 
-            <!-- Status icon -->
-            <div style="flex-shrink:0;margin-top:2px;">
-                <?php if ($status === 'pass'): ?>
-                    <span style="color:#16a34a;font-size:18px;"><i class="bi bi-check-circle-fill"></i></span>
-                <?php elseif ($status === 'warn'): ?>
-                    <span style="color:#d97706;font-size:18px;"><i class="bi bi-exclamation-triangle-fill"></i></span>
-                <?php elseif ($status === 'fail'): ?>
-                    <span style="color:#dc2626;font-size:18px;"><i class="bi bi-x-circle-fill"></i></span>
+            <!-- Priority indicator -->
+            <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:64px;">
+                <?php if ($p === 'critical'): ?>
+                    <div style="width:36px;height:36px;border-radius:50%;background:#fef2f2;display:flex;align-items:center;justify-content:center;">
+                        <i class="bi bi-exclamation-octagon-fill" style="color:#dc2626;font-size:18px;"></i>
+                    </div>
+                <?php elseif ($p === 'high'): ?>
+                    <div style="width:36px;height:36px;border-radius:50%;background:#fff7ed;display:flex;align-items:center;justify-content:center;">
+                        <i class="bi bi-exclamation-triangle-fill" style="color:#ea580c;font-size:18px;"></i>
+                    </div>
+                <?php elseif ($p === 'medium'): ?>
+                    <div style="width:36px;height:36px;border-radius:50%;background:#fffbeb;display:flex;align-items:center;justify-content:center;">
+                        <i class="bi bi-exclamation-circle-fill" style="color:#d97706;font-size:18px;"></i>
+                    </div>
                 <?php else: ?>
-                    <span style="color:#9ca3af;font-size:18px;"><i class="bi bi-question-circle-fill"></i></span>
+                    <div style="width:36px;height:36px;border-radius:50%;background:#f0f9ff;display:flex;align-items:center;justify-content:center;">
+                        <i class="bi bi-info-circle-fill" style="color:#0284c7;font-size:18px;"></i>
+                    </div>
                 <?php endif; ?>
+                <span style="font-size:10px;font-weight:600;color:<?= $pc['badge'] ?>;text-transform:uppercase;letter-spacing:.3px;"><?= $pc['label'] ?></span>
             </div>
 
-            <!-- Label + description + detail -->
+            <!-- Content -->
             <div style="flex:1;min-width:0;">
-                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                    <span style="font-size:14px;font-weight:500;color:#111827;"><?= $e($check['label']) ?></span>
-                    <!-- Severity badge -->
-                    <?php if ($check['severity'] === 'high'): ?>
-                        <span class="badge-danger badge-pill" style="font-size:10px;">Hoch</span>
-                    <?php elseif ($check['severity'] === 'medium'): ?>
-                        <span class="badge-warning badge-pill" style="font-size:10px;">Mittel</span>
-                    <?php else: ?>
-                        <span class="badge-info badge-pill" style="font-size:10px;">Niedrig</span>
-                    <?php endif; ?>
-                </div>
-                <div style="font-size:12px;color:#6b7280;margin-top:2px;"><?= $e($check['description']) ?></div>
-                <div style="font-size:12px;color:#9ca3af;margin-top:4px;font-style:italic;"><?= $e($check['detail']) ?></div>
+                <div style="font-size:14px;font-weight:600;color:#111827;margin-bottom:4px;"><?= $e($rec['title']) ?></div>
+                <div style="font-size:13px;color:#4b5563;line-height:1.5;"><?= $e($rec['description']) ?></div>
             </div>
 
-            <!-- Status label (right-aligned) -->
-            <div style="flex-shrink:0;text-align:right;">
-                <?php if ($status === 'pass'): ?>
-                    <span class="badge-success badge-pill">Bestanden</span>
-                <?php elseif ($status === 'warn'): ?>
-                    <span class="badge-warning badge-pill">Warnung</span>
-                <?php elseif ($status === 'fail'): ?>
-                    <span class="badge-danger badge-pill">Fehlgeschlagen</span>
+            <!-- Action button -->
+            <div style="flex-shrink:0;">
+                <?php if (!empty($rec['ca_template'])): ?>
+                    <a href="<?= $e($rec['module_url']) ?>?create=1&template=<?= $e($rec['ca_template']) ?>"
+                       class="btn btn-sm"
+                       style="background:#0078d4;color:#fff;border:none;white-space:nowrap;">
+                        <i class="bi bi-plus-lg me-1"></i><?= $e($rec['action']) ?>
+                    </a>
                 <?php else: ?>
-                    <span class="badge-neutral badge-pill">Unbekannt</span>
+                    <a href="<?= $e($rec['module_url']) ?>"
+                       class="btn btn-sm btn-outline-secondary"
+                       style="white-space:nowrap;">
+                        <i class="bi bi-arrow-right me-1"></i><?= $e($rec['action']) ?>
+                    </a>
                 <?php endif; ?>
             </div>
 
@@ -144,19 +153,115 @@ $unknownCnt = count(array_filter($checks, fn($c) => $c['status'] === 'unknown'))
         <?php endforeach; ?>
     </div>
 </div>
-<?php endforeach; ?>
+<?php endif; ?>
 
-<!-- Info box -->
-<div class="content-card mt-2" style="border-left:4px solid #3b82f6;">
-    <div class="card-body-custom">
-        <div style="display:flex;align-items:flex-start;gap:10px;">
-            <i class="bi bi-info-circle-fill" style="color:#3b82f6;font-size:18px;flex-shrink:0;margin-top:1px;"></i>
-            <p style="font-size:13px;color:#374151;margin:0;">
-                Diese Prüfungen geben einen Überblick und ersetzen keine vollständige Sicherheitsanalyse.
-                Fehlende Berechtigungen werden als <strong>Unbekannt</strong> angezeigt.
-                Einige Prüfungen verwenden gecachte Daten (5–30 Minuten). Für aktuelle Ergebnisse
-                <a href="?refresh=1">Seite aktualisieren</a>.
-            </p>
+<!-- Checks by category -->
+<?php
+$catOrder = ['Identität & MFA', 'Conditional Access', 'Geräte & Compliance', 'Konfiguration & Apps'];
+$sortedCats = [];
+foreach ($catOrder as $cat) {
+    if (isset($byCategory[$cat])) {
+        $sortedCats[$cat] = $byCategory[$cat];
+    }
+}
+foreach ($byCategory as $cat => $items) {
+    if (!isset($sortedCats[$cat])) {
+        $sortedCats[$cat] = $items;
+    }
+}
+?>
+
+<div class="row g-3 mb-3">
+    <?php foreach ($sortedCats as $category => $categoryChecks):
+        $catPass = count(array_filter($categoryChecks, fn($c) => $c['status'] === 'pass'));
+        $catFail = count(array_filter($categoryChecks, fn($c) => $c['status'] === 'fail'));
+        $catWarn = count(array_filter($categoryChecks, fn($c) => $c['status'] === 'warn'));
+        $catTot  = count(array_filter($categoryChecks, fn($c) => $c['status'] !== 'unknown'));
+        $catPct  = $catTot > 0 ? round($catPass / $catTot * 100) : 0;
+        $catColor = $catPct >= 80 ? '#16a34a' : ($catPct >= 50 ? '#d97706' : '#dc2626');
+        $icon = $categoryIcons[$category] ?? 'bi-shield';
+    ?>
+    <div class="col-12">
+    <div class="content-card mb-0">
+        <div class="card-header-custom">
+            <span style="display:flex;align-items:center;gap:10px;">
+                <i class="bi <?= $icon ?>" style="font-size:16px;color:#0078d4;"></i>
+                <strong><?= $e($category) ?></strong>
+                <span style="font-size:12px;color:#9ca3af;"><?= count($categoryChecks) ?> Prüfungen</span>
+            </span>
+            <span style="display:flex;align-items:center;gap:8px;">
+                <?php if ($catFail > 0): ?>
+                    <span style="font-size:12px;color:#dc2626;"><i class="bi bi-x-circle-fill"></i> <?= $catFail ?> fehlgeschlagen</span>
+                <?php endif; ?>
+                <?php if ($catWarn > 0): ?>
+                    <span style="font-size:12px;color:#d97706;"><i class="bi bi-exclamation-triangle-fill"></i> <?= $catWarn ?> Warnung</span>
+                <?php endif; ?>
+                <span style="font-size:13px;font-weight:600;color:<?= $catColor ?>;"><?= $catPct ?>%</span>
+            </span>
+        </div>
+        <div class="card-body-custom p-0">
+            <?php foreach ($categoryChecks as $idx => $check):
+                $status = $check['status'];
+                $rowBg  = $status === 'fail' ? '#fffafa' : ($status === 'warn' ? '#fffdf5' : '');
+            ?>
+            <div style="display:flex;align-items:flex-start;gap:14px;padding:13px 20px;<?= $idx > 0 ? 'border-top:1px solid #f3f4f6;' : '' ?><?= $rowBg ? 'background:' . $rowBg . ';' : '' ?>">
+
+                <!-- Status icon -->
+                <div style="flex-shrink:0;margin-top:1px;">
+                    <?php if ($status === 'pass'): ?>
+                        <i class="bi bi-check-circle-fill" style="color:#16a34a;font-size:17px;"></i>
+                    <?php elseif ($status === 'warn'): ?>
+                        <i class="bi bi-exclamation-triangle-fill" style="color:#d97706;font-size:17px;"></i>
+                    <?php elseif ($status === 'fail'): ?>
+                        <i class="bi bi-x-circle-fill" style="color:#dc2626;font-size:17px;"></i>
+                    <?php else: ?>
+                        <i class="bi bi-question-circle-fill" style="color:#d1d5db;font-size:17px;"></i>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Text -->
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px;">
+                        <span style="font-size:13px;font-weight:500;color:#111827;"><?= $e($check['label']) ?></span>
+                        <?php if ($check['severity'] === 'high'): ?>
+                            <span class="badge-danger badge-pill" style="font-size:10px;padding:2px 6px;">Hoch</span>
+                        <?php elseif ($check['severity'] === 'medium'): ?>
+                            <span class="badge-warning badge-pill" style="font-size:10px;padding:2px 6px;">Mittel</span>
+                        <?php else: ?>
+                            <span class="badge-info badge-pill" style="font-size:10px;padding:2px 6px;">Niedrig</span>
+                        <?php endif; ?>
+                    </div>
+                    <div style="font-size:12px;color:#6b7280;"><?= $e($check['description']) ?></div>
+                    <div style="font-size:12px;color:<?= $status === 'fail' ? '#b91c1c' : ($status === 'warn' ? '#92400e' : '#6b7280') ?>;margin-top:3px;font-style:italic;"><?= $e($check['detail']) ?></div>
+                </div>
+
+                <!-- Badge -->
+                <div style="flex-shrink:0;">
+                    <?php if ($status === 'pass'): ?>
+                        <span class="badge-enabled badge-pill">Bestanden</span>
+                    <?php elseif ($status === 'warn'): ?>
+                        <span class="badge-warning badge-pill">Warnung</span>
+                    <?php elseif ($status === 'fail'): ?>
+                        <span class="badge-danger badge-pill">Fehlgeschlagen</span>
+                    <?php else: ?>
+                        <span class="badge-neutral badge-pill">Unbekannt</span>
+                    <?php endif; ?>
+                </div>
+
+            </div>
+            <?php endforeach; ?>
         </div>
     </div>
+    </div>
+    <?php endforeach; ?>
+</div>
+
+<!-- Hinweis -->
+<div style="padding:12px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;color:#64748b;">
+    <i class="bi bi-info-circle me-1"></i>
+    Prüfungen basieren auf Microsoft Graph API-Daten und Best Practices (CIS M365, Microsoft Security Baseline).
+    Fehlende Berechtigungen werden als <strong>Unbekannt</strong> angezeigt.
+    Einige Prüfungen nutzen gecachte Daten (5–30 Min). Für aktuelle Ergebnisse:
+    <a href="?refresh=1" style="color:#0078d4;">Aktualisieren</a>.
+    Risikobasierte CA-Richtlinien (Anmelderisiko, Benutzerrisiko) erfordern <strong>Entra ID P2</strong>.
 </div>

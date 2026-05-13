@@ -2,86 +2,82 @@
 
 namespace App\Modules\Sharing;
 
+use App\Database\DB;
 use App\Graph\GraphClient;
 
 class SharingService
 {
     public function __construct(private GraphClient $graph) {}
 
-    public function getExternalShares(): array
+    /**
+     * Returns all tracked shares from the DB (populated by the share_scan cron job).
+     * Excludes revoked entries by default.
+     */
+    public function getAll(string $statusFilter = ''): array
     {
-        $shares = [];
+        $sql    = "SELECT * FROM share_reviews WHERE status != 'revoked'";
+        $params = [];
+        if ($statusFilter) {
+            $sql    = 'SELECT * FROM share_reviews WHERE status = ?';
+            $params = [$statusFilter];
+        }
+        $sql .= ' ORDER BY first_detected DESC';
+        return DB::fetchAll($sql, $params);
+    }
 
-        // SharePoint external sharing report
-        try {
-            $sites = $this->graph->paginate(
-                '/sites',
-                ['search' => '*', '$select' => 'id,displayName,webUrl'],
-                20,
-                'sharing_sites',
-                1800
-            );
+    /**
+     * True when the share_reviews table has at least one row (scan has run before).
+     */
+    public function hasBeenScanned(): bool
+    {
+        $row = DB::fetchOne('SELECT 1 FROM share_reviews LIMIT 1');
+        return (bool)$row;
+    }
 
-            foreach (array_slice($sites, 0, 20) as $site) {
-                try {
-                    $drives = $this->graph->paginate(
-                        "/sites/{$site['id']}/drives",
-                        ['$select' => 'id,name'],
-                        5,
-                        "sharing_drives_{$site['id']}",
-                        1800
-                    );
+    public function getSharingSummary(string $statusFilter = ''): array
+    {
+        $items  = $this->getAll($statusFilter);
+        $byType = ['organization' => 0, 'users' => 0, 'anonymous' => 0, 'unknown' => 0];
 
-                    foreach (array_slice($drives, 0, 3) as $drive) {
-                        try {
-                            $sharedItems = $this->graph->paginate(
-                                "/drives/{$drive['id']}/root/search(q='')",
-                                ['$select' => 'id,name,webUrl,shared,createdBy,lastModifiedDateTime', '$filter' => "shared ne null", '$top' => '50'],
-                                3,
-                                "sharing_items_{$drive['id']}",
-                                1800
-                            );
+        foreach ($items as $row) {
+            $scope = $row['share_scope'] ?? 'unknown';
+            $byType[$scope] = ($byType[$scope] ?? 0) + 1;
+        }
 
-                            foreach ($sharedItems as $item) {
-                                if (empty($item['shared'])) continue;
-                                $scope = $item['shared']['scope'] ?? 'unknown';
-                                $shares[] = [
-                                    'type'     => 'SharePoint',
-                                    'site'     => $site['displayName'] ?? '',
-                                    'name'     => $item['name'] ?? '',
-                                    'url'      => $item['webUrl'] ?? '',
-                                    'scope'    => $scope,
-                                    'owner'    => $item['createdBy']['user']['displayName'] ?? '',
-                                    'modified' => $item['lastModifiedDateTime'] ?? '',
-                                ];
-                            }
-                        } catch (\Throwable) { continue; }
-                    }
-                } catch (\Throwable) { continue; }
-            }
-        } catch (\Throwable) {}
+        // Map DB rows to the shape the view expects
+        $mapped = array_map(fn($row) => [
+            'id'           => $row['id'],
+            'drive_id'     => $row['drive_id'],
+            'item_id'      => $row['item_id'],
+            'permission_id'=> $row['permission_id'],
+            'type'         => 'SharePoint',
+            'site'         => $row['site_name'] ?? '',
+            'name'         => $row['item_name'] ?? '',
+            'url'          => $row['item_url'] ?? '',
+            'scope'        => $row['share_scope'] ?? 'unknown',
+            'owner'        => $row['owner_display_name'] ?: ($row['owner_upn'] ?? ''),
+            'owner_upn'    => $row['owner_upn'] ?? '',
+            'modified'     => $row['first_detected'] ?? '',
+            'status'       => $row['status'] ?? 'active',
+        ], $items);
 
-        return $shares;
+        return [
+            'total'      => count($mapped),
+            'byType'     => $byType,
+            'items'      => $mapped,
+            'hasScanned' => $this->hasBeenScanned(),
+        ];
     }
 
     public function revokePermission(string $driveId, string $itemId, string $permissionId): void
     {
         $this->graph->delete("/drives/{$driveId}/items/{$itemId}/permissions/{$permissionId}");
-        $this->graph->getCache()->forget("sharing_items_{$driveId}");
-    }
 
-    public function getSharingSummary(): array
-    {
-        $shares = $this->getExternalShares();
-        $byType = ['organization' => 0, 'users' => 0, 'anonymous' => 0, 'unknown' => 0];
-        foreach ($shares as $s) {
-            $scope = $s['scope'];
-            $byType[$scope] = ($byType[$scope] ?? 0) + 1;
-        }
-        return [
-            'total'  => count($shares),
-            'byType' => $byType,
-            'items'  => $shares,
-        ];
+        // Mark as revoked in DB
+        DB::execute(
+            "UPDATE share_reviews SET status='revoked', revoked_at=NOW()
+             WHERE drive_id=? AND item_id=? AND permission_id=?",
+            [$driveId, $itemId, $permissionId]
+        );
     }
 }

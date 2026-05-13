@@ -13,14 +13,27 @@ class SharingController
     public function index(): void
     {
         LocalAuth::require();
-        $service = app_service(SharingService::class);
-        $data    = $service->getSharingSummary();
+        $service      = app_service(SharingService::class);
+        $statusFilter = trim($_GET['status'] ?? '');
+        $scopeFilter  = trim($_GET['scope'] ?? '');
+
+        // Fetch all, then apply scope filter in PHP (DB already filtered by status)
+        $summary = $service->getSharingSummary($statusFilter);
+
+        if ($scopeFilter) {
+            $summary['items'] = array_values(array_filter(
+                $summary['items'],
+                fn($i) => ($i['scope'] ?? '') === $scopeFilter
+            ));
+        }
 
         View::render('sharing/index', [
-            'pageTitle' => 'Externe Freigaben',
-            'summary'   => $data,
-            'flash'     => Session::getFlash('success'),
-            'error'     => Session::getFlash('error'),
+            'pageTitle'    => 'Freigaben',
+            'summary'      => $summary,
+            'statusFilter' => $statusFilter,
+            'scopeFilter'  => $scopeFilter,
+            'flash'        => Session::getFlash('success'),
+            'error'        => Session::getFlash('error'),
         ]);
     }
 
@@ -52,14 +65,15 @@ class SharingController
         $items = $data['items'] ?? [];
 
         CsvExporter::download('freigaben_' . date('Ymd') . '.csv',
-            ['Typ', 'Name', 'Quelle', 'Freigabe-Typ', 'Besitzer', 'Geändert'],
+            ['Typ', 'Name', 'Quelle', 'Freigabe-Typ', 'Besitzer', 'Erstmals erkannt', 'Status'],
             array_map(fn($i) => [
-                $i['type'] ?? '',
-                $i['name'] ?? '',
-                $i['site'] ?? '',
-                $i['scope'] ?? '',
-                $i['owner'] ?? '',
+                $i['type']    ?? '',
+                $i['name']    ?? '',
+                $i['site']    ?? '',
+                $i['scope']   ?? '',
+                $i['owner']   ?? '',
                 CsvExporter::formatDate($i['modified'] ?? ''),
+                $i['status']  ?? '',
             ], $items)
         );
     }

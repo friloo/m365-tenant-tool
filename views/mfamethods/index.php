@@ -181,20 +181,26 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
 <div class="content-card">
     <div class="table-toolbar">
         <input type="text" id="mfaSearch" class="search-box" placeholder="Benutzer suchen…">
-        <select id="mfaFilter" class="form-select form-select-sm ms-2" style="max-width:260px;"
+        <select id="mfaFilter" class="form-select form-select-sm ms-2" style="max-width:280px;"
                 onchange="filterMfaTable()">
-            <option value="">Alle</option>
-            <option value="no-mfa">Kein MFA</option>
-            <?php
-            // Build filter options dynamically from methods actually present in the data
-            $presentMethods = array_keys($byMethod);
-            sort($presentMethods);
-            foreach ($presentMethods as $methodKey):
-                $label = $labels[$methodKey] ?? $methodKey;
-                $count = $byMethod[$methodKey] ?? 0;
-            ?>
-                <option value="<?= $e($methodKey) ?>"><?= $e($label) ?> (<?= $count ?>)</option>
-            <?php endforeach; ?>
+            <option value="">Alle (<?= $total ?>)</option>
+            <optgroup label="MFA-Status">
+                <option value="mfa-yes">MFA registriert (<?= $mfaRegistered ?>)</option>
+                <option value="no-mfa">Kein MFA (<?= $noMfa ?>)</option>
+            </optgroup>
+            <?php if (!empty($byMethod)): ?>
+            <optgroup label="Nach Methode">
+                <?php
+                $presentMethods = array_keys($byMethod);
+                sort($presentMethods);
+                foreach ($presentMethods as $methodKey):
+                    $label = $labels[$methodKey] ?? $methodKey;
+                    $count = $byMethod[$methodKey] ?? 0;
+                ?>
+                    <option value="<?= $e($methodKey) ?>"><?= $e($label) ?> (<?= $count ?>)</option>
+                <?php endforeach; ?>
+            </optgroup>
+            <?php endif; ?>
         </select>
         <a href="?refresh=1" class="btn btn-sm btn-outline-secondary ms-2">
             <i class="bi bi-arrow-clockwise"></i> Aktualisieren
@@ -300,6 +306,8 @@ function filterMfaTable() {
         let show = true;
         if (val === 'no-mfa') {
             show = d.mfa === '0';
+        } else if (val === 'mfa-yes') {
+            show = d.mfa === '1';
         } else if (val !== '') {
             const methods = (d.methods || '').split(',').filter(Boolean);
             show = methods.includes(val);

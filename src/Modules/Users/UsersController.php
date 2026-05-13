@@ -42,6 +42,7 @@ class UsersController
         $groups   = $service->getMemberOf($id);
         $skus     = app_service(LicensesService::class)->getSkus();
         $signIns  = $service->getSignInHistory($id);
+        $notes    = (new UserNotesService())->getForUser($id);
 
         View::render('users/detail', [
             'pageTitle' => $user['displayName'] ?? 'Benutzer',
@@ -49,6 +50,7 @@ class UsersController
             'groups'    => $groups,
             'skus'      => $skus,
             'signIns'   => $signIns,
+            'notes'     => $notes,
             'flash'     => Session::getFlash('success'),
             'error'     => Session::getFlash('error'),
         ]);
@@ -224,6 +226,25 @@ class UsersController
             Session::flash('error', 'Lizenz-Entfernung fehlgeschlagen: ' . $e->getMessage());
         }
         Redirect::to('/users/' . $id);
+    }
+
+    public function addNote(string $id): void
+    {
+        LocalAuth::requireAdmin();
+        $note = trim($_POST['note'] ?? '');
+        if ($note !== '') {
+            (new UserNotesService())->add($id, $note, LocalAuth::username());
+            Session::flash('success', 'Notiz gespeichert.');
+        }
+        Redirect::to("/users/{$id}");
+    }
+
+    public function deleteNote(string $id, string $noteId): void
+    {
+        LocalAuth::requireAdmin();
+        (new UserNotesService())->delete((int)$noteId, $id);
+        Session::flash('success', 'Notiz gelöscht.');
+        Redirect::to("/users/{$id}");
     }
 
     public function bulkAction(): void
