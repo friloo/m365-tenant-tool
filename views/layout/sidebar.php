@@ -45,6 +45,7 @@ $_navDefs = [
     // ── Sicherheit
     ['section' => 'Sicherheit',          'icon' => 'shield-check',         'label' => 'Sicherheit',             'route' => 'security',                   'admin' => false],
     ['section' => null,                  'icon' => 'shield-fill-check',    'label' => 'Security Posture',       'route' => 'securityposture',            'admin' => false],
+    ['section' => null,                  'icon' => 'file-earmark-lock',    'label' => 'DSGVO-Status',           'route' => 'securityposture#cat-dsgvo-datenschutz', 'admin' => false],
     ['section' => null,                  'icon' => 'bar-chart-line',       'label' => 'Secure Score',           'route' => 'securescore',                'admin' => false],
     ['section' => null,                  'icon' => 'bell',                 'label' => 'Defender Alerts',        'route' => 'defenderalerts',             'admin' => false],
     ['section' => null,                  'icon' => 'exclamation-triangle', 'label' => 'Risiko-Anmeldungen',     'route' => 'riskysignins',               'admin' => false],
