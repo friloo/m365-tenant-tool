@@ -16,6 +16,7 @@ class OnboardingController
 
         $licenses = [];
         $groups   = [];
+        $domains  = [];
         $loadError = null;
         try {
             $licenses = $service->getAvailableLicenses();
@@ -30,11 +31,17 @@ class OnboardingController
             $loadError = ($loadError ? $loadError . ' | ' : '')
                 . 'Gruppen konnten nicht geladen werden: ' . $e->getMessage();
         }
+        try {
+            $domains = $service->getVerifiedDomains();
+        } catch (\Throwable $e) {
+            error_log('Onboarding domains: ' . $e->getMessage());
+        }
 
         View::render('onboarding/wizard', [
             'pageTitle' => 'Benutzer-Onboarding',
             'licenses'  => $licenses,
             'groups'    => $groups,
+            'domains'   => $domains,
             'flash'     => Session::getFlash('success'),
             'error'     => Session::getFlash('error') ?: $loadError,
         ]);
