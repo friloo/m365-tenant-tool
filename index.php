@@ -167,6 +167,7 @@ $router->get('/sharepoint/{id}',                  [\App\Modules\SharePoint\Share
 // Sharing
 $router->get('/sharing',                          [\App\Modules\Sharing\SharingController::class, 'index']);
 $router->get('/sharing/export',                   [\App\Modules\Sharing\SharingController::class, 'export']);
+$router->get('/sharing/scan',                     [\App\Modules\Sharing\SharingController::class, 'scan']);
 $router->post('/sharing/revoke',                  [\App\Modules\Sharing\SharingController::class, 'revoke']);
 
 // Share Review (public — no auth)
