@@ -487,6 +487,8 @@ class RecommendationLibrary
                 'internal_path' => '/sharing',
                 'ms_admin_url'  => 'https://admin.microsoft.com/sharepoint',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/sharepoint/turn-external-sharing-on-or-off',
+                'bsi_controls'  => ['APP.5.2.A4', 'CON.2.A1'],
+                'nis2_articles' => ['Art. 21 Abs. 2(h)', 'Art. 21 Abs. 2(i)'],
             ];
         }
 
@@ -508,6 +510,8 @@ class RecommendationLibrary
                 'internal_path' => '/users',
                 'ms_admin_url'  => 'https://admin.microsoft.com/#/licenses',
                 'ms_doc_url'    => null,
+                'bsi_controls'  => ['ORP.4.A9'],
+                'nis2_articles' => ['Art. 21 Abs. 2(i)'],
             ];
         }
 
@@ -530,6 +534,8 @@ class RecommendationLibrary
                 'internal_path' => '/licenseadvisor',
                 'ms_admin_url'  => 'https://admin.microsoft.com/#/licenses',
                 'ms_doc_url'    => null,
+                'bsi_controls'  => ['OPS.1.1.3.A4'],
+                'nis2_articles' => ['Art. 21 Abs. 2(a)'],
             ];
         }
 
@@ -552,6 +558,8 @@ class RecommendationLibrary
                 'internal_path' => '/devices',
                 'ms_admin_url'  => 'https://intune.microsoft.com/#view/Microsoft_Intune_DeviceSettings/DevicesMenu/~/compliance',
                 'ms_doc_url'    => 'https://learn.microsoft.com/de-de/mem/intune/protect/device-compliance-get-started',
+                'bsi_controls'  => ['SYS.2.1.A3', 'SYS.2.1.A36', 'SYS.2.1.A38'],
+                'nis2_articles' => ['Art. 21 Abs. 2(e)', 'Art. 21 Abs. 2(i)'],
             ];
         }
 

@@ -334,6 +334,21 @@ $sevOrder = ['critical', 'high', 'medium', 'low'];
                     </a>
                     <?php endif; ?>
                 </div>
+
+                <?php if (!empty($rec['bsi_controls']) || !empty($rec['nis2_articles'])): ?>
+                <div class="mt-2 d-flex flex-wrap gap-1">
+                    <?php foreach ($rec['bsi_controls'] ?? [] as $ctrl): ?>
+                        <span style="font-size:10px;padding:2px 6px;border-radius:3px;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;font-weight:500;">
+                            BSI <?= htmlspecialchars($ctrl) ?>
+                        </span>
+                    <?php endforeach; ?>
+                    <?php foreach ($rec['nis2_articles'] ?? [] as $art): ?>
+                        <span style="font-size:10px;padding:2px 6px;border-radius:3px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;font-weight:500;">
+                            NIS-2 <?= htmlspecialchars($art) ?>
+                        </span>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
         <?php endforeach; ?>
@@ -369,6 +384,11 @@ $sevOrder = ['critical', 'high', 'medium', 'low'];
                 <strong>Datenschutz bestätigt:</strong>
                 Die folgende Tabelle zeigt exakt, welche Daten an <?= $e($provider) ?> übertragen wurden.
                 Es handelt sich ausschließlich um Zahlen und Prozentwerte — keine Benutzernamen, keine Tenant-ID, keine Domainnamen.
+            </div>
+            <div class="alert alert-success mb-3" style="font-size:12px;">
+                <i class="bi bi-lock me-1"></i>
+                <strong>Hinweis:</strong>
+                Keine Compliance-Daten (BSI/NIS-2) werden an die KI übertragen — diese Zuordnung erfolgt lokal im Tool.
             </div>
 
             <table class="table table-sm" style="font-size:13px;">
@@ -436,7 +456,7 @@ $sevOrder = ['critical', 'high', 'medium', 'low'];
 <!-- ── Footer note ───────────────────────────────────────────────────────── -->
 <div style="padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;color:#64748b;">
     <i class="bi bi-info-circle me-1"></i>
-    Empfehlungen basieren auf Microsoft Best Practices (CIS Benchmark, Microsoft Security Baseline).
+    Empfehlungen basieren auf Microsoft Best Practices, BSI IT-Grundschutz Kompendium 2023 und NIS-2-Richtlinie (EU 2022/2555).
     KI-Zusammenfassung durch <strong><?= $e($provider) ?></strong>.
     <a href="/settings#ai-advisor" class="ms-2">Einstellungen</a>
 </div>
