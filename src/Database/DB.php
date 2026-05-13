@@ -36,6 +36,27 @@ class DB
         return self::$instance;
     }
 
+    /**
+     * Backwards-compat shim: some call sites use DB::getInstance()->fetchOne()
+     * instead of DB::fetchOne(). Returns a tiny proxy that routes instance
+     * calls back to the static helpers so both styles work.
+     */
+    public static function getInstance(): object
+    {
+        static $proxy = null;
+        if ($proxy === null) {
+            $proxy = new class {
+                public function fetchOne(string $sql, array $params = []): array|false { return DB::fetchOne($sql, $params); }
+                public function fetchAll(string $sql, array $params = []): array       { return DB::fetchAll($sql, $params); }
+                public function execute(string $sql, array $params = []): int          { return DB::execute($sql, $params); }
+                public function query(string $sql, array $params = []): \PDOStatement  { return DB::query($sql, $params); }
+                public function lastInsertId(): string                                 { return DB::lastInsertId(); }
+                public function pdo(): \PDO                                            { return DB::get(); }
+            };
+        }
+        return $proxy;
+    }
+
     public static function query(string $sql, array $params = []): \PDOStatement
     {
         $stmt = self::get()->prepare($sql);
