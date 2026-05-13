@@ -59,7 +59,11 @@ class OnboardingController
             $result = app_service(OnboardingService::class)->runOnboarding($data);
 
             if ($result['user'] === null) {
-                Session::flash('error', implode(' | ', $result['errors']));
+                // Translator liefert konkreten Hinweis (Permission fehlt, Lizenz,
+                // etc.) statt nur die rohe Graph-Message.
+                $errMsg = implode(' | ', $result['errors']);
+                $hint   = $this->permissionHint($errMsg);
+                Session::flash('error', $errMsg . ($hint ? ' — ' . $hint : ''));
                 Redirect::to('/onboarding');
                 return;
             }
@@ -71,8 +75,28 @@ class OnboardingController
             Session::flash('success', $msg);
             Redirect::to('/users/' . ($result['user']['id'] ?? ''));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Onboarding fehlgeschlagen: ' . $e->getMessage());
+            $hint = $this->permissionHint($e->getMessage());
+            Session::flash('error', 'Onboarding fehlgeschlagen: ' . $e->getMessage() . ($hint ? ' — ' . $hint : ''));
             Redirect::to('/onboarding');
         }
+    }
+
+    /**
+     * Map raw Graph errors to a concrete next-step hint for the operator.
+     * "Insufficient privileges" gets explicit because the writing endpoints
+     * need different permissions than the read-only ones we usually check.
+     */
+    private function permissionHint(string $msg): ?string
+    {
+        if (stripos($msg, 'Insufficient privileges') !== false || stripos($msg, 'Authorization_RequestDenied') !== false) {
+            return 'Die App-Registrierung in Azure braucht die Application-Permission "User.ReadWrite.All" (+ Admin Consent). Lese-Berechtigung allein reicht für POST /users nicht. Permissions prüfen unter /settings/permissions.';
+        }
+        if (stripos($msg, 'license') !== false && stripos($msg, 'available') !== false) {
+            return 'Im Tenant sind keine verfügbaren Lizenzen für die gewählte SKU vorhanden.';
+        }
+        if (stripos($msg, 'userPrincipalName') !== false && stripos($msg, 'already exists') !== false) {
+            return 'Ein Benutzer mit dieser UPN existiert bereits.';
+        }
+        return null;
     }
 }
