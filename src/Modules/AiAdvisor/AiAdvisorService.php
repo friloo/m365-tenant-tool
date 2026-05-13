@@ -302,16 +302,23 @@ class AiAdvisorService
         return $ctx;
     }
 
+    /**
+     * Returns the most recent analysis if there is one, INCLUDING expired
+     * entries (marked as stale). The user can choose to re-run; until then
+     * we keep the last result on screen instead of going blank.
+     */
     public function getCachedAnalysis(): ?array
     {
         try {
             $row = DB::fetchOne(
-                "SELECT data, created_at FROM cache WHERE cache_key = 'ai_security_analysis' AND expires_at > NOW()"
+                "SELECT data, created_at, expires_at FROM cache WHERE cache_key = 'ai_security_analysis' ORDER BY created_at DESC LIMIT 1"
             );
             if ($row) {
                 $data = json_decode($row['data'], true);
                 if (is_array($data)) {
-                    $data['cached_at'] = $row['created_at'];
+                    $data['cached_at']  = $row['created_at'];
+                    $data['expires_at'] = $row['expires_at'];
+                    $data['is_stale']   = strtotime($row['expires_at']) < time();
                     return $data;
                 }
             }

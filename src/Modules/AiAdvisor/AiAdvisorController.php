@@ -29,17 +29,49 @@ class AiAdvisorController
         $service = app_service(AiAdvisorService::class);
 
         if (!$service->isEnabled()) {
+            // For non-AJAX callers we still need a redirect to keep the form
+            // contract; for AJAX we return JSON.
+            if ($this->wantsJson()) {
+                http_response_code(400);
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['ok' => false, 'error' => 'KI ist nicht aktiviert.']);
+                return;
+            }
             Redirect::to('/ai');
         }
 
+        // Don't let an aborted browser kill the analysis. The browser may give
+        // up after 60s (proxy timeout, fetch abort) but the analysis can take
+        // several minutes on big tenants; we want the cache to be populated
+        // anyway so the next page load shows fresh data.
+        @ignore_user_abort(true);
+        @set_time_limit(600);
+
         try {
-            set_time_limit(120);
             $service->analyze();
+            if ($this->wantsJson()) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['ok' => true]);
+                return;
+            }
             Session::flash('success', 'KI-Analyse abgeschlossen.');
         } catch (\Throwable $e) {
+            if ($this->wantsJson()) {
+                http_response_code(500);
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
+                return;
+            }
             Session::flash('error', 'Analyse fehlgeschlagen: ' . $e->getMessage());
         }
         Redirect::to('/ai');
+    }
+
+    private function wantsJson(): bool
+    {
+        $accept   = $_SERVER['HTTP_ACCEPT'] ?? '';
+        $xRequest = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+        return str_contains($accept, 'application/json') || strcasecmp($xRequest, 'XMLHttpRequest') === 0;
     }
 
     public function clearCache(): void
