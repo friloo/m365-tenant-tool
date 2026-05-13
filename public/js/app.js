@@ -28,16 +28,79 @@
     const btn     = document.getElementById('sidebarToggle');
     const key     = 'm365_sidebar_collapsed';
 
-    function applyState(collapsed) {
-        sidebar?.classList.toggle('collapsed', collapsed);
+    if (!sidebar) return;
+
+    // Single backdrop element, reused across opens/closes.
+    const backdrop = document.createElement('div');
+    backdrop.className = 'sidebar-backdrop';
+    backdrop.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(backdrop);
+
+    const mqPhone  = window.matchMedia('(max-width: 768px)');
+    const mqTablet = window.matchMedia('(max-width: 1024px) and (min-width: 769px)');
+
+    function applyDesktopState(collapsed) {
+        sidebar.classList.toggle('collapsed', collapsed);
         main?.classList.toggle('collapsed', collapsed);
         try { localStorage.setItem(key, collapsed ? '1' : '0'); } catch (_) {}
     }
 
-    btn?.addEventListener('click', () => applyState(!sidebar.classList.contains('collapsed')));
+    function openMobile() {
+        sidebar.classList.add('mobile-open');
+        backdrop.classList.add('show');
+        document.body.style.overflow = 'hidden';     // prevent body scroll behind drawer
+    }
+    function closeMobile() {
+        sidebar.classList.remove('mobile-open');
+        backdrop.classList.remove('show');
+        document.body.style.overflow = '';
+    }
 
+    function toggle() {
+        if (mqPhone.matches) {
+            sidebar.classList.contains('mobile-open') ? closeMobile() : openMobile();
+        } else if (mqTablet.matches) {
+            // On tablet the Burger toggles the inline "expanded" full-width state
+            sidebar.classList.toggle('expanded');
+        } else {
+            applyDesktopState(!sidebar.classList.contains('collapsed'));
+        }
+    }
+
+    btn?.addEventListener('click', toggle);
+    backdrop.addEventListener('click', closeMobile);
+
+    // Close drawer when the user navigates by tapping a sidebar link.
+    sidebar.addEventListener('click', (e) => {
+        if (mqPhone.matches && e.target.closest('a[href]')) closeMobile();
+    });
+
+    // Escape closes the mobile drawer.
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mqPhone.matches && sidebar.classList.contains('mobile-open')) {
+            closeMobile();
+        }
+    });
+
+    // When crossing breakpoints we don't want a stuck open/closed state.
+    function syncOnResize() {
+        if (!mqPhone.matches) {
+            sidebar.classList.remove('mobile-open');
+            backdrop.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        if (!mqTablet.matches && !mqPhone.matches) {
+            sidebar.classList.remove('expanded');
+        }
+    }
+    mqPhone.addEventListener('change', syncOnResize);
+    mqTablet.addEventListener('change', syncOnResize);
+
+    // Persisted desktop preference (collapsed sidebar)
     try {
-        if (localStorage.getItem(key) === '1') applyState(true);
+        if (!mqPhone.matches && !mqTablet.matches && localStorage.getItem(key) === '1') {
+            applyDesktopState(true);
+        }
     } catch (_) {}
 })();
 
