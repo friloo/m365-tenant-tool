@@ -32,7 +32,9 @@ class AiAdvisorService
         };
     }
 
-    // Builds ONLY anonymized, aggregated metrics — zero PII, zero tenant identifiers
+    /**
+     * Builds ONLY anonymized, aggregated metrics — zero PII, zero tenant identifiers.
+     */
     public function buildContext(): array
     {
         $ctx = ['generated_at' => date('c'), 'privacy_note' => 'anonymized_aggregated_only'];
@@ -144,13 +146,47 @@ class AiAdvisorService
         return null;
     }
 
+    /**
+     * Run analysis:
+     * 1. Build anonymized context.
+     * 2. Get concrete recommendations from RecommendationLibrary (no AI needed).
+     * 3. If AI is enabled, call the API for a short executive summary + score only.
+     * 4. Cache and return result.
+     */
     public function analyze(): array
     {
-        $ctx    = $this->buildContext();
-        $raw    = $this->callApi($ctx);
-        $result = $this->parseResponse($raw);
-        $result['context']      = $ctx;
-        $result['generated_at'] = date('Y-m-d H:i:s');
+        $ctx = $this->buildContext();
+
+        $failedChecks  = $ctx['security_posture']['failed_checks']  ?? [];
+        $warningChecks = $ctx['security_posture']['warning_checks']  ?? [];
+
+        // Always get concrete library recommendations (works without AI)
+        $libraryRecs = RecommendationLibrary::get($failedChecks, $warningChecks, $ctx);
+
+        $summary = null;
+        $score   = null;
+
+        // Only call AI for the tiny executive summary + score
+        if ($this->isEnabled()) {
+            try {
+                $raw     = $this->callApi($ctx, $failedChecks, $warningChecks);
+                $parsed  = $this->parseAiResponse($raw);
+                $summary = $parsed['summary'] ?? null;
+                $score   = isset($parsed['score']) ? (int)$parsed['score'] : null;
+            } catch (\Throwable) {
+                // AI failure is non-fatal — recommendations still shown
+                $summary = null;
+                $score   = null;
+            }
+        }
+
+        $result = [
+            'summary'         => $summary,
+            'score'           => $score,
+            'recommendations' => $libraryRecs,
+            'context'         => $ctx,
+            'generated_at'    => date('Y-m-d H:i:s'),
+        ];
 
         $hours = max(1, (int)$this->config->get('ai_cache_hours', '24'));
         try {
@@ -174,7 +210,10 @@ class AiAdvisorService
 
     // ── Private helpers ──────────────────────────────────────────────────────
 
-    private function callApi(array $ctx): string
+    /**
+     * Minimal AI call — only asks for a 2-3 sentence German summary + score 0-100.
+     */
+    private function callApi(array $ctx, array $failedChecks, array $warningChecks): string
     {
         $provider = $this->getProvider();
         $apiKey   = $this->config->get('ai_api_key', '', true);
@@ -182,40 +221,28 @@ class AiAdvisorService
         $baseUrl  = trim($this->config->get('ai_base_url', ''));
         $endpoint = $this->getEndpoint($provider, $baseUrl);
 
-        $ctxJson = json_encode($ctx, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $mfaPct      = (int)($ctx['users']['mfa_registered_pct'] ?? 0);
+        $nonCompliant = (int)($ctx['devices']['non_compliant'] ?? 0);
+        $anonShares  = (int)($ctx['sharing']['anonymous_count'] ?? 0);
+
+        $failedList  = implode(', ', $failedChecks)  ?: 'keine';
+        $warningList = implode(', ', $warningChecks) ?: 'keine';
+
         $userMsg = <<<PROMPT
-Analyze the following anonymized Microsoft 365 security metrics and return a JSON security assessment.
+Given these M365 security issues found (anonymized, no PII):
+Failed checks: {$failedList}
+Warning checks: {$warningList}
+Users without MFA: {$mfaPct}%
+Non-compliant devices: {$nonCompliant}
+Anonymous shares: {$anonShares}
 
-PRIVACY RULES (strict):
-- This data contains ONLY counts, percentages, and generic check IDs
-- No user names, email addresses, UPNs, tenant IDs, domain names, or device names are present
-- Do NOT ask for, infer, or reference specific users, organizations, or tenants
-
-Security Metrics (anonymized):
-{$ctxJson}
-
-Return ONLY valid JSON in exactly this format — no markdown, no explanation:
-{
-  "summary": "2-3 sentence overall assessment of the security posture",
-  "score": 0-100,
-  "recommendations": [
-    {
-      "id": "unique_snake_case_id",
-      "severity": "critical|high|medium|low",
-      "title": "Short actionable title (max 60 chars)",
-      "risk": "Why this is a security risk (1-2 sentences)",
-      "action": "Specific action to take (1-2 sentences)",
-      "internal_path": "/securityposture or /users or null",
-      "ms_admin_url": "https://entra.microsoft.com/... or https://admin.microsoft.com/... or null"
-    }
-  ]
-}
+Return JSON: {"score": 0-100, "summary": "2-3 German sentences assessing overall security posture and most critical risk"}
 PROMPT;
 
         $messages = [
             [
                 'role'    => 'system',
-                'content' => 'You are a Microsoft 365 security advisor. You analyze ONLY anonymized, aggregated security statistics — never user names, email addresses, tenant names, domain names, or any personally identifiable information. Always respond with valid JSON only, no markdown formatting.',
+                'content' => 'You are a Microsoft 365 security advisor. Respond only in German. Respond with valid JSON only.',
             ],
             ['role' => 'user', 'content' => $userMsg],
         ];
@@ -226,12 +253,9 @@ PROMPT;
             'temperature' => 0.2,
         ];
 
-        // JSON mode
         if ($provider === 'ollama') {
             $payload['stream'] = false;
             $payload['format'] = 'json';
-        } else {
-            $payload['response_format'] = ['type' => 'json_object'];
         }
 
         $headers = ['Content-Type: application/json'];
@@ -244,7 +268,7 @@ PROMPT;
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => json_encode($payload),
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => 90,
+            CURLOPT_TIMEOUT        => 60,
             CURLOPT_HTTPHEADER     => $headers,
             CURLOPT_SSL_VERIFYPEER => true,
         ]);
@@ -274,7 +298,7 @@ PROMPT;
         return $content;
     }
 
-    private function parseResponse(string $raw): array
+    private function parseAiResponse(string $raw): array
     {
         // Strip markdown code fences if the model added them despite instructions
         $raw = preg_replace('/^```(?:json)?\s*/m', '', $raw);
@@ -283,27 +307,13 @@ PROMPT;
 
         $data = json_decode($raw, true);
         if (!is_array($data)) {
-            throw new \RuntimeException('KI-Antwort ist kein gültiges JSON: ' . substr($raw, 0, 300));
+            return ['summary' => null, 'score' => null];
         }
 
-        // Normalise structure
-        if (!isset($data['recommendations'])) {
-            $data['recommendations'] = [];
-        }
-        if (!isset($data['summary'])) {
-            $data['summary'] = '';
-        }
-        if (!isset($data['score'])) {
-            $data['score'] = null;
-        }
-
-        // Sort by severity
-        $order = ['critical' => 0, 'high' => 1, 'medium' => 2, 'low' => 3];
-        usort($data['recommendations'], fn($a, $b) =>
-            ($order[$a['severity'] ?? 'low'] ?? 3) <=> ($order[$b['severity'] ?? 'low'] ?? 3)
-        );
-
-        return $data;
+        return [
+            'summary' => isset($data['summary']) ? (string)$data['summary'] : null,
+            'score'   => isset($data['score'])   ? (int)$data['score']      : null,
+        ];
     }
 
     private function getEndpoint(string $provider, string $baseUrl): string
