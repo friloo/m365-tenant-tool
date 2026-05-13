@@ -15,10 +15,12 @@ $hasScanned = $summary['hasScanned'] ?? false;
 <div class="alert alert-info mb-4">
     <i class="bi bi-info-circle me-2"></i>
     <strong>Noch kein Freigaben-Scan durchgeführt.</strong>
-    Starten Sie den Scan unter <a href="/cron" class="alert-link">Cron &amp; Automatisierung</a> (Job: <code>share_scan</code>),
-    um alle SharePoint-Freigaben zu erfassen. Der erste Scan kann einige Minuten dauern.
+    Klicken Sie auf "Jetzt scannen", um alle SharePoint-Freigaben zu erfassen.
+    Der erste Scan kann je nach Tenant-Größe einige Minuten dauern — bitte die Seite während des Scans geöffnet lassen.
     <div class="mt-2">
-        <a href="/cron" class="btn btn-sm btn-primary"><i class="bi bi-play-circle me-1"></i> Zum Cron-Dashboard</a>
+        <a href="/sharing/scan" class="btn btn-sm btn-primary" id="scanBtn" onclick="scanStart(this)">
+            <i class="bi bi-search me-1"></i> Jetzt scannen
+        </a>
     </div>
 </div>
 <?php endif; ?>
@@ -75,7 +77,10 @@ $hasScanned = $summary['hasScanned'] ?? false;
             <option value="pending_review" <?= ($statusFilter ?? '') === 'pending_review' ? 'selected' : '' ?>>Ausstehend</option>
             <option value="revoked"  <?= ($statusFilter ?? '') === 'revoked'       ? 'selected' : '' ?>>Widerrufen</option>
         </select>
-        <a href="/sharing/export" class="btn btn-sm btn-outline-secondary ms-auto">
+        <a href="/sharing/scan" class="btn btn-sm btn-outline-primary ms-auto" id="scanBtn" onclick="scanStart(this)" title="Scan starten (kann einige Minuten dauern)">
+            <i class="bi bi-arrow-repeat me-1"></i> Scan
+        </a>
+        <a href="/sharing/export" class="btn btn-sm btn-outline-secondary ms-2">
             <i class="bi bi-download me-1"></i> CSV
         </a>
     </div>
@@ -194,6 +199,12 @@ $hasScanned = $summary['hasScanned'] ?? false;
 
 <script>
 initTableSearch('sharingSearch', 'sharingTable');
+
+function scanStart(btn) {
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Scan läuft…';
+    btn.classList.add('disabled');
+    document.querySelectorAll('#scanBtn').forEach(b => { b.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Scan läuft…'; b.classList.add('disabled'); });
+}
 
 function filterSharing() {
     const val = document.getElementById('scopeFilter').value;

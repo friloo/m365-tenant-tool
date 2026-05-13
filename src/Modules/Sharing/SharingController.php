@@ -7,6 +7,7 @@ use App\Core\Redirect;
 use App\Core\Session;
 use App\Core\View;
 use App\Helpers\CsvExporter;
+use App\Modules\ShareReview\ShareReviewService;
 
 class SharingController
 {
@@ -55,6 +56,16 @@ class SharingController
         } catch (\Throwable $e) {
             Session::flash('error', 'Widerrufen fehlgeschlagen: ' . $e->getMessage());
         }
+        Redirect::to('/sharing');
+    }
+
+    public function scan(): void
+    {
+        LocalAuth::require();
+        set_time_limit(300);
+        $log   = app_service(ShareReviewService::class)->scanAndSync();
+        $found = count(array_filter($log, fn($l) => str_starts_with($l, 'NEW')));
+        Session::flash('success', "Scan abgeschlossen — {$found} neue Freigaben gefunden (" . count($log) . " Einträge verarbeitet).");
         Redirect::to('/sharing');
     }
 
