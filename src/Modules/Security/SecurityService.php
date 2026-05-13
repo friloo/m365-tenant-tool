@@ -12,7 +12,7 @@ class SecurityService
     {
         try {
             return $this->graph->paginate(
-                '/identity/conditionalAccessPolicies',
+                '/identity/conditionalAccess/policies',
                 ['$select' => 'id,displayName,state,createdDateTime,modifiedDateTime,conditions,grantControls'],
                 10,
                 'security_ca',
@@ -103,7 +103,7 @@ class SecurityService
     public function toggleCaPolicy(string $policyId, string $newState): void
     {
         $this->graph->patch(
-            '/identity/conditionalAccessPolicies/' . $policyId,
+            '/identity/conditionalAccess/policies/' . $policyId,
             ['state' => $newState]
         );
         $this->graph->getCache()->forget('security_ca');

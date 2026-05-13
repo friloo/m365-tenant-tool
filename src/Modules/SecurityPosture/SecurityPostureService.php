@@ -1287,7 +1287,7 @@ class SecurityPostureService
     private function fetchCaPolicies(): array
     {
         try {
-            $data = $this->graph->get('/identity/conditionalAccessPolicies', ['$top' => '200'], 'ca_policies', 900);
+            $data = $this->graph->get('/identity/conditionalAccess/policies', ['$top' => '200'], 'ca_policies', 900);
             return $data['value'] ?? [];
         } catch (\Throwable) {
             return [];

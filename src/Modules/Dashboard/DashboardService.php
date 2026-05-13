@@ -41,7 +41,7 @@ class DashboardService
         // CA policies: reuse cache populated by CA module
         try {
             $caPolicies = $this->graph->get(
-                '/identity/conditionalAccessPolicies',
+                '/identity/conditionalAccess/policies',
                 ['$top' => '200'],
                 'ca_policies',
                 900
