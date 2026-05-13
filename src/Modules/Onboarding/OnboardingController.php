@@ -13,15 +13,30 @@ class OnboardingController
     {
         LocalAuth::require();
         $service  = app_service(OnboardingService::class);
-        $licenses = $service->getAvailableLicenses();
-        $groups   = $service->getGroups();
+
+        $licenses = [];
+        $groups   = [];
+        $loadError = null;
+        try {
+            $licenses = $service->getAvailableLicenses();
+        } catch (\Throwable $e) {
+            error_log('Onboarding licenses: ' . $e->getMessage());
+            $loadError = 'Lizenzen konnten nicht geladen werden: ' . $e->getMessage();
+        }
+        try {
+            $groups = $service->getGroups();
+        } catch (\Throwable $e) {
+            error_log('Onboarding groups: ' . $e->getMessage());
+            $loadError = ($loadError ? $loadError . ' | ' : '')
+                . 'Gruppen konnten nicht geladen werden: ' . $e->getMessage();
+        }
 
         View::render('onboarding/wizard', [
             'pageTitle' => 'Benutzer-Onboarding',
             'licenses'  => $licenses,
             'groups'    => $groups,
             'flash'     => Session::getFlash('success'),
-            'error'     => Session::getFlash('error'),
+            'error'     => Session::getFlash('error') ?: $loadError,
         ]);
     }
 
