@@ -128,7 +128,7 @@ class GraphClient
             }
             break;
         }
-        curl_close($ch);
+        // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
 
         if ($httpCode >= 400) {
             $err = json_decode($response, true);
@@ -235,7 +235,7 @@ class GraphClient
         $raw      = (string)curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $hdrSize  = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        curl_close($ch);
+        // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
 
         $response = '';
 
@@ -252,7 +252,7 @@ class GraphClient
                 ]);
                 $response = (string)curl_exec($ch2);
                 $httpCode = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
-                curl_close($ch2);
+                // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
             }
         } elseif ($httpCode === 200) {
             $response = substr($raw, $hdrSize);

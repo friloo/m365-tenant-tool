@@ -212,7 +212,7 @@ class UpdateManager
         $body     = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlErr  = curl_error($ch);
-        curl_close($ch);
+        // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
 
         if ($curlErr !== '') {
             throw new \RuntimeException('cURL-Fehler: ' . $curlErr);
@@ -251,7 +251,7 @@ class UpdateManager
         $body    = curl_exec($ch);
         $curlErr = curl_error($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
 
         if ($curlErr !== '') {
             throw new \RuntimeException('Download-Fehler: ' . $curlErr);

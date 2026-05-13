@@ -56,7 +56,7 @@ class GraphTokenManager
         ]);
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
 
         if ($httpCode !== 200) {
             $err = json_decode($response, true);
