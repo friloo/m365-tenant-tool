@@ -25,28 +25,45 @@ class AdoptionController
             $cache->forget('adoption_skus');
         }
 
+        $graph = app_graph();
+        $diagnoseFor = function () use ($graph): ?array {
+            return \App\Graph\GraphErrorTranslator::translate($graph->getLastError(), 'Reports.Read.All');
+        };
+
+        // Wir rufen jeden Endpoint und merken uns den konkreten Fehlergrund pro
+        // Datenbereich — keine "Berechtigung fehlt möglicherweise"-Texte mehr.
+        $activeDiag = $emailDiag = $teamsDiag = $oneDriveDiag = null;
+
         try {
             $activeUsers = $service->getActiveUserSummary();
-        } catch (\Throwable) {
+            if (empty($activeUsers) || array_sum($activeUsers) === 0) $activeDiag = $diagnoseFor();
+        } catch (\Throwable $e) {
             $activeUsers = [];
+            $activeDiag  = \App\Graph\GraphErrorTranslator::fromThrowable($e, 'Reports.Read.All');
         }
 
         try {
             $emailCounts = $service->getEmailActivityCounts();
-        } catch (\Throwable) {
+            if (empty($emailCounts)) $emailDiag = $diagnoseFor();
+        } catch (\Throwable $e) {
             $emailCounts = [];
+            $emailDiag   = \App\Graph\GraphErrorTranslator::fromThrowable($e, 'Reports.Read.All');
         }
 
         try {
             $teamsCounts = $service->getTeamsActivityCounts();
-        } catch (\Throwable) {
+            if (empty($teamsCounts)) $teamsDiag = $diagnoseFor();
+        } catch (\Throwable $e) {
             $teamsCounts = [];
+            $teamsDiag   = \App\Graph\GraphErrorTranslator::fromThrowable($e, 'Reports.Read.All');
         }
 
         try {
             $onedriveCounts = $service->getOneDriveActivityCounts();
-        } catch (\Throwable) {
+            if (empty($onedriveCounts)) $oneDriveDiag = $diagnoseFor();
+        } catch (\Throwable $e) {
             $onedriveCounts = [];
+            $oneDriveDiag   = \App\Graph\GraphErrorTranslator::fromThrowable($e, 'Reports.Read.All');
         }
 
         try {
@@ -62,6 +79,10 @@ class AdoptionController
             'teamsCounts'    => $teamsCounts,
             'onedriveCounts' => $onedriveCounts,
             'skuTotals'      => $skuTotals,
+            'activeDiag'     => $activeDiag,
+            'emailDiag'      => $emailDiag,
+            'teamsDiag'      => $teamsDiag,
+            'oneDriveDiag'   => $oneDriveDiag,
         ]);
     }
 }

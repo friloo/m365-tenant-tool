@@ -15,11 +15,12 @@ class DevicesController
         LocalAuth::require();
         $service = app_service(DevicesService::class);
         $error   = Session::getFlash('error');
+        $diag    = null;
         $devices = [];
         try {
             $devices = $service->getAll();
         } catch (\Throwable $e) {
-            $error = 'Geräte konnten nicht geladen werden: ' . $e->getMessage();
+            $diag = \App\Graph\GraphErrorTranslator::fromThrowable($e, 'DeviceManagementManagedDevices.Read.All');
             error_log('DevicesController::index error: ' . $e->getMessage());
         }
         $stats = $service->getStats($devices);
@@ -30,6 +31,7 @@ class DevicesController
             'stats'     => $stats,
             'flash'     => Session::getFlash('success'),
             'error'     => $error,
+            'diag'      => $diag,
         ]);
     }
 

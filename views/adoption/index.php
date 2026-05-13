@@ -1,6 +1,29 @@
 <?php use App\Core\View; $e = fn($v) => View::escape($v); ?>
 
 <?php
+// ── Helper: render a diagnostic empty-state. Falls $diag null ist (kein
+//     Graph-Fehler erkannt, einfach leere Daten), wird ein generischer Text
+//     gezeigt; ansonsten der konkrete Hinweis aus dem GraphErrorTranslator.
+$renderDiag = function (string $icon, ?string $title, ?array $diag) use ($e): string {
+    $out = '<div class="empty-state text-center py-4">'
+         . '<i class="bi bi-' . $e($icon) . ' text-muted" style="font-size:2.2rem;"></i>';
+    if ($title) {
+        $out .= '<p class="mt-3 mb-1 fw-medium">' . $e($title) . '</p>';
+    }
+    if ($diag) {
+        $out .= '<p class="mt-2 fw-semibold" style="color:#b45309;">' . $e($diag['short']) . '</p>'
+              . '<p class="text-muted small mb-0" style="max-width:520px;margin:0 auto;">' . $e($diag['detail']) . '</p>';
+        if (!empty($diag['fix_url'])) {
+            $out .= '<a href="' . $e($diag['fix_url']) . '" class="btn btn-sm btn-outline-secondary mt-3">'
+                  . '<i class="bi bi-arrow-right-circle me-1"></i>Zur Lösung</a>';
+        }
+    } else {
+        $out .= '<p class="mt-2 text-muted small mb-0">Keine Daten — möglicherweise sind die Berichte aktuell noch nicht generiert worden (Microsoft braucht ca. 48 h Verzögerung).</p>';
+    }
+    $out .= '</div>';
+    return $out;
+};
+
 // ── Helper: compute colour class based on adoption percentage ─────────────
 $adoptionColor = function (int $active, int $total): string {
     if ($total <= 0) return '#6b7280';
@@ -147,14 +170,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                            + ($activeUsers['sharepoint'] ?? 0) + ($activeUsers['onedrive'] ?? 0) > 0;
         ?>
         <?php if (empty($activeUsers) || !$hasAnyServiceData): ?>
-            <div class="empty-state">
-                <i class="bi bi-shield-exclamation text-muted" style="font-size:2.5rem;"></i>
-                <p class="mt-3 mb-1 fw-medium">Keine Adoption-Daten verfügbar</p>
-                <p class="text-muted small">
-                    <code>Reports.Read.All</code> Berechtigung fehlt möglicherweise.<br>
-                    Prüfen Sie auch, ob der Datenschutzmodus für Berichte deaktiviert ist.
-                </p>
-            </div>
+            <?= $renderDiag('shield-exclamation', 'Keine Adoption-Daten verfügbar', $activeDiag ?? null) ?>
         <?php else: ?>
             <div style="position:relative; height:250px;">
                 <canvas id="adoptionBarChart"></canvas>
@@ -175,10 +191,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
             </div>
             <div class="card-body-custom">
                 <?php if (empty($emailCounts)): ?>
-                    <div class="empty-state">
-                        <i class="bi bi-envelope text-muted" style="font-size:2rem;"></i>
-                        <p class="mt-2 text-muted small"><code>Reports.Read.All</code> Berechtigung fehlt möglicherweise.</p>
-                    </div>
+                    <?= $renderDiag('envelope', null, $emailDiag ?? null) ?>
                 <?php else: ?>
                     <div style="position:relative; height:250px;">
                         <canvas id="emailChart"></canvas>
@@ -197,10 +210,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
             </div>
             <div class="card-body-custom">
                 <?php if (empty($teamsCounts)): ?>
-                    <div class="empty-state">
-                        <i class="bi bi-microsoft-teams text-muted" style="font-size:2rem;"></i>
-                        <p class="mt-2 text-muted small"><code>Reports.Read.All</code> Berechtigung fehlt möglicherweise.</p>
-                    </div>
+                    <?= $renderDiag('microsoft-teams', null, $teamsDiag ?? null) ?>
                 <?php else: ?>
                     <div style="position:relative; height:250px;">
                         <canvas id="teamsChart"></canvas>
