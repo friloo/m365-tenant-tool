@@ -208,6 +208,7 @@ class GraphClient
      */
     public function getReport(string $endpoint, array $query = [], ?string $cacheKey = null, int $ttl = 3600): array
     {
+        $this->lastError = null;
         if ($cacheKey) {
             $cached = $this->cache->get($cacheKey);
             if (!empty($cached)) return $cached;
@@ -235,7 +236,6 @@ class GraphClient
         $raw      = (string)curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $hdrSize  = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
 
         $response = '';
 
@@ -252,14 +252,21 @@ class GraphClient
                 ]);
                 $response = (string)curl_exec($ch2);
                 $httpCode = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
-                // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
             }
         } elseif ($httpCode === 200) {
+            $response = substr($raw, $hdrSize);
+        } else {
+            // 4xx/5xx — capture the JSON error body so the translator can
+            // explain it instead of returning a blank "Berechtigung fehlt".
             $response = substr($raw, $hdrSize);
         }
 
         if ($httpCode >= 400 || $response === '') {
-            error_log("Graph Reports API error (step1={$httpCode}) on {$url}");
+            $errBody = json_decode(substr($raw, $hdrSize), true);
+            $msg     = $errBody['error']['message'] ?? ('HTTP ' . $httpCode);
+            $code    = $errBody['error']['code']    ?? '';
+            $this->lastError = ['status' => $httpCode, 'code' => $code, 'message' => $msg, 'url' => $url];
+            error_log("Graph Reports API error (step1={$httpCode}) on {$url}: {$msg}");
             return [];
         }
 

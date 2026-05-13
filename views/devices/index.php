@@ -6,6 +6,20 @@
 <?php if (!empty($error)): ?>
     <div class="alert alert-danger alert-dismissible mb-3"><i class="bi bi-exclamation-triangle me-2"></i><?= $e($error) ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 <?php endif; ?>
+<?php if (!empty($diag)): ?>
+    <div class="alert alert-warning d-flex gap-3 mb-3" role="alert">
+        <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1" style="font-size:1.4rem;color:#b45309;"></i>
+        <div class="flex-grow-1">
+            <div class="fw-semibold mb-1"><?= $e($diag['short']) ?></div>
+            <div class="small text-muted"><?= $e($diag['detail']) ?></div>
+            <?php if (!empty($diag['fix_url'])): ?>
+                <a href="<?= $e($diag['fix_url']) ?>" class="btn btn-sm btn-outline-secondary mt-2">
+                    <i class="bi bi-arrow-right-circle me-1"></i>Zur Lösung
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+<?php endif; ?>
 
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
