@@ -255,12 +255,10 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
 </div>
 
 <script>
-// Tenant user list — preloaded server-side (no AJAX) so the picker filters
-// instantly without depending on any backend search endpoint.
-window.__tenantUsers = <?= json_encode($tenantUsers, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
-
 (function () {
     const searchInput    = document.getElementById('userSearchInput');
+    const searchIcon     = document.getElementById('searchIcon');
+    const searchSpinner  = document.getElementById('searchSpinner');
     const dropdown       = document.getElementById('userSearchDropdown');
     const chip           = document.getElementById('selectedUserChip');
     const chipName       = document.getElementById('chipName');
@@ -274,8 +272,6 @@ window.__tenantUsers = <?= json_encode($tenantUsers, JSON_UNESCAPED_UNICODE | JS
     const searchWrap     = document.getElementById('searchWrap');
     const manualInput    = document.getElementById('manualUpnInput');
 
-    const ALL_USERS = window.__tenantUsers || [];
-
     // Reset when modal opens
     document.getElementById('addUserModal').addEventListener('show.bs.modal', resetForm);
 
@@ -288,6 +284,16 @@ window.__tenantUsers = <?= json_encode($tenantUsers, JSON_UNESCAPED_UNICODE | JS
         submitBtn.disabled = true;
         manualWrap.classList.add('d-none');
         searchWrap.classList.remove('d-none');
+    }
+
+    function setBusy(busy) {
+        if (busy) {
+            searchIcon.classList.add('d-none');
+            searchSpinner.classList.remove('d-none');
+        } else {
+            searchIcon.classList.remove('d-none');
+            searchSpinner.classList.add('d-none');
+        }
     }
 
     // Toggle manual entry
@@ -313,19 +319,36 @@ window.__tenantUsers = <?= json_encode($tenantUsers, JSON_UNESCAPED_UNICODE | JS
         submitBtn.disabled = !manualInput.value.trim().includes('@');
     });
 
-    // Search input — filters the preloaded list client-side, no AJAX
+    // Search input — AJAX against /settings/users/search with debounce.
+    let searchTimer = null;
+    let activeRequest = 0;
     searchInput.addEventListener('input', function () {
-        const q = this.value.trim().toLowerCase();
-        if (q.length < 2) { dropdown.classList.add('d-none'); return; }
-        const matches = [];
-        for (let i = 0; i < ALL_USERS.length && matches.length < 15; i++) {
-            const u = ALL_USERS[i];
-            const name = (u.displayName || '').toLowerCase();
-            const upn  = (u.userPrincipalName || '').toLowerCase();
-            if (name.includes(q) || upn.includes(q)) matches.push(u);
-        }
-        renderDropdown(matches);
+        const q = this.value.trim();
+        if (q.length < 2) { dropdown.classList.add('d-none'); setBusy(false); return; }
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => runSearch(q), 200);
     });
+
+    function runSearch(q) {
+        const reqId = ++activeRequest;
+        setBusy(true);
+        fetch('/settings/users/search?q=' + encodeURIComponent(q), { credentials: 'same-origin' })
+            .then(r => r.json().then(j => ({ ok: r.ok, body: j })))
+            .then(({ ok, body }) => {
+                if (reqId !== activeRequest) return; // stale response
+                setBusy(false);
+                if (!ok || (body && body.error)) {
+                    renderError(body && body.error ? body.error : 'Suche fehlgeschlagen');
+                    return;
+                }
+                renderDropdown(Array.isArray(body) ? body : []);
+            })
+            .catch(err => {
+                if (reqId !== activeRequest) return;
+                setBusy(false);
+                renderError('Netzwerkfehler: ' + err.message);
+            });
+    }
 
     searchInput.addEventListener('keydown', e => {
         if (e.key === 'Escape') { dropdown.classList.add('d-none'); searchInput.blur(); }
@@ -357,6 +380,17 @@ window.__tenantUsers = <?= json_encode($tenantUsers, JSON_UNESCAPED_UNICODE | JS
         dropdown.classList.remove('d-none');
     }
 
+    function renderError(msg) {
+        dropdown.innerHTML = '';
+        const el = document.createElement('div');
+        el.className = 'dropdown-item small pe-none';
+        el.style.color = '#dc2626';
+        el.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>' + esc(msg)
+            + '<div class="text-muted mt-1" style="font-size:11px;">Tipp: UPN manuell eingeben.</div>';
+        dropdown.appendChild(el);
+        dropdown.classList.remove('d-none');
+    }
+
     function selectUser(u) {
         upnHidden.value    = u.userPrincipalName;
         chipName.textContent = u.displayName || u.userPrincipalName;
@@ -376,13 +410,6 @@ window.__tenantUsers = <?= json_encode($tenantUsers, JSON_UNESCAPED_UNICODE | JS
 
     function esc(str) {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    // If user list could not be loaded (e.g. Graph error), prompt manual entry
-    if (ALL_USERS.length === 0) {
-        searchInput.placeholder = 'Benutzerliste nicht verfügbar — UPN manuell eingeben';
-        searchInput.disabled = true;
-        toggleManual.click();
     }
 })();
 </script>

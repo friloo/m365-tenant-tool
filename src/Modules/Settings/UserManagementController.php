@@ -16,22 +16,9 @@ class UserManagementController
         LocalAuth::requireAdmin();
         $users = DB::fetchAll('SELECT * FROM m365_users ORDER BY created_at DESC');
 
-        // Preload tenant users (cached) so the picker can filter client-side
-        // without an AJAX round trip
-        try {
-            $tenantUsers = app_service(\App\Modules\Users\UsersService::class)->getAll();
-            $tenantUsers = array_map(fn($u) => [
-                'displayName'       => $u['displayName']       ?? '',
-                'userPrincipalName' => $u['userPrincipalName'] ?? '',
-            ], $tenantUsers);
-        } catch (\Throwable) {
-            $tenantUsers = [];
-        }
-
         View::render('settings/users', [
             'pageTitle'   => 'Benutzer-Zugang',
             'users'       => $users,
-            'tenantUsers' => $tenantUsers,
             'redirectUri' => MicrosoftAuth::redirectUri(),
             'flash'       => Session::getFlash('success'),
             'error'       => Session::getFlash('error'),
@@ -90,10 +77,13 @@ class UserManagementController
     public function search(): void
     {
         LocalAuth::requireAdmin();
-        header('Content-Type: application/json');
+        header('Content-Type: application/json; charset=utf-8');
 
-        $q = strtolower(trim($_GET['q'] ?? ''));
-        if (strlen($q) < 2) {
+        $qRaw = trim($_GET['q'] ?? '');
+        // Use mb_strtolower so umlauts (Ü → ü) and other non-ASCII letters
+        // are correctly case-folded; strtolower only handles A-Z.
+        $q = function_exists('mb_strtolower') ? mb_strtolower($qRaw, 'UTF-8') : strtolower($qRaw);
+        if (mb_strlen($qRaw, 'UTF-8') < 2) {
             echo json_encode([]);
             return;
         }
@@ -102,21 +92,27 @@ class UserManagementController
             $allUsers = app_service(\App\Modules\Users\UsersService::class)->getAll();
             $results  = [];
             foreach ($allUsers as $u) {
-                $name = strtolower($u['displayName']       ?? '');
-                $upn  = strtolower($u['userPrincipalName'] ?? '');
-                if (str_contains($name, $q) || str_contains($upn, $q)) {
+                $nameRaw = (string)($u['displayName']       ?? '');
+                $upnRaw  = (string)($u['userPrincipalName'] ?? '');
+                $mailRaw = (string)($u['mail']              ?? '');
+                $name = function_exists('mb_strtolower') ? mb_strtolower($nameRaw, 'UTF-8') : strtolower($nameRaw);
+                $upn  = function_exists('mb_strtolower') ? mb_strtolower($upnRaw,  'UTF-8') : strtolower($upnRaw);
+                $mail = function_exists('mb_strtolower') ? mb_strtolower($mailRaw, 'UTF-8') : strtolower($mailRaw);
+                if ($name !== '' && str_contains($name, $q)
+                 || $upn  !== '' && str_contains($upn,  $q)
+                 || $mail !== '' && str_contains($mail, $q)) {
                     $results[] = [
                         'id'                => $u['id']                ?? '',
-                        'displayName'       => $u['displayName']       ?? '',
-                        'userPrincipalName' => $u['userPrincipalName'] ?? '',
+                        'displayName'       => $nameRaw,
+                        'userPrincipalName' => $upnRaw,
                     ];
                     if (count($results) >= 15) break;
                 }
             }
-            echo json_encode($results);
+            echo json_encode($results, JSON_UNESCAPED_UNICODE);
         } catch (\Throwable $e) {
             http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
         }
     }
 }
