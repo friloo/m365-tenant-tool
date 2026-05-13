@@ -10,7 +10,7 @@ $_widgets = [
     'dash-w-infopanels'=> 'Info-Panels',
     'dash-w-quicklinks'=> 'Schnellzugriff',
 ];
-?>
+
 $n = fn($v) => $v !== null ? number_format((int)$v) : '<span class="text-muted small">–</span>';
 
 $mfaPct    = $security['mfa_pct']    ?? null;
