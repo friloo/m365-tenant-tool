@@ -20,6 +20,12 @@ class PermissionCheckerService
                 'section'  => 'Verzeichnis',
                 'write'    => false,
             ],
+            'User.ReadWrite.All' => [
+                'desc'     => 'Benutzer anlegen, bearbeiten und löschen',
+                'features' => ['Onboarding (neuen Benutzer anlegen)', 'Benutzerdaten ändern (Job-Titel, Abteilung, Telefon)'],
+                'section'  => 'Verzeichnis',
+                'write'    => true,
+            ],
             'User.EnableDisableAccount.All' => [
                 'desc'     => 'Benutzerkonten aktivieren/deaktivieren',
                 'features' => ['Benutzer aktivieren/deaktivieren', 'Offboarding (Konto deaktivieren)'],

@@ -97,9 +97,30 @@
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-semibold">Benutzerprinzipalname (UPN) <span class="text-danger">*</span></label>
-                <input type="email" name="userPrincipalName" id="inp-upn" class="form-control" required
-                       placeholder="vorname.nachname@unternehmen.com" autocomplete="off">
-                <div class="form-text">Format: vorname.nachname@unternehmen.com</div>
+                <?php if (!empty($domains)): ?>
+                    <div class="input-group">
+                        <input type="text" id="inp-upn-local" class="form-control"
+                               placeholder="vorname.nachname" autocomplete="off"
+                               pattern="[A-Za-z0-9._%+\-]+" required>
+                        <span class="input-group-text">@</span>
+                        <select id="inp-upn-domain" class="form-select" style="max-width:240px;">
+                            <?php foreach ($domains as $d): ?>
+                                <option value="<?= $e($d['name']) ?>" <?= $d['isDefault'] ? 'selected' : '' ?>>
+                                    <?= $e($d['name']) ?><?= $d['isDefault'] ? ' (Standard)' : '' ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <input type="hidden" name="userPrincipalName" id="inp-upn">
+                    <div class="form-text">Domain aus dem Dropdown wählen — es werden nur im Tenant verifizierte Domains angeboten.</div>
+                <?php else: ?>
+                    <input type="email" name="userPrincipalName" id="inp-upn" class="form-control" required
+                           placeholder="vorname.nachname@unternehmen.com" autocomplete="off">
+                    <div class="form-text text-warning">
+                        Tenant-Domains konnten nicht gelesen werden (Berechtigung <code>Domain.Read.All</code> prüfen).
+                        Bitte UPN manuell eingeben — nur Domains, die im Tenant verifiziert sind, werden von Microsoft akzeptiert.
+                    </div>
+                <?php endif; ?>
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-semibold">Passwort <span class="text-danger">*</span></label>
@@ -323,15 +344,42 @@ function prevStep() {
     if (currentStep > 1) showStep(currentStep - 1);
 }
 
+// Wenn der UPN über Local + Domain-Dropdown eingegeben wird, in das
+// hidden Feld zusammensetzen. Wird vor jedem Validate aufgerufen.
+function syncUpn() {
+    const local  = document.getElementById('inp-upn-local');
+    const domain = document.getElementById('inp-upn-domain');
+    const hidden = document.getElementById('inp-upn');
+    if (local && domain && hidden) {
+        const val = (local.value || '').trim() + '@' + (domain.value || '');
+        hidden.value = val.endsWith('@') ? '' : val;
+    }
+}
+
+['input', 'change'].forEach(ev => {
+    document.addEventListener(ev, e => {
+        if (e.target.id === 'inp-upn-local' || e.target.id === 'inp-upn-domain') syncUpn();
+    });
+});
+
 function validateStep(n) {
     if (n === 1) {
-        const dn  = document.getElementById('inp-displayName');
-        const upn = document.getElementById('inp-upn');
-        const pw  = document.getElementById('inp-password');
+        syncUpn();
+        const dn    = document.getElementById('inp-displayName');
+        const local = document.getElementById('inp-upn-local');
+        const upn   = document.getElementById('inp-upn');
+        const pw    = document.getElementById('inp-password');
         if (!dn.value.trim()) { dn.focus(); dn.classList.add('is-invalid'); return false; }
         dn.classList.remove('is-invalid');
-        if (!upn.value.trim() || !upn.value.includes('@')) { upn.focus(); upn.classList.add('is-invalid'); return false; }
-        upn.classList.remove('is-invalid');
+        if (local) {
+            // Mit Domain-Dropdown: local-Part validieren
+            if (!local.value.trim()) { local.focus(); local.classList.add('is-invalid'); return false; }
+            local.classList.remove('is-invalid');
+        } else {
+            // Klassische email-Eingabe
+            if (!upn.value.trim() || !upn.value.includes('@')) { upn.focus(); upn.classList.add('is-invalid'); return false; }
+            upn.classList.remove('is-invalid');
+        }
         if (pw.value.length < 8) { pw.focus(); pw.classList.add('is-invalid'); return false; }
         pw.classList.remove('is-invalid');
     }

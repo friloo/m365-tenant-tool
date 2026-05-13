@@ -88,6 +88,46 @@ class OnboardingService
         return $result;
     }
 
+    /**
+     * Liefert die im Tenant verifizierten Domains, sortiert: default zuerst.
+     *
+     * @return array<int, array{name: string, isDefault: bool, supportsUsers: bool}>
+     */
+    public function getVerifiedDomains(): array
+    {
+        $rows = $this->graph->paginate(
+            '/domains',
+            ['$select' => 'id,isVerified,isDefault,supportedServices'],
+            5,
+            'onboarding_domains',
+            3600
+        );
+
+        $result = [];
+        foreach ($rows as $d) {
+            if (!($d['isVerified'] ?? false)) continue;
+            // Nur Domains, die Email-/Identity-Services tragen (kein
+            // OfficeCommunicationsOnline-only). Microsoft listet pro Domain
+            // die unterstützten Services — wenn das Array fehlt, nehmen
+            // wir die Domain trotzdem, weil der Endpunkt das Feld nicht
+            // immer befüllt.
+            $services = $d['supportedServices'] ?? [];
+            $usable   = empty($services)
+                     || in_array('Email',                 $services, true)
+                     || in_array('OfficeCommunicationsOnline', $services, true)
+                     || in_array('Intune',                $services, true);
+            if (!$usable) continue;
+            $result[] = [
+                'name'          => $d['id'] ?? '',
+                'isDefault'     => (bool)($d['isDefault'] ?? false),
+                'supportsUsers' => true,
+            ];
+        }
+        // Default-Domain zuerst, dann alphabetisch
+        usort($result, fn($a, $b) => ($b['isDefault'] <=> $a['isDefault']) ?: strcasecmp($a['name'], $b['name']));
+        return $result;
+    }
+
     public function createUser(array $data): array
     {
         $upn           = $data['userPrincipalName'];
