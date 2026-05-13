@@ -39,20 +39,36 @@ class AiAdvisorService
     {
         $ctx = ['generated_at' => date('c'), 'privacy_note' => 'anonymized_aggregated_only'];
 
-        // Security Posture checks
+        // Security Posture checks — split into general + GDPR groups so the
+        // AI can weight them separately and the recommendation library can
+        // attach the right citation (BSI/NIS-2 vs DSGVO).
         try {
             $posture = app_service(\App\Modules\SecurityPosture\SecurityPostureService::class)->runChecks();
-            $byStatus = ['pass' => [], 'warn' => [], 'fail' => []];
+            $byStatus     = ['pass' => [], 'warn' => [], 'fail' => []];
+            $gdprByStatus = ['pass' => [], 'warn' => [], 'fail' => []];
             foreach ($posture as $c) {
-                $byStatus[$c['status'] ?? 'warn'][] = $c['id'];
+                $status = $c['status'] ?? 'warn';
+                if (($c['category'] ?? '') === 'DSGVO & Datenschutz') {
+                    $gdprByStatus[$status][] = $c['id'];
+                } else {
+                    $byStatus[$status][] = $c['id'];
+                }
             }
             $ctx['security_posture'] = [
-                'total'          => count($posture),
+                'total'          => array_sum(array_map('count', $byStatus)),
                 'passed'         => count($byStatus['pass']),
                 'warnings'       => count($byStatus['warn']),
                 'failed'         => count($byStatus['fail']),
-                'failed_checks'  => $byStatus['fail'],   // generic IDs, no tenant data
+                'failed_checks'  => $byStatus['fail'],
                 'warning_checks' => $byStatus['warn'],
+            ];
+            $ctx['gdpr_posture'] = [
+                'total'          => array_sum(array_map('count', $gdprByStatus)),
+                'passed'         => count($gdprByStatus['pass']),
+                'warnings'       => count($gdprByStatus['warn']),
+                'failed'         => count($gdprByStatus['fail']),
+                'failed_checks'  => $gdprByStatus['fail'],
+                'warning_checks' => $gdprByStatus['warn'],
             ];
         } catch (\Throwable) {}
 
@@ -273,7 +289,15 @@ class AiAdvisorService
             $ctx['domains'] = ['total' => count($r), 'verified' => $verified, 'unverified' => count($r) - $verified];
         } catch (\Throwable) {}
 
-        // Defender / Mail Flow not duplicated — alerts already covered above.
+        // Audit-Log Anomalien (7-Tage-Rollup + 23-Tage-Baseline)
+        try {
+            $ctx['audit_log_anomalies'] = app_service(\App\Modules\Anomaly\AuditLogAnomalyService::class)->summarize(7, 23);
+        } catch (\Throwable) {}
+
+        // Sign-in Anomalien (24h + 30-Tage-Country-Baseline)
+        try {
+            $ctx['signin_anomalies'] = app_service(\App\Modules\Anomaly\SignInAnomalyService::class)->summarize(24, 30);
+        } catch (\Throwable) {}
 
         return $ctx;
     }
@@ -366,46 +390,63 @@ class AiAdvisorService
      */
     private function buildPrompt(array $ctx, array $failedChecks, array $warningChecks): array
     {
-        $failedList  = implode(', ', $failedChecks)  ?: 'keine';
-        $warningList = implode(', ', $warningChecks) ?: 'keine';
+        $failedList     = implode(', ', $failedChecks)  ?: 'keine';
+        $warningList    = implode(', ', $warningChecks) ?: 'keine';
+        $gdprFailed     = implode(', ', $ctx['gdpr_posture']['failed_checks']  ?? []) ?: 'keine';
+        $gdprWarning    = implode(', ', $ctx['gdpr_posture']['warning_checks'] ?? []) ?: 'keine';
 
         // Only aggregated, anonymized metrics — no UPNs/domains/tenant IDs.
         $metrics = [
-            'users'              => $ctx['users']              ?? null,
-            'licenses'           => $ctx['licenses']           ?? null,
-            'devices'            => $ctx['devices']            ?? null,
-            'sharing'            => $ctx['sharing']            ?? null,
-            'risky'              => $ctx['risky']              ?? null,
-            'defender_alerts'    => $ctx['defender_alerts']    ?? null,
-            'conditional_access' => $ctx['conditional_access'] ?? null,
-            'secure_score'       => $ctx['secure_score']       ?? null,
-            'admin_roles'        => $ctx['admin_roles']        ?? null,
-            'guest_users'        => $ctx['guest_users']        ?? null,
-            'teams'              => $ctx['teams']              ?? null,
-            'app_registrations'  => $ctx['app_registrations']  ?? null,
-            'named_locations'    => $ctx['named_locations']    ?? null,
-            'domains'            => $ctx['domains']            ?? null,
+            'users'               => $ctx['users']               ?? null,
+            'licenses'            => $ctx['licenses']            ?? null,
+            'devices'             => $ctx['devices']             ?? null,
+            'sharing'             => $ctx['sharing']             ?? null,
+            'risky'               => $ctx['risky']               ?? null,
+            'defender_alerts'     => $ctx['defender_alerts']     ?? null,
+            'conditional_access'  => $ctx['conditional_access']  ?? null,
+            'secure_score'        => $ctx['secure_score']        ?? null,
+            'admin_roles'         => $ctx['admin_roles']         ?? null,
+            'guest_users'         => $ctx['guest_users']         ?? null,
+            'teams'               => $ctx['teams']               ?? null,
+            'app_registrations'   => $ctx['app_registrations']   ?? null,
+            'named_locations'     => $ctx['named_locations']     ?? null,
+            'domains'             => $ctx['domains']             ?? null,
+            'audit_log_anomalies' => $ctx['audit_log_anomalies'] ?? null,
+            'signin_anomalies'    => $ctx['signin_anomalies']    ?? null,
         ];
         $metricsJson = json_encode(array_filter($metrics, fn($v) => $v !== null), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
         $userMsg = <<<PROMPT
-Beurteile die Microsoft-365-Sicherheitslage anhand dieser aggregierten, vollständig anonymisierten Metriken (keine PII, keine Tenant-Kennungen, keine UPNs, keine Domain-Namen).
+Beurteile die Microsoft-365-Sicherheits- und Datenschutzlage anhand dieser aggregierten, vollständig anonymisierten Metriken (keine PII, keine Tenant-Kennungen, keine UPNs, keine Domain-Namen, keine Länder­namen einzelner Vorfälle, keine IP-Adressen).
 
-Posture-Checks fehlgeschlagen: {$failedList}
-Posture-Checks mit Warnung: {$warningList}
+Sicherheits-Posture (BSI / NIS-2):
+  Fehlgeschlagen: {$failedList}
+  Warnung:       {$warningList}
 
-Metriken (JSON):
+DSGVO-Posture (Art. 5, 25, 32, 44–49):
+  Fehlgeschlagen: {$gdprFailed}
+  Warnung:       {$gdprWarning}
+
+Aggregierte Metriken & Anomalien (JSON):
 {$metricsJson}
 
-Berücksichtige alle Module bei der Bewertung — insbesondere MFA-Abdeckung, fehlende Conditional-Access-Richtlinien, ungesicherte externe Freigaben, Defender-Alerts, Risiko-Benutzer, ablaufende App-Secrets, nicht-konforme Geräte, Secure-Score, Gast-Anteil. Identifiziere das kritischste Risiko zuerst.
+Bewerte ganzheitlich:
+- Sicherheit (BSI IT-Grundschutz, NIS-2 Art. 21): MFA, Conditional Access, Risiko-Benutzer, Defender-Alerts, Secure Score, Admin-Rollen, App-Secrets, nicht-konforme Geräte.
+- Datenschutz (DSGVO): Tenant-Region, SharePoint-/OneDrive-Sharing-Einstellungen, Sensitivity Labels, Aufbewahrung, Audit-Log.
+- Anomalien: ungewöhnliche Audit-Kategorien, Credential-Stuffing-Signaturen, Impossible-Travel, Logins aus neuen Ländern.
 
-Antwort als JSON: {"score": 0-100, "summary": "2-3 deutsche Sätze, knapp und präzise"}
+Identifiziere das kritischste Risiko und nenne, ob es Sicherheit (BSI/NIS-2) oder Datenschutz (DSGVO) betrifft.
+
+Antwort streng als JSON mit diesem Schema (keine Markdown-Fences, keine zusätzlichen Felder):
+{"score": 0-100, "summary": "3-4 deutsche Sätze: Gesamtlage, kritischstes Risiko mit Bereich (Sicherheit oder DSGVO), Empfehlung."}
 PROMPT;
 
         $messages = [
             [
                 'role'    => 'system',
-                'content' => 'You are a Microsoft 365 security advisor. Respond only in German. Respond with valid JSON only — no markdown fences.',
+                'content' => 'You are a Microsoft 365 security & GDPR compliance advisor. '
+                           . 'Use ONLY the data given. Do not invent or guess any value. '
+                           . 'Respond only in German. Output strictly valid JSON, no markdown fences.',
             ],
             ['role' => 'user', 'content' => $userMsg],
         ];
@@ -432,7 +473,7 @@ PROMPT;
         $payload = [
             'model'       => $model,
             'messages'    => $messages,
-            'temperature' => 0.2,
+            'temperature' => 0,
         ];
 
         if ($provider === 'ollama') {
@@ -472,7 +513,7 @@ PROMPT;
                 'system_prompt'   => $messages[0]['content'] ?? '',
                 'user_prompt'     => $messages[1]['content'] ?? '',
                 'metrics_sent'    => $built['metrics'],
-                'temperature'     => 0.2,
+                'temperature' => 0,
             ],
             'response' => [
                 'http_code' => $httpCode,

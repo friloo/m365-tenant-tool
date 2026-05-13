@@ -61,6 +61,16 @@ class SecurityPostureService
             $this->checkAppSecretsExpiry(),
             $this->checkNoStaleLicensed(),
             $this->checkGuestUserCount(),
+
+            // DSGVO / Datenschutz
+            $this->checkGdprTenantRegion(),
+            $this->checkGdprSharePointSharing(),
+            $this->checkGdprAnonymousLinkExpiry(),
+            $this->checkGdprDefaultSharingLink(),
+            $this->checkGdprSensitivityLabels(),
+            $this->checkGdprRetentionPolicies(),
+            $this->checkGdprAuditLogReachable(),
+            $this->checkGdprDlpOrLabelsActive(),
         ];
     }
 
@@ -1386,6 +1396,216 @@ class SecurityPostureService
             return isset($data['allowInvitesFrom']) ? $data : null;
         } catch (\Throwable) {
             return null;
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // DSGVO / GDPR Checks
+    //
+    // Alle prüfen Tenant-Einstellungen, nicht personen­bezogene Daten.
+    // ─────────────────────────────────────────────────────────────────────
+
+    private function checkGdprTenantRegion(): array
+    {
+        $base = [
+            'id'          => 'gdpr_tenant_region',
+            'category'    => 'DSGVO & Datenschutz',
+            'label'       => 'Tenant-Region in EU/EWR',
+            'description' => 'Der Tenant-Standort bestimmt, in welcher Datacenter-Region M365-Daten primär gespeichert werden. EU-Standort ist für DSGVO-konforme Verarbeitung relevant.',
+            'severity'    => 'high',
+        ];
+        try {
+            $org = $this->graph->get('/organization', ['$select' => 'countryLetterCode,country,preferredDataLocation'], 'org_region', 3600);
+            $row = $org['value'][0] ?? null;
+            if (!$row) return array_merge($base, ['status' => 'unknown', 'detail' => 'Organisation nicht lesbar.']);
+            $code = strtoupper($row['countryLetterCode'] ?? '');
+            $pdl  = strtoupper($row['preferredDataLocation'] ?? '');
+            // EU/EWR-Staaten (Stand 2026)
+            $euCodes = ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO'];
+            $euPdl   = ['EUR','EU','DEU','FRA','NOR','SWE','GBR']; // GBR Übergangs-Adäquanzbeschluss
+            $inEu = in_array($code, $euCodes, true) || in_array($pdl, $euPdl, true);
+            if ($inEu) {
+                return array_merge($base, ['status' => 'pass', 'detail' => "Tenant-Region: {$code}" . ($pdl ? " (preferredDataLocation={$pdl})" : '')]);
+            }
+            return array_merge($base, ['status' => 'fail', 'detail' => "Tenant-Region außerhalb EU/EWR: {$code}. DSGVO-Übermittlung in Drittländer prüfen (Art. 44–49)."]);
+        } catch (\Throwable $e) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
+        }
+    }
+
+    private function checkGdprSharePointSharing(): array
+    {
+        $base = [
+            'id'          => 'gdpr_sharepoint_sharing',
+            'category'    => 'DSGVO & Datenschutz',
+            'label'       => 'SharePoint External Sharing restriktiv',
+            'description' => 'Die Tenant-weite Freigabe-Einstellung sollte externe Freigabe einschränken — Anyone-Links sind DSGVO-kritisch (Art. 25 Privacy by Default).',
+            'severity'    => 'high',
+        ];
+        try {
+            $s = $this->graph->get('/admin/sharepoint/settings', [], 'sp_tenant_settings', 1800);
+            if (empty($s)) return array_merge($base, ['status' => 'unknown', 'detail' => 'SharePoint-Tenant-Settings nicht lesbar (Permission SharePointTenantSettings.Read.All?).']);
+            $cap = $s['sharingCapability'] ?? '';
+            return match ($cap) {
+                'disabled'                          => array_merge($base, ['status' => 'pass', 'detail' => 'Externe Freigabe komplett deaktiviert.']),
+                'existingExternalUserSharingOnly'   => array_merge($base, ['status' => 'pass', 'detail' => 'Nur an bekannte externe Benutzer — restriktiv.']),
+                'externalUserSharingOnly'           => array_merge($base, ['status' => 'warn', 'detail' => 'Nur an authentifizierte Externe — akzeptabel, aber prüfen.']),
+                'externalUserAndGuestSharing'       => array_merge($base, ['status' => 'fail', 'detail' => 'Anyone-Links sind aktiv — DSGVO-Risiko: unbekannte Dritte können auf Daten zugreifen.']),
+                default                             => array_merge($base, ['status' => 'unknown', 'detail' => "Unbekannter sharingCapability-Wert: {$cap}"]),
+            };
+        } catch (\Throwable $e) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
+        }
+    }
+
+    private function checkGdprAnonymousLinkExpiry(): array
+    {
+        $base = [
+            'id'          => 'gdpr_anonymous_link_expiry',
+            'category'    => 'DSGVO & Datenschutz',
+            'label'       => 'Anonyme Freigabe-Links laufen ab',
+            'description' => 'Anyone-Links ohne Ablaufdatum verletzen Speicherbegrenzung (Art. 5 Abs. 1e DSGVO). Empfehlung: ≤ 90 Tage.',
+            'severity'    => 'medium',
+        ];
+        try {
+            $s = $this->graph->get('/admin/sharepoint/settings', [], 'sp_tenant_settings', 1800);
+            if (empty($s)) return array_merge($base, ['status' => 'unknown', 'detail' => 'SharePoint-Tenant-Settings nicht lesbar.']);
+            // 0 = unbegrenzt, sonst Tage
+            $days = (int)($s['requireAnonymousLinksExpireInDays'] ?? 0);
+            if (($s['sharingCapability'] ?? '') === 'disabled') {
+                return array_merge($base, ['status' => 'pass', 'detail' => 'Externe Freigabe deaktiviert — Ablauf irrelevant.']);
+            }
+            if ($days <= 0) {
+                return array_merge($base, ['status' => 'fail', 'detail' => 'Anyone-Links haben keinen Ablauf — DSGVO-Risiko.']);
+            }
+            if ($days > 90) {
+                return array_merge($base, ['status' => 'warn', 'detail' => "Anyone-Links laufen nach {$days} Tagen ab — empfohlen ≤ 90."]);
+            }
+            return array_merge($base, ['status' => 'pass', 'detail' => "Anyone-Links laufen nach {$days} Tagen ab."]);
+        } catch (\Throwable $e) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
+        }
+    }
+
+    private function checkGdprDefaultSharingLink(): array
+    {
+        $base = [
+            'id'          => 'gdpr_default_sharing_link',
+            'category'    => 'DSGVO & Datenschutz',
+            'label'       => 'Standard-Freigabetyp ist intern',
+            'description' => 'Der Default-Linktyp sollte „internal" oder „direct" (named) sein — Anyone als Standard begünstigt versehentliche Datenweitergabe.',
+            'severity'    => 'medium',
+        ];
+        try {
+            $s = $this->graph->get('/admin/sharepoint/settings', [], 'sp_tenant_settings', 1800);
+            if (empty($s)) return array_merge($base, ['status' => 'unknown', 'detail' => 'SharePoint-Tenant-Settings nicht lesbar.']);
+            $type = $s['defaultSharingLinkType'] ?? '';
+            return match ($type) {
+                'direct', 'internal' => array_merge($base, ['status' => 'pass', 'detail' => "Standard-Link: {$type}"]),
+                'anonymousAccess'    => array_merge($base, ['status' => 'fail', 'detail' => 'Standard-Link ist Anyone — DSGVO-kritisch.']),
+                default              => array_merge($base, ['status' => 'warn', 'detail' => "Standard-Link: {$type}"]),
+            };
+        } catch (\Throwable $e) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
+        }
+    }
+
+    private function checkGdprSensitivityLabels(): array
+    {
+        $base = [
+            'id'          => 'gdpr_sensitivity_labels',
+            'category'    => 'DSGVO & Datenschutz',
+            'label'       => 'Sensitivity Labels veröffentlicht',
+            'description' => 'Vertraulichkeitsbezeichnungen sind Voraussetzung für Information-Protection (Art. 32 DSGVO Maßnahmen zur Datenintegrität).',
+            'severity'    => 'medium',
+        ];
+        try {
+            $data = $this->graph->get('/security/informationProtection/sensitivityLabels', ['$top' => '50'], 'gdpr_sens_labels', 1800);
+            $labels = $data['value'] ?? [];
+            $active = count(array_filter($labels, fn($l) => $l['isActive'] ?? false));
+            if (empty($labels)) {
+                return array_merge($base, ['status' => 'fail', 'detail' => 'Keine Sensitivity Labels gefunden.']);
+            }
+            if ($active === 0) {
+                return array_merge($base, ['status' => 'warn', 'detail' => count($labels) . ' Labels existieren, aber keines ist aktiv.']);
+            }
+            return array_merge($base, ['status' => 'pass', 'detail' => "{$active} aktive Sensitivity Labels (von " . count($labels) . ')']);
+        } catch (\Throwable $e) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
+        }
+    }
+
+    private function checkGdprRetentionPolicies(): array
+    {
+        $base = [
+            'id'          => 'gdpr_retention_policies',
+            'category'    => 'DSGVO & Datenschutz',
+            'label'       => 'Aufbewahrungs-/eDiscovery-Fälle aktiv',
+            'description' => 'Aufbewahrungsrichtlinien sind nötig für Speicherbegrenzung & Auskunfts-/Löschpflichten (Art. 5 + Art. 17 DSGVO).',
+            'severity'    => 'medium',
+        ];
+        try {
+            $cases = $this->graph->paginate(
+                '/security/cases/ediscoveryCases',
+                ['$select' => 'id,status'],
+                3,
+                'gdpr_ediscovery',
+                3600
+            );
+            $active = count(array_filter($cases, fn($c) => ($c['status'] ?? '') === 'active'));
+            if (empty($cases)) {
+                return array_merge($base, ['status' => 'warn', 'detail' => 'Keine eDiscovery-/Aufbewahrungsfälle konfiguriert.']);
+            }
+            return array_merge($base, ['status' => 'pass', 'detail' => "{$active} aktive Fälle, " . count($cases) . ' insgesamt.']);
+        } catch (\Throwable $e) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
+        }
+    }
+
+    private function checkGdprAuditLogReachable(): array
+    {
+        $base = [
+            'id'          => 'gdpr_audit_log',
+            'category'    => 'DSGVO & Datenschutz',
+            'label'       => 'Audit-Log aktiv & abrufbar',
+            'description' => 'Ohne Audit-Log keine Nachvollziehbarkeit von Datenzugriffen (Art. 32 DSGVO, Rechenschaftspflicht).',
+            'severity'    => 'high',
+        ];
+        try {
+            $data = $this->graph->get(
+                '/auditLogs/directoryAudits',
+                ['$top' => '1', '$select' => 'id'],
+                'gdpr_audit_probe',
+                3600
+            );
+            if (isset($data['value'])) {
+                return array_merge($base, ['status' => 'pass', 'detail' => 'Audit-Log liefert Daten.']);
+            }
+            return array_merge($base, ['status' => 'warn', 'detail' => 'Audit-Log antwortet, aber leer — Permission/Ausstellungsdatum prüfen.']);
+        } catch (\Throwable $e) {
+            return array_merge($base, ['status' => 'fail', 'detail' => 'Audit-Log nicht abrufbar: ' . $e->getMessage()]);
+        }
+    }
+
+    private function checkGdprDlpOrLabelsActive(): array
+    {
+        $base = [
+            'id'          => 'gdpr_dlp_or_labels',
+            'category'    => 'DSGVO & Datenschutz',
+            'label'       => 'DLP-/Label-Schutz für personenbezogene Daten',
+            'description' => 'Mindestens eine Information-Protection-Schutzmaßnahme (Sensitivity Label aktiv) ist erforderlich (Art. 25 + Art. 32 DSGVO).',
+            'severity'    => 'high',
+        ];
+        try {
+            $labels = $this->graph->get('/security/informationProtection/sensitivityLabels', ['$top' => '50'], 'gdpr_sens_labels', 1800);
+            $list   = $labels['value'] ?? [];
+            $active = count(array_filter($list, fn($l) => $l['isActive'] ?? false));
+            if ($active > 0) {
+                return array_merge($base, ['status' => 'pass', 'detail' => "{$active} Sensitivity Labels aktiv."]);
+            }
+            return array_merge($base, ['status' => 'fail', 'detail' => 'Keine aktive Schutzmaßnahme (DLP/Label) gefunden.']);
+        } catch (\Throwable $e) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
         }
     }
 }

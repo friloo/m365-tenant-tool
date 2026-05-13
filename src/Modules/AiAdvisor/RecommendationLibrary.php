@@ -563,6 +563,201 @@ class RecommendationLibrary
             ];
         }
 
+        // ── DSGVO / GDPR recommendations ──────────────────────────────────────
+        $gdprAll = array_merge($failedCheckIds, $warningCheckIds);
+
+        if (in_array('gdpr_tenant_region', $gdprAll, true)) {
+            $recs[] = [
+                'id'            => 'gdpr_tenant_region',
+                'severity'      => 'high',
+                'title'         => 'Tenant-Region außerhalb EU/EWR — Drittlandtransfer prüfen',
+                'risk'          => 'Daten werden außerhalb des EWR verarbeitet. Ohne Adäquanzbeschluss oder geeignete Garantien (Standardvertragsklauseln + Transfer Impact Assessment) ist die Übermittlung nach Art. 44–49 DSGVO unzulässig.',
+                'steps'         => [
+                    'Microsoft 365 Admin Center → Settings → Org Settings → Organization profile → Data location prüfen',
+                    'Falls Verlagerung möglich: Multi-Geo oder Tenant in EU-Region beantragen',
+                    'Andernfalls: DPA-Auftragsverarbeitungsvertrag + EU-Standardvertragsklauseln (Microsoft DPA) prüfen',
+                    'Transfer Impact Assessment (Schrems-II) dokumentieren',
+                ],
+                'internal_path' => '/securityposture',
+                'ms_admin_url'  => 'https://admin.microsoft.com/Adminportal/Home#/companyprofile',
+                'ms_doc_url'    => 'https://learn.microsoft.com/de-de/microsoft-365/enterprise/o365-data-locations',
+                'gdpr_articles' => ['Art. 44', 'Art. 46', 'Art. 49'],
+            ];
+        }
+
+        if (in_array('gdpr_sharepoint_sharing', $gdprAll, true)) {
+            $recs[] = [
+                'id'            => 'gdpr_sharepoint_sharing',
+                'severity'      => 'high',
+                'title'         => 'SharePoint-/OneDrive-Sharing einschränken',
+                'risk'          => 'Anyone-Links erlauben unbekannten Dritten den Zugriff auf personenbezogene Daten. Verletzt Privacy-by-Default (Art. 25 DSGVO) und Datensicherheit (Art. 32).',
+                'steps'         => [
+                    'SharePoint Admin Center → Policies → Sharing',
+                    'External sharing auf „New and existing guests" oder restriktiver setzen',
+                    '„Anyone with the link" nur in Ausnahmefällen erlauben — sonst deaktivieren',
+                    'Pro-Site-Übersteuerung prüfen (sensitive Sites strenger als Tenant-Default)',
+                ],
+                'internal_path' => '/sharing/policies',
+                'ms_admin_url'  => 'https://admin.microsoft.com/sharepoint?page=sharing',
+                'ms_doc_url'    => 'https://learn.microsoft.com/de-de/sharepoint/turn-external-sharing-on-or-off',
+                'gdpr_articles' => ['Art. 25', 'Art. 32'],
+            ];
+        }
+
+        if (in_array('gdpr_anonymous_link_expiry', $gdprAll, true)) {
+            $recs[] = [
+                'id'            => 'gdpr_anonymous_link_expiry',
+                'severity'      => 'medium',
+                'title'         => 'Ablauffrist für anonyme Links setzen',
+                'risk'          => 'Anyone-Links ohne Ablauf bleiben unbegrenzt nutzbar und verletzen Speicherbegrenzung (Art. 5 Abs. 1e DSGVO).',
+                'steps'         => [
+                    'SharePoint Admin Center → Policies → Sharing → File and folder links',
+                    '„Anyone links expire in" auf maximal 90 Tage setzen',
+                    'Standard-Linktyp auf „Only people in your organization" oder „Specific people" stellen',
+                ],
+                'internal_path' => '/sharing/policies',
+                'ms_admin_url'  => 'https://admin.microsoft.com/sharepoint?page=sharing',
+                'ms_doc_url'    => 'https://learn.microsoft.com/de-de/sharepoint/file-and-folder-links',
+                'gdpr_articles' => ['Art. 5 Abs. 1e'],
+            ];
+        }
+
+        if (in_array('gdpr_default_sharing_link', $gdprAll, true)) {
+            $recs[] = [
+                'id'            => 'gdpr_default_sharing_link',
+                'severity'      => 'medium',
+                'title'         => 'Default-Freigabetyp auf intern stellen',
+                'risk'          => 'Mit Anyone als Default-Linktyp werden personenbezogene Daten unbeabsichtigt nach außen geteilt.',
+                'steps'         => [
+                    'SharePoint Admin Center → Policies → Sharing → File and folder links',
+                    'Default link type auf „Only people in your organization" oder „Specific people" setzen',
+                ],
+                'ms_admin_url'  => 'https://admin.microsoft.com/sharepoint?page=sharing',
+                'ms_doc_url'    => 'https://learn.microsoft.com/de-de/sharepoint/file-and-folder-links',
+                'gdpr_articles' => ['Art. 25'],
+            ];
+        }
+
+        if (in_array('gdpr_sensitivity_labels', $gdprAll, true) || in_array('gdpr_dlp_or_labels', $gdprAll, true)) {
+            $recs[] = [
+                'id'            => 'gdpr_sensitivity_labels',
+                'severity'      => 'high',
+                'title'         => 'Sensitivity Labels einrichten & veröffentlichen',
+                'risk'          => 'Ohne Vertraulichkeitsbezeichnungen lassen sich personenbezogene Daten nicht systematisch kennzeichnen, verschlüsseln oder vor unbefugter Weitergabe schützen.',
+                'steps'         => [
+                    'Microsoft Purview → Information Protection → Labels',
+                    'Mindestens 4 Labels: „Öffentlich", „Intern", „Vertraulich", „Streng vertraulich"',
+                    'Verschlüsselung + Rights Management für „Vertraulich" und höher konfigurieren',
+                    'Label-Policy veröffentlichen für alle relevanten Benutzergruppen',
+                    'Auto-Labeling-Policy für personen­bezogene Daten (PII-Klassifizierer)',
+                ],
+                'internal_path' => '/sensitivitylabels',
+                'ms_admin_url'  => 'https://purview.microsoft.com/informationprotection/sensitivitylabels',
+                'ms_doc_url'    => 'https://learn.microsoft.com/de-de/purview/sensitivity-labels',
+                'gdpr_articles' => ['Art. 25', 'Art. 32'],
+            ];
+        }
+
+        if (in_array('gdpr_retention_policies', $gdprAll, true)) {
+            $recs[] = [
+                'id'            => 'gdpr_retention_policies',
+                'severity'      => 'medium',
+                'title'         => 'Aufbewahrungsrichtlinien definieren',
+                'risk'          => 'Ohne klare Aufbewahrungsfristen können personenbezogene Daten gegen die Speicherbegrenzung verstoßen — und das Löschrecht (Art. 17 DSGVO) ist nicht umsetzbar.',
+                'steps'         => [
+                    'Microsoft Purview → Data Lifecycle Management → Retention policies',
+                    'Pro Datenkategorie (Mail, SharePoint, OneDrive, Teams) Frist definieren',
+                    'Automatische Löschung am Ende der Frist aktivieren',
+                    'Auskunfts- und Löschverfahren dokumentieren',
+                ],
+                'internal_path' => '/retentionpolicies',
+                'ms_admin_url'  => 'https://purview.microsoft.com/datalifecyclemanagement',
+                'ms_doc_url'    => 'https://learn.microsoft.com/de-de/purview/retention',
+                'gdpr_articles' => ['Art. 5 Abs. 1e', 'Art. 17'],
+            ];
+        }
+
+        if (in_array('gdpr_audit_log', $gdprAll, true)) {
+            $recs[] = [
+                'id'            => 'gdpr_audit_log',
+                'severity'      => 'high',
+                'title'         => 'Audit-Log aktivieren & Aufbewahrung sicherstellen',
+                'risk'          => 'Ohne lückenloses Audit-Log ist die Rechenschaftspflicht (Art. 5 Abs. 2 DSGVO) und Nachweis der Sicherheitsmaßnahmen (Art. 32) nicht erfüllbar. Im Verdachts­fall keine forensische Auswertung möglich.',
+                'steps'         => [
+                    'Microsoft Purview → Audit → Audit-Log aktivieren (falls noch nicht)',
+                    'Aufbewahrung auf mindestens 180 Tage (besser 1 Jahr) anheben',
+                    'AuditLog.Read.All-Berechtigung für die App-Registrierung sicherstellen',
+                    'Regelmäßige Auswertung im Audit-Log-Modul des Tools',
+                ],
+                'internal_path' => '/auditlog',
+                'ms_admin_url'  => 'https://purview.microsoft.com/audit',
+                'ms_doc_url'    => 'https://learn.microsoft.com/de-de/purview/audit-log-enable-disable',
+                'gdpr_articles' => ['Art. 5 Abs. 2', 'Art. 32'],
+            ];
+        }
+
+        // ── Anomaly-driven recommendations ───────────────────────────────────
+        $signinAn = $metrics['signin_anomalies'] ?? [];
+        if (($signinAn['credential_stuffing_signatures'] ?? 0) > 0) {
+            $recs[] = [
+                'id'            => 'anomaly_credential_stuffing',
+                'severity'      => 'high',
+                'title'         => 'Credential-Stuffing-Signaturen erkannt',
+                'risk'          => 'Es wurden Cluster aus ≥ 5 fehlgeschlagenen Logins gefolgt von einem Erfolg innerhalb von 30 Minuten erkannt. Klassisches Muster für automatisiertes Ausprobieren geleakter Passwörter.',
+                'steps'         => [
+                    'Risk-based Sign-in CA-Policy aktivieren (Block oder MFA bei „high")',
+                    'Smart Lockout-Schwellen in Entra ID auf 5–10 Versuche prüfen',
+                    'Betroffene Konten im Sign-in-Log identifizieren und Passwort-Reset erzwingen',
+                ],
+                'internal_path' => '/signinlog',
+                'ms_admin_url'  => 'https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade',
+                'ms_doc_url'    => 'https://learn.microsoft.com/de-de/entra/identity/authentication/howto-password-smart-lockout',
+                'bsi_controls'  => ['ORP.4.A23'],
+                'nis2_articles' => ['Art. 21 Abs. 2(d)'],
+            ];
+        }
+
+        if (($signinAn['impossible_travel_count'] ?? 0) > 0) {
+            $recs[] = [
+                'id'            => 'anomaly_impossible_travel',
+                'severity'      => 'high',
+                'title'         => 'Impossible-Travel-Vorfälle aufklären',
+                'risk'          => 'Erfolgreiche Logins desselben Kontos aus unterschiedlichen Ländern innerhalb < 4 Stunden. Starker Indikator für Token-Theft oder geteilte Credentials.',
+                'steps'         => [
+                    'Sign-in-Log nach Risk Level „medium/high" filtern',
+                    'Betroffene Konten: Sitzungen revoken (revokeSignInSessions)',
+                    'Passwort-Reset erzwingen und MFA-Re-Registrierung',
+                    'CA-Policy „Block VPN/Anonymizer" prüfen',
+                ],
+                'internal_path' => '/signinlog',
+                'ms_admin_url'  => 'https://entra.microsoft.com/#view/Microsoft_AAD_IAM/UsersManagementMenuBlade',
+                'ms_doc_url'    => 'https://learn.microsoft.com/de-de/entra/id-protection/concept-identity-protection-risks',
+                'bsi_controls'  => ['ORP.4.A23'],
+                'nis2_articles' => ['Art. 21 Abs. 2(d)'],
+            ];
+        }
+
+        $auditAn = $metrics['audit_log_anomalies'] ?? [];
+        if (!empty($auditAn['anomalies'])) {
+            $cats = array_map(fn($a) => $a['category'], $auditAn['anomalies']);
+            $recs[] = [
+                'id'            => 'anomaly_audit_spike',
+                'severity'      => 'medium',
+                'title'         => 'Auffällige Audit-Aktivität: ' . implode(', ', array_slice($cats, 0, 3)),
+                'risk'          => 'Eine oder mehrere Aktivitäts-Kategorien liegen deutlich über dem 23-Tage-Schnitt. Mögliche Ursachen: legitime Massen­änderungen (Onboarding/Offboarding) oder unautorisierte Massen­aktion (z. B. Insider-Misuse).',
+                'steps'         => [
+                    'Audit-Log im Tool öffnen und nach den genannten Kategorien filtern',
+                    'Zeitfenster und ausführende Konten verifizieren',
+                    'Bei verdächtigem Muster: Konto sperren, Sitzungen revoken, Forensik einleiten',
+                ],
+                'internal_path' => '/auditlog',
+                'ms_admin_url'  => 'https://purview.microsoft.com/audit',
+                'ms_doc_url'    => 'https://learn.microsoft.com/de-de/purview/audit-search',
+                'bsi_controls'  => ['DER.1.A4'],
+                'nis2_articles' => ['Art. 21 Abs. 2(g)'],
+            ];
+        }
+
         // ── Sort by severity ──────────────────────────────────────────────────
         usort($recs, static function (array $a, array $b): int {
             $ao = self::SEVERITY_ORDER[$a['severity']] ?? 3;
