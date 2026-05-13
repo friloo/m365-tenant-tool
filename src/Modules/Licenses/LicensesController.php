@@ -3,6 +3,7 @@
 namespace App\Modules\Licenses;
 
 use App\Auth\LocalAuth;
+use App\Core\Session;
 use App\Core\View;
 use App\Helpers\CsvExporter;
 
@@ -12,18 +13,23 @@ class LicensesController
     {
         LocalAuth::require();
         $service = app_service(LicensesService::class);
-        $skus    = $service->getSkus();
+
+        $skus = []; $loadErr = null;
+        try { $skus = $service->getSkus(); }
+        catch (\Throwable $e) { $loadErr = 'Lizenzen nicht ladbar: ' . $e->getMessage(); error_log('Licenses index: ' . $e->getMessage()); }
 
         View::render('licenses/index', [
             'pageTitle' => 'Lizenzen',
             'skus'      => $skus,
+            'error'     => Session::getFlash('error') ?: $loadErr,
         ]);
     }
 
     public function export(): void
     {
         LocalAuth::require();
-        $skus = app_service(LicensesService::class)->getSkus();
+        try { $skus = app_service(LicensesService::class)->getSkus(); }
+        catch (\Throwable $e) { error_log('Licenses export: ' . $e->getMessage()); $skus = []; }
         CsvExporter::download('lizenzen_' . date('Ymd') . '.csv',
             ['Produkt', 'SKU', 'Genutzt', 'Gesamt', 'Verfügbar', 'Nutzung %'],
             array_map(fn($s) => [
@@ -46,13 +52,17 @@ class LicensesController
             app_graph()->getCache()->forget('license_expiry');
         }
 
-        $subscriptions = $service->getSubscriptionExpiry();
-        $expiringSoon  = $service->getExpiringSoon(60);
+        $subscriptions = []; $expiringSoon = []; $loadErr = null;
+        try { $subscriptions = $service->getSubscriptionExpiry(); }
+        catch (\Throwable $e) { $loadErr = 'Abos: ' . $e->getMessage(); error_log('Licenses expiry subs: ' . $e->getMessage()); }
+        try { $expiringSoon = $service->getExpiringSoon(60); }
+        catch (\Throwable $e) { error_log('Licenses expiry soon: ' . $e->getMessage()); }
 
         View::render('licenses/expiry', [
             'pageTitle'     => 'Lizenz-Ablauf',
             'subscriptions' => $subscriptions,
             'expiringSoon'  => $expiringSoon,
+            'error'         => Session::getFlash('error') ?: $loadErr,
         ]);
     }
 }

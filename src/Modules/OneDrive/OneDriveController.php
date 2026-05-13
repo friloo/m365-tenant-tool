@@ -14,13 +14,17 @@ class OneDriveController
     {
         LocalAuth::require();
         $service = app_service(OneDriveService::class);
-        $users   = app_service(UsersService::class)->getAll();
 
-        $drives  = $service->getUserDrives($users);
+        $users = []; $drives = []; $loadErr = null;
+        try { $users = app_service(UsersService::class)->getAll(); }
+        catch (\Throwable $e) { $loadErr = 'Benutzer nicht ladbar: ' . $e->getMessage(); error_log('OneDrive index users: ' . $e->getMessage()); }
+        try { $drives = $service->getUserDrives($users); }
+        catch (\Throwable $e) { $loadErr = ($loadErr ? $loadErr . ' | ' : '') . 'Drives: ' . $e->getMessage(); error_log('OneDrive index drives: ' . $e->getMessage()); }
 
         View::render('onedrive/index', [
             'pageTitle' => 'OneDrive',
             'drives'    => $drives,
+            'error'     => Session::getFlash('error') ?: $loadErr,
         ]);
     }
 
@@ -35,14 +39,18 @@ class OneDriveController
             app_graph()->getCache()->forget('users_all');
         }
 
-        $allUsers = app_service(UsersService::class)->getAll();
-        $driveMap = $service->getPersonalDrivesReport();
-        $reportMode = !empty($driveMap); // false = fell back to per-user check
+        $allUsers = []; $driveMap = []; $loadErr = null;
+        try { $allUsers = app_service(UsersService::class)->getAll(); }
+        catch (\Throwable $e) { $loadErr = 'Benutzer: ' . $e->getMessage(); error_log('OneDrive personal users: ' . $e->getMessage()); }
+        try { $driveMap = $service->getPersonalDrivesReport(); }
+        catch (\Throwable $e) { error_log('OneDrive personal report: ' . $e->getMessage()); }
+        $reportMode = !empty($driveMap);
 
         if (!$reportMode) {
             // Report API returned empty (permission issue, anonymisation, or $format problem).
             // Fall back to per-user drive checks for the first 150 users.
-            $driveMap = $service->getPersonalDrivesPerUser($allUsers, 150);
+            try { $driveMap = $service->getPersonalDrivesPerUser($allUsers, 150); }
+            catch (\Throwable $e) { $driveMap = []; error_log('OneDrive personal perUser: ' . $e->getMessage()); }
         }
 
         $list = [];
@@ -73,7 +81,7 @@ class OneDriveController
             'notProvisioned' => $notProvisioned,
             'reportMode'     => $reportMode,
             'flash'          => Session::getFlash('success'),
-            'error'          => Session::getFlash('error'),
+            'error'          => Session::getFlash('error') ?: $loadErr,
         ]);
     }
 
