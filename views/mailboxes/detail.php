@@ -116,6 +116,7 @@ $tz          = $detail['timeZone'] ?? '';
 
                 <!-- Set / update forwarding -->
                 <form method="post" action="/mailboxes/<?= $e($userId) ?>/forwarding" class="mb-2">
+                    <?= \App\Core\Csrf::field() ?>
                     <div class="d-flex gap-2 align-items-center flex-wrap">
                         <input type="email" name="forward_to"
                                value="<?= $e($fwdAddr) ?>"
@@ -132,6 +133,7 @@ $tz          = $detail['timeZone'] ?? '';
                 <!-- Remove forwarding -->
                 <form method="post" action="/mailboxes/<?= $e($userId) ?>/forwarding"
                       onsubmit="return confirm('Weiterleitung wirklich entfernen?')">
+                    <?= \App\Core\Csrf::field() ?>
                     <input type="hidden" name="forward_to" value="">
                     <button type="submit" class="btn btn-sm btn-outline-danger">
                         <i class="bi bi-x-circle me-1"></i>Weiterleitung entfernen
@@ -177,6 +179,7 @@ $tz          = $detail['timeZone'] ?? '';
 
                 <!-- Toggle form -->
                 <form method="post" action="/mailboxes/<?= $e($userId) ?>/auto-reply">
+                    <?= \App\Core\Csrf::field() ?>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="checkbox" name="auto_reply_enabled"
                                id="autoReplyEnabled" <?= $autoActive ? 'checked' : '' ?>>

@@ -175,6 +175,7 @@ $nowTs           = time();
                                   action="/appregistrations/<?= $e($appObjectId) ?>/delete-secret"
                                   onsubmit="return confirm('Secret wirklich löschen? Apps die dieses Secret verwenden können sich nicht mehr anmelden.')"
                                   class="mb-0">
+                                <?= \App\Core\Csrf::field() ?>
                                 <input type="hidden" name="key_id" value="<?= $e($keyId) ?>">
                                 <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2">
                                     <i class="bi bi-trash"></i>
@@ -255,6 +256,7 @@ $nowTs           = time();
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="post" action="/appregistrations/<?= $e($appObjectId) ?>/add-secret">
+                <?= \App\Core\Csrf::field() ?>
                 <div class="modal-header">
                     <h5 class="modal-title" id="addSecretModalLabel">
                         <i class="bi bi-key-fill me-2 text-warning"></i>Neues Client Secret anlegen

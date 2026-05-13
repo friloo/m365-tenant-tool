@@ -127,6 +127,7 @@ $localAndFwdCount = count(array_filter($forwards, fn($f) => $f['deliverToMailbox
                         <td class="text-end">
                             <form method="post" action="/mailboxes/external-forwards/remove"
                                   onsubmit="return confirm('Weiterleitung für <?= $e(addslashes($fwd['displayName'])) ?> wirklich entfernen?');">
+                                <?= \App\Core\Csrf::field() ?>
                                 <input type="hidden" name="user_id" value="<?= $e($fwd['id']) ?>">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">
                                     <i class="bi bi-x-circle me-1"></i>Weiterleitung entfernen
