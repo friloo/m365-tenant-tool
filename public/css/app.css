@@ -75,11 +75,11 @@ body {
 
 .sidebar-section {
     padding: 8px 16px 4px;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: .8px;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.5);
     white-space: nowrap;
 }
 
@@ -92,18 +92,18 @@ body {
     display: flex;
     align-items: center;
     padding: 10px 16px 4px;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: .8px;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.5);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
     transition: color .15s;
 }
 .sidebar-section-toggle:hover {
-    color: rgba(255,255,255,0.65);
+    color: rgba(255,255,255,0.8);
 }
 .sidebar-section-toggle .nav-group-label {
     flex: 1;

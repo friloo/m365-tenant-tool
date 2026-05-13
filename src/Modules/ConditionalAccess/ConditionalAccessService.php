@@ -15,7 +15,7 @@ class ConditionalAccessService
     {
         try {
             $data = $this->graph->get(
-                '/identity/conditionalAccessPolicies',
+                '/identity/conditionalAccess/policies',
                 ['$top' => '200'],
                 'ca_policies',
                 900
@@ -82,7 +82,7 @@ class ConditionalAccessService
                 break;
         }
 
-        $result = $this->graph->post('/identity/conditionalAccessPolicies', $body);
+        $result = $this->graph->post('/identity/conditionalAccess/policies', $body);
         $this->graph->getCache()->forget('ca_policies');
         return $result;
     }
@@ -96,7 +96,7 @@ class ConditionalAccessService
         if (!in_array($newState, $allowed, true)) {
             throw new \InvalidArgumentException('Ungültiger Status: ' . $newState);
         }
-        $this->graph->patch('/identity/conditionalAccessPolicies/' . $id, ['state' => $newState]);
+        $this->graph->patch('/identity/conditionalAccess/policies/' . $id, ['state' => $newState]);
         $this->graph->getCache()->forget('ca_policies');
     }
 
@@ -105,7 +105,7 @@ class ConditionalAccessService
      */
     public function deletePolicy(string $id): void
     {
-        $this->graph->delete('/identity/conditionalAccessPolicies/' . $id);
+        $this->graph->delete('/identity/conditionalAccess/policies/' . $id);
         $this->graph->getCache()->forget('ca_policies');
     }
 
