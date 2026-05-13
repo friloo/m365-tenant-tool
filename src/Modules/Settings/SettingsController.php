@@ -57,6 +57,11 @@ class SettingsController
             'lic_need_sharepoint'            => $config->get('lic_need_sharepoint', '0'),
             'lic_need_onedrive'              => $config->get('lic_need_onedrive', '0'),
             'lic_need_intune'                => $config->get('lic_need_intune', '0'),
+            'ai_enabled'                     => $config->get('ai_enabled', '0'),
+            'ai_provider'                    => $config->get('ai_provider', 'openai'),
+            'ai_model'                       => $config->get('ai_model', ''),
+            'ai_base_url'                    => $config->get('ai_base_url', ''),
+            'ai_cache_hours'                 => $config->get('ai_cache_hours', '24'),
         ];
 
         $flash = Session::getFlash('success');
@@ -114,6 +119,15 @@ class SettingsController
             $config->set('lic_need_sharepoint',           isset($_POST['lic_need_sharepoint']) ? '1' : '0');
             $config->set('lic_need_onedrive',             isset($_POST['lic_need_onedrive']) ? '1' : '0');
             $config->set('lic_need_intune',               isset($_POST['lic_need_intune']) ? '1' : '0');
+
+            $config->set('ai_enabled',     isset($_POST['ai_enabled']) ? '1' : '0');
+            $config->set('ai_provider',    in_array($_POST['ai_provider'] ?? '', ['openai','deepseek','ollama']) ? $_POST['ai_provider'] : 'openai');
+            $config->set('ai_model',       trim($_POST['ai_model'] ?? ''));
+            $config->set('ai_base_url',    rtrim(trim($_POST['ai_base_url'] ?? ''), '/'));
+            $config->set('ai_cache_hours', (string)max(1, (int)($_POST['ai_cache_hours'] ?? 24)));
+            if (!empty($_POST['ai_api_key'])) {
+                $config->set('ai_api_key', trim($_POST['ai_api_key']), true); // encrypted
+            }
 
             if (!empty($_POST['smtp_password'])) {
                 $config->set('smtp_password', trim($_POST['smtp_password']), true);

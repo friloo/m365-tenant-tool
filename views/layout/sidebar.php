@@ -50,6 +50,7 @@ $_navDefs = [
     ['section' => null,                  'icon' => 'exclamation-triangle', 'label' => 'Risiko-Anmeldungen',     'route' => 'riskysignins',               'admin' => false],
     ['section' => null,                  'icon' => 'grid-3x3-gap',         'label' => 'App-Registrierungen',    'route' => 'appregistrations',           'admin' => false],
     ['section' => null,                  'icon' => 'globe2',               'label' => 'Domain Health',          'route' => 'domainhealth',               'admin' => false],
+    ['section' => null,                  'icon' => 'robot',                'label' => 'KI-Berater',             'route' => 'ai',                         'admin' => false],
 
     // ── Compliance & Audit
     ['section' => 'Compliance & Audit',  'icon' => 'phone',                'label' => 'Geräte',                 'route' => 'devices',                    'admin' => false],

@@ -406,6 +406,11 @@ $router->get('/dlppolicies',                [\App\Modules\DlpPolicies\DlpPolicie
 // ── Retention Policies ─────────────────────────────────────
 $router->get('/retentionpolicies',          [\App\Modules\RetentionPolicies\RetentionPoliciesController::class, 'index']);
 
+// ── KI-Sicherheitsberater ──────────────────────────────────
+$router->get('/ai',              [\App\Modules\AiAdvisor\AiAdvisorController::class, 'index']);
+$router->post('/ai/analyze',     [\App\Modules\AiAdvisor\AiAdvisorController::class, 'analyze']);
+$router->post('/ai/clear-cache', [\App\Modules\AiAdvisor\AiAdvisorController::class, 'clearCache']);
+
 // ── Dispatch ──────────────────────────────────────────────
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $uri    = $_SERVER['REQUEST_URI'] ?? '/';
