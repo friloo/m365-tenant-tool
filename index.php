@@ -218,6 +218,25 @@ function app_service(string $class): object {
     return new $class($graphClient);
 }
 
+// ── Pre-flight: when the M365 tenant credentials aren't configured yet,
+// every Graph-API-driven page would crash with RuntimeException. Send the
+// logged-in user straight to /settings with a clear hint instead.
+$reqUriPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
+$preflightAllowed = false;
+foreach (['/settings', '/login', '/logout', '/auth/microsoft', '/install', '/cron'] as $prefix) {
+    if (str_starts_with($reqUriPath, $prefix)) { $preflightAllowed = true; break; }
+}
+if (!$preflightAllowed && Session::get('authenticated')) {
+    $tenantConfigured = !empty($config->get('tenant_id'))
+        && !empty($config->get('client_id'))
+        && !empty($config->get('client_secret'));
+    if (!$tenantConfigured) {
+        Session::flash('error', 'Microsoft 365 Verbindung ist noch nicht vollständig konfiguriert. Bitte ergänze die Tenant-Daten in den Einstellungen.');
+        header('Location: /settings');
+        exit;
+    }
+}
+
 // ── Router ────────────────────────────────────────────────
 $router = new Router();
 

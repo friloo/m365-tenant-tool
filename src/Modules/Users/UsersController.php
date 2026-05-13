@@ -20,9 +20,13 @@ class UsersController
         $service = app_service(UsersService::class);
         if (isset($_GET['refresh'])) app_graph()->getCache()->forget('users_all');
 
-        $users  = $service->getAll();
-        $mfaMap = $service->getMfaStatus();
-        $skus   = app_service(LicensesService::class)->getSkus();
+        $users = []; $mfaMap = []; $skus = []; $loadErr = null;
+        try { $users = $service->getAll(); }
+        catch (\Throwable $e) { $loadErr = 'Benutzer: ' . $e->getMessage(); error_log('Users index users: ' . $e->getMessage()); }
+        try { $mfaMap = $service->getMfaStatus(); }
+        catch (\Throwable $e) { error_log('Users index mfa: ' . $e->getMessage()); }
+        try { $skus = app_service(LicensesService::class)->getSkus(); }
+        catch (\Throwable $e) { error_log('Users index skus: ' . $e->getMessage()); }
 
         View::render('users/index', [
             'pageTitle' => 'Benutzer',
@@ -30,7 +34,7 @@ class UsersController
             'mfaMap'    => $mfaMap,
             'skus'      => $skus,
             'flash'     => Session::getFlash('success'),
-            'error'     => Session::getFlash('error'),
+            'error'     => Session::getFlash('error') ?: $loadErr,
         ]);
     }
 
@@ -39,11 +43,16 @@ class UsersController
         LocalAuth::require();
         $service = app_service(UsersService::class);
 
-        $user     = $service->getOne($id);
-        $groups   = $service->getMemberOf($id);
-        $skus     = app_service(LicensesService::class)->getSkus();
-        $signIns  = $service->getSignInHistory($id);
-        $notes    = (new UserNotesService())->getForUser($id);
+        $user = null; $groups = []; $skus = []; $signIns = []; $loadErr = null;
+        try { $user = $service->getOne($id); }
+        catch (\Throwable $e) { $loadErr = 'Benutzer nicht ladbar: ' . $e->getMessage(); error_log('Users show: ' . $e->getMessage()); }
+        try { $groups = $service->getMemberOf($id); }
+        catch (\Throwable $e) { error_log('Users show groups: ' . $e->getMessage()); }
+        try { $skus = app_service(LicensesService::class)->getSkus(); }
+        catch (\Throwable $e) { error_log('Users show skus: ' . $e->getMessage()); }
+        try { $signIns = $service->getSignInHistory($id); }
+        catch (\Throwable $e) { error_log('Users show signins: ' . $e->getMessage()); }
+        $notes = (new UserNotesService())->getForUser($id);
 
         View::render('users/detail', [
             'pageTitle' => $user['displayName'] ?? 'Benutzer',
@@ -53,7 +62,7 @@ class UsersController
             'signIns'   => $signIns,
             'notes'     => $notes,
             'flash'     => Session::getFlash('success'),
-            'error'     => Session::getFlash('error'),
+            'error'     => Session::getFlash('error') ?: $loadErr,
         ]);
     }
 

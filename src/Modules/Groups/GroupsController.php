@@ -14,11 +14,15 @@ class GroupsController
     {
         LocalAuth::require();
         $service = app_service(GroupsService::class);
-        $groups  = $service->getAll();
+
+        $groups = []; $loadErr = null;
+        try { $groups = $service->getAll(); }
+        catch (\Throwable $e) { $loadErr = 'Gruppen nicht ladbar: ' . $e->getMessage(); error_log('Groups index: ' . $e->getMessage()); }
 
         View::render('groups/index', [
             'pageTitle' => 'Gruppen & Teams',
             'groups'    => $groups,
+            'error'     => Session::getFlash('error') ?: $loadErr,
         ]);
     }
 
@@ -26,9 +30,14 @@ class GroupsController
     {
         LocalAuth::require();
         $service = app_service(GroupsService::class);
-        $group   = $service->getOne($id);
-        $members = $service->getMembers($id);
-        $owners  = $service->getOwners($id);
+
+        $group = null; $members = []; $owners = []; $loadErr = null;
+        try { $group = $service->getOne($id); }
+        catch (\Throwable $e) { $loadErr = 'Gruppe nicht ladbar: ' . $e->getMessage(); error_log('Groups show: ' . $e->getMessage()); }
+        try { $members = $service->getMembers($id); }
+        catch (\Throwable $e) { error_log('Groups show members: ' . $e->getMessage()); }
+        try { $owners = $service->getOwners($id); }
+        catch (\Throwable $e) { error_log('Groups show owners: ' . $e->getMessage()); }
 
         View::render('groups/detail', [
             'pageTitle' => $group['displayName'] ?? 'Gruppe',
@@ -36,7 +45,7 @@ class GroupsController
             'members'   => $members,
             'owners'    => $owners,
             'flash'     => Session::getFlash('success'),
-            'error'     => Session::getFlash('error'),
+            'error'     => Session::getFlash('error') ?: $loadErr,
         ]);
     }
 
