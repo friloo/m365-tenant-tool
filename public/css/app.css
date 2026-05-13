@@ -585,3 +585,13 @@ body {
     .sidebar .nav-label, .sidebar .sidebar-brand .brand-name, .sidebar .sidebar-section { display: none; }
     .main-content { margin-left: 64px; }
 }
+
+/* ── Print styles ─────────────────────────────── */
+@media print {
+    .sidebar, .topbar, .btn, .table-toolbar, #widgetConfig,
+    .alert-dismissible .btn-close, nav, .offcanvas { display: none !important; }
+    .main-content { margin: 0 !important; padding: 0 !important; }
+    .content-card { border: 1px solid #ccc; box-shadow: none; page-break-inside: avoid; }
+    body { font-size: 11px; }
+    a[href]:after { content: none; }
+}

@@ -148,13 +148,78 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-medium">MFA-Schwellwert</label>
+                        <label class="form-label fw-medium text-muted">MFA-Schwellwert</label>
+                        <div class="text-muted small">Konfigurierbar unter <a href="#alert-thresholds">Alert-Schwellwerte</a> ↓</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Thresholds -->
+        <div class="content-card mb-4" id="alert-thresholds">
+            <div class="card-header-custom">
+                <i class="bi bi-sliders text-primary"></i>
+                <h6>Alert-Schwellwerte</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted small mb-3">
+                    Definiert ab wann automatische Benachrichtigungen ausgelöst werden.
+                    Alle Schwellwerte werden vom Cron-Job geprüft.
+                </p>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">MFA-Quote</label>
                         <div class="input-group input-group-sm">
                             <input type="number" name="alert_mfa_threshold" class="form-control"
                                    value="<?= $e($s['alert_mfa_threshold']) ?>" min="0" max="100">
                             <span class="input-group-text">%</span>
                         </div>
-                        <div class="form-text">Alert wenn MFA-Quote darunter fällt</div>
+                        <div class="form-text">Alert wenn MFA-Registrierungsquote unter diesen Wert fällt.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Lizenzauslastung</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" name="alert_license_threshold" class="form-control"
+                                   value="<?= $e($s['alert_license_threshold'] ?? '90') ?>" min="0" max="100">
+                            <span class="input-group-text">%</span>
+                        </div>
+                        <div class="form-text">Alert wenn eine SKU mehr als X% ausgelastet ist.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Externe Freigaben</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" name="alert_external_shares_max" class="form-control"
+                                   value="<?= $e($s['alert_external_shares_max'] ?? '50') ?>" min="0">
+                            <span class="input-group-text">Stück</span>
+                        </div>
+                        <div class="form-text">Alert wenn aktive externe Freigaben diesen Wert übersteigen.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Nicht-konforme Geräte</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" name="alert_noncompliant_devices_max" class="form-control"
+                                   value="<?= $e($s['alert_noncompliant_devices_max'] ?? '5') ?>" min="0">
+                            <span class="input-group-text">Geräte</span>
+                        </div>
+                        <div class="form-text">Alert wenn mehr als X Geräte nicht konform sind.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Risikobenutzer</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" name="alert_risky_users_max" class="form-control"
+                                   value="<?= $e($s['alert_risky_users_max'] ?? '0') ?>" min="0">
+                            <span class="input-group-text">Benutzer</span>
+                        </div>
+                        <div class="form-text">Alert wenn mehr als X Risikobenutzer erkannt werden (0 = bei jedem).</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Inaktive Konten (Alert)</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" name="alert_stale_accounts_max" class="form-control"
+                                   value="<?= $e($s['alert_stale_accounts_max'] ?? '10') ?>" min="0">
+                            <span class="input-group-text">Konten</span>
+                        </div>
+                        <div class="form-text">Alert wenn mehr als X inaktive Konten mit Lizenzen gefunden werden.</div>
                     </div>
                 </div>
             </div>

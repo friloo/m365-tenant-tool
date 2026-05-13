@@ -254,12 +254,58 @@ class UsersController
         $action  = $_POST['action'] ?? '';
         $userIds = array_values(array_filter(array_map('trim', (array)($_POST['user_ids'] ?? []))));
 
-        if (empty($userIds) || !in_array($action, ['disable', 'enable', 'reset_mfa'], true)) {
+        $validActions = ['disable', 'enable', 'reset_mfa', 'assign_license', 'remove_license'];
+        if (empty($userIds) || !in_array($action, $validActions, true)) {
             Session::flash('error', 'Ungültige Bulk-Aktion oder keine Benutzer ausgewählt.');
             Redirect::to('/users');
         }
 
-        // Map action → queue job type
+        if ($action === 'assign_license') {
+            $skuId = trim($_POST['sku_id'] ?? '');
+            if (!$skuId) {
+                Session::flash('error', 'Keine Lizenz ausgewählt.');
+                Redirect::to('/users');
+            }
+            $graph  = app_graph();
+            $ok = 0; $errors = 0;
+            foreach ($userIds as $uid) {
+                try {
+                    $graph->post("/users/{$uid}/assignLicense", [
+                        'addLicenses'    => [['skuId' => $skuId]],
+                        'removeLicenses' => [],
+                    ]);
+                    $ok++;
+                } catch (\Throwable) { $errors++; }
+            }
+            $graph->getCache()->forget('users_all');
+            Session::flash($errors ? 'error' : 'success',
+                "{$ok} Lizenzen zugewiesen" . ($errors ? ", {$errors} Fehler." : '.'));
+            Redirect::to('/users');
+        }
+
+        if ($action === 'remove_license') {
+            $graph  = app_graph();
+            $ok = 0; $errors = 0;
+            foreach ($userIds as $uid) {
+                try {
+                    $user = $graph->get("/users/{$uid}", ['$select' => 'assignedLicenses'], null, 0);
+                    $skus = array_column($user['assignedLicenses'] ?? [], 'skuId');
+                    if ($skus) {
+                        $graph->post("/users/{$uid}/assignLicense", [
+                            'addLicenses'    => [],
+                            'removeLicenses' => $skus,
+                        ]);
+                    }
+                    $ok++;
+                } catch (\Throwable) { $errors++; }
+            }
+            $graph->getCache()->forget('users_all');
+            Session::flash($errors ? 'error' : 'success',
+                "{$ok} Benutzer Lizenzen entfernt" . ($errors ? ", {$errors} Fehler." : '.'));
+            Redirect::to('/users');
+        }
+
+        // Queue-based actions
         $jobType = match($action) {
             'disable'   => 'user_toggle',
             'enable'    => 'user_toggle',

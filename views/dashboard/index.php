@@ -1,6 +1,16 @@
 <?php
 use App\Core\View;
 $e = fn($v) => View::escape($v);
+
+// Widget config: names map to IDs
+$_widgets = [
+    'dash-w-metrics1'  => 'Verzeichnis & Identität',
+    'dash-w-metrics2'  => 'Sicherheit & Geräte',
+    'dash-w-charts'    => 'Charts & Sicherheitsstatus',
+    'dash-w-infopanels'=> 'Info-Panels',
+    'dash-w-quicklinks'=> 'Schnellzugriff',
+];
+?>
 $n = fn($v) => $v !== null ? number_format((int)$v) : '<span class="text-muted small">–</span>';
 
 $mfaPct    = $security['mfa_pct']    ?? null;
@@ -12,8 +22,35 @@ $alerts    = $security['unresolved_alerts'] ?? null;
 $ext = $extended ?? [];
 ?>
 
+<!-- Widget config button -->
+<div class="d-flex justify-content-end mb-2">
+    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#widgetConfig">
+        <i class="bi bi-layout-three-columns me-1"></i> Widgets
+    </button>
+</div>
+
+<!-- Offcanvas: widget visibility config -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="widgetConfig" style="width:280px;">
+    <div class="offcanvas-header">
+        <h6 class="offcanvas-title"><i class="bi bi-layout-three-columns me-2"></i>Dashboard-Widgets</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+        <p class="text-muted" style="font-size:12px;">Einstellungen werden im Browser gespeichert.</p>
+        <?php foreach ($_widgets as $id => $label): ?>
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input widget-toggle" type="checkbox" id="wt-<?= $id ?>" data-widget="<?= $id ?>" checked>
+            <label class="form-check-label" for="wt-<?= $id ?>"><?= $e($label) ?></label>
+        </div>
+        <?php endforeach; ?>
+        <button class="btn btn-sm btn-outline-secondary w-100 mt-2" onclick="resetWidgets()">
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Zurücksetzen
+        </button>
+    </div>
+</div>
+
 <!-- ── Row 1: Directory & Identity ────────────────────────────── -->
-<div class="row g-3 mb-3">
+<div id="dash-w-metrics1" class="row g-3 mb-3">
     <div class="col-sm-6 col-xl-3">
         <a href="/users" class="text-decoration-none">
         <div class="metric-card d-flex align-items-center gap-3 h-100">
@@ -85,7 +122,7 @@ $ext = $extended ?? [];
 </div>
 
 <!-- ── Row 2: Devices & Risks ─────────────────────────────────── -->
-<div class="row g-3 mb-4">
+<div id="dash-w-metrics2" class="row g-3 mb-4">
     <div class="col-sm-6 col-xl-3">
         <a href="/devices" class="text-decoration-none">
         <div class="metric-card d-flex align-items-center gap-3 h-100">
@@ -157,7 +194,7 @@ $ext = $extended ?? [];
 </div>
 
 <!-- ── Charts + Security Status ───────────────────────────────── -->
-<div class="row g-3 mb-4">
+<div id="dash-w-charts" class="row g-3 mb-4">
     <div class="col-xl-7">
         <div class="content-card">
             <div class="card-header-custom">
@@ -247,7 +284,7 @@ $ext = $extended ?? [];
 </div>
 
 <!-- ── Info Panels ─────────────────────────────────────────────── -->
-<div class="row g-3 mb-4">
+<div id="dash-w-infopanels" class="row g-3 mb-4">
 
     <!-- Verzeichnis & Identitäten -->
     <div class="col-md-4">
@@ -374,7 +411,7 @@ $ext = $extended ?? [];
 </div>
 
 <!-- ── Quick Access ────────────────────────────────────────────── -->
-<div class="content-card mb-2">
+<div id="dash-w-quicklinks" class="content-card mb-2">
     <div class="card-header-custom">
         <i class="bi bi-grid text-secondary"></i>
         <h6>Schnellzugriff</h6>
@@ -394,3 +431,41 @@ $ext = $extended ?? [];
         </div>
     </div>
 </div>
+
+<script>
+(function () {
+    const KEY = 'dash_widgets';
+    const widgets = <?= json_encode(array_keys($_widgets)) ?>;
+
+    function load() {
+        try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; }
+    }
+    function save(state) { localStorage.setItem(KEY, JSON.stringify(state)); }
+
+    function applyState(state) {
+        widgets.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = state[id] === false ? 'none' : '';
+            const cb = document.getElementById('wt-' + id);
+            if (cb) cb.checked = state[id] !== false;
+        });
+    }
+
+    const state = load();
+    applyState(state);
+
+    document.querySelectorAll('.widget-toggle').forEach(cb => {
+        cb.addEventListener('change', function () {
+            const s = load();
+            s[this.dataset.widget] = this.checked;
+            save(s);
+            applyState(s);
+        });
+    });
+
+    window.resetWidgets = function () {
+        localStorage.removeItem(KEY);
+        applyState({});
+    };
+})();
+</script>

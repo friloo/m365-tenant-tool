@@ -26,7 +26,12 @@ class SettingsController
             'smtp_host'          => $config->get('smtp_host', ''),
             'smtp_port'          => $config->get('smtp_port', '587'),
             'smtp_user'          => $config->get('smtp_user', ''),
-            'alert_mfa_threshold'=> $config->get('alert_mfa_threshold', '80'),
+            'alert_mfa_threshold'            => $config->get('alert_mfa_threshold', '80'),
+            'alert_license_threshold'        => $config->get('alert_license_threshold', '90'),
+            'alert_external_shares_max'      => $config->get('alert_external_shares_max', '50'),
+            'alert_noncompliant_devices_max' => $config->get('alert_noncompliant_devices_max', '5'),
+            'alert_risky_users_max'          => $config->get('alert_risky_users_max', '0'),
+            'alert_stale_accounts_max'       => $config->get('alert_stale_accounts_max', '10'),
             'operator_username'              => $config->get('operator_username', ''),
             'alert_risky_users'              => $config->get('alert_risky_users', '1'),
             'alert_anon_shares'              => $config->get('alert_anon_shares', '1'),
@@ -79,7 +84,12 @@ class SettingsController
             $config->set('smtp_host',            trim($_POST['smtp_host'] ?? ''));
             $config->set('smtp_port',            (string)(int)($_POST['smtp_port'] ?? 587));
             $config->set('smtp_user',            trim($_POST['smtp_user'] ?? ''));
-            $config->set('alert_mfa_threshold',  (string)(int)($_POST['alert_mfa_threshold'] ?? 80));
+            $config->set('alert_mfa_threshold',            (string)(int)($_POST['alert_mfa_threshold'] ?? 80));
+            $config->set('alert_license_threshold',        (string)max(0, min(100, (int)($_POST['alert_license_threshold'] ?? 90))));
+            $config->set('alert_external_shares_max',      (string)max(0, (int)($_POST['alert_external_shares_max'] ?? 50)));
+            $config->set('alert_noncompliant_devices_max', (string)max(0, (int)($_POST['alert_noncompliant_devices_max'] ?? 5)));
+            $config->set('alert_risky_users_max',          (string)max(0, (int)($_POST['alert_risky_users_max'] ?? 0)));
+            $config->set('alert_stale_accounts_max',       (string)max(0, (int)($_POST['alert_stale_accounts_max'] ?? 10)));
             $config->set('alert_risky_users',             isset($_POST['alert_risky_users']) ? '1' : '0');
             $config->set('alert_anon_shares',             isset($_POST['alert_anon_shares']) ? '1' : '0');
             $config->set('app_base_url',                  rtrim(trim($_POST['app_base_url'] ?? ''), '/'));

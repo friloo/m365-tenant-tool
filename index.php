@@ -382,6 +382,30 @@ $router->post('/accessreview/{id}/decide/{itemId}', [\App\Modules\AccessReview\A
 $router->post('/accessreview/{id}/bulk',     [\App\Modules\AccessReview\AccessReviewController::class, 'bulkDecide']);
 $router->post('/accessreview/{id}/apply',    [\App\Modules\AccessReview\AccessReviewController::class, 'apply']);
 
+// ── Domain Health ──────────────────────────────────────────
+$router->get('/domainhealth',               [\App\Modules\DomainHealth\DomainHealthController::class, 'index']);
+
+// ── Teams Governance ───────────────────────────────────────
+$router->get('/teamsgovernance',            [\App\Modules\TeamsGovernance\TeamsGovernanceController::class, 'index']);
+
+// ── Usage Reports ──────────────────────────────────────────
+$router->get('/usagereports',               [\App\Modules\UsageReports\UsageReportsController::class, 'index']);
+
+// ── Deleted Objects ────────────────────────────────────────
+$router->get('/deletedobjects',             [\App\Modules\DeletedObjects\DeletedObjectsController::class, 'index']);
+$router->post('/deletedobjects/{id}/restore',         [\App\Modules\DeletedObjects\DeletedObjectsController::class, 'restore']);
+$router->post('/deletedobjects/{id}/permanent-delete', [\App\Modules\DeletedObjects\DeletedObjectsController::class, 'permanentDelete']);
+
+// ── Onboarding Wizard ──────────────────────────────────────
+$router->get('/onboarding',                 [\App\Modules\Onboarding\OnboardingController::class, 'wizard']);
+$router->post('/onboarding',                [\App\Modules\Onboarding\OnboardingController::class, 'create']);
+
+// ── DLP Policies ───────────────────────────────────────────
+$router->get('/dlppolicies',                [\App\Modules\DlpPolicies\DlpPoliciesController::class, 'index']);
+
+// ── Retention Policies ─────────────────────────────────────
+$router->get('/retentionpolicies',          [\App\Modules\RetentionPolicies\RetentionPoliciesController::class, 'index']);
+
 // ── Dispatch ──────────────────────────────────────────────
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $uri    = $_SERVER['REQUEST_URI'] ?? '/';

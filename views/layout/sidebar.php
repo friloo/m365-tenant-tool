@@ -22,6 +22,7 @@ $_navDefs = [
     ['section' => null,         'icon' => 'lightbulb',           'label' => 'Lizenz-Berater',       'route' => 'licenseadvisor',       'admin' => false],
     ['section' => null,         'icon' => 'shield-lock',         'label' => 'MFA-Methoden',         'route' => 'mfamethods',           'admin' => false],
     ['section' => null,         'icon' => 'key',                 'label' => 'Passwort-Ablauf',      'route' => 'passwordexpiry',       'admin' => false],
+    ['section' => null,         'icon' => 'person-plus',         'label' => 'Onboarding',           'route' => 'onboarding',           'admin' => false],
     ['section' => null,         'icon' => 'person-dash',         'label' => 'Offboarding',          'route' => 'offboarding',          'admin' => false],
 
     // ── Speicher & Freigaben
@@ -37,7 +38,9 @@ $_navDefs = [
     ['section' => null,         'icon' => 'airplane',            'label' => 'EXO Migration',        'route' => 'exchangemigration',    'admin' => false],
     ['section' => null,         'icon' => 'camera-video',        'label' => 'Teams-Nutzung',        'route' => 'teamsusage',           'admin' => false],
     ['section' => null,         'icon' => 'collection',          'label' => 'Teams-Übersicht',      'route' => 'teamspolicies',        'admin' => false],
+    ['section' => null,         'icon' => 'people-fill',         'label' => 'Teams Governance',     'route' => 'teamsgovernance',      'admin' => false],
     ['section' => null,         'icon' => 'graph-up-arrow',      'label' => 'Adoptions-Report',     'route' => 'adoption',             'admin' => false],
+    ['section' => null,         'icon' => 'bar-chart-steps',     'label' => 'Nutzungsberichte',     'route' => 'usagereports',         'admin' => false],
     ['section' => null,         'icon' => 'megaphone',           'label' => 'Message Center',       'route' => 'msgcenter',            'admin' => false],
     ['section' => null,         'icon' => 'arrow-left-right',    'label' => 'Mail Flow & Schutz',   'route' => 'mailflow',             'admin' => false],
     ['section' => null,         'icon' => 'heart-pulse',         'label' => 'Dienststatus',         'route' => 'servicehealth',        'admin' => false],
@@ -53,6 +56,7 @@ $_navDefs = [
     ['section' => null,         'icon' => 'tags',                'label' => 'Sensitivity Labels',   'route' => 'sensitivitylabels',    'admin' => false],
     ['section' => null,         'icon' => 'grid-3x3-gap',        'label' => 'App-Registrierungen',  'route' => 'appregistrations',     'admin' => false],
     ['section' => null,         'icon' => 'person-lock',         'label' => 'Admin-Rollen',         'route' => 'adminroles',           'admin' => false],
+    ['section' => null,         'icon' => 'globe2',              'label' => 'Domain Health',        'route' => 'domainhealth',         'admin' => false],
 
     // ── Compliance & Audit
     ['section' => 'Compliance & Audit', 'icon' => 'phone',       'label' => 'Geräte',              'route' => 'devices',              'admin' => false],
@@ -60,6 +64,9 @@ $_navDefs = [
     ['section' => null,         'icon' => 'clipboard-check',     'label' => 'Access Reviews',       'route' => 'accessreview',         'admin' => false],
     ['section' => null,         'icon' => 'clock-history',       'label' => 'Audit-Log',            'route' => 'auditlog',             'admin' => false],
     ['section' => null,         'icon' => 'journal-text',        'label' => 'Sign-in-Log',          'route' => 'signinlog',            'admin' => false],
+    ['section' => null,         'icon' => 'shield-lock',         'label' => 'DLP-Richtlinien',      'route' => 'dlppolicies',          'admin' => false],
+    ['section' => null,         'icon' => 'archive',             'label' => 'Aufbewahrung',         'route' => 'retentionpolicies',    'admin' => false],
+    ['section' => null,         'icon' => 'trash2',              'label' => 'Papierkorb',           'route' => 'deletedobjects',       'admin' => false],
 
     // ── Handbuch (no section header)
     ['section' => null,         'icon' => 'book',                'label' => 'Handbuch',             'route' => 'manual',               'admin' => false],

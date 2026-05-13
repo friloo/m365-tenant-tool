@@ -68,6 +68,46 @@ $total = count($users);
                 onclick="submitBulk('reset_mfa')">
             <i class="bi bi-shield-x me-1"></i> MFA zurücksetzen
         </button>
+        <button type="button" class="btn btn-sm btn-outline-primary"
+                onclick="openLicenseModal('assign')">
+            <i class="bi bi-plus-circle me-1"></i> Lizenz zuweisen
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-danger"
+                onclick="submitBulk('remove_license')"
+                title="Alle Lizenzen der ausgewählten Benutzer entfernen">
+            <i class="bi bi-dash-circle me-1"></i> Lizenzen entfernen
+        </button>
+        <input type="hidden" name="sku_id" id="bulkSkuId" value="">
+    </div>
+
+    <!-- License assign modal -->
+    <div class="modal fade" id="licenseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-award me-2"></i>Lizenz zuweisen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label fw-semibold">Lizenz auswählen</label>
+                    <select id="skuSelect" class="form-select">
+                        <?php foreach ($skus as $sku): ?>
+                            <?php $avail = ($sku['prepaidUnits']['enabled'] ?? 0) - ($sku['consumedUnits'] ?? 0); ?>
+                            <?php if ($avail <= 0) continue; ?>
+                            <option value="<?= $e($sku['skuId']) ?>">
+                                <?= $e($sku['skuPartNumber']) ?> (<?= $avail ?> verfügbar)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmLicenseAssign()">
+                        <i class="bi bi-check-circle me-1"></i> Zuweisen
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="table-responsive">
@@ -191,12 +231,24 @@ function updateBulkBar() {
 
 function submitBulk(action) {
     const labels = {
-        disable:   'Ausgewählte Benutzer wirklich deaktivieren?',
-        enable:    'Ausgewählte Benutzer aktivieren?',
-        reset_mfa: 'MFA für ausgewählte Benutzer zurücksetzen?',
+        disable:        'Ausgewählte Benutzer wirklich deaktivieren?',
+        enable:         'Ausgewählte Benutzer aktivieren?',
+        reset_mfa:      'MFA für ausgewählte Benutzer zurücksetzen?',
+        remove_license: 'Alle Lizenzen der ausgewählten Benutzer entfernen?',
     };
-    if (!confirm(labels[action])) return;
+    if (!confirm(labels[action] || 'Aktion ausführen?')) return;
     document.getElementById('bulkAction').value = action;
+    document.getElementById('bulkForm').submit();
+}
+function openLicenseModal(type) {
+    new bootstrap.Modal(document.getElementById('licenseModal')).show();
+}
+function confirmLicenseAssign() {
+    const skuId = document.getElementById('skuSelect').value;
+    if (!skuId) return;
+    document.getElementById('bulkSkuId').value = skuId;
+    document.getElementById('bulkAction').value = 'assign_license';
+    bootstrap.Modal.getInstance(document.getElementById('licenseModal')).hide();
     document.getElementById('bulkForm').submit();
 }
 

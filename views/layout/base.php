@@ -176,6 +176,9 @@
                 <a href="?refresh=1" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" title="Daten aktualisieren">
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>
+                <button onclick="window.print()" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" title="Seite drucken / als PDF speichern">
+                    <i class="bi bi-printer"></i>
+                </button>
                 <div class="d-flex align-items-center gap-2 ms-2 ps-2" style="border-left: 1px solid #e5e7eb;">
                     <?php if (\App\Core\Session::get('auth_type') === 'microsoft'): ?>
                         <i class="bi bi-microsoft" style="color:#0078d4;"></i>

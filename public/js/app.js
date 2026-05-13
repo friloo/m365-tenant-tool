@@ -335,3 +335,49 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.target === overlay) close();
     });
 })();
+
+// ── Saved Filters (localStorage per page) ─────────────────────────────────
+(function () {
+    const pageKey = 'filter_' + location.pathname.replace(/\//g, '_');
+
+    function saveFilters() {
+        const state = {};
+        document.querySelectorAll('[data-save-filter]').forEach(el => {
+            state[el.dataset.saveFilter] = el.tagName === 'INPUT' ? el.value : el.value;
+        });
+        if (Object.keys(state).length) {
+            localStorage.setItem(pageKey, JSON.stringify(state));
+        }
+    }
+
+    function restoreFilters() {
+        try {
+            const state = JSON.parse(localStorage.getItem(pageKey) || '{}');
+            Object.entries(state).forEach(([key, val]) => {
+                const el = document.querySelector('[data-save-filter="' + key + '"]');
+                if (el && val !== undefined) {
+                    el.value = val;
+                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        } catch {}
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        restoreFilters();
+        document.querySelectorAll('[data-save-filter]').forEach(el => {
+            el.addEventListener('change', saveFilters);
+        });
+    });
+})();
+
+// ── PDF / Print export ─────────────────────────────────────────────────────
+function printPage() {
+    window.print();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-pdf-export]').forEach(btn => {
+        btn.addEventListener('click', () => window.print());
+    });
+});
