@@ -80,16 +80,119 @@
                                        placeholder="http://localhost:11434">
                                 <div class="form-text" id="aiBaseUrlHint">Für Ollama oder eigene OpenAI-kompatible Endpunkte</div>
                             </div>
-                            <div class="col-md-6 d-flex align-items-end">
+                            <div class="col-md-6 d-flex align-items-end gap-2">
                                 <a href="/ai" class="btn btn-outline-primary btn-sm">
                                     <i class="bi bi-robot me-1"></i> Zum KI-Berater
                                 </a>
+                                <button type="button" class="btn btn-outline-secondary btn-sm"
+                                        data-bs-toggle="modal" data-bs-target="#aiProtocolModal"
+                                        onclick="loadAiProtocol()">
+                                    <i class="bi bi-file-earmark-text me-1"></i> Protokoll anzeigen
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- AI Protocol Modal -->
+        <div class="modal fade" id="aiProtocolModal" tabindex="-1">
+          <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">
+                  <i class="bi bi-file-earmark-text me-2 text-primary"></i>
+                  KI-Protokoll &mdash; zuletzt gesendete Daten
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div class="alert alert-success small mb-3">
+                  <i class="bi bi-shield-check me-1"></i>
+                  <strong>Datenschutz:</strong> Es werden ausschließlich aggregierte, anonymisierte Metriken
+                  (Zahlen, Prozentsätze) übertragen. Keine UPNs, keine Namen, keine Tenant-ID, keine Domains,
+                  keine SKU-Bezeichnungen, keine Geräte-Namen.
+                </div>
+                <div id="aiProtocolBody">
+                  <div class="text-center py-4 text-muted">
+                    <div class="spinner-border spinner-border-sm me-2"></div>Lade Protokoll&hellip;
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+        function loadAiProtocol() {
+            const body = document.getElementById('aiProtocolBody');
+            body.innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Lade Protokoll&hellip;</div>';
+            fetch('/ai/last-payload', { credentials: 'same-origin' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.empty) {
+                        body.innerHTML = '<div class="alert alert-info">' + escapeHtml(data.message) + '</div>';
+                        return;
+                    }
+                    body.innerHTML = renderProtocol(data);
+                })
+                .catch(err => {
+                    body.innerHTML = '<div class="alert alert-danger">Protokoll konnte nicht geladen werden: ' + escapeHtml(err.message) + '</div>';
+                });
+        }
+        function renderProtocol(d) {
+            const esc = escapeHtml;
+            const stored = d.stored_at ? new Date(d.stored_at.replace(' ', 'T')).toLocaleString('de-DE') : '–';
+            const sent   = d.sent_at   ? new Date(d.sent_at.replace(' ',   'T')).toLocaleString('de-DE') : '–';
+            const httpClass = (d.response && d.response.http_code >= 200 && d.response.http_code < 300) ? 'text-success' : 'text-danger';
+
+            let out = '<div class="row g-3 mb-3">';
+            out += metaCard('Gesendet', sent);
+            out += metaCard('Anbieter', esc(d.provider || ''));
+            out += metaCard('Modell', esc(d.model || ''));
+            out += metaCard('HTTP-Status', '<span class="' + httpClass + '">' + (d.response && d.response.http_code != null ? d.response.http_code : '–') + '</span>');
+            out += '</div>';
+
+            out += '<h6 class="fw-bold mt-3 mb-2"><i class="bi bi-cloud-upload me-1"></i>Endpunkt</h6>';
+            out += '<pre class="bg-light border rounded p-2 small mb-3" style="white-space:pre-wrap;word-break:break-all;">' + esc(d.endpoint || '') + '</pre>';
+
+            if (d.request && d.request.metrics_sent) {
+                out += '<h6 class="fw-bold mt-3 mb-2"><i class="bi bi-bar-chart me-1"></i>Übertragene Metriken (anonymisiert)</h6>';
+                out += '<pre class="bg-light border rounded p-2 small mb-3" style="max-height:300px;overflow:auto;">'
+                     + esc(JSON.stringify(d.request.metrics_sent, null, 2)) + '</pre>';
+            }
+
+            if (d.request && d.request.system_prompt) {
+                out += '<h6 class="fw-bold mt-3 mb-2"><i class="bi bi-gear me-1"></i>System-Prompt</h6>';
+                out += '<pre class="bg-light border rounded p-2 small mb-3" style="white-space:pre-wrap;">' + esc(d.request.system_prompt) + '</pre>';
+            }
+            if (d.request && d.request.user_prompt) {
+                out += '<h6 class="fw-bold mt-3 mb-2"><i class="bi bi-chat-left-text me-1"></i>User-Prompt (vollständig)</h6>';
+                out += '<pre class="bg-light border rounded p-2 small mb-3" style="white-space:pre-wrap;max-height:300px;overflow:auto;">' + esc(d.request.user_prompt) + '</pre>';
+            }
+
+            out += '<h6 class="fw-bold mt-3 mb-2"><i class="bi bi-cloud-download me-1"></i>Rohantwort des Anbieters</h6>';
+            if (d.response && d.response.curl_err) {
+                out += '<div class="alert alert-danger small">cURL-Fehler: ' + esc(d.response.curl_err) + '</div>';
+            }
+            out += '<pre class="bg-light border rounded p-2 small mb-2" style="max-height:300px;overflow:auto;white-space:pre-wrap;">'
+                 + esc((d.response && d.response.body) ? d.response.body : '(leer)') + '</pre>';
+
+            out += '<div class="text-muted small mt-3"><i class="bi bi-clock me-1"></i>Aufgezeichnet: ' + stored + '</div>';
+            return out;
+        }
+        function metaCard(label, val) {
+            return '<div class="col-md-3"><div class="p-2 border rounded bg-light"><div class="text-muted small">'
+                + escapeHtml(label) + '</div><div class="fw-semibold">' + val + '</div></div></div>';
+        }
+        function escapeHtml(s) {
+            return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+        </script>
 
         <!-- General -->
         <div class="content-card mb-4" id="general">
