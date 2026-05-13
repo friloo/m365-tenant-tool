@@ -22,11 +22,19 @@ set_exception_handler(function (\Throwable $e): void {
 });
 
 // Redirect to installer if not installed
-if (!file_exists(__DIR__ . '/storage/installed.lock')) {
-    if (!str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/install')) {
+$reqUri = $_SERVER['REQUEST_URI'] ?? '';
+$onInstallerRoute = str_starts_with($reqUri, '/install');
+
+function setup_redirect(string $reason): never {
+    error_log('[M365Tool] Setup redirect: ' . $reason);
+    if (!headers_sent()) {
         header('Location: /install/');
-        exit;
     }
+    exit;
+}
+
+if (!file_exists(__DIR__ . '/storage/installed.lock')) {
+    if (!$onInstallerRoute) setup_redirect('installed.lock missing');
 }
 
 if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
@@ -48,109 +56,152 @@ use App\Graph\GraphClient;
 
 Session::start();
 
-// Load encryption key + connect DB using stored config
+// Load encryption key. If the file is missing/unreadable/malformed, send the
+// user back to the installer rather than blowing up with "Interner Fehler".
 $keyPath = __DIR__ . '/storage/app.key';
-$encryptor = new Encryptor($keyPath);
-
-// Bootstrap DB from a minimal config file (only needs host/name/user; password decrypted)
-// We need to bootstrap the DB to read the rest of the config.
-// First connect with the non-encrypted values (db_host, db_name, db_user stored plaintext,
-// db_password stored encrypted). We read a bootstrap config from a small ini file written by installer.
-$bootstrapFile = __DIR__ . '/storage/db_bootstrap.ini';
-if (file_exists($bootstrapFile)) {
-    $ini = parse_ini_file($bootstrapFile, false, INI_SCANNER_RAW);
-    $dbPassword = $encryptor->decrypt($ini['db_password_enc']);
-    DB::connect([
-        'host'     => $ini['db_host'],
-        'port'     => $ini['db_port'] ?? 3306,
-        'name'     => $ini['db_name'],
-        'user'     => $ini['db_user'],
-        'password' => $dbPassword,
-    ]);
-} else {
-    // Fallback: try to read directly from app_config (DB connection must already exist)
-    // This path is hit if db_bootstrap.ini wasn't written. Installer creates it.
-    die('Setup incomplete. Please run the <a href="/install/">installer</a>.');
+try {
+    $encryptor = new Encryptor($keyPath);
+} catch (\Throwable $e) {
+    if ($onInstallerRoute) {
+        // Installer will create the key; keep going without one is not possible
+        // here, but the installer's own bootstrap should not hit this branch.
+        throw $e;
+    }
+    setup_redirect('Encryptor init failed: ' . $e->getMessage());
 }
 
-// Ensure m365_users table exists
-DB::execute("CREATE TABLE IF NOT EXISTS m365_users (
-    id               INT AUTO_INCREMENT PRIMARY KEY,
-    azure_object_id  VARCHAR(100) DEFAULT NULL,
-    upn              VARCHAR(255) NOT NULL,
-    display_name     VARCHAR(255) DEFAULT NULL,
-    role             ENUM('operator','admin') NOT NULL DEFAULT 'operator',
-    is_active        TINYINT(1) NOT NULL DEFAULT 1,
-    last_login       DATETIME DEFAULT NULL,
-    created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY uq_upn (upn),
-    UNIQUE KEY uq_oid (azure_object_id)
-)");
+// Bootstrap DB from a minimal config file (host/name/user plaintext, password
+// encrypted with the app key). Anything malformed → installer.
+$bootstrapFile = __DIR__ . '/storage/db_bootstrap.ini';
+if (!file_exists($bootstrapFile)) {
+    if ($onInstallerRoute) {
+        // Installer hasn't written it yet — that's fine, let installer handle it.
+    } else {
+        setup_redirect('db_bootstrap.ini missing');
+    }
+} else {
+    $ini = @parse_ini_file($bootstrapFile, false, INI_SCANNER_RAW);
+    if (!is_array($ini) || empty($ini['db_password_enc']) || empty($ini['db_host'])
+        || empty($ini['db_name']) || empty($ini['db_user'])) {
+        if ($onInstallerRoute) {
+            // Let installer rewrite it.
+        } else {
+            setup_redirect('db_bootstrap.ini corrupt or incomplete');
+        }
+    } else {
+        try {
+            $dbPassword = $encryptor->decrypt($ini['db_password_enc']);
+        } catch (\Throwable $e) {
+            setup_redirect('Cannot decrypt DB password (app.key mismatch?): ' . $e->getMessage());
+        }
+        try {
+            DB::connect([
+                'host'     => $ini['db_host'],
+                'port'     => $ini['db_port'] ?? 3306,
+                'name'     => $ini['db_name'],
+                'user'     => $ini['db_user'],
+                'password' => $dbPassword,
+            ]);
+        } catch (\Throwable $e) {
+            error_log('[M365Tool] DB connect failed: ' . $e->getMessage());
+            if (!$onInstallerRoute) {
+                http_response_code(503);
+                header('Content-Type: text/html; charset=utf-8');
+                echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Datenbank nicht erreichbar</title></head>'
+                   . '<body style="font-family:system-ui;text-align:center;padding:80px;">'
+                   . '<h2>&#9888; Datenbank nicht erreichbar</h2>'
+                   . '<p>Die Datenbankverbindung konnte nicht hergestellt werden. Bitte prüfe die Zugangsdaten oder kontaktiere den Administrator.</p>'
+                   . '<p><a href="/install/">Zur Installation</a></p></body></html>';
+                exit;
+            }
+        }
+    }
+}
 
-// Ensure user_notes table exists
-DB::execute("CREATE TABLE IF NOT EXISTS user_notes (
-    id            INT AUTO_INCREMENT PRIMARY KEY,
-    user_azure_id VARCHAR(100) NOT NULL,
-    note          TEXT NOT NULL,
-    created_by    VARCHAR(255) NOT NULL DEFAULT '',
-    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_user (user_azure_id)
-)");
-
-// Ensure access_reviews tables exist
-DB::execute("CREATE TABLE IF NOT EXISTS access_reviews (
-    id           INT AUTO_INCREMENT PRIMARY KEY,
-    title        VARCHAR(255) NOT NULL,
-    type         VARCHAR(50) NOT NULL DEFAULT 'guests',
-    status       ENUM('open','completed') DEFAULT 'open',
-    created_by   VARCHAR(255) NOT NULL,
-    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    completed_at DATETIME DEFAULT NULL
-)");
-
-DB::execute("CREATE TABLE IF NOT EXISTS access_review_items (
-    id           INT AUTO_INCREMENT PRIMARY KEY,
-    review_id    INT NOT NULL,
-    user_id      VARCHAR(100) NOT NULL,
-    user_upn     VARCHAR(255) NOT NULL,
-    user_name    VARCHAR(255) NOT NULL,
-    last_signin  DATETIME DEFAULT NULL,
-    decision     ENUM('pending','approve','revoke') DEFAULT 'pending',
-    decided_by   VARCHAR(255) DEFAULT NULL,
-    decided_at   DATETIME DEFAULT NULL,
-    FOREIGN KEY (review_id) REFERENCES access_reviews(id) ON DELETE CASCADE,
-    INDEX idx_review (review_id)
-)");
-
-// Login brute-force protection table
-DB::execute("CREATE TABLE IF NOT EXISTS login_attempts (
-    id           INT AUTO_INCREMENT PRIMARY KEY,
-    ip_address   VARCHAR(45) NOT NULL,
-    attempted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_ip_time (ip_address, attempted_at)
-)");
-
-// Internal application audit log
-DB::execute("CREATE TABLE IF NOT EXISTS app_audit_log (
-    id         INT AUTO_INCREMENT PRIMARY KEY,
-    actor      VARCHAR(255) NOT NULL DEFAULT '',
-    action     VARCHAR(255) NOT NULL,
-    module     VARCHAR(100) NOT NULL DEFAULT '',
-    detail     TEXT,
-    ip_address VARCHAR(45),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_created (created_at),
-    INDEX idx_actor (actor)
-)");
+// Ensure required tables exist. Running DDL on every request is fragile (a
+// read-only replica or a user who has lost DDL privileges would fatal here),
+// so do it once per process and tolerate failures — the installer is the
+// authoritative source for schema.
+$ddl = [
+    "CREATE TABLE IF NOT EXISTS m365_users (
+        id               INT AUTO_INCREMENT PRIMARY KEY,
+        azure_object_id  VARCHAR(100) DEFAULT NULL,
+        upn              VARCHAR(255) NOT NULL,
+        display_name     VARCHAR(255) DEFAULT NULL,
+        role             ENUM('operator','admin') NOT NULL DEFAULT 'operator',
+        is_active        TINYINT(1) NOT NULL DEFAULT 1,
+        last_login       DATETIME DEFAULT NULL,
+        created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY uq_upn (upn),
+        UNIQUE KEY uq_oid (azure_object_id)
+    )",
+    "CREATE TABLE IF NOT EXISTS user_notes (
+        id            INT AUTO_INCREMENT PRIMARY KEY,
+        user_azure_id VARCHAR(100) NOT NULL,
+        note          TEXT NOT NULL,
+        created_by    VARCHAR(255) NOT NULL DEFAULT '',
+        created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_user (user_azure_id)
+    )",
+    "CREATE TABLE IF NOT EXISTS access_reviews (
+        id           INT AUTO_INCREMENT PRIMARY KEY,
+        title        VARCHAR(255) NOT NULL,
+        type         VARCHAR(50) NOT NULL DEFAULT 'guests',
+        status       ENUM('open','completed') DEFAULT 'open',
+        created_by   VARCHAR(255) NOT NULL,
+        created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        completed_at DATETIME DEFAULT NULL
+    )",
+    "CREATE TABLE IF NOT EXISTS access_review_items (
+        id           INT AUTO_INCREMENT PRIMARY KEY,
+        review_id    INT NOT NULL,
+        user_id      VARCHAR(100) NOT NULL,
+        user_upn     VARCHAR(255) NOT NULL,
+        user_name    VARCHAR(255) NOT NULL,
+        last_signin  DATETIME DEFAULT NULL,
+        decision     ENUM('pending','approve','revoke') DEFAULT 'pending',
+        decided_by   VARCHAR(255) DEFAULT NULL,
+        decided_at   DATETIME DEFAULT NULL,
+        FOREIGN KEY (review_id) REFERENCES access_reviews(id) ON DELETE CASCADE,
+        INDEX idx_review (review_id)
+    )",
+    "CREATE TABLE IF NOT EXISTS login_attempts (
+        id           INT AUTO_INCREMENT PRIMARY KEY,
+        ip_address   VARCHAR(45) NOT NULL,
+        attempted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_ip_time (ip_address, attempted_at)
+    )",
+    "CREATE TABLE IF NOT EXISTS app_audit_log (
+        id         INT AUTO_INCREMENT PRIMARY KEY,
+        actor      VARCHAR(255) NOT NULL DEFAULT '',
+        action     VARCHAR(255) NOT NULL,
+        module     VARCHAR(100) NOT NULL DEFAULT '',
+        detail     TEXT,
+        ip_address VARCHAR(45),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_created (created_at),
+        INDEX idx_actor (actor)
+    )",
+];
+foreach ($ddl as $sql) {
+    try { DB::execute($sql); }
+    catch (\Throwable $e) { error_log('[M365Tool] DDL skipped: ' . $e->getMessage()); }
+}
 
 // Configure Config singleton with encryptor
 $config = Config::getInstance();
 $config->setEncryptor($encryptor);
 
-// Set timezone
+// Set timezone. Some shared MySQL servers don't have the tz tables loaded
+// and reject "SET time_zone"; that's purely cosmetic for DATETIME functions,
+// so swallow the error.
 $tz = $config->get('timezone', 'Europe/Berlin');
-date_default_timezone_set($tz);
-DB::get()->exec("SET time_zone = '" . (new \DateTime())->format('P') . "'");
+try { date_default_timezone_set($tz); } catch (\Throwable) {}
+try {
+    DB::get()->exec("SET time_zone = '" . (new \DateTime())->format('P') . "'");
+} catch (\Throwable $e) {
+    error_log('[M365Tool] SET time_zone skipped: ' . $e->getMessage());
+}
 
 // ── Service container helpers ──────────────────────────────
 $graphCache   = new GraphCache((int)$config->get('cache_ttl', 15));
