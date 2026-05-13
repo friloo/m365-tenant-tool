@@ -638,6 +638,7 @@ $router->get('/retentionpolicies',          [\App\Modules\RetentionPolicies\Rete
 $router->get('/ai',              [\App\Modules\AiAdvisor\AiAdvisorController::class, 'index']);
 $router->post('/ai/analyze',     [\App\Modules\AiAdvisor\AiAdvisorController::class, 'analyze']);
 $router->post('/ai/clear-cache', [\App\Modules\AiAdvisor\AiAdvisorController::class, 'clearCache']);
+$router->get('/ai/last-payload', [\App\Modules\AiAdvisor\AiAdvisorController::class, 'lastPayload']);
 
 // ── Dispatch ──────────────────────────────────────────────
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';

@@ -49,4 +49,20 @@ class AiAdvisorController
         Session::flash('success', 'KI-Analyse-Cache geleert.');
         Redirect::to('/ai');
     }
+
+    /**
+     * Returns the exact payload last sent to the AI provider as JSON, for
+     * the protocol modal in /settings. Admin-only.
+     */
+    public function lastPayload(): void
+    {
+        LocalAuth::requireAdmin();
+        header('Content-Type: application/json; charset=utf-8');
+        $payload = app_service(AiAdvisorService::class)->getLastPayload();
+        if (!$payload) {
+            echo json_encode(['empty' => true, 'message' => 'Es wurde noch keine KI-Analyse durchgeführt. Starte die Analyse einmal unter "Zum KI-Berater".']);
+            return;
+        }
+        echo json_encode($payload, JSON_UNESCAPED_UNICODE);
+    }
 }

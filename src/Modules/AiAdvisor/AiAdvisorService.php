@@ -126,6 +126,155 @@ class AiAdvisorService
             ];
         } catch (\Throwable) {}
 
+        // Risky Users / Detections — counts only, no UPNs
+        try {
+            $rsi = app_service(\App\Modules\RiskySignIns\RiskySignInsService::class);
+            $risky = $rsi->getRiskyUsers();
+            $det   = $rsi->getRiskyDetections(100);
+            $ctx['risky'] = [
+                'at_risk_users' => count($risky),
+                'high_risk'     => count(array_filter($risky, fn($u) => strtolower($u['riskLevel'] ?? '') === 'high')),
+                'medium_risk'   => count(array_filter($risky, fn($u) => strtolower($u['riskLevel'] ?? '') === 'medium')),
+                'detections'    => count($det),
+            ];
+        } catch (\Throwable) {}
+
+        // Defender Alerts — counts by status, no titles
+        try {
+            $alerts = app_graph()->get(
+                '/security/alerts_v2',
+                ['$top' => '200', '$select' => 'status,severity'],
+                'ai_defender_alerts', 600
+            );
+            $list = $alerts['value'] ?? [];
+            $ctx['defender_alerts'] = [
+                'open'        => count(array_filter($list, fn($a) => ($a['status'] ?? '') === 'new')),
+                'in_progress' => count(array_filter($list, fn($a) => ($a['status'] ?? '') === 'inProgress')),
+                'high'        => count(array_filter($list, fn($a) => ($a['severity'] ?? '') === 'high')),
+            ];
+        } catch (\Throwable) {}
+
+        // Conditional Access — counts by state
+        try {
+            $ca = app_graph()->get(
+                '/identity/conditionalAccess/policies',
+                ['$top' => '200', '$select' => 'state'],
+                'ca_policies', 900
+            );
+            $pol = $ca['value'] ?? [];
+            $ctx['conditional_access'] = [
+                'total'       => count($pol),
+                'enabled'     => count(array_filter($pol, fn($p) => ($p['state'] ?? '') === 'enabled')),
+                'report_only' => count(array_filter($pol, fn($p) => ($p['state'] ?? '') === 'enabledForReportingButNotEnforced')),
+                'disabled'    => count(array_filter($pol, fn($p) => ($p['state'] ?? '') === 'disabled')),
+            ];
+        } catch (\Throwable) {}
+
+        // Secure Score
+        try {
+            $score = app_graph()->get(
+                '/security/secureScores',
+                ['$top' => '1', '$select' => 'currentScore,maxScore'],
+                'securescore_latest', 3600
+            );
+            $latest = $score['value'][0] ?? null;
+            if ($latest && ($latest['maxScore'] ?? 0) > 0) {
+                $ctx['secure_score'] = [
+                    'current' => round((float)($latest['currentScore'] ?? 0)),
+                    'max'     => round((float)($latest['maxScore']     ?? 0)),
+                    'pct'     => round((float)$latest['currentScore'] / (float)$latest['maxScore'] * 100),
+                ];
+            }
+        } catch (\Throwable) {}
+
+        // Admin role assignments — total only
+        try {
+            $r = app_graph()->getEventual(
+                '/roleManagement/directory/roleAssignments',
+                ['$count' => 'true', '$top' => '1', '$select' => 'id'],
+                'dash_admin_count', 1800
+            );
+            $ctx['admin_roles'] = [
+                'assignments' => (int)($r['@odata.count'] ?? 0),
+            ];
+        } catch (\Throwable) {}
+
+        // Guest users
+        try {
+            $r = app_graph()->getEventual(
+                '/users',
+                ['$count' => 'true', '$top' => '1', '$select' => 'id', '$filter' => "userType eq 'Guest'"],
+                'dash_guests_count', 1800
+            );
+            $ctx['guest_users'] = ['total' => (int)($r['@odata.count'] ?? 0)];
+        } catch (\Throwable) {}
+
+        // Teams in tenant
+        try {
+            $r = app_graph()->getEventual(
+                '/groups',
+                ['$count' => 'true', '$top' => '1', '$select' => 'id', '$filter' => "resourceProvisioningOptions/Any(x:x eq 'Team')"],
+                'dash_teams_count', 1800
+            );
+            $ctx['teams'] = ['total' => (int)($r['@odata.count'] ?? 0)];
+        } catch (\Throwable) {}
+
+        // App registrations — counts + expiring secrets (no app names)
+        try {
+            $apps = app_graph()->paginate(
+                '/applications',
+                ['$select' => 'id,passwordCredentials,keyCredentials', '$top' => '200'],
+                10,
+                'ai_app_registrations', 1800
+            );
+            $now = time();
+            $secretsSoon = 0; $secretsExpired = 0;
+            foreach ($apps as $app) {
+                foreach (($app['passwordCredentials'] ?? []) as $cred) {
+                    $end = strtotime($cred['endDateTime'] ?? '');
+                    if (!$end) continue;
+                    if ($end < $now) $secretsExpired++;
+                    elseif ($end < $now + 30*86400) $secretsSoon++;
+                }
+            }
+            $ctx['app_registrations'] = [
+                'total'                => count($apps),
+                'secrets_expiring_30d' => $secretsSoon,
+                'secrets_expired'      => $secretsExpired,
+            ];
+        } catch (\Throwable) {}
+
+        // Named locations — count by type
+        try {
+            $r = app_graph()->get(
+                '/identity/conditionalAccess/namedLocations',
+                ['$top' => '100'],
+                'ai_named_locations', 1800
+            );
+            $list = $r['value'] ?? [];
+            $trusted = 0;
+            foreach ($list as $loc) {
+                if (($loc['@odata.type'] ?? '') === '#microsoft.graph.ipNamedLocation' && ($loc['isTrusted'] ?? false)) {
+                    $trusted++;
+                }
+            }
+            $ctx['named_locations'] = ['total' => count($list), 'trusted' => $trusted];
+        } catch (\Throwable) {}
+
+        // Domain health (verified vs unverified)
+        try {
+            $r = app_graph()->paginate(
+                '/domains',
+                ['$select' => 'id,isVerified,isDefault,authenticationType'],
+                5,
+                'ai_domains', 3600
+            );
+            $verified = count(array_filter($r, fn($d) => $d['isVerified'] ?? false));
+            $ctx['domains'] = ['total' => count($r), 'verified' => $verified, 'unverified' => count($r) - $verified];
+        } catch (\Throwable) {}
+
+        // Defender / Mail Flow not duplicated — alerts already covered above.
+
         return $ctx;
     }
 
@@ -211,7 +360,63 @@ class AiAdvisorService
     // ── Private helpers ──────────────────────────────────────────────────────
 
     /**
+     * Builds the prompt JSON payload sent to the AI provider.
+     * Returns the array exactly as it will be transmitted, so a verbatim copy
+     * can be stored for the protocol modal.
+     */
+    private function buildPrompt(array $ctx, array $failedChecks, array $warningChecks): array
+    {
+        $failedList  = implode(', ', $failedChecks)  ?: 'keine';
+        $warningList = implode(', ', $warningChecks) ?: 'keine';
+
+        // Only aggregated, anonymized metrics — no UPNs/domains/tenant IDs.
+        $metrics = [
+            'users'              => $ctx['users']              ?? null,
+            'licenses'           => $ctx['licenses']           ?? null,
+            'devices'            => $ctx['devices']            ?? null,
+            'sharing'            => $ctx['sharing']            ?? null,
+            'risky'              => $ctx['risky']              ?? null,
+            'defender_alerts'    => $ctx['defender_alerts']    ?? null,
+            'conditional_access' => $ctx['conditional_access'] ?? null,
+            'secure_score'       => $ctx['secure_score']       ?? null,
+            'admin_roles'        => $ctx['admin_roles']        ?? null,
+            'guest_users'        => $ctx['guest_users']        ?? null,
+            'teams'              => $ctx['teams']              ?? null,
+            'app_registrations'  => $ctx['app_registrations']  ?? null,
+            'named_locations'    => $ctx['named_locations']    ?? null,
+            'domains'            => $ctx['domains']            ?? null,
+        ];
+        $metricsJson = json_encode(array_filter($metrics, fn($v) => $v !== null), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
+        $userMsg = <<<PROMPT
+Beurteile die Microsoft-365-Sicherheitslage anhand dieser aggregierten, vollständig anonymisierten Metriken (keine PII, keine Tenant-Kennungen, keine UPNs, keine Domain-Namen).
+
+Posture-Checks fehlgeschlagen: {$failedList}
+Posture-Checks mit Warnung: {$warningList}
+
+Metriken (JSON):
+{$metricsJson}
+
+Berücksichtige alle Module bei der Bewertung — insbesondere MFA-Abdeckung, fehlende Conditional-Access-Richtlinien, ungesicherte externe Freigaben, Defender-Alerts, Risiko-Benutzer, ablaufende App-Secrets, nicht-konforme Geräte, Secure-Score, Gast-Anteil. Identifiziere das kritischste Risiko zuerst.
+
+Antwort als JSON: {"score": 0-100, "summary": "2-3 deutsche Sätze, knapp und präzise"}
+PROMPT;
+
+        $messages = [
+            [
+                'role'    => 'system',
+                'content' => 'You are a Microsoft 365 security advisor. Respond only in German. Respond with valid JSON only — no markdown fences.',
+            ],
+            ['role' => 'user', 'content' => $userMsg],
+        ];
+
+        return ['messages' => $messages, 'metrics' => $metrics];
+    }
+
+    /**
      * Minimal AI call — only asks for a 2-3 sentence German summary + score 0-100.
+     * Persists the exact transmitted payload + raw response so the admin
+     * can audit what was sent to the provider.
      */
     private function callApi(array $ctx, array $failedChecks, array $warningChecks): string
     {
@@ -221,31 +426,8 @@ class AiAdvisorService
         $baseUrl  = trim($this->config->get('ai_base_url', ''));
         $endpoint = $this->getEndpoint($provider, $baseUrl);
 
-        $mfaPct      = (int)($ctx['users']['mfa_registered_pct'] ?? 0);
-        $nonCompliant = (int)($ctx['devices']['non_compliant'] ?? 0);
-        $anonShares  = (int)($ctx['sharing']['anonymous_count'] ?? 0);
-
-        $failedList  = implode(', ', $failedChecks)  ?: 'keine';
-        $warningList = implode(', ', $warningChecks) ?: 'keine';
-
-        $userMsg = <<<PROMPT
-Given these M365 security issues found (anonymized, no PII):
-Failed checks: {$failedList}
-Warning checks: {$warningList}
-Users without MFA: {$mfaPct}%
-Non-compliant devices: {$nonCompliant}
-Anonymous shares: {$anonShares}
-
-Return JSON: {"score": 0-100, "summary": "2-3 German sentences assessing overall security posture and most critical risk"}
-PROMPT;
-
-        $messages = [
-            [
-                'role'    => 'system',
-                'content' => 'You are a Microsoft 365 security advisor. Respond only in German. Respond with valid JSON only.',
-            ],
-            ['role' => 'user', 'content' => $userMsg],
-        ];
+        $built    = $this->buildPrompt($ctx, $failedChecks, $warningChecks);
+        $messages = $built['messages'];
 
         $payload = [
             'model'       => $model,
@@ -278,6 +460,27 @@ PROMPT;
         $curlErr  = curl_error($ch);
         // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
 
+        // Persist the exact request + response so an admin can audit what
+        // was sent. Stored before throwing on error so failures are visible
+        // in the protocol modal too.
+        $this->saveLastPayload([
+            'sent_at'  => date('Y-m-d H:i:s'),
+            'provider' => $provider,
+            'endpoint' => $endpoint,
+            'model'    => $model,
+            'request'  => [
+                'system_prompt'   => $messages[0]['content'] ?? '',
+                'user_prompt'     => $messages[1]['content'] ?? '',
+                'metrics_sent'    => $built['metrics'],
+                'temperature'     => 0.2,
+            ],
+            'response' => [
+                'http_code' => $httpCode,
+                'curl_err'  => $curlErr ?: null,
+                'body'      => is_string($response) ? $response : null,
+            ],
+        ]);
+
         if ($curlErr) {
             throw new \RuntimeException("Verbindungsfehler: {$curlErr}");
         }
@@ -296,6 +499,43 @@ PROMPT;
         }
 
         return $content;
+    }
+
+    /**
+     * Save the last sent payload + raw response for audit purposes.
+     * Stored in the existing cache table with a long TTL.
+     */
+    private function saveLastPayload(array $payload): void
+    {
+        try {
+            DB::execute(
+                "INSERT INTO cache (cache_key, data, expires_at)
+                 VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 90 DAY))
+                 ON DUPLICATE KEY UPDATE data = VALUES(data), expires_at = VALUES(expires_at), created_at = NOW()",
+                ['ai_last_payload', json_encode($payload, JSON_UNESCAPED_UNICODE)]
+            );
+        } catch (\Throwable) {}
+    }
+
+    /**
+     * Read the most recent payload sent to the AI provider, if any.
+     * Returned shape matches saveLastPayload(). null if never called.
+     */
+    public function getLastPayload(): ?array
+    {
+        try {
+            $row = DB::fetchOne(
+                "SELECT data, created_at FROM cache WHERE cache_key = 'ai_last_payload'"
+            );
+            if ($row) {
+                $data = json_decode($row['data'], true);
+                if (is_array($data)) {
+                    $data['stored_at'] = $row['created_at'];
+                    return $data;
+                }
+            }
+        } catch (\Throwable) {}
+        return null;
     }
 
     private function parseAiResponse(string $raw): array
