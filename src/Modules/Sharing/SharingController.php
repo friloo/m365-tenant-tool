@@ -64,8 +64,14 @@ class SharingController
         LocalAuth::require();
         set_time_limit(300);
         $log   = app_service(ShareReviewService::class)->scanAndSync();
-        $found = count(array_filter($log, fn($l) => str_starts_with($l, 'NEW')));
-        Session::flash('success', "Scan abgeschlossen — {$found} neue Freigaben gefunden (" . count($log) . " Einträge verarbeitet).");
+        $errors = array_filter($log, fn($l) => str_starts_with($l, 'ERROR'));
+        $found  = count(array_filter($log, fn($l) => str_starts_with($l, 'NEW')));
+
+        if (!empty($errors)) {
+            Session::flash('error', 'Scan-Fehler: ' . implode('; ', $errors));
+        } else {
+            Session::flash('success', "Scan abgeschlossen — {$found} neue Freigaben gefunden.");
+        }
         Redirect::to('/sharing');
     }
 
