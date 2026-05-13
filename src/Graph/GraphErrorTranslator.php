@@ -137,6 +137,35 @@ class GraphErrorTranslator
     }
 
     /**
+     * Helper-Pattern: führt einen Service-Aufruf aus, fängt Throwables,
+     * konsultiert nach Erfolg getLastError() (für 403/404 die der GraphClient
+     * still swalloed), und liefert ['data' => …, 'diag' => …|null].
+     *
+     * Beispiel:
+     *   ['data' => $users, 'diag' => $diag] = GraphErrorTranslator::guard(
+     *       fn() => $svc->getAll(),
+     *       'User.Read.All'
+     *   );
+     */
+    public static function guard(callable $fn, ?string $permission = null, mixed $emptyValue = []): array
+    {
+        try {
+            $result = $fn();
+            $diag   = null;
+            // Wenn der Result leer ist UND der GraphClient zuletzt einen
+            // (stillschweigend geswallowed-en) Fehler hatte, surface ihn.
+            $isEmpty = $result === null || $result === [] || $result === '' || $result === false;
+            if ($isEmpty) {
+                $err = function_exists('app_graph') ? app_graph()->getLastError() : null;
+                $diag = self::translate($err, $permission);
+            }
+            return ['data' => $result, 'diag' => $diag];
+        } catch (\Throwable $e) {
+            return ['data' => $emptyValue, 'diag' => self::fromThrowable($e, $permission)];
+        }
+    }
+
+    /**
      * Bequemer Wrapper: nimmt eine Throwable-Message und produziert die
      * gleiche Diagnose. Wird genutzt, wenn der Caller nur eine Exception hat
      * und nicht das strukturierte lastError-Array.

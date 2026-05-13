@@ -42,14 +42,19 @@ $classificationLabel = fn(string $c): string => match (strtolower($c)) {
 <!-- Permission / connectivity error -->
 <div class="content-card mb-4">
     <div class="card-body-custom">
-        <div class="empty-state">
-            <i class="bi bi-cloud-slash text-muted" style="font-size:2.5rem;"></i>
-            <p class="mt-3 mb-1 fw-medium">Keine Service-Health-Daten verfügbar</p>
-            <p class="text-muted small">
-                Stellen Sie sicher, dass die Berechtigung
-                <code>ServiceHealth.Read.All</code> erteilt wurde.
-            </p>
-        </div>
+        <?php
+        if (!empty($diag ?? null)) {
+            $diagStyle = 'empty';
+            $diagIcon  = 'cloud-slash';
+            $diagTitle = 'Keine Service-Health-Daten verfügbar';
+            include BASE_PATH . '/views/partials/graph_diagnostic.php';
+        } else { ?>
+            <div class="empty-state">
+                <i class="bi bi-cloud-slash text-muted" style="font-size:2.5rem;"></i>
+                <p class="mt-3 mb-1 fw-medium">Keine Service-Health-Daten verfügbar</p>
+                <p class="text-muted small">Microsoft hat aktuell keine Status-Daten geliefert.</p>
+            </div>
+        <?php } ?>
     </div>
 </div>
 <?php else: ?>

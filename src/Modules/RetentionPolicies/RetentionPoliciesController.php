@@ -11,18 +11,17 @@ class RetentionPoliciesController
     {
         LocalAuth::require();
 
-        $cases = [];
-        try {
-            $cases = app_graph()->paginate(
+        ['data' => $cases, 'diag' => $diag] = \App\Graph\GraphErrorTranslator::guard(
+            fn() => app_graph()->paginate(
                 '/security/cases/ediscoveryCases',
                 ['$select' => 'id,displayName,status,createdDateTime,closedDateTime'],
                 10,
                 'ediscovery_cases',
                 1800
-            );
-        } catch (\Throwable) {
-            $cases = [];
-        }
+            ),
+            'eDiscovery.Read.All'
+        );
+        $cases ??= [];
 
         $openCount   = count(array_filter($cases, fn($c) => ($c['status'] ?? '') === 'active'));
         $closedCount = count(array_filter($cases, fn($c) => ($c['status'] ?? '') === 'closed'));
@@ -32,6 +31,7 @@ class RetentionPoliciesController
             'cases'       => $cases,
             'openCount'   => $openCount,
             'closedCount' => $closedCount,
+            'diag'        => $diag,
         ]);
     }
 }

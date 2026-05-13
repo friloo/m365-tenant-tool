@@ -246,8 +246,7 @@ if ($neverExpires) {
                     <?php if (empty($signIns)): ?>
                         <div class="empty-state p-4 text-center">
                             <i class="bi bi-clock-history fs-2 text-muted mb-2 d-block"></i>
-                            <p class="text-muted mb-1">Keine Anmeldedaten verfügbar.</p>
-                            <p class="text-muted small mb-0">Möglicherweise fehlt die Berechtigung <code>AuditLog.Read.All</code> im App-Registration.</p>
+                            <p class="text-muted mb-0">Keine Anmeldedaten in den letzten 30 Tagen oder die Berechtigung <code>AuditLog.Read.All</code> fehlt. Genaue Diagnose unter <a href="/signinlog?user=<?= urlencode($user['id'] ?? '') ?>">Anmeldeprotokoll</a>.</p>
                         </div>
                     <?php else: ?>
                         <div class="table-responsive">

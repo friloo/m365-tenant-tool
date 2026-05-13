@@ -20,7 +20,11 @@ class ConditionalAccessController
 
         /** @var ConditionalAccessService $service */
         $service  = app_service(ConditionalAccessService::class);
-        $policies = $service->getPolicies();
+        ['data' => $policies, 'diag' => $diag] = \App\Graph\GraphErrorTranslator::guard(
+            fn() => $service->getPolicies(),
+            'Policy.Read.All'
+        );
+        $policies ??= [];
         $gaps     = $service->analyseGaps($policies);
 
         $summary = [
@@ -51,6 +55,7 @@ class ConditionalAccessController
             'gaps'             => $gaps,
             'summary'          => $summary,
             'lastError'        => $service->getLastError(),
+            'diag'             => $diag,
             'countryLocations' => $countryLocations,
             'flash'            => Session::getFlash('success'),
             'error'            => Session::getFlash('error'),

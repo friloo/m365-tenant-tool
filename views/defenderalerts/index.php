@@ -47,18 +47,18 @@
     <!-- Permission / no-data empty state -->
     <div class="content-card">
         <div class="card-body-custom">
-            <div class="empty-state">
-                <i class="bi bi-shield-slash"></i>
-                <p>
-                    Keine Defender-Daten verfügbar.<br>
-                    <span style="font-size:13px;color:#6b7280;">
-                        Berechtigung <code>SecurityEvents.Read.All</code> in der Azure AD App prüfen.
-                    </span>
-                </p>
-                <a href="/settings" class="btn btn-sm btn-outline-secondary mt-2">
-                    <i class="bi bi-gear me-1"></i>Einstellungen öffnen
-                </a>
-            </div>
+            <?php
+            if (!empty($diag ?? null)) {
+                $diagStyle = 'empty';
+                $diagIcon  = 'shield-slash';
+                $diagTitle = 'Keine Defender-Daten verfügbar';
+                include BASE_PATH . '/views/partials/graph_diagnostic.php';
+            } else { ?>
+                <div class="empty-state">
+                    <i class="bi bi-shield-slash"></i>
+                    <p>Aktuell keine Defender-Warnungen — alles ruhig.</p>
+                </div>
+            <?php } ?>
         </div>
     </div>
 <?php else: ?>
