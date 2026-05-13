@@ -8,7 +8,12 @@
 <?php endif; ?>
 
 <style>
-.step-indicator { display:flex; align-items:center; margin-bottom:2rem; }
+/* Step-Indicator (oben) */
+.step-indicator {
+    display:flex; align-items:flex-start;
+    margin: 0 auto 2rem; max-width:760px;
+    padding: 0 8px;
+}
 .step-indicator .step {
     display:flex; align-items:center; justify-content:center;
     width:36px; height:36px; border-radius:50%;
@@ -17,13 +22,42 @@
     flex-shrink:0; position:relative; z-index:1;
     transition: background .2s, border-color .2s, color .2s;
 }
-.step-indicator .step.active { background:#2563eb; border-color:#2563eb; color:#fff; }
+.step-indicator .step.active { background:#2563eb; border-color:#2563eb; color:#fff; box-shadow:0 0 0 4px rgba(37,99,235,.12); }
 .step-indicator .step.done   { background:#16a34a; border-color:#16a34a; color:#fff; }
-.step-indicator .step-label { font-size:12px; color:#6b7280; margin-top:4px; text-align:center; }
-.step-indicator .step-connector { flex:1; height:2px; background:#d1d5db; margin:0 4px; }
-.step-indicator .step-wrapper { display:flex; flex-direction:column; align-items:center; }
+.step-indicator .step-label { font-size:12px; color:#6b7280; margin-top:8px; text-align:center; white-space:nowrap; }
+.step-indicator .step-wrapper.active .step-label { color:#1d4ed8; font-weight:600; }
+.step-indicator .step-wrapper.done   .step-label { color:#15803d; font-weight:500; }
+.step-indicator .step-connector { flex:1; height:2px; background:#d1d5db; margin: 18px 4px 0; min-width:24px; }
+.step-indicator .step-connector.done { background:#16a34a; }
+.step-indicator .step-wrapper { display:flex; flex-direction:column; align-items:center; min-width:80px; }
+
+/* Card-Inhalt — die nackten .content-card im Wizard hatten kein Padding,
+   alles klebte an der Border. Wir geben jedem wizard-step-Card hier
+   einheitliches Padding + Header-Style. */
+.wizard-step .content-card { padding: 24px 28px; }
+.wizard-step .content-card > h5 {
+    font-size:18px; font-weight:600; color:#111827;
+    margin: 0 -28px 20px; padding: 0 28px 16px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+/* Aktions-Buttons unter dem Step (vorhandene mt-4 d-flex-Container) */
+.wizard-step .content-card > .d-flex.mt-4 {
+    margin: 20px -28px -4px;
+    padding: 16px 28px 0;
+    border-top: 1px solid #f3f4f6;
+}
+
 .strength-bar { height:4px; border-radius:2px; margin-top:4px; transition:width .3s,background .3s; }
-.group-search-box { margin-bottom:.5rem; }
+.group-search-box { margin-bottom:.75rem; }
+
+@media (max-width: 768px) {
+    .step-indicator { overflow-x: auto; padding-bottom: 4px; }
+    .step-indicator .step-label { font-size: 11px; }
+    .wizard-step .content-card { padding: 18px; }
+    .wizard-step .content-card > h5 { margin: 0 -18px 16px; padding: 0 18px 12px; }
+    .wizard-step .content-card > .d-flex.mt-4 { margin: 16px -18px -2px; padding: 14px 18px 0; }
+}
 </style>
 
 <form method="post" action="/onboarding/create" id="onboardingForm">
@@ -261,11 +295,21 @@ const totalSteps = 4;
 
 function showStep(n) {
     document.querySelectorAll('.wizard-step').forEach((s, i) => s.style.display = i + 1 === n ? '' : 'none');
-    document.querySelectorAll('.step-indicator .step').forEach((s, i) => {
-        s.classList.toggle('active', i + 1 === n);
-        s.classList.toggle('done', i + 1 < n);
-        if (i + 1 < n) s.innerHTML = '<i class="bi bi-check-lg"></i>';
-        else s.textContent = i + 1;
+    document.querySelectorAll('.step-indicator .step-wrapper').forEach((w, i) => {
+        const isActive = i + 1 === n;
+        const isDone   = i + 1 < n;
+        w.classList.toggle('active', isActive);
+        w.classList.toggle('done',   isDone);
+        const s = w.querySelector('.step');
+        if (s) {
+            s.classList.toggle('active', isActive);
+            s.classList.toggle('done',   isDone);
+            if (isDone) s.innerHTML = '<i class="bi bi-check-lg"></i>';
+            else        s.textContent = i + 1;
+        }
+    });
+    document.querySelectorAll('.step-indicator .step-connector').forEach((c, i) => {
+        c.classList.toggle('done', i + 1 < n);
     });
     currentStep = n;
     updateSummary();

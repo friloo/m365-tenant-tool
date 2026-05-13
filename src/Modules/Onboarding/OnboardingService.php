@@ -50,11 +50,15 @@ class OnboardingService
 
     public function getGroups(): array
     {
+        // Hinweis: Der OData-Filter "NOT groupTypes/any(…)" gilt bei Microsoft
+        // Graph als "advanced query" und würde zusätzlich den Header
+        // ConsistencyLevel: eventual + $count=true verlangen. Statt das hier
+        // hochzuziehen, holen wir alle Gruppen und filtern client-seitig —
+        // dynamische Gruppen sind eine kleine Minderheit, daher unkritisch.
         $groups = $this->graph->paginate(
             '/groups',
             [
                 '$select' => 'id,displayName,groupTypes,mailEnabled,resourceProvisioningOptions',
-                '$filter' => "NOT groupTypes/any(c:c eq 'DynamicMembership')",
                 '$top'    => '100',
             ],
             10,
@@ -64,10 +68,13 @@ class OnboardingService
 
         $result = [];
         foreach ($groups as $g) {
-            $groupTypes   = $g['groupTypes'] ?? [];
-            $provOptions  = $g['resourceProvisioningOptions'] ?? [];
-            $isTeam       = in_array('Team', $provOptions, true) || in_array('Unified', $groupTypes, true);
-            $isSecurity   = !($g['mailEnabled'] ?? false);
+            $groupTypes  = $g['groupTypes'] ?? [];
+            // Dynamische Gruppen ausschließen — Mitglieder werden nur über
+            // Regeln gesetzt, manuelles Hinzufügen ist nicht möglich.
+            if (in_array('DynamicMembership', $groupTypes, true)) continue;
+            $provOptions = $g['resourceProvisioningOptions'] ?? [];
+            $isTeam      = in_array('Team', $provOptions, true) || in_array('Unified', $groupTypes, true);
+            $isSecurity  = !($g['mailEnabled'] ?? false);
 
             $result[] = [
                 'id'          => $g['id'],
@@ -76,6 +83,8 @@ class OnboardingService
                 'isSecurity'  => $isSecurity,
             ];
         }
+        // Alphabetisch sortieren — bequemer im Dropdown
+        usort($result, fn($a, $b) => strcasecmp($a['displayName'], $b['displayName']));
         return $result;
     }
 

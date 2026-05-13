@@ -44,10 +44,11 @@ class AiAdvisorService
         // attach the right citation (BSI/NIS-2 vs DSGVO).
         try {
             $posture = app_service(\App\Modules\SecurityPosture\SecurityPostureService::class)->runChecks();
-            $byStatus     = ['pass' => [], 'warn' => [], 'fail' => []];
-            $gdprByStatus = ['pass' => [], 'warn' => [], 'fail' => []];
+            $byStatus     = ['pass' => [], 'warn' => [], 'fail' => [], 'unknown' => []];
+            $gdprByStatus = ['pass' => [], 'warn' => [], 'fail' => [], 'unknown' => []];
             foreach ($posture as $c) {
                 $status = $c['status'] ?? 'warn';
+                if (!isset($byStatus[$status])) $status = 'unknown';
                 if (($c['category'] ?? '') === 'DSGVO & Datenschutz') {
                     $gdprByStatus[$status][] = $c['id'];
                 } else {
@@ -59,16 +60,20 @@ class AiAdvisorService
                 'passed'         => count($byStatus['pass']),
                 'warnings'       => count($byStatus['warn']),
                 'failed'         => count($byStatus['fail']),
+                'unknown'        => count($byStatus['unknown']),
                 'failed_checks'  => $byStatus['fail'],
                 'warning_checks' => $byStatus['warn'],
+                'unknown_checks' => $byStatus['unknown'],
             ];
             $ctx['gdpr_posture'] = [
                 'total'          => array_sum(array_map('count', $gdprByStatus)),
                 'passed'         => count($gdprByStatus['pass']),
                 'warnings'       => count($gdprByStatus['warn']),
                 'failed'         => count($gdprByStatus['fail']),
+                'unknown'        => count($gdprByStatus['unknown']),
                 'failed_checks'  => $gdprByStatus['fail'],
                 'warning_checks' => $gdprByStatus['warn'],
+                'unknown_checks' => $gdprByStatus['unknown'],
             ];
         } catch (\Throwable) {}
 
@@ -343,11 +348,17 @@ class AiAdvisorService
         // including DSGVO — so the library can attach the right concrete
         // recommendation. The AI prompt itself receives the two buckets
         // separately (handled inside buildPrompt) to avoid double-listing.
+        //
+        // GDPR-Checks im Status "unknown" werden zusätzlich übergeben — der
+        // Status bedeutet meist "konnte nicht geprüft werden, Permission/Lizenz
+        // fehlt", was für den Compliance-Verantwortlichen genauso handlungs-
+        // relevant ist wie ein echter Fail.
         $allFailed     = array_merge($secFailed,  $ctx['gdpr_posture']['failed_checks']  ?? []);
         $allWarning    = array_merge($secWarning, $ctx['gdpr_posture']['warning_checks'] ?? []);
+        $unknownIds    = $ctx['gdpr_posture']['unknown_checks'] ?? [];
 
         // Always get concrete library recommendations (works without AI)
-        $libraryRecs = RecommendationLibrary::get($allFailed, $allWarning, $ctx);
+        $libraryRecs = RecommendationLibrary::get($allFailed, $allWarning, $ctx, $unknownIds);
 
         $summary = null;
         $score   = null;
