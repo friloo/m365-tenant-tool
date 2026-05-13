@@ -11,7 +11,7 @@ class AppAudit
         try {
             $actor = Session::get('username') ?? Session::get('auth_upn') ?? 'system';
             $ip    = $_SERVER['REMOTE_ADDR'] ?? '';
-            DB::getInstance()->execute(
+            DB::execute(
                 "INSERT INTO app_audit_log (actor, action, module, detail, ip_address) VALUES (?, ?, ?, ?, ?)",
                 [$actor, $action, $module, $detail, $ip]
             );
