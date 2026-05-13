@@ -121,10 +121,10 @@
         applyPage();
     }
 
-    // Defense-in-depth: every POST form on every authenticated page must carry a
-    // CSRF token. Forms in views that forgot the <?= Csrf::field() ?> would
-    // otherwise hit the router's 419 page. We auto-inject the token from the
-    // <meta name="csrf-token"> tag right before submit.
+    // Defense-in-depth: every POST form on every authenticated page must carry
+    // a CSRF token. Forms in views that forgot to render the hidden _csrf field
+    // would otherwise hit the router's 419 page. We auto-inject the token from
+    // the <meta name="csrf-token"> tag right before submit.
     document.addEventListener('submit', function (ev) {
         const form = ev.target;
         if (!form || form.tagName !== 'FORM') return;
