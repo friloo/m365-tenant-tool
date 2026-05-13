@@ -337,11 +337,17 @@ class AiAdvisorService
     {
         $ctx = $this->buildContext();
 
-        $failedChecks  = $ctx['security_posture']['failed_checks']  ?? [];
-        $warningChecks = $ctx['security_posture']['warning_checks']  ?? [];
+        $secFailed     = $ctx['security_posture']['failed_checks']  ?? [];
+        $secWarning    = $ctx['security_posture']['warning_checks'] ?? [];
+        // For the recommendation library we want EVERY failing/warning check —
+        // including DSGVO — so the library can attach the right concrete
+        // recommendation. The AI prompt itself receives the two buckets
+        // separately (handled inside buildPrompt) to avoid double-listing.
+        $allFailed     = array_merge($secFailed,  $ctx['gdpr_posture']['failed_checks']  ?? []);
+        $allWarning    = array_merge($secWarning, $ctx['gdpr_posture']['warning_checks'] ?? []);
 
         // Always get concrete library recommendations (works without AI)
-        $libraryRecs = RecommendationLibrary::get($failedChecks, $warningChecks, $ctx);
+        $libraryRecs = RecommendationLibrary::get($allFailed, $allWarning, $ctx);
 
         $summary = null;
         $score   = null;
@@ -349,7 +355,7 @@ class AiAdvisorService
         // Only call AI for the tiny executive summary + score
         if ($this->isEnabled()) {
             try {
-                $raw     = $this->callApi($ctx, $failedChecks, $warningChecks);
+                $raw     = $this->callApi($ctx, $secFailed, $secWarning);
                 $parsed  = $this->parseAiResponse($raw);
                 $summary = $parsed['summary'] ?? null;
                 $score   = isset($parsed['score']) ? (int)$parsed['score'] : null;
