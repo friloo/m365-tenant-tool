@@ -253,7 +253,7 @@ class SettingsController
     public function appAudit(): void
     {
         LocalAuth::requireAdmin();
-        $rows = DB::getInstance()->fetchAll(
+        $rows = DB::fetchAll(
             "SELECT * FROM app_audit_log ORDER BY created_at DESC LIMIT 200"
         );
         View::render('settings/app-audit', [

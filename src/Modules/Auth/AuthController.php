@@ -31,7 +31,7 @@ class AuthController
         $window      = 15;
         $maxAttempts = 5;
 
-        $attempts = DB::getInstance()->fetchOne(
+        $attempts = DB::fetchOne(
             "SELECT COUNT(*) AS c FROM login_attempts
              WHERE ip_address = ? AND attempted_at > DATE_SUB(NOW(), INTERVAL ? MINUTE)",
             [$ip, $window]
@@ -52,7 +52,7 @@ class AuthController
         $creds = LocalAuth::attemptCredentials($username, $password);
 
         if ($creds !== null) {
-            DB::getInstance()->execute("DELETE FROM login_attempts WHERE ip_address = ?", [$ip]);
+            DB::execute("DELETE FROM login_attempts WHERE ip_address = ?", [$ip]);
 
             // Check if TOTP 2FA is required (admin only when secret is configured)
             $totpSecret = Config::getInstance()->get('admin_totp_secret');
@@ -70,7 +70,7 @@ class AuthController
             return;
         }
 
-        DB::getInstance()->execute("INSERT INTO login_attempts (ip_address) VALUES (?)", [$ip]);
+        DB::execute("INSERT INTO login_attempts (ip_address) VALUES (?)", [$ip]);
         AppAudit::log('login_failed', 'auth', "IP: {$ip}");
 
         Session::flash('error', 'Ungültige Zugangsdaten.');
@@ -124,7 +124,7 @@ class AuthController
 
         // Failed attempt
         $ip = Session::get('_2fa_ip', $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
-        DB::getInstance()->execute("INSERT INTO login_attempts (ip_address) VALUES (?)", [$ip]);
+        DB::execute("INSERT INTO login_attempts (ip_address) VALUES (?)", [$ip]);
         AppAudit::log('login_2fa_failed', 'auth', "User: " . ($creds['username'] ?? '?'));
 
         Session::flash('error', 'Ungültiger Code. Bitte erneut versuchen.');
