@@ -56,8 +56,7 @@ class ShareReviewService
 
     public function scanAndSync(): array
     {
-        $log     = [];
-        $found   = [];
+        $log = [];
 
         try {
             $sites = $this->graph->paginate('/sites', ['search' => '*', '$select' => 'id,displayName'], 20);
@@ -65,7 +64,7 @@ class ShareReviewService
             return ["ERROR: Could not fetch sites: " . $e->getMessage()];
         }
 
-        foreach (array_slice($sites, 0, 30) as $site) {
+        foreach (array_slice($sites, 0, 20) as $site) {
             try {
                 $drives = $this->graph->paginate(
                     "/sites/{$site['id']}/drives",
@@ -74,77 +73,97 @@ class ShareReviewService
                 );
             } catch (\Throwable) { continue; }
 
-            foreach (array_slice($drives, 0, 5) as $drive) {
-                try {
-                    $items = $this->graph->paginate(
-                        "/drives/{$drive['id']}/root/search(q='')",
-                        ['$select' => 'id,name,webUrl,createdBy', '$filter' => "shared ne null", '$top' => '100'],
-                        5
-                    );
-                } catch (\Throwable) { continue; }
-
-                foreach ($items as $item) {
-                    try {
-                        $permissions = $this->graph->get(
-                            "/drives/{$drive['id']}/items/{$item['id']}/permissions",
-                            [],
-                            null // no cache — need fresh data
-                        );
-                    } catch (\Throwable) { continue; }
-
-                    foreach ($permissions['value'] ?? [] as $perm) {
-                        $scope = $perm['link']['scope'] ?? ($perm['grantedToIdentities'] ? 'users' : null);
-                        if (!$scope) continue;
-                        if ($this->onlyAnonymous && $scope !== 'anonymous') continue;
-                        if (!in_array($scope, ['anonymous', 'users', 'organization'])) continue;
-
-                        $permId   = $perm['id'] ?? '';
-                        $driveId  = $drive['id'];
-                        $itemId   = $item['id'];
-
-                        $ownerUpn   = $perm['createdBy']['user']['email'] ?? $perm['createdBy']['user']['displayName'] ?? ($item['createdBy']['user']['email'] ?? '');
-                        $ownerName  = $perm['createdBy']['user']['displayName'] ?? ($item['createdBy']['user']['displayName'] ?? '');
-                        $ownerEmail = $ownerUpn; // UPN is typically the email
-
-                        $key = "{$driveId}_{$itemId}_{$permId}";
-                        $found[$key] = true;
-
-                        $existing = DB::fetchOne(
-                            'SELECT id, status FROM share_reviews WHERE drive_id = ? AND item_id = ? AND permission_id = ?',
-                            [$driveId, $itemId, $permId]
-                        );
-
-                        if (!$existing) {
-                            $nextReview = date('Y-m-d H:i:s', strtotime("+{$this->reviewIntervalDays} days"));
-                            DB::execute(
-                                'INSERT INTO share_reviews
-                                 (drive_id, item_id, permission_id, item_name, item_url, share_scope,
-                                  owner_upn, owner_display_name, owner_email, site_name,
-                                  first_detected, next_review_at, review_interval_days, status)
-                                 VALUES (?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?)',
-                                [
-                                    $driveId, $itemId, $permId,
-                                    $item['name'] ?? '', $item['webUrl'] ?? '',
-                                    $scope, $ownerUpn, $ownerName, $ownerEmail,
-                                    $site['displayName'] ?? '',
-                                    $nextReview, $this->reviewIntervalDays, 'active',
-                                ]
-                            );
-                            $log[] = "NEW share tracked: {$item['name']} ({$scope}) by {$ownerUpn}";
-                        }
-                        // Update owner info if missing
-                        elseif (empty($existing['owner_email']) && $ownerEmail) {
-                            DB::execute(
-                                'UPDATE share_reviews SET owner_upn=?, owner_display_name=?, owner_email=? WHERE id=?',
-                                [$ownerUpn, $ownerName, $ownerEmail, $existing['id']]
-                            );
-                        }
-                    }
-                }
+            foreach (array_slice($drives, 0, 3) as $drive) {
+                // Walk folder tree with permissions expanded inline — no separate permission calls needed
+                $this->scanFolder($drive['id'], 'root', $site, $log, 3);
             }
         }
 
         return $log;
+    }
+
+    /**
+     * List the children of $folderId with permissions expanded, record any sharing
+     * permissions, then recurse into subfolders up to $depth levels.
+     */
+    private function scanFolder(string $driveId, string $folderId, array $site, array &$log, int $depth): void
+    {
+        if ($depth < 0) return;
+
+        try {
+            $children = $this->graph->paginate(
+                "/drives/{$driveId}/items/{$folderId}/children",
+                [
+                    '$select' => 'id,name,webUrl,createdBy,folder,permissions',
+                    '$expand' => 'permissions',
+                    '$top'    => '100',
+                ],
+                3  // max 300 items per folder
+            );
+        } catch (\Throwable) { return; }
+
+        $subfolders = [];
+
+        foreach ($children as $item) {
+            foreach ($item['permissions'] ?? [] as $perm) {
+                // Skip inherited/owner-only permissions (no link, no external grant)
+                $scope = $perm['link']['scope'] ?? null;
+                if (!$scope && !empty($perm['grantedToIdentities'])) {
+                    $scope = 'users';
+                }
+                if (!$scope) continue;
+                if ($this->onlyAnonymous && $scope !== 'anonymous') continue;
+                if (!in_array($scope, ['anonymous', 'users', 'organization'])) continue;
+
+                $permId = $perm['id'] ?? '';
+                $itemId = $item['id'];
+
+                $ownerUpn  = $perm['createdBy']['user']['email']
+                          ?? $perm['createdBy']['user']['displayName']
+                          ?? ($item['createdBy']['user']['email'] ?? '');
+                $ownerName = $perm['createdBy']['user']['displayName']
+                          ?? ($item['createdBy']['user']['displayName'] ?? '');
+
+                $existing = DB::fetchOne(
+                    'SELECT id, owner_email FROM share_reviews WHERE drive_id=? AND item_id=? AND permission_id=?',
+                    [$driveId, $itemId, $permId]
+                );
+
+                if (!$existing) {
+                    $nextReview = date('Y-m-d H:i:s', strtotime("+{$this->reviewIntervalDays} days"));
+                    DB::execute(
+                        'INSERT INTO share_reviews
+                         (drive_id, item_id, permission_id, item_name, item_url, share_scope,
+                          owner_upn, owner_display_name, owner_email, site_name,
+                          first_detected, next_review_at, review_interval_days, status)
+                         VALUES (?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?)',
+                        [
+                            $driveId, $itemId, $permId,
+                            $item['name'] ?? '', $item['webUrl'] ?? '',
+                            $scope, $ownerUpn, $ownerName, $ownerUpn,
+                            $site['displayName'] ?? '',
+                            $nextReview, $this->reviewIntervalDays, 'active',
+                        ]
+                    );
+                    $log[] = "NEW: {$item['name']} ({$scope}) @ {$site['displayName']}";
+                } elseif (empty($existing['owner_email']) && $ownerUpn) {
+                    DB::execute(
+                        'UPDATE share_reviews SET owner_upn=?, owner_display_name=?, owner_email=? WHERE id=?',
+                        [$ownerUpn, $ownerName, $ownerUpn, $existing['id']]
+                    );
+                }
+            }
+
+            if (isset($item['folder'])) {
+                $subfolders[] = $item['id'];
+            }
+        }
+
+        if ($depth > 0) {
+            foreach (array_slice($subfolders, 0, 15) as $subfolderId) {
+                $this->scanFolder($driveId, $subfolderId, $site, $log, $depth - 1);
+            }
+        }
     }
 
     // ── Cron: send review emails for due shares ──────────────

@@ -91,6 +91,7 @@ $fmtPrice = function ($val) {
             welche Benutzer noch nicht abgedeckt sind.
         </p>
         <form method="post" action="/licenseadvisor/save-criteria">
+            <?= \App\Core\Csrf::field() ?>
             <div class="row g-3 mb-4">
                 <?php foreach ($criteriaMap as $key => $def): ?>
                     <div class="col-sm-6 col-lg-4">

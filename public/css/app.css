@@ -87,6 +87,59 @@ body {
     display: none;
 }
 
+/* ── Collapsible sidebar groups ── */
+.sidebar-section-toggle {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: color .15s;
+}
+.sidebar-section-toggle:hover {
+    color: rgba(255,255,255,0.65);
+}
+.sidebar-section-toggle .nav-group-label {
+    flex: 1;
+}
+.sidebar-chevron {
+    font-size: 9px;
+    opacity: .5;
+    transition: transform .2s ease, opacity .15s;
+    flex-shrink: 0;
+}
+.sidebar-group.open > .sidebar-section-toggle .sidebar-chevron {
+    transform: rotate(-180deg);
+    opacity: .8;
+}
+.sidebar-group-items {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height .25s ease;
+}
+.sidebar-group.open > .sidebar-group-items {
+    max-height: 800px;
+}
+/* Collapsed sidebar: show all items, hide toggle labels */
+.sidebar.collapsed .sidebar-section-toggle {
+    justify-content: center;
+    padding: 8px 0 4px;
+}
+.sidebar.collapsed .nav-group-label,
+.sidebar.collapsed .sidebar-chevron {
+    display: none;
+}
+.sidebar.collapsed .sidebar-group-items {
+    max-height: none !important;
+    overflow: visible;
+}
+
 .nav-item {
     display: flex;
     align-items: center;
@@ -584,4 +637,14 @@ body {
     .sidebar { width: 64px; }
     .sidebar .nav-label, .sidebar .sidebar-brand .brand-name, .sidebar .sidebar-section { display: none; }
     .main-content { margin-left: 64px; }
+}
+
+/* ── Print styles ─────────────────────────────── */
+@media print {
+    .sidebar, .topbar, .btn, .table-toolbar, #widgetConfig,
+    .alert-dismissible .btn-close, nav, .offcanvas { display: none !important; }
+    .main-content { margin: 0 !important; padding: 0 !important; }
+    .content-card { border: 1px solid #ccc; box-shadow: none; page-break-inside: avoid; }
+    body { font-size: 11px; }
+    a[href]:after { content: none; }
 }

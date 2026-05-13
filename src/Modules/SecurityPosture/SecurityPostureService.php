@@ -47,6 +47,10 @@ class SecurityPostureService
             $this->checkDeviceComplianceRate(),
             $this->checkDefenderAlerts(),
 
+            // E-Mail & Endpoint-Schutz
+            $this->checkBreakGlass(),
+            $this->checkDefenderForOffice(),
+
             // Konfiguration & Apps
             $this->checkSecureScore(),
             $this->checkAdminCount(),
@@ -454,6 +458,34 @@ class SecurityPostureService
                     'description' => 'Keine PIM-berechtigten Rollenzuweisungen gefunden. PIM ermöglicht Just-in-Time-Zugriff für Admin-Rollen — Admins sind nur aktiv wenn nötig, mit Genehmigungsprozess und Audit-Trail.',
                     'action'      => 'Benutzer & Rollen',
                     'module_url'  => '/users',
+                    'ca_template' => null,
+                ],
+            ],
+            'break_glass' => [
+                'fail' => [
+                    'priority'    => 'high',
+                    'title'       => 'Notfallzugangskonto (Break-Glass) fehlt',
+                    'description' => 'Kein globales Admin-Konto ohne Lizenz gefunden. Microsoft empfiehlt mindestens 2 dedizierte Notfallkonten: cloud-only, kein MFA, keine Lizenz, starkes Passwort offline hinterlegt — für den Fall dass MFA oder CA nicht funktionieren.',
+                    'action'      => 'Admin-Rollen prüfen',
+                    'module_url'  => '/adminroles',
+                    'ca_template' => null,
+                ],
+                'warn' => [
+                    'priority'    => 'medium',
+                    'title'       => 'Nur 1 Notfallkonto konfiguriert',
+                    'description' => 'Nur ein potenzielles Notfallkonto gefunden. Microsoft empfiehlt mindestens 2 unabhängige Break-Glass-Konten für Redundanz.',
+                    'action'      => 'Admin-Rollen prüfen',
+                    'module_url'  => '/adminroles',
+                    'ca_template' => null,
+                ],
+            ],
+            'defender_for_office' => [
+                'fail' => [
+                    'priority'    => 'high',
+                    'title'       => 'Defender for Office 365 nicht lizenziert',
+                    'description' => 'Kein Microsoft Defender for Office 365 Abonnement gefunden. Safe Links, Safe Attachments und Anti-Phishing-Schutz sind nicht verfügbar — ein kritisches Sicherheitsrisiko für E-Mail-Angriffe.',
+                    'action'      => 'Lizenzen prüfen',
+                    'module_url'  => '/licenses',
                     'ca_template' => null,
                 ],
             ],
@@ -1259,6 +1291,87 @@ class SecurityPostureService
             return $data['value'] ?? [];
         } catch (\Throwable) {
             return [];
+        }
+    }
+
+    private function checkBreakGlass(): array
+    {
+        $base = [
+            'id'          => 'break_glass',
+            'category'    => 'E-Mail & Endpoint-Schutz',
+            'label'       => 'Notfallzugangskonto konfiguriert',
+            'description' => 'Mindestens 2 globale Admin-Konten ohne Lizenz und ohne On-Premises-Sync vorhanden (Break-Glass-Muster).',
+            'severity'    => 'high',
+        ];
+        try {
+            $roles = $this->graph->get(
+                '/directoryRoles',
+                ['$filter' => "roleTemplateId eq '" . self::ROLE_GLOBAL_ADMIN . "'", '$select' => 'id'],
+                'dir_role_global_admin_bg',
+                3600
+            );
+            $roleList = $roles['value'] ?? [];
+            if (empty($roleList)) {
+                return array_merge($base, ['status' => 'unknown', 'detail' => 'Globale Admin-Rolle nicht gefunden.']);
+            }
+            $roleId  = $roleList[0]['id'];
+            $members = $this->graph->get(
+                "/directoryRoles/{$roleId}/members",
+                ['$select' => 'id,displayName,userPrincipalName,assignedLicenses,onPremisesSyncEnabled'],
+                "dir_role_members_bg_{$roleId}",
+                1800
+            );
+            $candidates = 0;
+            foreach ($members['value'] ?? [] as $admin) {
+                $noLicense    = empty($admin['assignedLicenses'] ?? []);
+                $cloudOnly    = !($admin['onPremisesSyncEnabled'] ?? false);
+                if ($noLicense && $cloudOnly) {
+                    $candidates++;
+                }
+            }
+            if ($candidates >= 2) {
+                return array_merge($base, ['status' => 'pass', 'detail' => "{$candidates} potenzielle Notfallkonten gefunden (ohne Lizenz, Cloud-only)."]);
+            }
+            if ($candidates === 1) {
+                return array_merge($base, ['status' => 'warn', 'detail' => 'Nur 1 Notfallkonto gefunden. Microsoft empfiehlt mindestens 2.']);
+            }
+            return array_merge($base, ['status' => 'fail', 'detail' => 'Kein globales Admin-Konto ohne Lizenz gefunden. Notfallkonten sollten keine Lizenzen haben.']);
+        } catch (\Throwable $e) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
+        }
+    }
+
+    private function checkDefenderForOffice(): array
+    {
+        $base = [
+            'id'          => 'defender_for_office',
+            'category'    => 'E-Mail & Endpoint-Schutz',
+            'label'       => 'Defender for Office 365 lizenziert',
+            'description' => 'Microsoft Defender for Office 365 (Safe Links, Safe Attachments, Anti-Phishing) ist aktiv.',
+            'severity'    => 'high',
+        ];
+        try {
+            $skus = $this->graph->paginate(
+                '/subscribedSkus',
+                ['$select' => 'skuPartNumber,capabilityStatus'],
+                5,
+                'subscribed_skus_mdo',
+                3600
+            );
+            $mdoSkus = ['ATP_ENTERPRISE', 'MDATP_Server', 'WIN_DEF_ATP', 'DEFENDER_ENDPOINT_P1'];
+            $bundleSkus = ['SPE_E5', 'ENTERPRISEPREMIUM', 'M365_F5_SECURITY', 'SPE_E5_CALLINGMINUTES'];
+            foreach ($skus as $sku) {
+                if ($sku['capabilityStatus'] !== 'Enabled') continue;
+                if (in_array($sku['skuPartNumber'], $mdoSkus, true)) {
+                    return array_merge($base, ['status' => 'pass', 'detail' => 'Defender for Office 365 Lizenz aktiv: ' . $sku['skuPartNumber']]);
+                }
+                if (in_array($sku['skuPartNumber'], $bundleSkus, true)) {
+                    return array_merge($base, ['status' => 'pass', 'detail' => 'Defender for Office 365 im Bundle enthalten: ' . $sku['skuPartNumber']]);
+                }
+            }
+            return array_merge($base, ['status' => 'fail', 'detail' => 'Kein Defender for Office 365 Abonnement aktiv.']);
+        } catch (\Throwable $e) {
+            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
         }
     }
 

@@ -2,6 +2,25 @@
 
 define('BASE_PATH', __DIR__);
 
+// Production error handler — hides details from users, logs to error_log
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
+set_exception_handler(function (\Throwable $e): void {
+    error_log('[M365Tool] Uncaught ' . get_class($e) . ': ' . $e->getMessage()
+        . ' in ' . $e->getFile() . ':' . $e->getLine());
+    if (!headers_sent()) {
+        http_response_code(500);
+        header('Content-Type: text/html; charset=utf-8');
+    }
+    echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Fehler</title></head>'
+       . '<body style="font-family:system-ui;text-align:center;padding:80px;">'
+       . '<h2>&#9888; Interner Fehler</h2>'
+       . '<p>Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut oder kontaktiere den Administrator.</p>'
+       . '<p><a href="/">Zur Startseite</a></p></body></html>';
+    exit;
+});
+
 // Redirect to installer if not installed
 if (!file_exists(__DIR__ . '/storage/installed.lock')) {
     if (!str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/install')) {
@@ -103,6 +122,27 @@ DB::execute("CREATE TABLE IF NOT EXISTS access_review_items (
     INDEX idx_review (review_id)
 )");
 
+// Login brute-force protection table
+DB::execute("CREATE TABLE IF NOT EXISTS login_attempts (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    ip_address   VARCHAR(45) NOT NULL,
+    attempted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_ip_time (ip_address, attempted_at)
+)");
+
+// Internal application audit log
+DB::execute("CREATE TABLE IF NOT EXISTS app_audit_log (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    actor      VARCHAR(255) NOT NULL DEFAULT '',
+    action     VARCHAR(255) NOT NULL,
+    module     VARCHAR(100) NOT NULL DEFAULT '',
+    detail     TEXT,
+    ip_address VARCHAR(45),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_created (created_at),
+    INDEX idx_actor (actor)
+)");
+
 // Configure Config singleton with encryptor
 $config = Config::getInstance();
 $config->setEncryptor($encryptor);
@@ -131,9 +171,11 @@ function app_service(string $class): object {
 $router = new Router();
 
 // Auth
-$router->get('/login',  [\App\Modules\Auth\AuthController::class, 'login']);
-$router->post('/login', [\App\Modules\Auth\AuthController::class, 'doLogin']);
-$router->get('/logout', [\App\Modules\Auth\AuthController::class, 'logout']);
+$router->get('/login',      [\App\Modules\Auth\AuthController::class, 'login']);
+$router->post('/login',     [\App\Modules\Auth\AuthController::class, 'doLogin']);
+$router->get('/login/2fa',  [\App\Modules\Auth\AuthController::class, 'twofa']);
+$router->post('/login/2fa', [\App\Modules\Auth\AuthController::class, 'doTwofa']);
+$router->get('/logout',     [\App\Modules\Auth\AuthController::class, 'logout']);
 $router->get('/auth/microsoft',          [\App\Modules\Auth\MicrosoftAuthController::class, 'redirect']);
 $router->get('/auth/microsoft/callback', [\App\Modules\Auth\MicrosoftAuthController::class, 'callback']);
 
@@ -348,6 +390,13 @@ $router->get('/settings/permissions',             [\App\Modules\Settings\Setting
 $router->get('/settings/refresh-token',           [\App\Modules\Settings\SettingsController::class, 'refreshToken']);
 $router->get('/settings/license-prices',          [\App\Modules\Settings\SettingsController::class, 'licensePrice']);
 $router->post('/settings/license-prices/save',    [\App\Modules\Settings\SettingsController::class, 'saveLicensePrice']);
+$router->get('/settings/app-audit',              [\App\Modules\Settings\SettingsController::class, 'appAudit']);
+$router->get('/settings/2fa',                    [\App\Modules\Settings\SettingsController::class, 'twofa']);
+$router->post('/settings/2fa/setup',             [\App\Modules\Settings\SettingsController::class, 'twofaSetup']);
+$router->post('/settings/2fa/verify',            [\App\Modules\Settings\SettingsController::class, 'twofaVerify']);
+$router->post('/settings/2fa/disable',           [\App\Modules\Settings\SettingsController::class, 'twofaDisable']);
+$router->post('/settings/2fa/regen-codes',       [\App\Modules\Settings\SettingsController::class, 'twofaRegenCodes']);
+$router->post('/settings/2fa/cancel',            function() { \App\Core\Session::remove('_totp_setup_secret'); \App\Core\Redirect::to('/settings/2fa'); });
 
 // User management (M365 users with tool access)
 $router->get('/settings/users',                 [\App\Modules\Settings\UserManagementController::class, 'index']);
@@ -381,6 +430,35 @@ $router->get('/accessreview/{id}',           [\App\Modules\AccessReview\AccessRe
 $router->post('/accessreview/{id}/decide/{itemId}', [\App\Modules\AccessReview\AccessReviewController::class, 'decide']);
 $router->post('/accessreview/{id}/bulk',     [\App\Modules\AccessReview\AccessReviewController::class, 'bulkDecide']);
 $router->post('/accessreview/{id}/apply',    [\App\Modules\AccessReview\AccessReviewController::class, 'apply']);
+
+// ── Domain Health ──────────────────────────────────────────
+$router->get('/domainhealth',               [\App\Modules\DomainHealth\DomainHealthController::class, 'index']);
+
+// ── Teams Governance ───────────────────────────────────────
+$router->get('/teamsgovernance',            [\App\Modules\TeamsGovernance\TeamsGovernanceController::class, 'index']);
+
+// ── Usage Reports ──────────────────────────────────────────
+$router->get('/usagereports',               [\App\Modules\UsageReports\UsageReportsController::class, 'index']);
+
+// ── Deleted Objects ────────────────────────────────────────
+$router->get('/deletedobjects',             [\App\Modules\DeletedObjects\DeletedObjectsController::class, 'index']);
+$router->post('/deletedobjects/{id}/restore',         [\App\Modules\DeletedObjects\DeletedObjectsController::class, 'restore']);
+$router->post('/deletedobjects/{id}/permanent-delete', [\App\Modules\DeletedObjects\DeletedObjectsController::class, 'permanentDelete']);
+
+// ── Onboarding Wizard ──────────────────────────────────────
+$router->get('/onboarding',                 [\App\Modules\Onboarding\OnboardingController::class, 'wizard']);
+$router->post('/onboarding',                [\App\Modules\Onboarding\OnboardingController::class, 'create']);
+
+// ── DLP Policies ───────────────────────────────────────────
+$router->get('/dlppolicies',                [\App\Modules\DlpPolicies\DlpPoliciesController::class, 'index']);
+
+// ── Retention Policies ─────────────────────────────────────
+$router->get('/retentionpolicies',          [\App\Modules\RetentionPolicies\RetentionPoliciesController::class, 'index']);
+
+// ── KI-Sicherheitsberater ──────────────────────────────────
+$router->get('/ai',              [\App\Modules\AiAdvisor\AiAdvisorController::class, 'index']);
+$router->post('/ai/analyze',     [\App\Modules\AiAdvisor\AiAdvisorController::class, 'analyze']);
+$router->post('/ai/clear-cache', [\App\Modules\AiAdvisor\AiAdvisorController::class, 'clearCache']);
 
 // ── Dispatch ──────────────────────────────────────────────
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';

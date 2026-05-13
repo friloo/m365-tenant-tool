@@ -109,6 +109,7 @@
                             <?php if ($g['accountEnabled'] ?? true): ?>
                                 <form method="post" action="/guestusers/<?= $e($g['id']) ?>/disable"
                                       onsubmit="return confirm('Gastbenutzer deaktivieren?')" class="mb-0">
+                                    <?= \App\Core\Csrf::field() ?>
                                     <button type="submit" class="btn btn-xs btn-outline-warning py-0 px-2" style="font-size:11px;" title="Deaktivieren">
                                         <i class="bi bi-person-x"></i>
                                     </button>
@@ -116,6 +117,7 @@
                             <?php endif; ?>
                             <form method="post" action="/guestusers/<?= $e($g['id']) ?>/remove"
                                   onsubmit="return confirm('Gastbenutzer wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')" class="mb-0">
+                                <?= \App\Core\Csrf::field() ?>
                                 <button type="submit" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size:11px;" title="Löschen">
                                     <i class="bi bi-trash"></i>
                                 </button>

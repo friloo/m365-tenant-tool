@@ -97,6 +97,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="post" action="/accessreview">
+                <?= \App\Core\Csrf::field() ?>
                 <div class="modal-header">
                     <h5 class="modal-title" id="newReviewModalLabel"><i class="bi bi-clipboard-check me-2"></i>Neue Prüfung starten</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

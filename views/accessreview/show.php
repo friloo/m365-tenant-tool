@@ -82,12 +82,14 @@
 <?php if (!$isClosed): ?>
 <div class="d-flex gap-2 mb-4 flex-wrap">
     <form method="post" action="/accessreview/<?= $reviewId ?>/bulk" class="mb-0">
+        <?= \App\Core\Csrf::field() ?>
         <input type="hidden" name="decision" value="approve">
         <button type="submit" class="btn btn-sm btn-outline-success">
             <i class="bi bi-check-all me-1"></i> Alle ausstehenden genehmigen
         </button>
     </form>
     <form method="post" action="/accessreview/<?= $reviewId ?>/bulk" class="mb-0">
+        <?= \App\Core\Csrf::field() ?>
         <input type="hidden" name="decision" value="revoke">
         <button type="submit" class="btn btn-sm btn-outline-danger"
                 onclick="return confirm('Alle ausstehenden Einträge widerrufen?')">
@@ -96,6 +98,7 @@
     </form>
     <?php if (LocalAuth::isAdmin()): ?>
     <form method="post" action="/accessreview/<?= $reviewId ?>/apply" class="mb-0 ms-auto">
+        <?= \App\Core\Csrf::field() ?>
         <button type="submit" class="btn btn-sm btn-danger"
                 onclick="return confirm('Entscheidungen anwenden und Prüfung abschließen?\n\nAlle als „Widerrufen" markierten Konten werden deaktiviert. Diese Aktion kann nicht rückgängig gemacht werden.')">
             <i class="bi bi-play-fill me-1"></i> Entscheidungen anwenden &amp; abschließen
@@ -190,6 +193,7 @@
                     <td>
                         <div class="d-flex gap-1">
                             <form method="post" action="/accessreview/<?= $reviewId ?>/decide/<?= (int)$item['id'] ?>" class="mb-0">
+                                <?= \App\Core\Csrf::field() ?>
                                 <input type="hidden" name="decision" value="approve">
                                 <button type="submit"
                                         class="btn btn-xs <?= $decision === 'approve' ? 'btn-success' : 'btn-outline-success' ?> py-0 px-2"
@@ -198,6 +202,7 @@
                                 </button>
                             </form>
                             <form method="post" action="/accessreview/<?= $reviewId ?>/decide/<?= (int)$item['id'] ?>" class="mb-0">
+                                <?= \App\Core\Csrf::field() ?>
                                 <input type="hidden" name="decision" value="revoke">
                                 <button type="submit"
                                         class="btn btn-xs <?= $decision === 'revoke' ? 'btn-danger' : 'btn-outline-danger' ?> py-0 px-2"
@@ -207,6 +212,7 @@
                             </form>
                             <?php if ($decision !== 'pending'): ?>
                             <form method="post" action="/accessreview/<?= $reviewId ?>/decide/<?= (int)$item['id'] ?>" class="mb-0">
+                                <?= \App\Core\Csrf::field() ?>
                                 <input type="hidden" name="decision" value="pending">
                                 <button type="submit"
                                         class="btn btn-xs btn-outline-secondary py-0 px-2"

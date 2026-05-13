@@ -9,25 +9,36 @@ class LocalAuth
 {
     public static function attempt(string $username, string $password): bool
     {
+        $creds = self::attemptCredentials($username, $password);
+        if ($creds !== null) {
+            self::setSession($creds['username'], $creds['role']);
+            return true;
+        }
+        return false;
+    }
+
+    public static function attemptCredentials(string $username, string $password): ?array
+    {
         $config = Config::getInstance();
 
-        // Check admin
         $adminUser = $config->get('admin_username');
         $adminHash = $config->get('admin_password');
         if ($adminUser && $adminHash && $username === $adminUser && password_verify($password, $adminHash)) {
-            self::setSession($username, 'admin');
-            return true;
+            return ['username' => $username, 'role' => 'admin'];
         }
 
-        // Check operator
         $opUser = $config->get('operator_username');
         $opHash = $config->get('operator_password');
         if ($opUser && $opHash && $username === $opUser && password_verify($password, $opHash)) {
-            self::setSession($username, 'operator');
-            return true;
+            return ['username' => $username, 'role' => 'operator'];
         }
 
-        return false;
+        return null;
+    }
+
+    public static function setSessionDirect(array $credentials): void
+    {
+        self::setSession($credentials['username'], $credentials['role']);
     }
 
     private static function setSession(string $username, string $role): void
@@ -75,6 +86,16 @@ class LocalAuth
             header('Location: /login');
             exit;
         }
+
+        // Check idle timeout (30 minutes)
+        $timeout = 30 * 60; // 30 minutes in seconds
+        $lastActivity = Session::get('last_activity');
+        if ($lastActivity !== null && (time() - (int)$lastActivity) > $timeout) {
+            Session::destroy();
+            header('Location: /login?reason=timeout');
+            exit;
+        }
+        Session::set('last_activity', time());
     }
 
     public static function username(): string

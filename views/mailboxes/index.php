@@ -170,6 +170,7 @@ $fmtBytes = function (int $bytes): string {
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="post" action="/mailboxes/create-shared" id="createSharedMailboxForm">
+                <?= \App\Core\Csrf::field() ?>
                 <div class="modal-header">
                     <h5 class="modal-title" id="createSharedMailboxModalLabel">
                         <i class="bi bi-envelope-plus me-2 text-primary"></i>Shared Mailbox anlegen

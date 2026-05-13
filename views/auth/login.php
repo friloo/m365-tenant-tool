@@ -19,11 +19,16 @@
             <p class="text-muted small">Administrator-Anmeldung</p>
         </div>
 
+        <?php if (($_GET['reason'] ?? '') === 'timeout'): ?>
+            <div class="alert alert-info py-2 small">Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.</div>
+        <?php endif; ?>
+
         <?php if (!empty($error)): ?>
             <div class="alert alert-danger py-2 small"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
         <form method="post" action="/login">
+            <?= \App\Core\Csrf::field() ?>
             <div class="mb-3">
                 <label class="form-label fw-medium">Benutzername</label>
                 <div class="input-group">

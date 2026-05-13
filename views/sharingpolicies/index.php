@@ -92,6 +92,7 @@ $hasSpError = isset($sp['_error']);
         </div>
 
         <form method="post" action="/sharing/policies/sharepoint">
+            <?= \App\Core\Csrf::field() ?>
             <div class="content-card mb-4">
                 <div class="card-header-custom">
                     <i class="bi bi-sliders text-primary"></i>
@@ -242,6 +243,7 @@ $hasSpError = isset($sp['_error']);
                                 </td>
                                 <td>
                                     <form method="post" action="/sharing/policies/site" class="d-flex gap-2">
+                                        <?= \App\Core\Csrf::field() ?>
                                         <input type="hidden" name="site_id" value="<?= $e($site['id']) ?>">
                                         <select name="capability" class="form-select form-select-sm">
                                             <option value="ExternalUserAndGuestSharing" <?= ($site['sharingCapability'] ?? '') === 'ExternalUserAndGuestSharing' ? 'selected' : '' ?>>Alle</option>

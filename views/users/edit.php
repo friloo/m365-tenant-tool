@@ -28,6 +28,7 @@
                 <?php endif; ?>
 
                 <form method="post" action="/users/<?= $e($user['id']) ?>/update">
+                    <?= \App\Core\Csrf::field() ?>
 
                     <div class="mb-3">
                         <label for="displayName" class="form-label fw-medium">Anzeigename</label>

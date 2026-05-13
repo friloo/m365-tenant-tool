@@ -62,6 +62,12 @@ class Config
         unset($this->cache[$key]);
     }
 
+    public function delete(string $key): void
+    {
+        DB::execute('DELETE FROM app_config WHERE `key` = ?', [$key]);
+        unset($this->cache[$key]);
+    }
+
     public function clearCache(): void
     {
         $this->cache = [];

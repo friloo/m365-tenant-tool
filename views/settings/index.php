@@ -16,6 +16,80 @@
 <div class="row g-4">
     <div class="col-lg-8">
         <form method="post" action="/settings/save">
+            <?= \App\Core\Csrf::field() ?>
+
+        <!-- KI-Sicherheitsberater -->
+        <div class="content-card mb-4" id="ai-advisor">
+            <div class="card-header-custom">
+                <i class="bi bi-robot text-primary"></i>
+                <h6>KI-Sicherheitsberater</h6>
+            </div>
+            <div class="card-body-custom">
+                <div class="row g-3">
+                    <!-- Master switch -->
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="ai_enabled" id="aiEnabled" value="1"
+                                   <?= ($s['ai_enabled'] ?? '0') === '1' ? 'checked' : '' ?>
+                                   onchange="document.getElementById('aiOptions').style.display=this.checked?'block':'none'">
+                            <label class="form-check-label fw-semibold" for="aiEnabled">
+                                KI-Sicherheitsanalyse aktivieren
+                            </label>
+                        </div>
+                        <div class="text-muted small mt-1">
+                            <i class="bi bi-shield-check me-1 text-success"></i>
+                            Es werden ausschließlich anonymisierte Metriken (Zahlen, Prozentsätze) übertragen — niemals Benutzernamen, UPNs, Tenant-ID oder Domainnamen.
+                        </div>
+                    </div>
+
+                    <div id="aiOptions" <?= ($s['ai_enabled'] ?? '0') !== '1' ? 'style="display:none"' : '' ?>>
+                        <div class="row g-3 mt-0">
+                            <div class="col-md-3">
+                                <label class="form-label fw-medium">Anbieter</label>
+                                <select name="ai_provider" id="aiProvider" class="form-select" onchange="updateAiDefaults()">
+                                    <option value="openai"   <?= ($s['ai_provider'] ?? '') === 'openai'   ? 'selected' : '' ?>>OpenAI</option>
+                                    <option value="deepseek" <?= ($s['ai_provider'] ?? '') === 'deepseek' ? 'selected' : '' ?>>DeepSeek</option>
+                                    <option value="ollama"   <?= ($s['ai_provider'] ?? '') === 'ollama'   ? 'selected' : '' ?>>Ollama (lokal)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-medium">Modell</label>
+                                <input type="text" name="ai_model" id="aiModel" class="form-control"
+                                       value="<?= htmlspecialchars($s['ai_model'] ?? '') ?>"
+                                       placeholder="gpt-4o-mini">
+                                <div class="form-text" id="aiModelHint">Leer = Standard des Anbieters</div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-medium">API-Key</label>
+                                <input type="password" name="ai_api_key" class="form-control"
+                                       placeholder="Leer = keine Änderung" autocomplete="new-password">
+                                <div class="form-text">Wird verschlüsselt gespeichert</div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-medium">Cache-Dauer</label>
+                                <select name="ai_cache_hours" class="form-select">
+                                    <?php foreach ([1 => '1 Std.', 4 => '4 Std.', 12 => '12 Std.', 24 => '24 Std.', 48 => '48 Std.'] as $h => $l): ?>
+                                        <option value="<?= $h ?>" <?= (int)($s['ai_cache_hours'] ?? 24) === $h ? 'selected' : '' ?>><?= $l ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6" id="aiBaseUrlRow">
+                                <label class="form-label fw-medium">Basis-URL <span class="text-muted">(optional)</span></label>
+                                <input type="url" name="ai_base_url" class="form-control"
+                                       value="<?= htmlspecialchars($s['ai_base_url'] ?? '') ?>"
+                                       placeholder="http://localhost:11434">
+                                <div class="form-text" id="aiBaseUrlHint">Für Ollama oder eigene OpenAI-kompatible Endpunkte</div>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <a href="/ai" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-robot me-1"></i> Zum KI-Berater
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- General -->
         <div class="content-card mb-4" id="general">
@@ -148,13 +222,78 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-medium">MFA-Schwellwert</label>
+                        <label class="form-label fw-medium text-muted">MFA-Schwellwert</label>
+                        <div class="text-muted small">Konfigurierbar unter <a href="#alert-thresholds">Alert-Schwellwerte</a> ↓</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Thresholds -->
+        <div class="content-card mb-4" id="alert-thresholds">
+            <div class="card-header-custom">
+                <i class="bi bi-sliders text-primary"></i>
+                <h6>Alert-Schwellwerte</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted small mb-3">
+                    Definiert ab wann automatische Benachrichtigungen ausgelöst werden.
+                    Alle Schwellwerte werden vom Cron-Job geprüft.
+                </p>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">MFA-Quote</label>
                         <div class="input-group input-group-sm">
                             <input type="number" name="alert_mfa_threshold" class="form-control"
                                    value="<?= $e($s['alert_mfa_threshold']) ?>" min="0" max="100">
                             <span class="input-group-text">%</span>
                         </div>
-                        <div class="form-text">Alert wenn MFA-Quote darunter fällt</div>
+                        <div class="form-text">Alert wenn MFA-Registrierungsquote unter diesen Wert fällt.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Lizenzauslastung</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" name="alert_license_threshold" class="form-control"
+                                   value="<?= $e($s['alert_license_threshold'] ?? '90') ?>" min="0" max="100">
+                            <span class="input-group-text">%</span>
+                        </div>
+                        <div class="form-text">Alert wenn eine SKU mehr als X% ausgelastet ist.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Externe Freigaben</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" name="alert_external_shares_max" class="form-control"
+                                   value="<?= $e($s['alert_external_shares_max'] ?? '50') ?>" min="0">
+                            <span class="input-group-text">Stück</span>
+                        </div>
+                        <div class="form-text">Alert wenn aktive externe Freigaben diesen Wert übersteigen.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Nicht-konforme Geräte</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" name="alert_noncompliant_devices_max" class="form-control"
+                                   value="<?= $e($s['alert_noncompliant_devices_max'] ?? '5') ?>" min="0">
+                            <span class="input-group-text">Geräte</span>
+                        </div>
+                        <div class="form-text">Alert wenn mehr als X Geräte nicht konform sind.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Risikobenutzer</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" name="alert_risky_users_max" class="form-control"
+                                   value="<?= $e($s['alert_risky_users_max'] ?? '0') ?>" min="0">
+                            <span class="input-group-text">Benutzer</span>
+                        </div>
+                        <div class="form-text">Alert wenn mehr als X Risikobenutzer erkannt werden (0 = bei jedem).</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Inaktive Konten (Alert)</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" name="alert_stale_accounts_max" class="form-control"
+                                   value="<?= $e($s['alert_stale_accounts_max'] ?? '10') ?>" min="0">
+                            <span class="input-group-text">Konten</span>
+                        </div>
+                        <div class="form-text">Alert wenn mehr als X inaktive Konten mit Lizenzen gefunden werden.</div>
                     </div>
                 </div>
             </div>
@@ -474,6 +613,18 @@
         </form>
 
 <script>
+// AI provider defaults
+function updateAiDefaults() {
+    const p = document.getElementById('aiProvider')?.value;
+    const modelEl = document.getElementById('aiModel');
+    const hintEl  = document.getElementById('aiModelHint');
+    const defaults = { openai: 'gpt-4o-mini', deepseek: 'deepseek-chat', ollama: 'llama3.2' };
+    const hints    = { openai: 'z.B. gpt-4o-mini, gpt-4o', deepseek: 'z.B. deepseek-chat, deepseek-reasoner', ollama: 'z.B. llama3.2, mistral, phi3' };
+    if (modelEl && !modelEl.value) modelEl.placeholder = defaults[p] || 'Modellname';
+    if (hintEl) hintEl.textContent = hints[p] || '';
+}
+updateAiDefaults();
+
 // Live preview for branding
 (function () {
     const colorPicker = document.getElementById('brandColor');
@@ -573,6 +724,19 @@
                 <p class="small text-muted mb-3">Sendet eine Test-E-Mail an den konfigurierten Alert-Empfänger.</p>
                 <a href="/settings/test-mail" class="btn btn-outline-primary btn-sm w-100">
                     <i class="bi bi-send me-1"></i> Test-E-Mail senden
+                </a>
+            </div>
+        </div>
+
+        <div class="content-card mb-3">
+            <div class="card-header-custom">
+                <i class="bi bi-journal-check text-primary"></i>
+                <h6>App Audit-Log</h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="small text-muted mb-3">Protokoll aller sicherheitsrelevanten Aktionen (Anmeldungen, Einstellungsänderungen, Benutzeraktionen).</p>
+                <a href="/settings/app-audit" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="bi bi-journal-check me-1"></i> Audit-Log anzeigen
                 </a>
             </div>
         </div>

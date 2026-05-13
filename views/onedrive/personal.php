@@ -141,6 +141,7 @@ $total = count($list);
                         <td>
                             <?php if (!$u['hasOneDrive']): ?>
                                 <form method="post" action="/onedrive/provision/<?= $e($u['id']) ?>" style="display:inline;">
+                                    <?= \App\Core\Csrf::field() ?>
                                     <button type="submit" class="btn btn-sm btn-outline-primary"
                                             title="OneDrive provisionieren"
                                             onclick="return confirm('OneDrive für <?= $e(addslashes($u['displayName'])) ?> provisionieren?')">
@@ -149,6 +150,7 @@ $total = count($list);
                                 </form>
                             <?php else: ?>
                                 <form method="post" action="/onedrive/deprovision/<?= $e($u['id']) ?>" style="display:inline;">
+                                    <?= \App\Core\Csrf::field() ?>
                                     <button type="submit" class="btn btn-sm btn-outline-danger"
                                             title="OneDrive löschen (Papierkorb)"
                                             onclick="return confirm('ACHTUNG: Das OneDrive von <?= $e(addslashes($u['displayName'])) ?> wird gelöscht und in den SharePoint-Papierkorb verschoben.\n\nNach 93 Tagen werden alle Daten endgültig gelöscht.\n\nFortfahren?')">

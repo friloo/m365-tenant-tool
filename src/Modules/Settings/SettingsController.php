@@ -3,11 +3,14 @@
 namespace App\Modules\Settings;
 
 use App\Auth\LocalAuth;
+use App\Core\AppAudit;
 use App\Core\Config;
 use App\Core\Redirect;
 use App\Core\Session;
 use App\Core\View;
+use App\Database\DB;
 use App\Encryption\Encryptor;
+use App\Auth\TotpService;
 use App\Modules\LicenseAdvisor\LicenseAdvisorService;
 
 class SettingsController
@@ -26,7 +29,12 @@ class SettingsController
             'smtp_host'          => $config->get('smtp_host', ''),
             'smtp_port'          => $config->get('smtp_port', '587'),
             'smtp_user'          => $config->get('smtp_user', ''),
-            'alert_mfa_threshold'=> $config->get('alert_mfa_threshold', '80'),
+            'alert_mfa_threshold'            => $config->get('alert_mfa_threshold', '80'),
+            'alert_license_threshold'        => $config->get('alert_license_threshold', '90'),
+            'alert_external_shares_max'      => $config->get('alert_external_shares_max', '50'),
+            'alert_noncompliant_devices_max' => $config->get('alert_noncompliant_devices_max', '5'),
+            'alert_risky_users_max'          => $config->get('alert_risky_users_max', '0'),
+            'alert_stale_accounts_max'       => $config->get('alert_stale_accounts_max', '10'),
             'operator_username'              => $config->get('operator_username', ''),
             'alert_risky_users'              => $config->get('alert_risky_users', '1'),
             'alert_anon_shares'              => $config->get('alert_anon_shares', '1'),
@@ -52,6 +60,11 @@ class SettingsController
             'lic_need_sharepoint'            => $config->get('lic_need_sharepoint', '0'),
             'lic_need_onedrive'              => $config->get('lic_need_onedrive', '0'),
             'lic_need_intune'                => $config->get('lic_need_intune', '0'),
+            'ai_enabled'                     => $config->get('ai_enabled', '0'),
+            'ai_provider'                    => $config->get('ai_provider', 'openai'),
+            'ai_model'                       => $config->get('ai_model', ''),
+            'ai_base_url'                    => $config->get('ai_base_url', ''),
+            'ai_cache_hours'                 => $config->get('ai_cache_hours', '24'),
         ];
 
         $flash = Session::getFlash('success');
@@ -79,7 +92,12 @@ class SettingsController
             $config->set('smtp_host',            trim($_POST['smtp_host'] ?? ''));
             $config->set('smtp_port',            (string)(int)($_POST['smtp_port'] ?? 587));
             $config->set('smtp_user',            trim($_POST['smtp_user'] ?? ''));
-            $config->set('alert_mfa_threshold',  (string)(int)($_POST['alert_mfa_threshold'] ?? 80));
+            $config->set('alert_mfa_threshold',            (string)(int)($_POST['alert_mfa_threshold'] ?? 80));
+            $config->set('alert_license_threshold',        (string)max(0, min(100, (int)($_POST['alert_license_threshold'] ?? 90))));
+            $config->set('alert_external_shares_max',      (string)max(0, (int)($_POST['alert_external_shares_max'] ?? 50)));
+            $config->set('alert_noncompliant_devices_max', (string)max(0, (int)($_POST['alert_noncompliant_devices_max'] ?? 5)));
+            $config->set('alert_risky_users_max',          (string)max(0, (int)($_POST['alert_risky_users_max'] ?? 0)));
+            $config->set('alert_stale_accounts_max',       (string)max(0, (int)($_POST['alert_stale_accounts_max'] ?? 10)));
             $config->set('alert_risky_users',             isset($_POST['alert_risky_users']) ? '1' : '0');
             $config->set('alert_anon_shares',             isset($_POST['alert_anon_shares']) ? '1' : '0');
             $config->set('app_base_url',                  rtrim(trim($_POST['app_base_url'] ?? ''), '/'));
@@ -104,6 +122,15 @@ class SettingsController
             $config->set('lic_need_sharepoint',           isset($_POST['lic_need_sharepoint']) ? '1' : '0');
             $config->set('lic_need_onedrive',             isset($_POST['lic_need_onedrive']) ? '1' : '0');
             $config->set('lic_need_intune',               isset($_POST['lic_need_intune']) ? '1' : '0');
+
+            $config->set('ai_enabled',     isset($_POST['ai_enabled']) ? '1' : '0');
+            $config->set('ai_provider',    in_array($_POST['ai_provider'] ?? '', ['openai','deepseek','ollama']) ? $_POST['ai_provider'] : 'openai');
+            $config->set('ai_model',       trim($_POST['ai_model'] ?? ''));
+            $config->set('ai_base_url',    rtrim(trim($_POST['ai_base_url'] ?? ''), '/'));
+            $config->set('ai_cache_hours', (string)max(1, (int)($_POST['ai_cache_hours'] ?? 24)));
+            if (!empty($_POST['ai_api_key'])) {
+                $config->set('ai_api_key', trim($_POST['ai_api_key']), true); // encrypted
+            }
 
             if (!empty($_POST['smtp_password'])) {
                 $config->set('smtp_password', trim($_POST['smtp_password']), true);
@@ -131,6 +158,7 @@ class SettingsController
             $config->clearCache();
             date_default_timezone_set($config->get('timezone', 'Europe/Berlin'));
 
+            AppAudit::log('settings_updated', 'settings');
             Session::flash('success', 'Einstellungen gespeichert.');
         } catch (\Throwable $e) {
             Session::flash('error', 'Fehler: ' . $e->getMessage());
@@ -220,6 +248,111 @@ class SettingsController
             Session::flash('error', 'Fehler: ' . $e->getMessage());
         }
         Redirect::to('/settings/license-prices');
+    }
+
+    public function appAudit(): void
+    {
+        LocalAuth::requireAdmin();
+        $rows = DB::getInstance()->fetchAll(
+            "SELECT * FROM app_audit_log ORDER BY created_at DESC LIMIT 200"
+        );
+        View::render('settings/app-audit', [
+            'pageTitle' => 'App Audit-Log',
+            'rows'      => $rows,
+            'flash'     => Session::getFlash('success'),
+        ]);
+    }
+
+    public function twofa(): void
+    {
+        LocalAuth::requireAdmin();
+        $config        = Config::getInstance();
+        $enabled       = (bool)$config->get('admin_totp_secret');
+        $setupSecret   = Session::get('_totp_setup_secret');
+        $recoveryCodes = Session::getFlash('totp_recovery_codes');
+        $recoveryJson  = $enabled ? $config->get('admin_totp_recovery_codes') : null;
+        $codesLeft     = $recoveryJson ? count(json_decode($recoveryJson, true) ?? []) : 0;
+        $uri           = $setupSecret ? TotpService::getUri($setupSecret) : null;
+
+        View::render('settings/2fa', [
+            'pageTitle'     => 'Zwei-Faktor-Authentifizierung',
+            'enabled'       => $enabled,
+            'setupSecret'   => $setupSecret,
+            'totpUri'       => $uri,
+            'recoveryCodes' => $recoveryCodes,
+            'codesLeft'     => $codesLeft,
+            'flash'         => Session::getFlash('success'),
+            'error'         => Session::getFlash('error'),
+        ]);
+    }
+
+    public function twofaSetup(): void
+    {
+        LocalAuth::requireAdmin();
+        Session::set('_totp_setup_secret', TotpService::generateSecret());
+        Redirect::to('/settings/2fa');
+    }
+
+    public function twofaVerify(): void
+    {
+        LocalAuth::requireAdmin();
+        $secret = Session::get('_totp_setup_secret');
+        if (!$secret) {
+            Session::flash('error', 'Kein Setup-Geheimnis gefunden. Bitte beginne von vorne.');
+            Redirect::to('/settings/2fa');
+            return;
+        }
+        $code = trim($_POST['code'] ?? '');
+        if (!TotpService::verify($secret, $code)) {
+            Session::flash('error', 'Ungültiger Code. Bitte überprüfe deine Authenticator-App und versuche es erneut.');
+            Redirect::to('/settings/2fa');
+            return;
+        }
+        $config = Config::getInstance();
+        $config->set('admin_totp_secret', $secret, true);
+
+        $codes   = TotpService::generateRecoveryCodes(8);
+        $hashes  = array_map([TotpService::class, 'hashCode'], $codes);
+        $config->set('admin_totp_recovery_codes', json_encode($hashes), true);
+
+        Session::remove('_totp_setup_secret');
+        Session::flash('totp_recovery_codes', $codes);
+        AppAudit::log('totp_enabled', 'settings', 'TOTP 2FA aktiviert');
+        Redirect::to('/settings/2fa');
+    }
+
+    public function twofaDisable(): void
+    {
+        LocalAuth::requireAdmin();
+        $config   = Config::getInstance();
+        $password = $_POST['confirm_password'] ?? '';
+        $hash     = $config->get('admin_password');
+        if (!$hash || !password_verify($password, $hash)) {
+            Session::flash('error', 'Falsches Passwort — 2FA wurde nicht deaktiviert.');
+            Redirect::to('/settings/2fa');
+            return;
+        }
+        $config->delete('admin_totp_secret');
+        $config->delete('admin_totp_recovery_codes');
+        AppAudit::log('totp_disabled', 'settings', 'TOTP 2FA deaktiviert');
+        Session::flash('success', '2FA wurde erfolgreich deaktiviert.');
+        Redirect::to('/settings/2fa');
+    }
+
+    public function twofaRegenCodes(): void
+    {
+        LocalAuth::requireAdmin();
+        $config = Config::getInstance();
+        if (!$config->get('admin_totp_secret')) {
+            Redirect::to('/settings/2fa');
+            return;
+        }
+        $codes  = TotpService::generateRecoveryCodes(8);
+        $hashes = array_map([TotpService::class, 'hashCode'], $codes);
+        $config->set('admin_totp_recovery_codes', json_encode($hashes), true);
+        Session::flash('totp_recovery_codes', $codes);
+        AppAudit::log('totp_regen_codes', 'settings', 'TOTP Wiederherstellungscodes erneuert');
+        Redirect::to('/settings/2fa');
     }
 
     public function permissions(): void

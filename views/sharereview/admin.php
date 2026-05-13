@@ -167,6 +167,7 @@
                         <div class="d-flex gap-1">
                             <?php if ($s['owner_email'] && !in_array($s['status'], ['revoked'])): ?>
                             <form method="post" action="/sharing/monitor/remind/<?= (int)$s['id'] ?>">
+                                <?= \App\Core\Csrf::field() ?>
                                 <button type="submit" class="btn btn-sm btn-outline-warning" title="Erinnerung senden">
                                     <i class="bi bi-envelope"></i>
                                 </button>
@@ -174,6 +175,7 @@
                             <?php endif; ?>
                             <form method="post" action="/sharing/monitor/revoke/<?= (int)$s['id'] ?>"
                                   onsubmit="return confirm('Freigabe wirklich widerrufen?')">
+                                <?= \App\Core\Csrf::field() ?>
                                 <button type="submit" class="btn btn-sm btn-outline-danger" title="Freigabe widerrufen">
                                     <i class="bi bi-x-circle"></i>
                                 </button>

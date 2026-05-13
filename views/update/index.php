@@ -58,6 +58,7 @@
     </div>
     <div class="card-body-custom">
         <form method="post" action="/settings/update/channel" class="d-flex align-items-end gap-3 flex-wrap">
+            <?= \App\Core\Csrf::field() ?>
             <div>
                 <label class="form-label fw-medium mb-1">Kanal wählen</label>
                 <select name="channel" class="form-select" style="min-width:180px;">
@@ -180,6 +181,7 @@
                 <?php if ($migrationStatus['pending_count'] > 0): ?>
                     <form method="post" action="/settings/update/migrations"
                           onsubmit="return confirm('<?= (int)$migrationStatus['pending_count'] ?> ausstehende Migration(en) jetzt ausführen?')">
+                        <?= \App\Core\Csrf::field() ?>
                         <button type="submit" class="btn btn-warning">
                             <i class="bi bi-play-fill me-1"></i>
                             Ausstehende Migrationen ausführen (<?= (int)$migrationStatus['pending_count'] ?>)
@@ -201,7 +203,7 @@ document.getElementById('btnCheck')?.addEventListener('click', async function() 
     this.disabled = true;
     this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Wird geprüft…';
     try {
-        const r = await fetch('/settings/update/check', {method: 'POST'});
+        const r = await fetch('/settings/update/check', {method: 'POST', headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content ?? '' }});
         const data = await r.json();
         document.getElementById('checkResult').style.display = 'block';
         const area = document.getElementById('checkResultContent');
@@ -231,7 +233,7 @@ document.getElementById('btnCheck')?.addEventListener('click', async function() 
 function startInstall() {
     document.getElementById('progressArea').style.display = 'block';
     document.getElementById('btnInstall').disabled = true;
-    fetch('/settings/update/install', {method: 'POST'})
+    fetch('/settings/update/install', {method: 'POST', headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content ?? '' }})
         .then(r => r.json())
         .catch(() => ({}));
     pollProgress();

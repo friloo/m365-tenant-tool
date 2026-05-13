@@ -185,6 +185,7 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="post" action="/settings/users" id="addUserForm">
+                <?= \App\Core\Csrf::field() ?>
                 <div class="modal-body">
                     <!-- Tenant user picker -->
                     <div class="mb-3" id="searchWrap">
@@ -396,6 +397,7 @@ window.__tenantUsers = <?= json_encode($tenantUsers, JSON_UNESCAPED_UNICODE | JS
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="post" action="/settings/users/<?= (int)$u['id'] ?>/update">
+                <?= \App\Core\Csrf::field() ?>
                 <div class="modal-body">
                     <p class="fw-medium mb-3"><?= htmlspecialchars($u['upn']) ?></p>
                     <div class="mb-3">
@@ -434,6 +436,7 @@ window.__tenantUsers = <?= json_encode($tenantUsers, JSON_UNESCAPED_UNICODE | JS
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 <form method="post" action="/settings/users/<?= (int)$u['id'] ?>/delete">
+                    <?= \App\Core\Csrf::field() ?>
                     <button type="submit" class="btn btn-danger">Entfernen</button>
                 </form>
             </div>

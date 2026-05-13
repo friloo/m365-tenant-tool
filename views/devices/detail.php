@@ -161,6 +161,7 @@ $enrolledDate    = !empty($detail['enrolledDateTime']) ? date('d.m.Y', strtotime
                     <h6 class="fw-semibold mb-1"><i class="bi bi-arrow-repeat text-primary me-1"></i>Synchronisieren</h6>
                     <p class="text-muted small mb-3">Fordert das Gerät auf, sich sofort mit Intune zu synchronisieren.</p>
                     <form method="post" action="/devices/<?= $e($deviceId) ?>/sync">
+                        <?= \App\Core\Csrf::field() ?>
                         <button type="submit" class="btn btn-sm btn-primary">
                             <i class="bi bi-arrow-repeat me-1"></i>Sync anfordern
                         </button>
@@ -176,6 +177,7 @@ $enrolledDate    = !empty($detail['enrolledDateTime']) ? date('d.m.Y', strtotime
                     <p class="text-muted small mb-3">Entfernt Unternehmensdaten, lässt persönliche Daten intakt. Geeignet für persönliche Geräte (BYOD).</p>
                     <form method="post" action="/devices/<?= $e($deviceId) ?>/retire"
                           onsubmit="return confirm('Gerät wirklich zurücksetzen (Retire)? Unternehmensdaten werden entfernt, persönliche Daten bleiben erhalten.')">
+                        <?= \App\Core\Csrf::field() ?>
                         <button type="submit" class="btn btn-sm btn-warning">
                             <i class="bi bi-box-arrow-right me-1"></i>Retire ausführen
                         </button>
@@ -190,6 +192,7 @@ $enrolledDate    = !empty($detail['enrolledDateTime']) ? date('d.m.Y', strtotime
                     <p class="text-muted small mb-3">Löscht alle Daten auf dem Gerät. Nicht rückgängig machbar. Nur für Unternehmensgeräte.</p>
                     <form method="post" action="/devices/<?= $e($deviceId) ?>/wipe"
                           onsubmit="return confirm('ACHTUNG: Alle Daten auf dem Gerät werden unwiderruflich gelöscht. Wirklich fortfahren?')">
+                        <?= \App\Core\Csrf::field() ?>
                         <button type="submit" class="btn btn-sm btn-danger">
                             <i class="bi bi-trash me-1"></i>Wipe ausführen
                         </button>

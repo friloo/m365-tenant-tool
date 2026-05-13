@@ -74,6 +74,7 @@
     </div>
     <div class="card-body-custom">
         <form method="post" action="/adminroles/assign" class="row g-2 align-items-end">
+            <?= \App\Core\Csrf::field() ?>
             <div class="col-md-4">
                 <label class="form-label" style="font-size:12px;font-weight:600;color:#374151;">Benutzer-ID (UUID)</label>
                 <input type="text"
@@ -198,6 +199,7 @@
                                   action="/adminroles/<?= $e($assignId) ?>/remove"
                                   class="mb-0"
                                   onsubmit="return confirm('Rollenzuweisung für <?= $e(addslashes($displayName)) ?> wirklich entfernen?');">
+                                <?= \App\Core\Csrf::field() ?>
                                 <button type="submit"
                                         class="btn btn-sm btn-outline-danger py-0 px-2"
                                         style="font-size:11px;"
