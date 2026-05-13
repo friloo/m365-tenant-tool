@@ -1,6 +1,7 @@
 <?php $e = fn($v) => htmlspecialchars((string)$v, ENT_QUOTES); ?>
 
 <div class="content-card mb-4">
+  <div class="card-body-custom">
     <div class="d-flex align-items-center gap-3 mb-3">
         <div style="width:40px;height:40px;background:<?= $enabled ? '#16a34a' : '#0078d4' ?>;border-radius:10px;display:flex;align-items:center;justify-content:center;">
             <i class="bi bi-shield-lock-fill" style="color:#fff;font-size:18px;"></i>
@@ -178,4 +179,5 @@
         </div>
     </div>
     <?php endif; ?>
+  </div>
 </div>

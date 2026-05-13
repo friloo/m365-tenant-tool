@@ -170,6 +170,26 @@ class PermissionCheckerService
                 'section'  => 'Geräte & Compliance',
                 'write'    => false,
             ],
+            // ── Information Protection / Compliance ───────────────────
+            'InformationProtectionPolicy.Read.All' => [
+                'desc'     => 'Information-Protection-Richtlinien & Sensitivity Labels lesen',
+                'features' => ['Sensitivity Labels (Übersicht & Policy-Settings)', 'DLP-Richtlinien (Label-Übersicht)'],
+                'section'  => 'Compliance & Schutz',
+                'write'    => false,
+            ],
+            'eDiscovery.Read.All' => [
+                'desc'     => 'eDiscovery-Fälle (Aufbewahrungsrichtlinien) lesen',
+                'features' => ['Aufbewahrungsrichtlinien (eDiscovery-Fälle)'],
+                'section'  => 'Compliance & Schutz',
+                'write'    => false,
+            ],
+            // ── Domain & Tenant-Konfiguration ─────────────────────────
+            'Domain.Read.All' => [
+                'desc'     => 'Domains des Tenants lesen',
+                'features' => ['Domain Health (DNS/DKIM/DMARC-Checks)'],
+                'section'  => 'Administration',
+                'write'    => false,
+            ],
             // ── Service Health / MessageCenter ────────────────────────
             'ServiceHealth.Read.All' => [
                 'desc'     => 'Dienststatus lesen',
@@ -190,9 +210,11 @@ class PermissionCheckerService
 
     public function getAccessToken(): string
     {
+        // ReflectionProperty::setAccessible() is implicit since PHP 8.1 and
+        // emits a deprecation warning in PHP 8.5+, so we just read the
+        // private property directly via reflection.
         $rc     = new \ReflectionClass($this->graph);
         $tmProp = $rc->getProperty('tokenManager');
-        $tmProp->setAccessible(true);
         /** @var \App\Auth\GraphTokenManager $tm */
         $tm = $tmProp->getValue($this->graph);
         return $tm->getToken();
