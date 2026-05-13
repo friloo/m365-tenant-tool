@@ -1442,20 +1442,17 @@ class SecurityPostureService
             'description' => 'Die Tenant-weite Freigabe-Einstellung sollte externe Freigabe einschränken — Anyone-Links sind DSGVO-kritisch (Art. 25 Privacy by Default).',
             'severity'    => 'high',
         ];
-        try {
-            $s = $this->graph->get('/admin/sharepoint/settings', [], 'sp_tenant_settings', 1800);
-            if (empty($s)) return array_merge($base, ['status' => 'unknown', 'detail' => 'SharePoint-Tenant-Settings nicht lesbar (Permission SharePointTenantSettings.Read.All?).']);
-            $cap = $s['sharingCapability'] ?? '';
-            return match ($cap) {
-                'disabled'                          => array_merge($base, ['status' => 'pass', 'detail' => 'Externe Freigabe komplett deaktiviert.']),
-                'existingExternalUserSharingOnly'   => array_merge($base, ['status' => 'pass', 'detail' => 'Nur an bekannte externe Benutzer — restriktiv.']),
-                'externalUserSharingOnly'           => array_merge($base, ['status' => 'warn', 'detail' => 'Nur an authentifizierte Externe — akzeptabel, aber prüfen.']),
-                'externalUserAndGuestSharing'       => array_merge($base, ['status' => 'fail', 'detail' => 'Anyone-Links sind aktiv — DSGVO-Risiko: unbekannte Dritte können auf Daten zugreifen.']),
-                default                             => array_merge($base, ['status' => 'unknown', 'detail' => "Unbekannter sharingCapability-Wert: {$cap}"]),
-            };
-        } catch (\Throwable $e) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
-        }
+        $s = $this->loadSpSettings();
+        if (isset($s['__skip'])) return array_merge($base, ['status' => 'pass', 'detail' => $s['__skip']]);
+        if (empty($s))           return array_merge($base, ['status' => 'unknown', 'detail' => 'SharePoint-Tenant-Settings nicht lesbar (Permission SharePointTenantSettings.Read.All?).']);
+        $cap = $s['sharingCapability'] ?? '';
+        return match ($cap) {
+            'disabled'                          => array_merge($base, ['status' => 'pass', 'detail' => 'Externe Freigabe komplett deaktiviert.']),
+            'existingExternalUserSharingOnly'   => array_merge($base, ['status' => 'pass', 'detail' => 'Nur an bekannte externe Benutzer — restriktiv.']),
+            'externalUserSharingOnly'           => array_merge($base, ['status' => 'warn', 'detail' => 'Nur an authentifizierte Externe — akzeptabel, aber prüfen.']),
+            'externalUserAndGuestSharing'       => array_merge($base, ['status' => 'fail', 'detail' => 'Anyone-Links sind aktiv — DSGVO-Risiko: unbekannte Dritte können auf Daten zugreifen.']),
+            default                             => array_merge($base, ['status' => 'unknown', 'detail' => "Unbekannter sharingCapability-Wert: {$cap}"]),
+        };
     }
 
     private function checkGdprAnonymousLinkExpiry(): array
@@ -1467,24 +1464,20 @@ class SecurityPostureService
             'description' => 'Anyone-Links ohne Ablaufdatum verletzen Speicherbegrenzung (Art. 5 Abs. 1e DSGVO). Empfehlung: ≤ 90 Tage.',
             'severity'    => 'medium',
         ];
-        try {
-            $s = $this->graph->get('/admin/sharepoint/settings', [], 'sp_tenant_settings', 1800);
-            if (empty($s)) return array_merge($base, ['status' => 'unknown', 'detail' => 'SharePoint-Tenant-Settings nicht lesbar.']);
-            // 0 = unbegrenzt, sonst Tage
-            $days = (int)($s['requireAnonymousLinksExpireInDays'] ?? 0);
-            if (($s['sharingCapability'] ?? '') === 'disabled') {
-                return array_merge($base, ['status' => 'pass', 'detail' => 'Externe Freigabe deaktiviert — Ablauf irrelevant.']);
-            }
-            if ($days <= 0) {
-                return array_merge($base, ['status' => 'fail', 'detail' => 'Anyone-Links haben keinen Ablauf — DSGVO-Risiko.']);
-            }
-            if ($days > 90) {
-                return array_merge($base, ['status' => 'warn', 'detail' => "Anyone-Links laufen nach {$days} Tagen ab — empfohlen ≤ 90."]);
-            }
-            return array_merge($base, ['status' => 'pass', 'detail' => "Anyone-Links laufen nach {$days} Tagen ab."]);
-        } catch (\Throwable $e) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
+        $s = $this->loadSpSettings();
+        if (isset($s['__skip'])) return array_merge($base, ['status' => 'pass', 'detail' => $s['__skip']]);
+        if (empty($s))           return array_merge($base, ['status' => 'unknown', 'detail' => 'SharePoint-Tenant-Settings nicht lesbar.']);
+        $days = (int)($s['requireAnonymousLinksExpireInDays'] ?? 0);
+        if (($s['sharingCapability'] ?? '') === 'disabled') {
+            return array_merge($base, ['status' => 'pass', 'detail' => 'Externe Freigabe deaktiviert — Ablauf irrelevant.']);
         }
+        if ($days <= 0) {
+            return array_merge($base, ['status' => 'fail', 'detail' => 'Anyone-Links haben keinen Ablauf — DSGVO-Risiko.']);
+        }
+        if ($days > 90) {
+            return array_merge($base, ['status' => 'warn', 'detail' => "Anyone-Links laufen nach {$days} Tagen ab — empfohlen ≤ 90."]);
+        }
+        return array_merge($base, ['status' => 'pass', 'detail' => "Anyone-Links laufen nach {$days} Tagen ab."]);
     }
 
     private function checkGdprDefaultSharingLink(): array
@@ -1496,17 +1489,39 @@ class SecurityPostureService
             'description' => 'Der Default-Linktyp sollte „internal" oder „direct" (named) sein — Anyone als Standard begünstigt versehentliche Datenweitergabe.',
             'severity'    => 'medium',
         ];
+        $s = $this->loadSpSettings();
+        if (isset($s['__skip'])) return array_merge($base, ['status' => 'pass', 'detail' => $s['__skip']]);
+        if (empty($s))           return array_merge($base, ['status' => 'unknown', 'detail' => 'SharePoint-Tenant-Settings nicht lesbar.']);
+        $type = $s['defaultSharingLinkType'] ?? '';
+        return match ($type) {
+            'direct', 'internal' => array_merge($base, ['status' => 'pass', 'detail' => "Standard-Link: {$type}"]),
+            'anonymousAccess'    => array_merge($base, ['status' => 'fail', 'detail' => 'Standard-Link ist Anyone — DSGVO-kritisch.']),
+            default              => array_merge($base, ['status' => 'warn', 'detail' => "Standard-Link: {$type}"]),
+        };
+    }
+
+    /**
+     * Loads /admin/sharepoint/settings once per request and translates the
+     * common "tenant has no SPO license" error into a skip marker so the
+     * three SP checks above can report "nicht zutreffend" instead of an
+     * alarming "Unbekannt".
+     *
+     * @return array{__skip?:string} the raw settings, or a one-element
+     *                                array carrying the skip reason.
+     */
+    private function loadSpSettings(): array
+    {
+        static $cache = null;
+        if ($cache !== null) return $cache;
         try {
             $s = $this->graph->get('/admin/sharepoint/settings', [], 'sp_tenant_settings', 1800);
-            if (empty($s)) return array_merge($base, ['status' => 'unknown', 'detail' => 'SharePoint-Tenant-Settings nicht lesbar.']);
-            $type = $s['defaultSharingLinkType'] ?? '';
-            return match ($type) {
-                'direct', 'internal' => array_merge($base, ['status' => 'pass', 'detail' => "Standard-Link: {$type}"]),
-                'anonymousAccess'    => array_merge($base, ['status' => 'fail', 'detail' => 'Standard-Link ist Anyone — DSGVO-kritisch.']),
-                default              => array_merge($base, ['status' => 'warn', 'detail' => "Standard-Link: {$type}"]),
-            };
+            return $cache = (is_array($s) ? $s : []);
         } catch (\Throwable $e) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
+            $msg = $e->getMessage();
+            if (stripos($msg, 'SPO license') !== false || stripos($msg, 'SharePoint') !== false && stripos($msg, 'license') !== false) {
+                return $cache = ['__skip' => 'SharePoint Online ist im Tenant nicht lizenziert — Prüfung nicht zutreffend.'];
+            }
+            return $cache = [];
         }
     }
 
@@ -1519,20 +1534,62 @@ class SecurityPostureService
             'description' => 'Vertraulichkeitsbezeichnungen sind Voraussetzung für Information-Protection (Art. 32 DSGVO Maßnahmen zur Datenintegrität).',
             'severity'    => 'medium',
         ];
-        try {
-            $data = $this->graph->get('/security/informationProtection/sensitivityLabels', ['$top' => '50'], 'gdpr_sens_labels', 1800);
-            $labels = $data['value'] ?? [];
-            $active = count(array_filter($labels, fn($l) => $l['isActive'] ?? false));
-            if (empty($labels)) {
-                return array_merge($base, ['status' => 'fail', 'detail' => 'Keine Sensitivity Labels gefunden.']);
-            }
-            if ($active === 0) {
-                return array_merge($base, ['status' => 'warn', 'detail' => count($labels) . ' Labels existieren, aber keines ist aktiv.']);
-            }
-            return array_merge($base, ['status' => 'pass', 'detail' => "{$active} aktive Sensitivity Labels (von " . count($labels) . ')']);
-        } catch (\Throwable $e) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
+        $labels = $this->loadSensitivityLabels();
+        if (isset($labels['__skip'])) return array_merge($base, ['status' => 'pass', 'detail' => $labels['__skip']]);
+        if ($labels === null)          return array_merge($base, ['status' => 'unknown', 'detail' => 'Sensitivity-Labels-Endpunkt nicht erreichbar — Berechtigung InformationProtectionPolicy.Read.All prüfen.']);
+        $active = count(array_filter($labels, fn($l) => $l['isActive'] ?? true));
+        if (empty($labels))            return array_merge($base, ['status' => 'fail', 'detail' => 'Keine Sensitivity Labels gefunden.']);
+        if ($active === 0)             return array_merge($base, ['status' => 'warn', 'detail' => count($labels) . ' Labels existieren, aber keines ist aktiv.']);
+        return array_merge($base, ['status' => 'pass', 'detail' => "{$active} aktive Sensitivity Labels (von " . count($labels) . ')']);
+    }
+
+    private function checkGdprDlpOrLabelsActive(): array
+    {
+        $base = [
+            'id'          => 'gdpr_dlp_or_labels',
+            'category'    => 'DSGVO & Datenschutz',
+            'label'       => 'DLP-/Label-Schutz für personenbezogene Daten',
+            'description' => 'Mindestens eine Information-Protection-Schutzmaßnahme (Sensitivity Label aktiv) ist erforderlich (Art. 25 + Art. 32 DSGVO).',
+            'severity'    => 'high',
+        ];
+        $labels = $this->loadSensitivityLabels();
+        if (isset($labels['__skip'])) return array_merge($base, ['status' => 'pass', 'detail' => $labels['__skip']]);
+        if ($labels === null)          return array_merge($base, ['status' => 'unknown', 'detail' => 'Sensitivity-Labels-Endpunkt nicht erreichbar — Berechtigung InformationProtectionPolicy.Read.All prüfen.']);
+        $active = count(array_filter($labels, fn($l) => $l['isActive'] ?? true));
+        if ($active > 0) {
+            return array_merge($base, ['status' => 'pass', 'detail' => "{$active} Sensitivity Labels aktiv."]);
         }
+        return array_merge($base, ['status' => 'fail', 'detail' => 'Keine aktive Schutzmaßnahme (DLP/Label) gefunden.']);
+    }
+
+    /**
+     * Tries the beta endpoint first (app-permissions), falls back to the
+     * v1.0 delegated endpoint. Returns the labels array (possibly empty
+     * = no labels published), null if every endpoint produced an error
+     * (so the caller can say "Unbekannt" instead of falsely "keine").
+     *
+     * @return array<int,array<string,mixed>>|null
+     */
+    private function loadSensitivityLabels(): array|null
+    {
+        static $cache = false;
+        if ($cache !== false) return $cache;
+
+        $endpoints = [
+            'https://graph.microsoft.com/beta/security/informationProtection/sensitivityLabels',
+            '/informationProtection/policy/labels',
+        ];
+        $errors = 0;
+        foreach ($endpoints as $i => $ep) {
+            try {
+                $data = $this->graph->get($ep, ['$top' => '50'], 'gdpr_sens_' . $i, 1800);
+                if ($this->graph->getLastError() !== null) { $errors++; continue; }
+                return $cache = ($data['value'] ?? []);
+            } catch (\Throwable) {
+                $errors++;
+            }
+        }
+        return $cache = ($errors === count($endpoints) ? null : []);
     }
 
     private function checkGdprRetentionPolicies(): array
@@ -1587,25 +1644,4 @@ class SecurityPostureService
         }
     }
 
-    private function checkGdprDlpOrLabelsActive(): array
-    {
-        $base = [
-            'id'          => 'gdpr_dlp_or_labels',
-            'category'    => 'DSGVO & Datenschutz',
-            'label'       => 'DLP-/Label-Schutz für personenbezogene Daten',
-            'description' => 'Mindestens eine Information-Protection-Schutzmaßnahme (Sensitivity Label aktiv) ist erforderlich (Art. 25 + Art. 32 DSGVO).',
-            'severity'    => 'high',
-        ];
-        try {
-            $labels = $this->graph->get('/security/informationProtection/sensitivityLabels', ['$top' => '50'], 'gdpr_sens_labels', 1800);
-            $list   = $labels['value'] ?? [];
-            $active = count(array_filter($list, fn($l) => $l['isActive'] ?? false));
-            if ($active > 0) {
-                return array_merge($base, ['status' => 'pass', 'detail' => "{$active} Sensitivity Labels aktiv."]);
-            }
-            return array_merge($base, ['status' => 'fail', 'detail' => 'Keine aktive Schutzmaßnahme (DLP/Label) gefunden.']);
-        } catch (\Throwable $e) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
-        }
-    }
 }

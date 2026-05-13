@@ -12,10 +12,12 @@ $scoreColor = $pct >= 75 ? '#16a34a' : ($pct >= 50 ? '#d97706' : '#dc2626');
 $scoreLabel = $pct >= 75 ? 'Gut' : ($pct >= 50 ? 'Verbesserungsbedarf' : 'Kritisch');
 
 $categoryIcons = [
-    'Identität & MFA'      => 'bi-person-lock',
-    'Conditional Access'   => 'bi-shield-lock',
-    'Geräte & Compliance'  => 'bi-laptop',
-    'Konfiguration & Apps' => 'bi-gear',
+    'Identität & MFA'          => 'bi-person-lock',
+    'Conditional Access'       => 'bi-shield-lock',
+    'Geräte & Compliance'      => 'bi-laptop',
+    'E-Mail & Endpoint-Schutz' => 'bi-envelope-check',
+    'Konfiguration & Apps'     => 'bi-gear',
+    'DSGVO & Datenschutz'      => 'bi-file-earmark-lock',
 ];
 
 $priorityColors = [
@@ -180,8 +182,9 @@ foreach ($byCategory as $cat => $items) {
         $catPct  = $catTot > 0 ? round($catPass / $catTot * 100) : 0;
         $catColor = $catPct >= 80 ? '#16a34a' : ($catPct >= 50 ? '#d97706' : '#dc2626');
         $icon = $categoryIcons[$category] ?? 'bi-shield';
+        $anchor = 'cat-' . preg_replace('/[^a-z0-9]+/i', '-', strtolower($category));
     ?>
-    <div class="col-12">
+    <div class="col-12" id="<?= $anchor ?>" style="scroll-margin-top:64px;">
     <div class="content-card mb-0">
         <div class="card-header-custom">
             <span style="display:flex;align-items:center;gap:10px;">
