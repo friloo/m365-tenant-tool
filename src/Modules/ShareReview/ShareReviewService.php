@@ -94,7 +94,7 @@ class ShareReviewService
             $children = $this->graph->paginate(
                 "/drives/{$driveId}/items/{$folderId}/children",
                 [
-                    '$select' => 'id,name,webUrl,createdBy,folder',
+                    '$select' => 'id,name,webUrl,createdBy,folder,permissions',
                     '$expand' => 'permissions',
                     '$top'    => '100',
                 ],
