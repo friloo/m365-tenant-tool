@@ -5,13 +5,50 @@ define('BASE_PATH', __DIR__);
 // Debug mode: set cookie m365_debug=1 to see full stack traces and PHP
 // warnings inline. Production default is errors hidden + logged only.
 $debugMode = (($_COOKIE['m365_debug'] ?? '') === '1') || (($_GET['m365_debug'] ?? '') === '1');
-ini_set('display_errors', $debugMode ? '1' : '0');
 ini_set('log_errors', '1');
 if ($debugMode) {
+    ini_set('display_errors', '1');
     error_reporting(E_ALL);
     // Persist for the rest of the session even if ?m365_debug=1 was a one-off
     setcookie('m365_debug', '1', ['expires' => time() + 3600, 'path' => '/', 'httponly' => true, 'samesite' => 'Strict']);
+} else {
+    // Some shared hosts force display_errors=1 via php_admin_value; ini_set is
+    // then a no-op. Restrict error_reporting so deprecated/notice/warning
+    // never reach the output buffer in production, regardless. Fatals still
+    // hit our register_shutdown_function handler below.
+    ini_set('display_errors', '0');
+    error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR);
 }
+
+// Catch true fatal errors (E_ERROR, E_PARSE, memory exhausted) that don't
+// surface as Throwables and therefore bypass set_exception_handler. Without
+// this, those produce a literally blank response in production.
+register_shutdown_function(function () use ($debugMode): void {
+    $err = error_get_last();
+    if (!$err || !in_array($err['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR], true)) {
+        return;
+    }
+    if (headers_sent()) return;
+    http_response_code(500);
+    header('Content-Type: text/html; charset=utf-8');
+    $isAdmin = isset($_SESSION) && ($_SESSION['authenticated'] ?? false)
+        && (($_SESSION['role'] ?? '') === 'admin');
+    $showDetails = $debugMode || $isAdmin;
+    echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Fataler Fehler</title></head>'
+       . '<body style="font-family:system-ui;padding:40px;max-width:900px;margin:0 auto;">'
+       . '<h2 style="text-align:center;">&#9888; Fataler Fehler</h2>';
+    if ($showDetails) {
+        echo '<details open style="margin-top:30px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:16px;">'
+           . '<summary style="cursor:pointer;font-weight:600;color:#991b1b;">Fehlerdetails</summary>'
+           . '<p>' . htmlspecialchars($err['message']) . '</p>'
+           . '<p style="font-family:monospace;font-size:12px;color:#555;">'
+           . htmlspecialchars($err['file']) . ':' . (int)$err['line'] . '</p>'
+           . '</details>';
+    } else {
+        echo '<p style="text-align:center;">Ein fataler Fehler ist aufgetreten. Bitte kontaktiere den Administrator.</p>';
+    }
+    echo '<p style="text-align:center;margin-top:30px;"><a href="/">Zur Startseite</a></p></body></html>';
+});
 
 set_exception_handler(function (\Throwable $e) use ($debugMode): void {
     error_log('[M365Tool] Uncaught ' . get_class($e) . ': ' . $e->getMessage()

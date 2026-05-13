@@ -63,7 +63,7 @@ class MicrosoftAuth
         ]);
         $response = curl_exec($ch);
         $curlErr  = curl_errno($ch);
-        curl_close($ch);
+        // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
 
         if ($curlErr || !$response) {
             return null;
@@ -86,7 +86,7 @@ class MicrosoftAuth
             CURLOPT_HTTPHEADER     => ["Authorization: Bearer {$accessToken}"],
         ]);
         $response = curl_exec($ch);
-        curl_close($ch);
+        // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
 
         $data = json_decode($response, true);
         if (empty($data['id'])) {
