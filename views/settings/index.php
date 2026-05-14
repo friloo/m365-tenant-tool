@@ -13,13 +13,50 @@
     </div>
 <?php endif; ?>
 
+<style>
+.settings-tabs {
+    display: flex; gap: 4px; margin-bottom: 20px;
+    border-bottom: 1px solid #e5e7eb; padding-bottom: 0;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.settings-tabs button {
+    background: none; border: none;
+    padding: 10px 16px;
+    font-size: 14px; font-weight: 500; color: #6b7280;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+    white-space: nowrap;
+}
+.settings-tabs button:hover { color: #111827; }
+.settings-tabs button.active {
+    color: #0078d4;
+    border-bottom-color: #0078d4;
+}
+.settings-tabs button i { margin-right: 6px; }
+[data-tab]:not(.tab-active) { display: none; }
+.settings-savebar {
+    position: sticky; bottom: 0; z-index: 10;
+    margin-top: 16px; padding: 14px 0;
+    background: linear-gradient(to top, rgba(243,244,246,.95) 60%, transparent);
+    backdrop-filter: blur(4px);
+}
+</style>
+
 <div class="row g-4">
     <div class="col-lg-8">
         <form method="post" action="/settings/save">
             <?= \App\Core\Csrf::field() ?>
 
+        <nav class="settings-tabs" role="tablist">
+            <button type="button" data-tab-target="allgemein"        class="active"><i class="bi bi-sliders"></i>Allgemein</button>
+            <button type="button" data-tab-target="benachrichtigungen"><i class="bi bi-bell"></i>Benachrichtigungen</button>
+            <button type="button" data-tab-target="governance"      ><i class="bi bi-shield-check"></i>Governance</button>
+            <button type="button" data-tab-target="ki"              ><i class="bi bi-robot"></i>KI &amp; Lizenzen</button>
+        </nav>
+
         <!-- KI-Sicherheitsberater -->
-        <div class="content-card mb-4" id="ai-advisor">
+        <div class="content-card mb-4" data-tab="ki" id="ai-advisor">
             <div class="card-header-custom">
                 <i class="bi bi-robot text-primary"></i>
                 <h6>KI-Sicherheitsberater</h6>
@@ -195,7 +232,7 @@
         </script>
 
         <!-- General -->
-        <div class="content-card mb-4" id="general">
+        <div class="content-card mb-4" data-tab="allgemein" id="general">
             <div class="card-header-custom">
                 <i class="bi bi-gear text-primary"></i>
                 <h6>Allgemein</h6>
@@ -227,7 +264,7 @@
         </div>
 
         <!-- Admin Password -->
-        <div class="content-card mb-4" id="admin-password">
+        <div class="content-card mb-4" data-tab="allgemein" id="admin-password">
             <div class="card-header-custom">
                 <i class="bi bi-person-lock text-primary"></i>
                 <h6>Admin-Passwort ändern</h6>
@@ -246,32 +283,9 @@
             </div>
         </div>
 
-        <!-- Operator Account -->
-        <div class="content-card mb-4" id="operator">
-            <div class="card-header-custom">
-                <i class="bi bi-person-badge text-warning"></i>
-                <h6>Operator-Konto <span class="badge-warning ms-2">Schreibzugriff eingeschränkt</span></h6>
-            </div>
-            <div class="card-body-custom">
-                <p class="text-muted small mb-3">
-                    Der Operator kann Benutzer de/aktivieren, Lizenzen zuweisen und Gruppen verwalten —
-                    aber keine Einstellungen ändern.
-                </p>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label fw-medium">Benutzername</label>
-                        <input type="text" name="operator_username" class="form-control" value="<?= $e($s['operator_username']) ?>" placeholder="z.B. operator">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-medium">Passwort</label>
-                        <input type="password" name="operator_password" class="form-control" placeholder="Leer lassen = keine Änderung">
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Email Alerts -->
-        <div class="content-card mb-4" id="email">
+        <div class="content-card mb-4" data-tab="benachrichtigungen" id="email">
             <div class="card-header-custom">
                 <i class="bi bi-envelope text-primary"></i>
                 <h6>E-Mail-Benachrichtigungen</h6>
@@ -333,7 +347,7 @@
         </div>
 
         <!-- Alert Thresholds -->
-        <div class="content-card mb-4" id="alert-thresholds">
+        <div class="content-card mb-4" data-tab="benachrichtigungen" id="alert-thresholds">
             <div class="card-header-custom">
                 <i class="bi bi-sliders text-primary"></i>
                 <h6>Alert-Schwellwerte</h6>
@@ -403,7 +417,7 @@
         </div>
 
         <!-- Share Review / Freigaben-Monitor -->
-        <div class="content-card mb-4" id="share-review">
+        <div class="content-card mb-4" data-tab="governance" id="share-review">
             <div class="card-header-custom">
                 <i class="bi bi-eye-slash text-primary"></i>
                 <h6>Freigaben-Monitor</h6>
@@ -456,7 +470,7 @@
         </div>
 
         <!-- Stale Accounts / Inactive Users -->
-        <div class="content-card mb-4" id="stale-accounts">
+        <div class="content-card mb-4" data-tab="governance" id="stale-accounts">
             <div class="card-header-custom">
                 <i class="bi bi-person-x text-primary"></i>
                 <h6>Inaktive Konten</h6>
@@ -524,7 +538,7 @@
         </div>
 
         <!-- Password Expiry -->
-        <div class="content-card mb-4" id="password-expiry">
+        <div class="content-card mb-4" data-tab="governance" id="password-expiry">
             <div class="card-header-custom">
                 <i class="bi bi-key text-primary"></i>
                 <h6>Passwort-Ablauf</h6>
@@ -545,7 +559,7 @@
         </div>
 
         <!-- Weekly Report -->
-        <div class="content-card mb-4" id="weekly-report">
+        <div class="content-card mb-4" data-tab="benachrichtigungen" id="weekly-report">
             <div class="card-header-custom">
                 <i class="bi bi-envelope-paper text-primary"></i>
                 <h6>Wöchentlicher E-Mail-Report</h6>
@@ -584,7 +598,7 @@
         </div>
 
         <!-- License Criteria -->
-        <div class="content-card mb-4" id="license-criteria">
+        <div class="content-card mb-4" data-tab="ki" id="license-criteria">
             <div class="card-header-custom">
                 <i class="bi bi-lightbulb text-primary"></i>
                 <h6>Lizenz-Berater — Kriterien</h6>
@@ -622,7 +636,7 @@
         </div>
 
         <!-- License prices link -->
-        <div class="content-card mb-4" id="license-prices">
+        <div class="content-card mb-4" data-tab="ki" id="license-prices">
             <div class="card-header-custom">
                 <i class="bi bi-currency-euro text-primary"></i>
                 <h6>Lizenzpreise konfigurieren</h6>
@@ -639,7 +653,7 @@
         </div>
 
         <!-- Branding: public review page -->
-        <div class="content-card mb-4" id="branding">
+        <div class="content-card mb-4" data-tab="allgemein" id="branding">
             <div class="card-header-custom">
                 <i class="bi bi-palette text-primary"></i>
                 <h6>Branding — Öffentliche Bestätigungsseite</h6>
@@ -708,10 +722,11 @@
             </div>
         </div>
 
-        <div class="d-flex gap-2">
+        <div class="settings-savebar d-flex gap-2 align-items-center">
             <button type="submit" class="btn btn-primary px-4">
                 <i class="bi bi-check2 me-1"></i> Einstellungen speichern
             </button>
+            <span class="text-muted small">Speichert alle Tabs gemeinsam.</span>
         </div>
         </form>
 
@@ -746,6 +761,46 @@ updateAiDefaults();
     colorPicker?.addEventListener('input', updatePreview);
     logoText?.addEventListener('input', updatePreview);
     updatePreview();
+})();
+
+// ── Tab-Navigation ─────────────────────────────────────────────────────
+(function () {
+    const KEY     = 'm365_settings_tab';
+    const tabs    = document.querySelectorAll('.settings-tabs button[data-tab-target]');
+    const cards   = document.querySelectorAll('[data-tab]');
+    const savebar = document.querySelector('.settings-savebar');
+
+    function activate(name) {
+        tabs.forEach(b => b.classList.toggle('active', b.dataset.tabTarget === name));
+        cards.forEach(c => c.classList.toggle('tab-active', c.dataset.tab === name));
+        try { localStorage.setItem(KEY, name); } catch (_) {}
+        // Wenn der User per Hash auf eine konkrete Sektion springt
+        // (#admin-password etc.), aktiviere automatisch den richtigen Tab.
+    }
+
+    tabs.forEach(b => b.addEventListener('click', () => activate(b.dataset.tabTarget)));
+
+    // Initial: aus Hash → aus localStorage → 'allgemein'
+    let initial = 'allgemein';
+    if (location.hash) {
+        const anchored = document.querySelector(location.hash);
+        if (anchored && anchored.dataset.tab) initial = anchored.dataset.tab;
+    } else {
+        try {
+            const saved = localStorage.getItem(KEY);
+            if (saved && document.querySelector('button[data-tab-target="' + saved + '"]')) initial = saved;
+        } catch (_) {}
+    }
+    activate(initial);
+
+    // Hash-Change wechselt Tab + scrollt zum Anker
+    window.addEventListener('hashchange', () => {
+        const target = document.querySelector(location.hash);
+        if (target && target.dataset.tab) {
+            activate(target.dataset.tab);
+            setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+        }
+    });
 })();
 </script>
     </div>

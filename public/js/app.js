@@ -201,7 +201,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Settings deep links
         { label: 'Einstellungen: Allgemein',             icon: 'gear',           url: '/settings#general',          cat: 'Einstellungen' },
         { label: 'Einstellungen: Admin-Passwort',        icon: 'person-lock',    url: '/settings#admin-password',   cat: 'Einstellungen' },
-        { label: 'Einstellungen: Operator-Konto',        icon: 'person-badge',   url: '/settings#operator',         cat: 'Einstellungen' },
         { label: 'Einstellungen: E-Mail & SMTP',         icon: 'envelope',       url: '/settings#email',            cat: 'Einstellungen' },
         { label: 'Einstellungen: Freigaben-Monitor',     icon: 'eye-slash',      url: '/settings#share-review',     cat: 'Einstellungen' },
         { label: 'Einstellungen: Inaktive Konten',       icon: 'person-x',       url: '/settings#stale-accounts',   cat: 'Einstellungen' },

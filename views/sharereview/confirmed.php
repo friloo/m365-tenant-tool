@@ -5,51 +5,127 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Freigabe bestätigt — <?= htmlspecialchars($brandAppName) ?></title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        :root { --brand: <?= htmlspecialchars($brandColor) ?>; --brand-text: <?= htmlspecialchars($brandTextColor) ?>; }
-        body { background: #f3f4f6; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .result-card { max-width: 520px; width: 100%; margin: 40px auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
-        .brand-bar { background: var(--brand); color: var(--brand-text); padding: 16px 28px; display: flex; align-items: center; gap: 12px; }
-        .brand-logo { width: 32px; height: 32px; border-radius: 6px; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; overflow: hidden; }
-        .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
-        .card-body { padding: 40px 32px; text-align: center; }
-        .icon-circle { width: 72px; height: 72px; border-radius: 50%; background: #dcfce7; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-        footer.brand-footer { font-size: 12px; color: #9ca3af; text-align: center; padding: 16px; }
+        :root {
+            --brand: <?= htmlspecialchars($brandColor) ?>;
+            --brand-dark: <?= htmlspecialchars($brandColorDark) ?>;
+            --brand-text: <?= htmlspecialchars($brandTextColor) ?>;
+            --brand-rgb: <?php
+                $hex = ltrim($brandColor, '#');
+                if (strlen($hex) === 6) {
+                    echo hexdec(substr($hex,0,2)) . ',' . hexdec(substr($hex,2,2)) . ',' . hexdec(substr($hex,4,2));
+                } else { echo '0,120,212'; }
+            ?>;
+            --ink:    #0f172a;
+            --ink-2:  #475569;
+            --line:   #e2e8f0;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(34,197,94, 0.12), transparent 70%),
+                linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 32px 16px 56px; line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+        .brand-hero { width: 100%; max-width: 560px; text-align: center; margin: 8px auto 28px; }
+        .brand-logo-img { max-height: 84px; max-width: 260px; object-fit: contain; display: inline-block; }
+        .brand-logo-fallback {
+            width: 76px; height: 76px; margin: 0 auto;
+            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+            color: var(--brand-text);
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 32px; letter-spacing: -.5px;
+            box-shadow: 0 10px 24px -8px rgba(var(--brand-rgb), .45);
+        }
+        .brand-name {
+            font-size: 13px; font-weight: 600; color: var(--ink-2);
+            text-transform: uppercase; letter-spacing: 1.5px; margin-top: 14px;
+        }
+        .result-card {
+            width: 100%; max-width: 560px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 24px 48px -16px rgba(15,23,42,.10);
+            overflow: hidden;
+        }
+        .card-accent { height: 4px; background: linear-gradient(90deg, #16a34a, #22c55e); }
+        .card-body { padding: 40px 36px 36px; text-align: center; }
+        .icon-circle {
+            width: 84px; height: 84px; border-radius: 50%;
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: 0 10px 30px -8px rgba(34,197,94, .35);
+        }
+        .icon-circle i { font-size: 42px; color: #16a34a; }
+        .result-title { font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 8px; letter-spacing: -.3px; }
+        .result-lead  { font-size: 15px; color: var(--ink-2); line-height: 1.6; margin: 0 auto 28px; max-width: 420px; }
+        .footer-note  {
+            font-size: 12.5px; color: #94a3b8; line-height: 1.6;
+            padding-top: 20px; border-top: 1px solid var(--line);
+        }
+        .footer-note a { color: var(--brand); text-decoration: none; }
+        .footer-note a:hover { text-decoration: underline; }
+        .page-footer  {
+            font-size: 12px; color: #94a3b8; text-align: center;
+            margin-top: 32px; padding: 0 16px; max-width: 560px;
+        }
+        @media (max-width: 600px) {
+            body { padding: 24px 12px 40px; }
+            .brand-hero { margin-bottom: 22px; }
+            .brand-logo-img { max-height: 64px; max-width: 200px; }
+            .brand-logo-fallback { width: 64px; height: 64px; font-size: 26px; border-radius: 14px; }
+            .card-body { padding: 32px 22px 28px; }
+            .icon-circle { width: 72px; height: 72px; }
+            .icon-circle i { font-size: 36px; }
+            .result-title { font-size: 19px; }
+        }
     </style>
 </head>
 <body>
+
+<div class="brand-hero">
+    <?php if ($brandLogoUrl): ?>
+        <img src="<?= htmlspecialchars($brandLogoUrl) ?>" alt="<?= htmlspecialchars($brandAppName) ?>" class="brand-logo-img">
+    <?php else: ?>
+        <div class="brand-logo-fallback"><?= htmlspecialchars($brandLogoText) ?></div>
+    <?php endif; ?>
+    <div class="brand-name"><?= htmlspecialchars($brandAppName) ?></div>
+</div>
+
 <div class="result-card">
-    <div class="brand-bar">
-        <div class="brand-logo">
-            <?php if ($brandLogoUrl): ?>
-                <img src="<?= htmlspecialchars($brandLogoUrl) ?>" alt="Logo">
-            <?php else: ?>
-                <?= htmlspecialchars($brandLogoText) ?>
-            <?php endif; ?>
-        </div>
-        <span style="font-weight:600;"><?= htmlspecialchars($brandAppName) ?></span>
-    </div>
+    <div class="card-accent"></div>
     <div class="card-body">
-        <div class="icon-circle">
-            <i class="bi bi-check-circle-fill text-success" style="font-size:36px;"></i>
-        </div>
-        <h5 class="fw-bold mb-2">Freigabe bestätigt</h5>
-        <p class="text-muted mb-4">
-            Vielen Dank! Ihre Bestätigung wurde gespeichert und die Freigabe wurde verlängert.<br>
+        <div class="icon-circle"><i class="bi bi-check-lg"></i></div>
+        <h1 class="result-title">Freigabe bestätigt</h1>
+        <p class="result-lead">
+            Vielen Dank! Ihre Bestätigung wurde gespeichert und die Freigabe wurde verlängert.
             Sie erhalten rechtzeitig eine erneute Erinnerung.
         </p>
-        <p class="text-muted mb-0" style="font-size:12px;">
+        <div class="footer-note">
             <i class="bi bi-x-circle me-1"></i>Sie können dieses Fenster jetzt schließen.
             <?php if ($brandSupportEmail): ?>
-                <br>Bei Fragen: <a href="mailto:<?= htmlspecialchars($brandSupportEmail) ?>"><?= htmlspecialchars($brandSupportEmail) ?></a>
+                <br>Bei Fragen:
+                <a href="mailto:<?= htmlspecialchars($brandSupportEmail) ?>"><?= htmlspecialchars($brandSupportEmail) ?></a>
             <?php endif; ?>
-        </p>
+        </div>
     </div>
 </div>
+
 <?php if ($brandFooter): ?>
-<footer class="brand-footer"><?= htmlspecialchars($brandFooter) ?></footer>
+<div class="page-footer"><?= htmlspecialchars($brandFooter) ?></div>
 <?php endif; ?>
+
 </body>
 </html>
