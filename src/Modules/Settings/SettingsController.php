@@ -146,14 +146,8 @@ class SettingsController
                 $config->set('admin_password', $hash, true);
             }
 
-            // Update operator credentials
-            if (!empty($_POST['operator_username'])) {
-                $config->set('operator_username', trim($_POST['operator_username']));
-            }
-            if (!empty($_POST['operator_password'])) {
-                $hash = password_hash($_POST['operator_password'], PASSWORD_BCRYPT);
-                $config->set('operator_password', $hash, true);
-            }
+            // Operator credentials werden über /settings/users verwaltet —
+            // hier nicht mehr.
 
             $config->clearCache();
             date_default_timezone_set($config->get('timezone', 'Europe/Berlin'));
