@@ -31,15 +31,21 @@
             background:
                 radial-gradient(ellipse 80% 50% at 50% -10%, rgba(34,197,94, 0.12), transparent 70%),
                 linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+            background-attachment: fixed;
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex; flex-direction: column; align-items: center;
-            padding: 32px 16px 56px; line-height: 1.5;
+            padding: 32px 16px calc(56px + env(safe-area-inset-bottom, 0px));
+            line-height: 1.5;
             -webkit-font-smoothing: antialiased;
         }
-        .brand-hero { width: 100%; max-width: 560px; text-align: center; margin: 8px auto 28px; }
-        .brand-logo-img { max-height: 84px; max-width: 260px; object-fit: contain; display: inline-block; }
+        .brand-hero {
+            width: 100%; max-width: 560px; margin: 8px auto 28px;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+        }
+        .brand-logo-img { display: block; height: auto; max-height: 84px; max-width: 260px; width: auto; object-fit: contain; }
         .brand-logo-fallback {
-            width: 76px; height: 76px; margin: 0 auto;
+            width: 76px; height: 76px; flex-shrink: 0;
             background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
             color: var(--brand-text);
             border-radius: 18px;
@@ -82,14 +88,15 @@
             margin-top: 32px; padding: 0 16px; max-width: 560px;
         }
         @media (max-width: 600px) {
-            body { padding: 24px 12px 40px; }
-            .brand-hero { margin-bottom: 22px; }
-            .brand-logo-img { max-height: 64px; max-width: 200px; }
-            .brand-logo-fallback { width: 64px; height: 64px; font-size: 26px; border-radius: 14px; }
+            body { padding: 24px 12px calc(56px + env(safe-area-inset-bottom, 0px)); }
+            .brand-hero { margin: 4px auto 20px; }
+            .brand-logo-img { max-height: 72px; max-width: 220px; }
+            .brand-logo-fallback { width: 68px; height: 68px; font-size: 28px; border-radius: 16px; }
             .card-body { padding: 32px 22px 28px; }
             .icon-circle { width: 72px; height: 72px; }
             .icon-circle i { font-size: 36px; }
             .result-title { font-size: 19px; }
+            .page-footer { margin-bottom: 8px; }
         }
     </style>
 </head>
