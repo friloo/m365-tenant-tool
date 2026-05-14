@@ -16,9 +16,11 @@
 <style>
 .settings-tabs {
     display: flex; gap: 4px; margin-bottom: 20px;
-    border-bottom: 1px solid #e5e7eb; padding-bottom: 0;
+    border-bottom: 1px solid #e5e7eb;
     overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;                   /* Firefox */
 }
+.settings-tabs::-webkit-scrollbar { display: none; } /* WebKit */
 .settings-tabs button {
     background: none; border: none;
     padding: 10px 16px;
@@ -27,6 +29,7 @@
     border-bottom: 2px solid transparent;
     transition: color .15s, border-color .15s;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 .settings-tabs button:hover { color: #111827; }
 .settings-tabs button.active {
@@ -34,12 +37,23 @@
     border-bottom-color: #0078d4;
 }
 .settings-tabs button i { margin-right: 6px; }
+
 [data-tab]:not(.tab-active) { display: none; }
+
 .settings-savebar {
     position: sticky; bottom: 0; z-index: 10;
     margin-top: 16px; padding: 14px 0;
     background: linear-gradient(to top, rgba(243,244,246,.95) 60%, transparent);
     backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+@media (max-width: 640px) {
+    .settings-tabs button { padding: 9px 12px; font-size: 13px; }
+    .settings-tabs button i { margin-right: 5px; }
+    .settings-savebar { margin: 16px -12px -12px; padding: 12px; }
+    .settings-savebar .btn { width: 100%; }
+    .settings-savebar .small { display: none; }
 }
 </style>
 
