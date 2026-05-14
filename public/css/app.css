@@ -711,45 +711,52 @@ body {
     .modal-dialog { margin: .5rem; }
     .modal-dialog-centered { min-height: calc(100% - 1rem); }
 
-    /* ── Mobile Safety-Net gegen horizontalen Overflow ─────────────────── */
-    /* Verhindere generell horizontales Scrollen am Body — Inhalte, die
-       sich nicht anpassen können, bekommen ihren eigenen scroll-Container. */
-    html, body { overflow-x: hidden; max-width: 100vw; }
+    /* ── Mobile Safety-Net gegen horizontalen Overflow ───────────────────
+       Kein overflow:hidden mehr — Inhalte sollen erreichbar bleiben.
+       Strategie: jedes potentiell zu breite Element bekommt seinen
+       eigenen scroll-Container ODER bricht/skaliert; .main-content
+       fängt als Fallback alles ab was trotzdem übersteht. */
 
-    /* Cards: Inhalt kann scrollen, aber die Card selbst stoppt am Viewport */
+    /* Hauptcontainer als letzte Auffang-Scroll-Box (nicht clipping). */
+    .main-content { overflow-x: auto; min-width: 0; }
+
+    /* Bootstrap-Rows: ein direktes Kind mit Inhalts-min-content darf
+       die Row nicht sprengen — gewohnter Flex-Trick. */
+    .row > * { min-width: 0; }
+
+    /* Cards begrenzen sich aufs verfügbare und scrollen ihren Inhalt. */
     .content-card,
-    .card,
-    .card-body-custom { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .card { max-width: 100%; }
+    .content-card,
+    .card-body-custom,
+    .card-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-    /* Jede Table im Hauptcontent bekommt ihren eigenen scroll-Container,
-       auch wenn der Autor das table-responsive-Wrapper-DIV vergessen hat. */
+    /* Jede <table> im Hauptcontent bekommt einen scroll-Wrapper als
+       Fallback. Tables, die schon in einem .table-responsive sitzen,
+       bleiben unverändert (display:table wieder herstellen). */
     .page-content table { display: block; max-width: 100%; overflow-x: auto; }
-    .page-content table > tbody,
     .page-content table > thead,
+    .page-content table > tbody,
     .page-content table > tfoot { display: table; width: 100%; }
-    /* table-responsive hat den Wrapper schon — dann brauchen wir den
-       block-Display nicht. */
-    .page-content .table-responsive > table { display: table; overflow: visible; }
+    .page-content .table-responsive > table { display: table; overflow: visible; max-width: none; }
 
-    /* Lange Strings (UPNs, URLs, IDs) brechen statt überzustehen. */
-    .page-content td, .page-content th,
-    .page-content .text-truncate { overflow-wrap: anywhere; word-break: break-word; }
+    /* Lange UPNs/URLs/IDs brechen statt sprengen. */
+    .page-content td, .page-content th { overflow-wrap: anywhere; word-break: break-word; }
     .page-content pre, .page-content code { overflow-x: auto; max-width: 100%; word-break: break-word; }
 
-    /* Inline-min-widths von Score-Circles / Auswahlfeldern werden auf
-       Mobile auf "natürlich" reduziert, damit sie nicht aus dem Viewport
-       rausragen. Trifft nur Container, NICHT Buttons (selector .col-auto
-       und .col-sm-*). */
-    .page-content [style*="min-width"] { max-width: 100%; }
+    /* Inline-min-width-Container respektieren den Viewport.
+       Buttons sind ausgenommen, damit Pager-Buttons (min-width:32px) ok bleiben. */
+    .page-content [style*="min-width"]:not(button):not(.btn):not(.pager-btn) { max-width: 100%; }
 
-    /* Stat-Container (große Score-Circles, Avatar-Lists) bekommen einen
-       sanften Cap, damit sie nicht 60% des Screens fressen. */
+    /* SVG-Charts/Score-Circles dürfen nicht sprengen. */
     .page-content svg { max-width: 100%; height: auto; }
 
-    /* Form-Reihen mit input-group: lange Hilfetexte sollen nicht
-       überlaufen, sondern umbrechen. */
+    /* Input-Groups dürfen wrappen, ihre Kinder dürfen shrinken. */
     .input-group { flex-wrap: wrap; }
     .input-group > * { min-width: 0; }
+
+    /* Pre-formatted JSON/Logs sollen scrollen, nicht sprengen. */
+    .page-content pre { white-space: pre-wrap; word-break: break-word; }
 }
 
 /* Larger touch targets on coarse pointers (covers phone+tablet) */
