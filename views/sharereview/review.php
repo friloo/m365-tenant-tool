@@ -26,14 +26,12 @@
             --soft:   #f8fafc;
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { height: 100%; }
         body {
             font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif;
             color: var(--ink);
             background:
                 radial-gradient(ellipse 80% 50% at 50% -10%, rgba(var(--brand-rgb), 0.10), transparent 70%),
                 linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
-            background-attachment: fixed;
             min-height: 100vh;
             min-height: 100dvh;
             display: flex;
@@ -299,10 +297,13 @@
 
 <div class="brand-hero">
     <?php if ($brandLogoUrl): ?>
-        <img src="<?= htmlspecialchars($brandLogoUrl) ?>" alt="<?= htmlspecialchars($brandAppName) ?>" class="brand-logo-img">
-    <?php else: ?>
-        <div class="brand-logo-fallback"><?= htmlspecialchars($brandLogoText) ?></div>
+        <img src="<?= htmlspecialchars($brandLogoUrl) ?>"
+             alt="<?= htmlspecialchars($brandAppName) ?>"
+             class="brand-logo-img"
+             onerror="this.style.display='none'; var f=document.getElementById('brandFallback'); if(f) f.style.display='flex';">
     <?php endif; ?>
+    <div class="brand-logo-fallback" id="brandFallback"
+         style="<?= $brandLogoUrl ? 'display:none;' : '' ?>"><?= htmlspecialchars($brandLogoText) ?></div>
     <div class="brand-name"><?= htmlspecialchars($brandAppName) ?></div>
 </div>
 

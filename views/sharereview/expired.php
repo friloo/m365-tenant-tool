@@ -31,11 +31,10 @@
             background:
                 radial-gradient(ellipse 80% 50% at 50% -10%, rgba(220,38,38, 0.10), transparent 70%),
                 linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
-            background-attachment: fixed;
             min-height: 100vh;
             min-height: 100dvh;
-            display: flex; flex-direction: column; align-items: center;
-            padding: 32px 16px calc(56px + env(safe-area-inset-bottom, 0px));
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 32px 16px calc(40px + env(safe-area-inset-bottom, 0px));
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
         }
@@ -104,10 +103,13 @@
 
 <div class="brand-hero">
     <?php if ($brandLogoUrl): ?>
-        <img src="<?= htmlspecialchars($brandLogoUrl) ?>" alt="<?= htmlspecialchars($brandAppName) ?>" class="brand-logo-img">
-    <?php else: ?>
-        <div class="brand-logo-fallback"><?= htmlspecialchars($brandLogoText) ?></div>
+        <img src="<?= htmlspecialchars($brandLogoUrl) ?>"
+             alt="<?= htmlspecialchars($brandAppName) ?>"
+             class="brand-logo-img"
+             onerror="this.style.display='none'; var f=document.getElementById('brandFallback'); if(f) f.style.display='flex';">
     <?php endif; ?>
+    <div class="brand-logo-fallback" id="brandFallback"
+         style="<?= $brandLogoUrl ? 'display:none;' : '' ?>"><?= htmlspecialchars($brandLogoText) ?></div>
     <div class="brand-name"><?= htmlspecialchars($brandAppName) ?></div>
 </div>
 
