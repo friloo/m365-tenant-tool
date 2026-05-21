@@ -27,7 +27,11 @@ class Router
         $uri = rtrim($uri, '/') ?: '/';
 
         if (in_array($method, ['POST', 'DELETE', 'PATCH'], true)) {
-            if (!\App\Core\Csrf::validate()) {
+            // External REST API requests authenticate via X-Api-Key header
+            // (validated by the controller). They never carry a session
+            // CSRF token, so the form-style check must not apply there.
+            $isApiCall = str_starts_with($uri, '/api/v1/');
+            if (!$isApiCall && !\App\Core\Csrf::validate()) {
                 http_response_code(419);
                 if (!headers_sent()) {
                     header('Content-Type: text/html; charset=utf-8');

@@ -58,8 +58,8 @@ $ext = $extended ?? [];
                 <i class="bi bi-people-fill" style="color:#2563eb;"></i>
             </div>
             <div>
-                <div class="metric-label">Benutzer gesamt</div>
-                <div class="metric-value"><?= $n($metrics['total_users']) ?></div>
+                <div class="metric-label">Benutzer gesamt <?= \App\Core\Help::tip('graph_api') ?></div>
+                <div class="metric-value"><?= $n($metrics['total_users']) ?> <?= \App\Modules\Dashboard\MetricHistoryService::sparkline('total_users') ?></div>
                 <div class="metric-sub"><?= $n($metrics['enabled_users']) ?> aktiv</div>
             </div>
         </div>
@@ -130,8 +130,8 @@ $ext = $extended ?? [];
                 <i class="bi bi-phone-fill" style="color:#ca8a04;"></i>
             </div>
             <div>
-                <div class="metric-label">Geräte</div>
-                <div class="metric-value"><?= $n($metrics['total_devices']) ?></div>
+                <div class="metric-label">Geräte <?= \App\Core\Help::tip('device_compliance') ?></div>
+                <div class="metric-value"><?= $n($metrics['total_devices']) ?> <?= \App\Modules\Dashboard\MetricHistoryService::sparkline('total_devices') ?></div>
                 <div class="metric-sub">
                     <?php if ($nonComp > 0): ?>
                         <span style="color:#dc2626;"><?= $n($nonComp) ?> nicht konform</span>
@@ -152,7 +152,7 @@ $ext = $extended ?? [];
             <div>
                 <div class="metric-label">Risikobenutzer</div>
                 <div class="metric-value" style="color:<?= ($metrics['risky_users'] ?? 0) > 0 ? '#dc2626' : '#111827' ?>">
-                    <?= $n($metrics['risky_users']) ?>
+                    <?= $n($metrics['risky_users']) ?> <?= \App\Modules\Dashboard\MetricHistoryService::sparkline('risky_users', 7, '#dc2626') ?>
                 </div>
                 <div class="metric-sub">Aktive Risiken</div>
             </div>
@@ -183,7 +183,7 @@ $ext = $extended ?? [];
             </div>
             <div>
                 <div class="metric-label">Gruppen & Teams</div>
-                <div class="metric-value"><?= $n($metrics['total_groups']) ?></div>
+                <div class="metric-value"><?= $n($metrics['total_groups']) ?> <?= \App\Modules\Dashboard\MetricHistoryService::sparkline('total_groups') ?></div>
                 <div class="metric-sub">
                     <?= $ext['teams_count'] !== null ? $n($ext['teams_count']) . ' Teams' : 'Im Verzeichnis' ?>
                 </div>

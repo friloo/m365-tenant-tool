@@ -443,3 +443,83 @@ document.addEventListener('DOMContentLoaded', function () {
         btn.addEventListener('click', () => window.print());
     });
 });
+
+// ── Help-tooltip initializer ───────────────────────────────────────────────
+// Wires Bootstrap tooltips on every .help-tip element. Bootstrap's bundle
+// is loaded via CDN above; this guards in case it's blocked offline.
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof bootstrap === 'undefined' || !bootstrap.Tooltip) return;
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+        try { new bootstrap.Tooltip(el, { container: 'body' }); } catch (_) {}
+    });
+});
+
+// ── Notification bell ──────────────────────────────────────────────────────
+(function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        const trigger = document.getElementById('notifyTrigger');
+        const panel   = document.getElementById('notifyPanel');
+        if (!trigger || !panel) return;
+
+        trigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const wasOpen = panel.classList.contains('open');
+            panel.classList.toggle('open');
+            if (!wasOpen) {
+                fetch('/notifications/mark-seen', { method: 'POST',
+                    headers: { 'X-CSRF': document.querySelector('meta[name="csrf-token"]')?.content || '' }
+                }).then(function () {
+                    const badge = trigger.querySelector('.notify-badge');
+                    if (badge) badge.remove();
+                }).catch(function () {});
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!panel.contains(e.target) && !trigger.contains(e.target)) {
+                panel.classList.remove('open');
+            }
+        });
+    });
+})();
+
+// ── Sparkline renderer ─────────────────────────────────────────────────────
+// Looks for <canvas class="sparkline-canvas" data-values="1,2,3,4,5"></canvas>
+// and draws a simple line. No dependencies — keeps Chart.js bundle out of
+// the per-cell render path.
+(function () {
+    function drawSparkline(canvas) {
+        const raw = (canvas.dataset.values || '').split(',').map(parseFloat).filter(v => !isNaN(v));
+        if (raw.length < 2) return;
+        const w = canvas.width = canvas.offsetWidth * 2;
+        const h = canvas.height = canvas.offsetHeight * 2;
+        const ctx = canvas.getContext('2d');
+        const min = Math.min.apply(null, raw);
+        const max = Math.max.apply(null, raw);
+        const range = (max - min) || 1;
+        const dx = w / (raw.length - 1);
+        const padY = h * 0.1;
+        const usable = h - padY * 2;
+
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineWidth = 3;
+        const color = canvas.dataset.color || '#0078d4';
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color + '22';
+        ctx.beginPath();
+        raw.forEach((v, i) => {
+            const x = i * dx;
+            const y = h - padY - ((v - min) / range) * usable;
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        ctx.lineTo(w, h);
+        ctx.lineTo(0, h);
+        ctx.closePath();
+        ctx.fill();
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('canvas.sparkline-canvas').forEach(drawSparkline);
+    });
+})();

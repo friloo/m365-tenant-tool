@@ -31,14 +31,23 @@ class HardeningService
             $this->itemSpSharingCapability(),
             $this->itemSpAnonLinkExpiry(),
             $this->itemSpDefaultLinkType(),
+            $this->itemSpIdleSessionSignout(),
+            $this->itemSpOneDriveSharing(),
+            $this->itemSpExternalReshare(),
             $this->itemBlockLegacyAuth(),
             $this->itemMfaForAllTemplate(),
             $this->itemGuestInviteRestriction(),
+            $this->itemGuestUserRoleRestricted(),
+            $this->itemBlockUserAppCreation(),
+            $this->itemBlockUserSecurityGroupCreation(),
+            $this->itemBlockTenantCreationByUsers(),
+            $this->itemRestrictUserReadOthers(),
             $this->itemAppConsentPolicy(),
             $this->itemAuditLogEnable(),
             $this->itemDefenderSafeLinks(),
             $this->itemDlpInPurview(),
             $this->itemPimRoles(),
+            $this->itemExternalSenderIdentifier(),
         ];
     }
 
@@ -56,8 +65,24 @@ class HardeningService
             'sp_anon_expiry_90'     => $this->applySpAnonExpiry(90),
             'sp_default_internal'   => $this->applySpDefaultLinkType('internal'),
             'sp_default_direct'     => $this->applySpDefaultLinkType('direct'),
+            'sp_idle_signout_on'    => $this->applySpIdleSessionSignout(true,  4 * 60, 1 * 60),
+            'sp_idle_signout_off'   => $this->applySpIdleSessionSignout(false, 0,      0),
+            'sp_onedrive_strict'    => $this->applySpOneDriveSharing('existingExternalUserSharingOnly'),
+            'sp_onedrive_off'       => $this->applySpOneDriveSharing('disabled'),
+            'sp_no_external_reshare'=> $this->applySpExternalReshare(false),
+            'sp_allow_external_reshare' => $this->applySpExternalReshare(true),
             'block_legacy_auth'     => $this->applyBlockLegacyAuth(),
             'guest_invite_admins'   => $this->applyGuestInviteRestriction(),
+            'guest_role_restricted' => $this->applyGuestUserRole('2af84b1e-32c8-42b7-82bc-daa82404023b'),     // Restricted Guest
+            'guest_role_member'     => $this->applyGuestUserRole('10dae51f-b6af-4016-8d66-8c2a99b929b3'),     // Default Guest (full)
+            'block_user_app_create' => $this->applyDefaultUserPerm('allowedToCreateApps',          false),
+            'allow_user_app_create' => $this->applyDefaultUserPerm('allowedToCreateApps',          true),
+            'block_user_secgroup'   => $this->applyDefaultUserPerm('allowedToCreateSecurityGroups',false),
+            'allow_user_secgroup'   => $this->applyDefaultUserPerm('allowedToCreateSecurityGroups',true),
+            'block_user_tenants'    => $this->applyDefaultUserPerm('allowedToCreateTenants',       false),
+            'allow_user_tenants'    => $this->applyDefaultUserPerm('allowedToCreateTenants',       true),
+            'restrict_user_read'    => $this->applyDefaultUserPerm('allowedToReadOtherUsers',      false),
+            'allow_user_read'       => $this->applyDefaultUserPerm('allowedToReadOtherUsers',      true),
             default                 => ['ok' => false, 'msg' => 'Unbekannte Aktion: ' . $id],
         };
     }
@@ -423,6 +448,288 @@ class HardeningService
                 'allowInvitesFrom' => 'adminsAndGuestInviters',
             ]);
             return ['ok' => true, 'msg' => 'Gast-Einladungen auf Admins/Guest-Inviter beschränkt.'];
+        } catch (\Throwable $e) {
+            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+        }
+    }
+
+    // ── Zusätzliche Items (Phase 4) ────────────────────────────────────────
+
+    private function itemSpIdleSessionSignout(): array
+    {
+        $base = [
+            'id'        => 'sp_idle_signout',
+            'title'     => 'Idle-Session-Signout in SharePoint/OneDrive',
+            'category'  => 'Speicher',
+            'desc'      => 'Loggt User in SharePoint/OneDrive nach Inaktivität automatisch aus — verhindert, dass jemand einen offenen Browser-Tab missbraucht.',
+            'why'       => 'BSI ORP.4.A22 (Authentisierung), ISO 27001 A.9.4.2.',
+            'admin_url' => 'https://admin.microsoft.com/sharepoint?page=accessControl',
+        ];
+        try {
+            $s = $this->graph->get('/admin/sharepoint/settings', [], null, 0);
+            $on  = (bool)($s['idleSessionSignOut']['isEnabled'] ?? false);
+            $base['status'] = $on ? 'on' : 'off';
+            if ($on) {
+                $warn = (int)($s['idleSessionSignOut']['warnAfterInSeconds']   ?? 0) / 60;
+                $sign = (int)($s['idleSessionSignOut']['signOutAfterInSeconds'] ?? 0) / 60;
+                $base['detail'] = "Aktiv: Warnung nach {$warn} min, Sign-out nach {$sign} min.";
+            } else {
+                $base['detail'] = 'Idle-Sign-out ist nicht konfiguriert.';
+            }
+            $base['actions'] = $on
+                ? [['id' => 'sp_idle_signout_off', 'label' => 'Deaktivieren', 'style' => 'outline-secondary']]
+                : [['id' => 'sp_idle_signout_on',  'label' => 'Aktivieren (Sign-out nach 4 h, Warnung nach 3 h)', 'style' => 'outline-primary']];
+        } catch (\Throwable $e) {
+            $base['status'] = 'unknown';
+            $base['detail'] = $e->getMessage();
+        }
+        return $base;
+    }
+
+    private function itemSpOneDriveSharing(): array
+    {
+        $base = [
+            'id'        => 'sp_onedrive_sharing',
+            'title'     => 'OneDrive External Sharing einschränken',
+            'category'  => 'Speicher',
+            'desc'      => 'Separates Setting für OneDrive (unabhängig vom Tenant-weiten SharePoint-Sharing). Begrenzt, an wen Mitarbeiter ihre OneDrive-Dateien teilen können.',
+            'why'       => 'DSGVO Art. 25 + 32, BSI APP.5.2.',
+            'admin_url' => 'https://admin.microsoft.com/sharepoint?page=sharing',
+        ];
+        try {
+            $s = $this->graph->get('/admin/sharepoint/settings', [], null, 0);
+            $cap = $s['oneDriveSharingCapability'] ?? '';
+            $base['status'] = match ($cap) {
+                'disabled', 'existingExternalUserSharingOnly' => 'on',
+                'externalUserSharingOnly'                     => 'warn',
+                'externalUserAndGuestSharing'                 => 'off',
+                default                                       => 'unknown',
+            };
+            $base['detail'] = "Aktuell: {$cap}";
+            $base['actions'] = [
+                ['id' => 'sp_onedrive_strict', 'label' => 'Auf "bekannte Gäste" stellen', 'style' => 'outline-primary'],
+                ['id' => 'sp_onedrive_off',    'label' => 'OneDrive-External-Sharing deaktivieren', 'style' => 'outline-danger'],
+            ];
+        } catch (\Throwable $e) {
+            $base['status'] = 'unknown';
+            $base['detail'] = $e->getMessage();
+        }
+        return $base;
+    }
+
+    private function itemSpExternalReshare(): array
+    {
+        $base = [
+            'id'        => 'sp_external_reshare',
+            'title'     => 'Externe Benutzer dürfen nicht weiter teilen',
+            'category'  => 'Speicher',
+            'desc'      => 'Verhindert dass Gäste, die Zugriff auf eine Datei haben, diese weiter an andere Externe teilen — typischer Daten-Leak-Pfad.',
+            'why'       => 'DSGVO Art. 25 (Privacy by Default).',
+            'admin_url' => 'https://admin.microsoft.com/sharepoint?page=sharing',
+        ];
+        try {
+            $s = $this->graph->get('/admin/sharepoint/settings', [], null, 0);
+            $allow = (bool)($s['isResharingByExternalUsersEnabled'] ?? true);
+            $base['status'] = $allow ? 'off' : 'on';
+            $base['detail'] = $allow
+                ? 'Externe Benutzer dürfen aktuell weiter teilen — Daten-Leak-Risiko.'
+                : 'Externe Benutzer dürfen nicht weiter teilen.';
+            $base['actions'] = $allow
+                ? [['id' => 'sp_no_external_reshare',    'label' => 'Re-Sharing blockieren', 'style' => 'outline-primary']]
+                : [['id' => 'sp_allow_external_reshare', 'label' => 'Re-Sharing erlauben (nicht empfohlen)', 'style' => 'outline-secondary']];
+        } catch (\Throwable $e) {
+            $base['status'] = 'unknown';
+            $base['detail'] = $e->getMessage();
+        }
+        return $base;
+    }
+
+    private function itemGuestUserRoleRestricted(): array
+    {
+        // Well-known Role-Template-IDs für Gast-Rollen:
+        //   2af84b1e-32c8-42b7-82bc-daa82404023b = Restricted Guest
+        //   10dae51f-b6af-4016-8d66-8c2a99b929b3 = Guest User (default, voll)
+        $base = [
+            'id'        => 'guest_user_role',
+            'title'     => 'Gast-Standardrolle einschränken',
+            'category'  => 'Identity',
+            'desc'      => 'Standardmäßig haben Gäste fast die gleichen Lese-Rechte wie Members (sehen das Verzeichnis). „Restricted Guest" verbirgt diese Information.',
+            'why'       => 'BSI ORP.4.A26, NIS-2 Art. 21 Abs. 2(d). Microsoft-Empfehlung für DSGVO-relevante Tenants.',
+            'admin_url' => 'https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AllowlistPolicyBlade',
+        ];
+        try {
+            $p   = $this->graph->get('/policies/authorizationPolicy', [], null, 0);
+            $rid = $p['guestUserRoleId'] ?? '';
+            $base['status'] = $rid === '2af84b1e-32c8-42b7-82bc-daa82404023b' ? 'on'
+                            : ($rid === '10dae51f-b6af-4016-8d66-8c2a99b929b3' ? 'off' : 'warn');
+            $base['detail'] = match ($rid) {
+                '2af84b1e-32c8-42b7-82bc-daa82404023b' => 'Restricted Guest — minimale Rechte.',
+                '10dae51f-b6af-4016-8d66-8c2a99b929b3' => 'Default Guest (volle Lese-Rechte auf Verzeichnis) — DSGVO-Risiko.',
+                'a0b1b346-4d3e-4e8b-98f8-753987be4970' => 'User Guest (Standard).',
+                default => "Unbekannte Role-ID: {$rid}",
+            };
+            $base['actions'] = $rid === '2af84b1e-32c8-42b7-82bc-daa82404023b'
+                ? [['id' => 'guest_role_member',     'label' => 'Auf Default-Guest zurück (nicht empfohlen)', 'style' => 'outline-secondary']]
+                : [['id' => 'guest_role_restricted', 'label' => 'Auf Restricted-Guest umstellen', 'style' => 'outline-primary']];
+        } catch (\Throwable $e) {
+            $base['status'] = 'unknown';
+            $base['detail'] = $e->getMessage();
+        }
+        return $base;
+    }
+
+    private function itemBlockUserAppCreation(): array
+    {
+        $base = [
+            'id'        => 'block_app_creation',
+            'title'     => 'User dürfen keine App-Registrierungen anlegen',
+            'category'  => 'Apps',
+            'desc'      => 'Standardmäßig darf jeder Tenant-User App-Registrierungen anlegen — das wird bei Phishing-Konten missbraucht, um Persistence-Apps mit Tenant-Permissions zu erstellen.',
+            'why'       => 'BSI ORP.4.A23, NIS-2 Art. 21 Abs. 2(j). Top-Vektor für Tenant-Hijack.',
+            'admin_url' => 'https://entra.microsoft.com/#view/Microsoft_AAD_IAM/UserSettingsBlade',
+        ];
+        return $this->checkDefaultUserPerm($base, 'allowedToCreateApps', 'block_user_app_create', 'allow_user_app_create');
+    }
+
+    private function itemBlockUserSecurityGroupCreation(): array
+    {
+        $base = [
+            'id'        => 'block_secgroup_creation',
+            'title'     => 'User dürfen keine Security-Gruppen anlegen',
+            'category'  => 'Identity',
+            'desc'      => 'Wenn jeder User Security-Gruppen anlegen darf, entstehen über die Zeit Hunderte unkontrollierte Berechtigungs-Container.',
+            'why'       => 'BSI ORP.4.A26, Microsoft-Empfehlung für governance-strenge Umgebungen.',
+            'admin_url' => 'https://entra.microsoft.com/#view/Microsoft_AAD_IAM/GroupsManagementMenuBlade',
+        ];
+        return $this->checkDefaultUserPerm($base, 'allowedToCreateSecurityGroups', 'block_user_secgroup', 'allow_user_secgroup');
+    }
+
+    private function itemBlockTenantCreationByUsers(): array
+    {
+        $base = [
+            'id'        => 'block_tenant_creation',
+            'title'     => 'User dürfen keine eigenen Tenants anlegen',
+            'category'  => 'Identity',
+            'desc'      => 'Microsoft erlaubt es Standardnutzern, eigene Azure-AD-Tenants zu erstellen — diese Shadow-Tenants entgehen jeder Governance.',
+            'why'       => 'CIS Microsoft 365 Foundations 1.1.1.',
+            'admin_url' => 'https://entra.microsoft.com/#view/Microsoft_AAD_IAM/UserSettingsBlade',
+        ];
+        return $this->checkDefaultUserPerm($base, 'allowedToCreateTenants', 'block_user_tenants', 'allow_user_tenants');
+    }
+
+    private function itemRestrictUserReadOthers(): array
+    {
+        $base = [
+            'id'        => 'restrict_user_read',
+            'title'     => 'User dürfen Verzeichnis-Profile nicht lesen',
+            'category'  => 'Identity',
+            'desc'      => 'Standardmäßig sehen alle Mitarbeiter alle Profile (Telefon, Manager, Department). Bei großen Tenants oder DSGVO-strenger Branche einschränken.',
+            'why'       => 'DSGVO Art. 5 Abs. 1c (Datenminimierung).',
+            'admin_url' => 'https://entra.microsoft.com/#view/Microsoft_AAD_IAM/UserSettingsBlade',
+            '_warning'  => true,
+        ];
+        $item = $this->checkDefaultUserPerm($base, 'allowedToReadOtherUsers', 'restrict_user_read', 'allow_user_read');
+        // Sicherheitshalber zusätzlich warnen
+        $item['detail'] .= ' Achtung: Wenn deaktiviert, brechen manche Office-Funktionen (z. B. People-Picker).';
+        return $item;
+    }
+
+    private function itemExternalSenderIdentifier(): array
+    {
+        return [
+            'id'        => 'external_sender_tag',
+            'title'     => '„External"-Tag in Outlook anzeigen',
+            'category'  => 'E-Mail',
+            'desc'      => 'Outlook kennzeichnet Mails von außerhalb der Organisation mit einem „External"-Banner — sehr wirksam gegen Phishing.',
+            'why'       => 'BSI APP.5.3.A11 (Schutz vor Phishing).',
+            'status'    => 'info',
+            'detail'    => 'Aktivierung nur über Exchange Online PowerShell: <code>Set-ExternalInOutlook -Enabled $true</code>. Graph hat dafür keinen Endpunkt.',
+            'actions'   => [],
+            'admin_url' => 'https://learn.microsoft.com/de-de/exchange/external-in-outlook-exchange-online',
+        ];
+    }
+
+    /**
+     * Helper: Default-User-Permission prüfen und Aktionen zurückgeben.
+     */
+    private function checkDefaultUserPerm(array $base, string $key, string $onAction, string $offAction): array
+    {
+        try {
+            $p = $this->graph->get('/policies/authorizationPolicy', [], null, 0);
+            $current = (bool)($p['defaultUserRolePermissions'][$key] ?? true);
+            $base['status'] = $current ? 'off' : 'on';
+            $base['detail'] = $current
+                ? "Aktuell: User dürfen dies (defaultUserRolePermissions.{$key} = true)."
+                : "Aktuell: User dürfen dies nicht (defaultUserRolePermissions.{$key} = false).";
+            $base['actions'] = $current
+                ? [['id' => $onAction,  'label' => 'Blockieren', 'style' => 'outline-primary']]
+                : [['id' => $offAction, 'label' => 'Wieder erlauben', 'style' => 'outline-secondary']];
+        } catch (\Throwable $e) {
+            $base['status'] = 'unknown';
+            $base['detail'] = $e->getMessage();
+            $base['actions'] = [];
+        }
+        return $base;
+    }
+
+    // ── Apply-Methoden (Phase 4) ───────────────────────────────────────────
+
+    private function applySpIdleSessionSignout(bool $enabled, int $signOutMin, int $warnMin): array
+    {
+        try {
+            $body = ['idleSessionSignOut' => [
+                'isEnabled'               => $enabled,
+                'warnAfterInSeconds'      => $warnMin   * 60,
+                'signOutAfterInSeconds'   => $signOutMin * 60,
+            ]];
+            $this->graph->patch('/admin/sharepoint/settings', $body);
+            return ['ok' => true, 'msg' => $enabled
+                ? "Idle-Sign-out aktiviert: Warnung nach {$warnMin} min, Sign-out nach {$signOutMin} min."
+                : 'Idle-Sign-out deaktiviert.'];
+        } catch (\Throwable $e) {
+            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+        }
+    }
+
+    private function applySpOneDriveSharing(string $value): array
+    {
+        try {
+            $this->graph->patch('/admin/sharepoint/settings', ['oneDriveSharingCapability' => $value]);
+            return ['ok' => true, 'msg' => "OneDrive External Sharing auf {$value} gesetzt."];
+        } catch (\Throwable $e) {
+            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+        }
+    }
+
+    private function applySpExternalReshare(bool $allow): array
+    {
+        try {
+            $this->graph->patch('/admin/sharepoint/settings', ['isResharingByExternalUsersEnabled' => $allow]);
+            return ['ok' => true, 'msg' => $allow
+                ? 'Re-Sharing durch externe Benutzer erlaubt.'
+                : 'Re-Sharing durch externe Benutzer blockiert.'];
+        } catch (\Throwable $e) {
+            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+        }
+    }
+
+    private function applyGuestUserRole(string $roleId): array
+    {
+        try {
+            $this->graph->patch('/policies/authorizationPolicy', ['guestUserRoleId' => $roleId]);
+            return ['ok' => true, 'msg' => 'Gast-Rolle auf ID ' . $roleId . ' gesetzt.'];
+        } catch (\Throwable $e) {
+            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+        }
+    }
+
+    private function applyDefaultUserPerm(string $key, bool $value): array
+    {
+        try {
+            $this->graph->patch('/policies/authorizationPolicy', [
+                'defaultUserRolePermissions' => [$key => $value],
+            ]);
+            return ['ok' => true, 'msg' => "defaultUserRolePermissions.{$key} = " . ($value ? 'true' : 'false') . ' gesetzt.'];
         } catch (\Throwable $e) {
             return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
         }

@@ -199,6 +199,59 @@
                 <button onclick="window.print()" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" title="Seite drucken / als PDF speichern">
                     <i class="bi bi-printer"></i>
                 </button>
+                <?php
+                $_notifUnread = 0;
+                $_notifRecent = [];
+                try {
+                    $_notifUnread = \App\Modules\Notifications\NotificationService::unreadCount();
+                    $_notifRecent = \App\Modules\Notifications\NotificationService::recent(10);
+                } catch (\Throwable) {}
+                ?>
+                <div style="position:relative;">
+                    <button id="notifyTrigger" class="notify-trigger" type="button" title="Benachrichtigungen" aria-label="Benachrichtigungen">
+                        <i class="bi bi-bell" style="font-size:18px;"></i>
+                        <?php if ($_notifUnread > 0): ?>
+                            <span class="notify-badge"><?= $_notifUnread > 99 ? '99+' : (int)$_notifUnread ?></span>
+                        <?php endif; ?>
+                    </button>
+                    <div id="notifyPanel" class="notify-panel">
+                        <div class="notify-panel-head">
+                            <strong><i class="bi bi-bell-fill"></i> Benachrichtigungen</strong>
+                            <a href="/notifications">Alle anzeigen</a>
+                        </div>
+                        <?php if (empty($_notifRecent)): ?>
+                            <div class="notify-empty"><i class="bi bi-inbox" style="font-size:32px;display:block;margin-bottom:8px;"></i>Keine Ereignisse</div>
+                        <?php else: ?>
+                            <?php foreach ($_notifRecent as $n): ?>
+                                <?php
+                                $icon = match ($n['severity']) {
+                                    'critical' => 'exclamation-triangle-fill',
+                                    'warn'     => 'exclamation-circle',
+                                    'success'  => 'check-circle',
+                                    default    => 'info-circle',
+                                };
+                                $ts = strtotime((string)$n['created_at']) ?: time();
+                                $age = time() - $ts;
+                                if ($age < 60)        $ago = 'gerade eben';
+                                elseif ($age < 3600)  $ago = floor($age / 60) . ' Min.';
+                                elseif ($age < 86400) $ago = floor($age / 3600) . ' Std.';
+                                else                  $ago = floor($age / 86400) . ' Tg.';
+                                $clickAttr = !empty($n['link']) ? ('onclick="window.location=\'' . htmlspecialchars($n['link'], ENT_QUOTES) . '\'"') : '';
+                                ?>
+                                <div class="notify-item severity-<?= htmlspecialchars($n['severity']) ?>" <?= $clickAttr ?>>
+                                    <div class="notify-item-icon"><i class="bi bi-<?= $icon ?>"></i></div>
+                                    <div class="notify-item-body">
+                                        <div class="notify-item-title"><?= htmlspecialchars($n['title']) ?></div>
+                                        <?php if (!empty($n['body'])): ?>
+                                            <div class="notify-item-text"><?= htmlspecialchars($n['body']) ?></div>
+                                        <?php endif; ?>
+                                        <div class="notify-item-time"><?= htmlspecialchars($ago) ?> · <?= htmlspecialchars($n['category']) ?></div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
                 <div class="d-flex align-items-center gap-2 ms-2 ps-2" style="border-left: 1px solid #e5e7eb;">
                     <?php if (\App\Core\Session::get('auth_type') === 'microsoft'): ?>
                         <i class="bi bi-microsoft" style="color:#0078d4;"></i>

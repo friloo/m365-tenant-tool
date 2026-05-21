@@ -99,6 +99,19 @@
         <a href="#auditlog">Audit-Log</a>
         <a href="#signinlog">Sign-in-Log</a>
 
+        <h6>Compliance & Audit (erweitert)</h6>
+        <a href="#auditdiff">Audit-Diff</a>
+        <a href="#auditreport">DSGVO/NIS-2 Report</a>
+        <a href="#complianceprofiles">Compliance-Profile</a>
+
+        <h6>Erweiterungen</h6>
+        <a href="#setupwizard">Einrichtungs-Assistent</a>
+        <a href="#workflows">Workflow-Automatisierung</a>
+        <a href="#notifications">In-App-Benachrichtigungen</a>
+        <a href="#kpisparklines">KPI-Sparklines</a>
+        <a href="#onlinehelp">Online-Hilfe</a>
+        <a href="#restapi">REST-API & Swagger</a>
+
         <h6>Administration</h6>
         <a href="#cron">Cron & Automatisierung</a>
         <a href="#settings">Einstellungen</a>
@@ -1171,6 +1184,80 @@
     </ul>
 
     <div class="tip-box"><i class="bi bi-lightbulb"></i>Unter <strong>Einstellungen → Berechtigungen prüfen</strong> siehst du immer, welche Berechtigungen aktuell erteilt sind und welche Module dadurch eingeschränkt sind.</div>
+</div>
+
+<div class="man-section" id="setupwizard">
+    <h2><i class="bi bi-magic"></i> Einrichtungs-Assistent</h2>
+    <p>Beim ersten Login eines Admins erscheint automatisch der fünfstufige Einrichtungs-Assistent. Er prüft die Tenant-Verbindung, die App-Permissions, fragt Benachrichtigungs-Empfänger und Branding ab, und schlägt am Ende ein passendes Compliance-Profil vor. Der Assistent kann jederzeit erneut über <strong>Administration → Einrichtungs-Assistent</strong> aufgerufen werden.</p>
+</div>
+
+<div class="man-section" id="complianceprofiles">
+    <h2><i class="bi bi-patch-check"></i> Compliance-Profile</h2>
+    <p>Compliance-Profile bündeln branchen-typische Härtungs-Voreinstellungen zu Ein-Klick-Presets. Verfügbare Profile: <strong>Standard / DSGVO-Basis</strong>, <strong>Gesundheitswesen (KRITIS)</strong>, <strong>Finanzwesen (BaFin/DORA)</strong>, <strong>Öffentlicher Sektor / BSI</strong>, <strong>Bildung</strong>. Jedes Profil ruft beim Anwenden eine Sequenz von <code>HardeningService</code>-Aktionen auf — komplett im Audit-Log nachvollziehbar und über das Härtungs-Modul einzeln revidierbar.</p>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i>Profile sind <strong>nicht exklusiv</strong>. Du kannst z. B. mit dem Standard-Profil starten und einzelne Härtungs-Items im <code>/hardening</code>-Modul nachjustieren. Das aktuell aktive Profil wird in den Settings vermerkt.</div>
+</div>
+
+<div class="man-section" id="notifications">
+    <h2><i class="bi bi-bell"></i> In-App-Benachrichtigungen</h2>
+    <p>Die Glocke oben rechts in der Topbar zeigt alle Tenant-Ereignisse seit deinem letzten Besuch. Module wie Defender-Alerts, Cross-Tenant-Access, MFA-Fatigue oder das Compliance-Profil drücken Events in das gemeinsame Feed — eine Klick-Adresse pro Eintrag führt direkt zur Detail-Seite. Benachrichtigungen werden 90 Tage aufbewahrt und automatisch vom Cron-Job <code>notification_trim</code> gepflegt.</p>
+</div>
+
+<div class="man-section" id="auditdiff">
+    <h2><i class="bi bi-arrow-left-right"></i> Audit-Diff</h2>
+    <p>Täglich (Cron-Job <code>audit_diff_snapshot</code>) wird ein Snapshot aller sicherheitsrelevanten Tenant-Einstellungen erstellt — Authorization Policy, Security Defaults, Auth Methods, SharePoint, Conditional Access, Admin-Rollen, Gast-Konfiguration. In <strong>Compliance &amp; Audit → Audit-Diff</strong> kannst du beliebige zwei Snapshots auswählen und alle Veränderungen mit Rot-/Grün-/Gelb-Markierung darstellen.</p>
+    <p>Ideal für Übergaben (was hat der Vorgänger letzte Woche verändert?), für Audits (was hat sich seit der letzten Prüfung getan?) und für die Untersuchung von Vorfällen (wer hat wann diese Einstellung umgestellt? — Audit-Log liefert das &quot;wer&quot;, Audit-Diff das &quot;was&quot;).</p>
+</div>
+
+<div class="man-section" id="auditreport">
+    <h2><i class="bi bi-file-earmark-pdf"></i> DSGVO/NIS-2 Audit-Report</h2>
+    <p>Unter <strong>Compliance &amp; Audit → DSGVO/NIS-2 Report</strong> erzeugt das Tool einen kompletten Audit-Bericht. Die Struktur:</p>
+    <ol>
+        <li><strong>Deckblatt</strong> mit Tenant-Stammdaten und aktivem Compliance-Profil</li>
+        <li><strong>Graph-API-Berechtigungen</strong> — wieviele erteilt, wieviele fehlen</li>
+        <li><strong>Hardening-Übersicht</strong> aller 21 Items, gruppiert nach Kategorie</li>
+        <li><strong>Regulatorische Zuordnung</strong> — DSGVO Art. 25/32, NIS-2 Art. 21, BSI ORP.4 mit den jeweils zugeordneten Hardening-Items</li>
+    </ol>
+    <p>Mit dem &quot;Als PDF speichern&quot;-Button generiert dein Browser daraus eine PDF-Datei — perfekt für Auditoren, IT-Leitung oder Lieferanten-Auskünfte.</p>
+</div>
+
+<div class="man-section" id="restapi">
+    <h2><i class="bi bi-code-slash"></i> REST-API &amp; Swagger</h2>
+    <p>Das Tool stellt unter <code>/api/v1/...</code> eine umfangreiche REST-API für externe Werkzeuge bereit: PowerBI, Grafana, n8n, eigene Skripte. Endpunkte u. a.:</p>
+    <ul>
+        <li><code>GET /api/v1/dashboard/metrics</code> — alle KPIs in einem JSON</li>
+        <li><code>GET /api/v1/dashboard/security</code> — MFA/CA/Risk-Status</li>
+        <li><code>GET /api/v1/dashboard/licenses</code> — Top-Lizenz-Nutzung</li>
+        <li><code>GET /api/v1/metrics/{name}/history?days=30</code> — Historie für Charts</li>
+        <li><code>GET /api/v1/hardening</code> — Liste der Härtungs-Items mit Status</li>
+        <li><code>GET /api/v1/snapshots</code> &amp; <code>/api/v1/snapshots/diff?from=&amp;to=</code></li>
+        <li><code>GET /api/v1/notifications</code> &amp; <code>POST /api/v1/notifications/push</code> (Webhook-Stil)</li>
+        <li><code>GET /api/v1/audit-log</code></li>
+    </ul>
+    <h3>Authentifizierung</h3>
+    <p>Per API-Key im Header: <code>X-Api-Key: m365_xxxxxxxx</code>. Keys erzeugst du unter <strong>Administration → API-Schlüssel</strong>; der Klartextwert wird genau einmal angezeigt und nur als SHA-256-Hash gespeichert. Scopes: <code>read</code> (Lesen), <code>write</code> (Notifications pushen), <code>admin</code> (reserviert).</p>
+    <h3>Dokumentation</h3>
+    <p>Die vollständige interaktive OpenAPI-3.0-Dokumentation findest du unter <code>/api/docs</code> — Swagger UI mit &quot;Try it out&quot;-Funktion. Die Roh-Spec gibt es unter <code>/api/openapi.json</code> für Import in z. B. Postman.</p>
+</div>
+
+<div class="man-section" id="workflows">
+    <h2><i class="bi bi-diagram-2"></i> Workflow-Automatisierung</h2>
+    <p>Unter <strong>Administration → Workflows</strong> kannst du leichtgewichtige Trigger-Aktion-Sequenzen anlegen — als Mini-Power-Automate für M365-Standardabläufe. Beispiele:</p>
+    <ul>
+        <li>&quot;Neuer Gast-Benutzer&quot; → &quot;In Gruppe X aufnehmen&quot; + &quot;Mail an IT-Leitung&quot; + &quot;In-App-Benachrichtigung erzeugen&quot;</li>
+        <li>&quot;Alle 60 Minuten&quot; → &quot;Notification erzeugen, wenn Risk-Score hoch&quot;</li>
+        <li>&quot;Neuer Benutzer in Gruppe XY&quot; → &quot;Lizenz E3 zuweisen&quot; + &quot;Begrüßungsmail senden&quot;</li>
+    </ul>
+    <p>Trigger werden alle 15 Minuten vom Cron-Job <code>workflow_runner</code> ausgewertet. Jede Aktion landet im Run-Log (Schwester-Tabelle <code>app_workflow_runs</code>) mit Status, Ziel und Detail. Template-Variablen für Mail-/Notification-Felder: <code>{{user.userPrincipalName}}</code>, <code>{{user.displayName}}</code>, <code>{{user.id}}</code>, <code>{{trigger}}</code>.</p>
+</div>
+
+<div class="man-section" id="kpisparklines">
+    <h2><i class="bi bi-graph-up"></i> KPI-Sparklines</h2>
+    <p>Neben den wichtigsten Dashboard-Kennzahlen siehst du ein 7-Tage-Mini-Diagramm und einen Prozent-Pfeil (<code>↑ 3,2%</code>) — der Trend gegenüber der letzten Woche. Das funktioniert, sobald das Dashboard ein paar Tage in Folge aufgerufen wurde (Werte werden in <code>app_metric_history</code> persistiert). API-Endpunkt für externe Charts: <code>/api/v1/metrics/{name}/history</code>.</p>
+</div>
+
+<div class="man-section" id="onlinehelp">
+    <h2><i class="bi bi-question-circle"></i> Online-Hilfe (?-Bubbles)</h2>
+    <p>An vielen Stellen findest du kleine <code>?</code>-Symbole neben Labels und Überschriften. Beim Hovern erscheint eine deutschsprachige Erklärung — der gesamte Katalog (~35 Begriffe) wird zentral in <code>src/Core/Help.php</code> gepflegt und kann mit <code>\App\Core\Help::tip('key')</code> in jeder View aufgerufen werden.</p>
 </div>
 
 </div><!-- /manual-body -->

@@ -282,6 +282,70 @@ $ddl = [
         INDEX idx_created (created_at),
         INDEX idx_actor (actor)
     )",
+    "CREATE TABLE IF NOT EXISTS app_notifications (
+        id         INT AUTO_INCREMENT PRIMARY KEY,
+        category   VARCHAR(64) NOT NULL DEFAULT 'info',
+        severity   ENUM('info','success','warn','critical') NOT NULL DEFAULT 'info',
+        title      VARCHAR(255) NOT NULL,
+        body       TEXT,
+        link       VARCHAR(255) DEFAULT NULL,
+        dedupe_key VARCHAR(128) DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY uq_dedupe (dedupe_key),
+        INDEX idx_created (created_at)
+    )",
+    "CREATE TABLE IF NOT EXISTS app_notification_seen (
+        actor      VARCHAR(255) NOT NULL,
+        last_seen  DATETIME NOT NULL,
+        PRIMARY KEY (actor)
+    )",
+    "CREATE TABLE IF NOT EXISTS app_tenant_snapshots (
+        id         INT AUTO_INCREMENT PRIMARY KEY,
+        kind       VARCHAR(64) NOT NULL,
+        payload    LONGTEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_kind_created (kind, created_at)
+    )",
+    "CREATE TABLE IF NOT EXISTS app_metric_history (
+        metric     VARCHAR(64) NOT NULL,
+        day        DATE NOT NULL,
+        value      DECIMAL(14,4) NOT NULL,
+        PRIMARY KEY (metric, day)
+    )",
+    "CREATE TABLE IF NOT EXISTS app_api_keys (
+        id         INT AUTO_INCREMENT PRIMARY KEY,
+        name       VARCHAR(120) NOT NULL,
+        key_hash   CHAR(64) NOT NULL,
+        scopes     VARCHAR(255) NOT NULL DEFAULT 'read',
+        created_by VARCHAR(255) NOT NULL DEFAULT '',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_used  DATETIME DEFAULT NULL,
+        revoked_at DATETIME DEFAULT NULL,
+        UNIQUE KEY uq_hash (key_hash)
+    )",
+    "CREATE TABLE IF NOT EXISTS app_workflows (
+        id          INT AUTO_INCREMENT PRIMARY KEY,
+        name        VARCHAR(160) NOT NULL,
+        trigger_key VARCHAR(80)  NOT NULL,
+        trigger_cfg TEXT,
+        actions     LONGTEXT     NOT NULL,
+        enabled     TINYINT(1)   NOT NULL DEFAULT 1,
+        created_by  VARCHAR(255) NOT NULL DEFAULT '',
+        created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_run    DATETIME DEFAULT NULL,
+        last_status VARCHAR(20)  DEFAULT NULL,
+        last_msg    TEXT,
+        INDEX idx_trigger (trigger_key, enabled)
+    )",
+    "CREATE TABLE IF NOT EXISTS app_workflow_runs (
+        id          INT AUTO_INCREMENT PRIMARY KEY,
+        workflow_id INT NOT NULL,
+        ran_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        status      VARCHAR(20) NOT NULL,
+        target      VARCHAR(255) DEFAULT NULL,
+        detail      TEXT,
+        INDEX idx_workflow (workflow_id, ran_at)
+    )",
 ];
 foreach ($ddl as $sql) {
     try { DB::execute($sql); }
@@ -326,7 +390,7 @@ function app_service(string $class): object {
 try {
     $reqUriPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
     $preflightAllowed = false;
-    foreach (['/settings', '/login', '/logout', '/auth/microsoft', '/install', '/cron', '/review/'] as $prefix) {
+    foreach (['/settings', '/login', '/logout', '/auth/microsoft', '/install', '/cron', '/review/', '/setup', '/notifications', '/api/'] as $prefix) {
         if (str_starts_with($reqUriPath, $prefix)) { $preflightAllowed = true; break; }
     }
     if (!$preflightAllowed && Session::get('authenticated')) {
@@ -338,6 +402,16 @@ try {
             Session::flash('error', 'Microsoft 365 Verbindung ist noch nicht vollständig konfiguriert. Bitte ergänze die Tenant-Daten in den Einstellungen.');
             if (!headers_sent()) {
                 header('Location: /settings');
+            }
+            exit;
+        }
+        // First-time admin: send through the setup wizard the very first time
+        // they log in. After completion the flag is set and this block becomes
+        // a no-op forever (unless an admin manually triggers /setup/reset).
+        if (($_SESSION['role'] ?? '') === 'admin' && $reqUriPath === '/'
+            && !\App\Modules\SetupWizard\SetupWizardController::isCompleted()) {
+            if (!headers_sent()) {
+                header('Location: /setup');
             }
             exit;
         }
@@ -692,6 +766,55 @@ $router->get('/dlppolicies',                [\App\Modules\DlpPolicies\DlpPolicie
 
 // ── Retention Policies ─────────────────────────────────────
 $router->get('/retentionpolicies',          [\App\Modules\RetentionPolicies\RetentionPoliciesController::class, 'index']);
+
+// ── In-App-Notifications ───────────────────────────────────
+$router->get('/notifications',              [\App\Modules\Notifications\NotificationsController::class, 'index']);
+$router->post('/notifications/mark-seen',   [\App\Modules\Notifications\NotificationsController::class, 'markSeen']);
+
+// ── Setup-Wizard ───────────────────────────────────────────
+$router->get('/setup',                      [\App\Modules\SetupWizard\SetupWizardController::class, 'index']);
+$router->post('/setup/save',                [\App\Modules\SetupWizard\SetupWizardController::class, 'save']);
+$router->post('/setup/reset',               [\App\Modules\SetupWizard\SetupWizardController::class, 'reset']);
+
+// ── Compliance-Profile ─────────────────────────────────────
+$router->get('/complianceprofile',          [\App\Modules\ComplianceProfile\ComplianceProfileController::class, 'index']);
+$router->post('/complianceprofile/apply',   [\App\Modules\ComplianceProfile\ComplianceProfileController::class, 'apply']);
+
+// ── Audit-Diff ─────────────────────────────────────────────
+$router->get('/auditdiff',                  [\App\Modules\AuditDiff\AuditDiffController::class, 'index']);
+$router->post('/auditdiff/capture',         [\App\Modules\AuditDiff\AuditDiffController::class, 'capture']);
+
+// ── DSGVO/NIS-2 Audit-Report ───────────────────────────────
+$router->get('/auditreport',                [\App\Modules\AuditReport\AuditReportController::class, 'index']);
+
+// ── Workflow-Automatisierung ───────────────────────────────
+$router->get('/workflows',                  [\App\Modules\Workflows\WorkflowsController::class, 'index']);
+$router->get('/workflows/edit/{id}',        [\App\Modules\Workflows\WorkflowsController::class, 'edit']);
+$router->post('/workflows/save',            [\App\Modules\Workflows\WorkflowsController::class, 'save']);
+$router->post('/workflows/{id}/delete',     [\App\Modules\Workflows\WorkflowsController::class, 'delete']);
+$router->post('/workflows/{id}/run-now',    [\App\Modules\Workflows\WorkflowsController::class, 'runNow']);
+
+// ── REST API v1 (public, X-Api-Key auth) ──────────────────
+$router->get('/api',                            [\App\Modules\Api\ApiController::class, 'rootInfo']);
+$router->get('/api/docs',                       [\App\Modules\Api\ApiController::class, 'docs']);
+$router->get('/api/openapi.json',               [\App\Modules\Api\ApiController::class, 'openApiSpec']);
+$router->get('/api/v1/dashboard/metrics',       [\App\Modules\Api\ApiController::class, 'dashboardMetrics']);
+$router->get('/api/v1/dashboard/security',      [\App\Modules\Api\ApiController::class, 'dashboardSecurity']);
+$router->get('/api/v1/dashboard/licenses',      [\App\Modules\Api\ApiController::class, 'dashboardLicenses']);
+$router->get('/api/v1/metrics/{name}/history',  [\App\Modules\Api\ApiController::class, 'metricHistory']);
+$router->get('/api/v1/hardening',               [\App\Modules\Api\ApiController::class, 'hardeningList']);
+$router->get('/api/v1/compliance-profiles',     [\App\Modules\Api\ApiController::class, 'complianceProfiles']);
+$router->get('/api/v1/snapshots',               [\App\Modules\Api\ApiController::class, 'snapshotList']);
+$router->get('/api/v1/snapshots/diff',          [\App\Modules\Api\ApiController::class, 'snapshotDiff']);
+$router->get('/api/v1/snapshots/{id}',          [\App\Modules\Api\ApiController::class, 'snapshotGet']);
+$router->get('/api/v1/notifications',           [\App\Modules\Api\ApiController::class, 'notificationsList']);
+$router->post('/api/v1/notifications/push',     [\App\Modules\Api\ApiController::class, 'notificationsPush']);
+$router->get('/api/v1/audit-log',               [\App\Modules\Api\ApiController::class, 'auditLog']);
+
+// ── API-Keys Verwaltung (Admin-UI) ────────────────────────
+$router->get('/settings/api-keys',              [\App\Modules\Api\ApiKeysController::class, 'index']);
+$router->post('/settings/api-keys/create',      [\App\Modules\Api\ApiKeysController::class, 'create']);
+$router->post('/settings/api-keys/{id}/revoke', [\App\Modules\Api\ApiKeysController::class, 'revoke']);
 
 // ── KI-Sicherheitsberater ──────────────────────────────────
 $router->get('/ai',              [\App\Modules\AiAdvisor\AiAdvisorController::class, 'index']);

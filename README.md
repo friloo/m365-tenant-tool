@@ -106,6 +106,13 @@ Ein webbasiertes Admin-Dashboard für einen einzelnen Microsoft 365 Tenant. Grei
 
 | Modul | Was es zeigt | Aktionen |
 |---|---|---|
+| **Einrichtungs-Assistent** (`/setup`) | 5-Schritt-Onboarding für neue Admins: Verbindung, Permissions, Empfänger, Branding, Compliance-Profil | Vollständig durchlaufen, neu starten |
+| **Compliance-Profile** (`/complianceprofile`) | 5 Branchen-Presets (Standard/DSGVO, Healthcare/KRITIS, Finance/BaFin/DORA, Public/BSI, Bildung) | One-Click anwenden |
+| **Workflows** (`/workflows`) | Leichtgewichtige Trigger+Action-Automatisierung (Mini-Power-Automate) | Anlegen, Aktivieren, Jetzt ausführen, Run-Log |
+| **In-App-Benachrichtigungen** (Topbar-Glocke) | Tenant-Events seit letztem Besuch | Lesen markieren, alle anzeigen |
+| **Audit-Diff** (`/auditdiff`) | Diff zwischen zwei täglichen Tenant-Snapshots — Änderungen sichtbar | Manueller Snapshot, A/B-Vergleich |
+| **DSGVO/NIS-2 Audit-Report** (`/auditreport`) | Vollständiger Compliance-Bericht mit Zuordnung zu Artikeln | Im Browser als PDF speichern |
+| **REST-API** (`/api/v1/...`) + Swagger UI (`/api/docs`) | OpenAPI-3.0-Schnittstelle für PowerBI/Grafana/n8n | API-Keys verwalten unter `/settings/api-keys` |
 | **Cron & Automatisierung** | Alle geplanten Aufgaben mit Status, Logs; Job-Queue-Statistiken | Job sofort ausführen, Intervall konfigurieren |
 | **Einstellungen** | App, SMTP/Alerts, Freigaben-Monitor, Inaktive Konten, Branding, KI, …  — **mit Tab-Navigation** | Admin only |
 | **Benutzer-Zugang** (`/settings/users`) | M365-Benutzer mit Tool-Zugriff verwalten (Admin/Operator-Rollen) | Hinzufügen, Bearbeiten, Entfernen |
@@ -129,6 +136,9 @@ Ein webbasiertes Admin-Dashboard für einen einzelnen Microsoft 365 Tenant. Grei
 - **Konkrete Fehler-Diagnose**: jede Graph-API-Fehlermeldung wird in eine deutsche Erklärung mit Lösungsweg übersetzt (`GraphErrorTranslator`)
 - **Mobile-responsive Layout**: Off-Canvas-Sidebar auf Phone, Touch-optimierte Buttons
 - **Anomalie-Erkennung**: Audit-Log + Sign-in-Log werden auf Anomalien geprüft (Credential-Stuffing, Impossible Travel, neue Länder) und fließen in den KI-Berater ein
+- **KPI-Sparklines**: 7-Tage-Mini-Diagramme neben den wichtigsten Kennzahlen auf dem Dashboard mit Prozent-Trend (z. B. `↑ 3,2%`)
+- **Inline-Online-Hilfe**: `?`-Bubbles an Labels und Überschriften mit deutschsprachigen Erklärungen (~35 Begriffe, zentraler Katalog in `src/Core/Help.php`)
+- **REST-API & Swagger UI**: vollständige OpenAPI-3.0-Spec unter `/api/docs`, X-Api-Key-Auth mit Scopes (read/write/admin)
 
 ---
 

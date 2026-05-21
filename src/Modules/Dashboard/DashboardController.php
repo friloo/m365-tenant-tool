@@ -22,6 +22,17 @@ class DashboardController
         $security = $service->getSecurityStatus();
         $extended = $service->getExtendedStats();
 
+        // Persist today's KPI readings for the sparkline trend history.
+        // Idempotent — calling multiple times per day overwrites the same row.
+        MetricHistoryService::recordMany(array_merge($metrics, [
+            'guests'             => $extended['guests']             ?? null,
+            'teams_count'        => $extended['teams_count']        ?? null,
+            'admin_assignments'  => $extended['admin_assignments']  ?? null,
+            'secure_score'       => $extended['secure_score']       ?? null,
+            'service_incidents'  => $extended['service_incidents']  ?? null,
+            'msg_center_count'   => $extended['msg_center_count']   ?? null,
+        ]));
+
         View::render('dashboard/index', [
             'pageTitle' => 'Dashboard',
             'metrics'   => $metrics,
