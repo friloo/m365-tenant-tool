@@ -629,6 +629,19 @@ $router->get('/oauthaudit',                 [\App\Modules\OAuthAudit\OAuthAuditC
 // ── DLP-Vorfälle ──────────────────────────────────────────
 $router->get('/dlpincidents',               [\App\Modules\DlpIncidents\DlpIncidentsController::class, 'index']);
 
+// ── Authentication-Strength ────────────────────────────────
+$router->get('/authstrength',               [\App\Modules\AuthStrength\AuthStrengthController::class, 'index']);
+
+// ── Backup-Status ──────────────────────────────────────────
+$router->get('/backup',                     [\App\Modules\Backup\BackupController::class, 'index']);
+$router->post('/backup/save',               [\App\Modules\Backup\BackupController::class, 'save']);
+
+// ── Executive-Report ───────────────────────────────────────
+$router->get('/executivereport',            [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'index']);
+$router->post('/executivereport/save',      [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'save']);
+$router->post('/executivereport/send-now',  [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'sendNow']);
+$router->get('/executivereport/preview',    [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'preview']);
+
 // ── Teams Governance ───────────────────────────────────────
 $router->get('/teamsgovernance',            [\App\Modules\TeamsGovernance\TeamsGovernanceController::class, 'index']);
 
