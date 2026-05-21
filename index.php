@@ -658,6 +658,13 @@ $router->get('/phishingsim',                [\App\Modules\PhishingSim\PhishingSi
 // ── Lifecycle Workflows (Entra ID Governance) ──────────────
 $router->get('/lifecycle',                  [\App\Modules\Lifecycle\LifecycleController::class, 'index']);
 
+// ── External Identity Providers ────────────────────────────
+$router->get('/identityproviders',          [\App\Modules\IdentityProviders\IdentityProvidersController::class, 'index']);
+
+// ── Customer Lockbox ───────────────────────────────────────
+$router->get('/customerlockbox',            [\App\Modules\CustomerLockbox\CustomerLockboxController::class, 'index']);
+$router->post('/customerlockbox/save',      [\App\Modules\CustomerLockbox\CustomerLockboxController::class, 'save']);
+
 // ── Executive-Report ───────────────────────────────────────
 $router->get('/executivereport',            [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'index']);
 $router->post('/executivereport/save',      [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'save']);

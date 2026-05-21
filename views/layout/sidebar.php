@@ -61,6 +61,8 @@ $_navDefs = [
     ['section' => null,                  'icon' => 'clock-history',        'label' => 'Token-Lifetime',         'route' => 'tokenlifetime',              'admin' => false],
     ['section' => null,                  'icon' => 'bullseye',             'label' => 'Phishing-Simulationen',  'route' => 'phishingsim',                'admin' => false],
     ['section' => null,                  'icon' => 'diagram-2',            'label' => 'Lifecycle Workflows',    'route' => 'lifecycle',                  'admin' => false],
+    ['section' => null,                  'icon' => 'person-bounding-box',  'label' => 'Identity Provider Trust','route' => 'identityproviders',          'admin' => false],
+    ['section' => null,                  'icon' => 'lock-fill',            'label' => 'Customer Lockbox',       'route' => 'customerlockbox',            'admin' => false],
     ['section' => null,                  'icon' => 'bar-chart-line',       'label' => 'Secure Score',           'route' => 'securescore',                'admin' => false],
     ['section' => null,                  'icon' => 'bell',                 'label' => 'Defender Alerts',        'route' => 'defenderalerts',             'admin' => false],
     ['section' => null,                  'icon' => 'exclamation-triangle', 'label' => 'Risiko-Anmeldungen',     'route' => 'riskysignins',               'admin' => false],

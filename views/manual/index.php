@@ -80,6 +80,15 @@
         <a href="#authstrength">Auth-Strength</a>
         <a href="#backup">Backup-Status</a>
         <a href="#executivereport">Executive-Report</a>
+        <a href="#mfafatigue">MFA-Fatigue-Erkennung</a>
+        <a href="#insiderthreat">Insider-Threat-Detection</a>
+        <a href="#crosstenantaccess">Cross-Tenant-Access</a>
+        <a href="#tokenlifetime">Token-Lifetime</a>
+        <a href="#lifecycle">Lifecycle Workflows</a>
+        <a href="#phishingsim">Phishing-Simulationen</a>
+        <a class="sub" href="#phishing-anleitung">→ Anleitung Phishing-Sim</a>
+        <a href="#identityproviders">Identity Provider Trust</a>
+        <a href="#customerlockbox">Customer Lockbox</a>
 
         <h6>KI & Reports</h6>
         <a href="#ai">KI-Sicherheitsberater</a>
@@ -699,6 +708,244 @@
     </ul>
     <p>Empfänger ist standardmäßig die Alert-E-Mail-Adresse, kann aber pro Report-Typ überschrieben werden (mehrere durch Komma getrennt).</p>
     <p>Buttons <em>„Vorschau im Browser"</em> und <em>„Jetzt versenden"</em> erlauben Tests, ohne auf den 1. des Monats zu warten.</p>
+</div>
+
+<!-- MFA-Fatigue ─────────────────────────────────────────── -->
+<div class="man-section" id="mfafatigue">
+    <h2><i class="bi bi-shield-slash text-primary"></i> MFA-Fatigue-Erkennung</h2>
+    <p>MFA-Fatigue ist die Strategie, mit der ein Angreifer ein gestohlenes Passwort doch noch nutzbar macht: er triggert wiederholt MFA-Push-Notifications auf dem Handy des Opfers, bis es genervt „Approve" tippt. Bekanntester Fall: Uber-Hack 2022.</p>
+    <h3>Was die Seite zeigt</h3>
+    <ul>
+        <li><strong>MFA-Denials gesamt</strong> im gewählten Zeitraum (24h / 7 Tage / 30 Tage).</li>
+        <li><strong>Verdächtige Cluster</strong> — pro User gruppiert in 30-Minuten-Fenster; ab 5 Denials gilt es als verdächtig.</li>
+        <li><strong>Erfolgreich (Approve!)</strong> — Cluster, in denen direkt nach den Denials eine erfolgreiche Anmeldung stand. Sofort-Maßnahmen einleiten!</li>
+    </ul>
+    <h3>Sofortmaßnahmen bei einem erfolgreichen Angriff</h3>
+    <ol>
+        <li>Konto sperren (<code>/users</code> → Benutzer → Deaktivieren).</li>
+        <li>Alle aktiven Sitzungen widerrufen (<code>revokeSignInSessions</code>).</li>
+        <li>Passwort-Reset erzwingen.</li>
+        <li>Inbox-Regeln im <a href="/mailboxrules">Auto-Forward-Audit</a> prüfen — typischerweise legt ein Angreifer als Erstes eine Weiterleitungs-Regel an.</li>
+        <li>Im <a href="/oauthaudit">OAuth-Audit</a> nachsehen, ob die App neuen Consents gegeben wurden.</li>
+    </ol>
+    <h3>Prävention</h3>
+    <ul>
+        <li>Auf <strong>Number-Matching</strong> umstellen (Microsoft hat das 2023 standardmäßig aktiviert).</li>
+        <li>Für privilegierte Konten: FIDO2 oder Windows Hello erzwingen (siehe <a href="/authstrength">Auth-Strength</a>).</li>
+        <li>Sign-in-Frequency in CA-Policies erhöhen, damit ein gekaperter Token nicht 90 Tage gültig bleibt (siehe <a href="/tokenlifetime">Token-Lifetime</a>).</li>
+    </ul>
+    <p><span class="perm-tag">AuditLog.Read.All</span></p>
+</div>
+
+<!-- Insider-Threat ──────────────────────────────────────── -->
+<div class="man-section" id="insiderthreat">
+    <h2><i class="bi bi-eye-fill text-primary"></i> Insider-Threat-Detection (Light)</h2>
+    <p>Statistische Anomalie-Erkennung pro User, basierend auf Sign-in- und Audit-Log-Daten. Das volle Microsoft Purview Insider Risk Management ist mächtiger, aber lizenz-pflichtig (E5 / Compliance-Add-on); dieses Modul liefert die wichtigsten Signale ohne zusätzliche Lizenz.</p>
+    <h3>Erfasste Signale</h3>
+    <ul>
+        <li><strong>Off-Hours-Anmeldungen</strong> — wieviel Prozent der Logins fanden zwischen 22:00 und 06:00 statt? &gt; 50 % = Score +25, &gt; 25 % = +10.</li>
+        <li><strong>Geo-Diversität</strong> — Anmeldungen aus &gt; 3 verschiedenen Ländern in 30 Tagen = +15.</li>
+        <li><strong>Massendownloads</strong> — ≥ 50 OneDrive-File-Reads in einer Stunde = +15 pro Burst.</li>
+        <li><strong>Mass-Mail-Send</strong> — ≥ 100 Mails in einer Stunde = +20 pro Burst.</li>
+        <li><strong>Lösch-Aktivität</strong> — ≥ 100 Lösch-Events = +25, ≥ 30 = +10.</li>
+        <li><strong>Sharing-Aktivität</strong> — ≥ 50 Sharing-Events = +20.</li>
+    </ul>
+    <p>Der Gesamt-Score wird auf 100 gecappt. User mit Score ≥ 50 sind High-Risk und sollten geprüft werden — entweder ein legitimer „Power User" (Marketing, Außendienst) oder ein Insider-Threat-Verdachtsfall.</p>
+    <p><span class="perm-tag">AuditLog.Read.All</span></p>
+</div>
+
+<!-- Cross-Tenant-Access ────────────────────────────────── -->
+<div class="man-section" id="crosstenantaccess">
+    <h2><i class="bi bi-arrow-left-right text-primary"></i> Cross-Tenant-Access (B2B/Federation)</h2>
+    <p>Regelt, welche externen Tenants Zugriff auf Ihre Ressourcen haben und in welche externen Tenants Ihre User dürfen. Drei Ebenen:</p>
+    <h3>Default-Policy</h3>
+    <p>Gilt für alle externen Tenants ohne expliziten Eintrag. Microsoft-Default: B2B-Kollaboration erlaubt, B2B-Direct-Connect (Teams-Federation) blockiert, kein Trust für MFA/Compliant-Device.</p>
+    <h3>Partner-spezifisch</h3>
+    <p>Pro bekanntem Partner können Overrides definiert werden — z. B. eine engere Beziehung mit konkreten Tochterunternehmen, in denen MFA-Trust gegenseitig akzeptiert wird (dann muss der Gast nicht ein zweites Mal MFA durchlaufen).</p>
+    <h3>Service-Provider (MSP)</h3>
+    <p>Markiert einen Tenant als „Managed Service Provider" — gibt diesem erweiterte Verwaltungs-Berechtigungen für unseren Tenant. Sicherheits-kritisch.</p>
+    <p><span class="perm-tag">Policy.Read.All</span> · Schreib-Operationen über Entra-Portal.</p>
+</div>
+
+<!-- Token-Lifetime ──────────────────────────────────────── -->
+<div class="man-section" id="tokenlifetime">
+    <h2><i class="bi bi-clock-history text-primary"></i> Token-Lifetime &amp; Sign-in-Frequency</h2>
+    <p>Microsoft hat 2021 die globalen Token-Lifetime-Policies deprecated. Heute steuert man die effektive Anmelde-Frequenz über das <code>signInFrequency</code>-Setting in Conditional-Access-Policies.</p>
+    <h3>Empfohlene Werte</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr style="background:#f3f4f6;"><th style="padding:6px;text-align:left;border:1px solid #e5e7eb;">App-Klasse</th><th style="padding:6px;text-align:left;border:1px solid #e5e7eb;">Sign-in-Frequency</th></tr></thead>
+        <tbody>
+            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Privileged Roles (Admin)</td><td style="padding:6px;border:1px solid #e5e7eb;">4 Stunden</td></tr>
+            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Sensitive Apps (Finance, HR)</td><td style="padding:6px;border:1px solid #e5e7eb;">12 Stunden</td></tr>
+            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Standard Office-Apps</td><td style="padding:6px;border:1px solid #e5e7eb;">7 Tage</td></tr>
+            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Privater Browser (Persistent-Browser)</td><td style="padding:6px;border:1px solid #e5e7eb;">Niemals persistent</td></tr>
+        </tbody>
+    </table>
+    <p>Konfiguration: <a href="https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies" target="_blank" rel="noopener">Entra → Conditional Access → Policy</a> → Sitzung → Sign-in frequency.</p>
+    <p><span class="perm-tag">Policy.Read.All</span></p>
+</div>
+
+<!-- Lifecycle Workflows ─────────────────────────────────── -->
+<div class="man-section" id="lifecycle">
+    <h2><i class="bi bi-diagram-2 text-primary"></i> Lifecycle Workflows</h2>
+    <p>Microsoft Entra ID Governance bietet automatisierte Workflows für die drei Lebens­phasen eines Mitarbeiter­kontos:</p>
+    <ul>
+        <li><strong>Joiner</strong> — beim Eintritt: zu Standard-Gruppen hinzufügen, Welcome-Mail senden, Manager benachrichtigen, Lizenzen zuweisen.</li>
+        <li><strong>Mover</strong> — bei Abteilungs-Wechsel: alte Gruppen entfernen, neue zuweisen, Mailbox-Permissions anpassen.</li>
+        <li><strong>Leaver</strong> — beim Austritt: Konto deaktivieren, Lizenzen entziehen, Manager benachrichtigen, nach X Tagen löschen.</li>
+    </ul>
+    <p>Voraussetzung: <strong>Microsoft Entra ID Governance</strong> (separate Lizenz oder im E5-Bundle).</p>
+    <p>Konfiguration im Entra-Portal — das Tool zeigt nur die definierten Workflows mit ihrem Status. Schreib-Operationen sind über die Graph-API möglich, sind aber nicht im Tool integriert (komplexe Task-Definitionen würden ihre eigene UI brauchen).</p>
+</div>
+
+<!-- Phishing-Simulationen Modul + ausführliche Anleitung ─── -->
+<div class="man-section" id="phishingsim">
+    <h2><i class="bi bi-bullseye text-primary"></i> Phishing-Simulationen</h2>
+    <p>Übersicht der durchgeführten Phishing-Simulationen aus Microsoft Defender Attack Simulation Training. Pro Simulation werden Empfänger-Anzahl, Klick-Rate, „Compromised"-Rate (User hat Credentials eingegeben oder Datei geöffnet) und Reporting-Rate (User hat die Phishing-Mail korrekt gemeldet) angezeigt.</p>
+    <h3>Wichtige Kennzahlen</h3>
+    <ul>
+        <li><strong>Compromised-Rate &lt; 5 %</strong> ist ein gutes Ziel. &gt; 20 % bedeutet dringender Schulungs­bedarf.</li>
+        <li><strong>Reporting-Rate &gt; 50 %</strong> zeigt, dass die User das „Report Phishing"-Plugin in Outlook aktiv nutzen.</li>
+        <li><strong>Training-Quote</strong> — wieviele der erwischten User haben das zugewiesene Training auch abgeschlossen.</li>
+    </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     AUSFÜHRLICHE PHISHING-SIMULATIONS-ANLEITUNG
+     ═══════════════════════════════════════════════════════════ -->
+<div class="man-section" id="phishing-anleitung">
+    <h2><i class="bi bi-book-half text-primary"></i> Anleitung: Phishing-Simulationen mit Microsoft aufsetzen</h2>
+    <p>Schritt-für-Schritt-Anleitung, wie Sie mit Microsoft Defender Attack Simulation Training eine kontrollierte Phishing-Kampagne in Ihrem Tenant durchführen — von der Vorbereitung über die Durchführung bis zur Nachbereitung.</p>
+
+    <h3>1. Voraussetzungen</h3>
+    <ul>
+        <li><strong>Lizenz:</strong> Microsoft Defender for Office 365 <em>Plan 2</em> (in <code>Microsoft 365 E5</code> und <code>Microsoft 365 A5</code> enthalten) oder als Add-on buchbar.</li>
+        <li><strong>Rolle:</strong> Sie benötigen eine der folgenden Microsoft-Entra-Rollen:
+            <ul>
+                <li><em>Globaler Administrator</em></li>
+                <li><em>Sicherheits-Administrator</em></li>
+                <li><em>Attack-Simulation-Administrator</em> (empfohlene Mindest­rolle)</li>
+            </ul>
+        </li>
+        <li><strong>Postfach-Verzeichnis:</strong> Defender Attack Simulator nutzt die normale Tenant-Verzeichnis-Liste, also sind alle aktiven Mailboxen automatisch verfügbar.</li>
+        <li><strong>Vorgespräche:</strong> Betriebs­rat und Daten­schutz­beauftragten <strong>vor</strong> der ersten Simulation einbinden — in Deutschland ist eine Phishing-Simulation eine Mitarbeiter-Schulungs­maßnahme, die u. U. mitbestimmungs­pflichtig ist (§ 87 Abs. 1 Nr. 6 BetrVG).</li>
+    </ul>
+
+    <h3>2. Vorbereitung &amp; Kommunikation</h3>
+    <ol>
+        <li>
+            <strong>Pilotphase planen.</strong> Niemals direkt den ganzen Tenant ins kalte Wasser werfen — beginnen Sie mit einer Pilotgruppe von 10–30 Personen aus IT, Marketing oder Verwaltung.
+        </li>
+        <li>
+            <strong>Vorab-Kommunikation:</strong> ankündigen, dass „in den nächsten Wochen Phishing-Simulationen stattfinden werden, ohne konkreten Termin". Das ist nicht der Verrat — Mitarbeiter sollen wissen, dass es passieren <em>kann</em>, aber nicht <em>wann</em>.
+        </li>
+        <li>
+            <strong>Reporting-Plugin in Outlook aktivieren:</strong> stellen Sie sicher, dass der Button „Report Phishing" oder „Report Message" in Outlook für alle User sichtbar ist (Defender-Portal → Email &amp; collaboration → Policies → User reported settings).
+        </li>
+        <li>
+            <strong>Training-Module vorbereiten:</strong> Microsoft bringt einen Standard-Pool von ca. 70 Trainings­videos mit. Schauen Sie sie sich vorher an und wählen Sie 3–5 aus, die zu Ihrer Kampagne passen.
+        </li>
+    </ol>
+
+    <h3>3. Erste Simulation anlegen</h3>
+    <ol>
+        <li>
+            <strong>Defender-Portal öffnen:</strong>
+            <a href="https://security.microsoft.com/attacksimulator" target="_blank" rel="noopener">security.microsoft.com/attacksimulator</a> → Reiter <em>Simulations</em> → <em>+ Launch a simulation</em>.
+        </li>
+        <li>
+            <strong>Technik wählen.</strong> Microsoft bietet sechs Standard-Techniken — beginnen Sie mit <em>Credential Harvest</em> (gefälschte Login-Seite), das ist statistisch der häufigste reale Angriffstyp.
+            <ul style="margin-top:6px;">
+                <li><em>Credential Harvest</em> — gefälschte Anmelde-Seite</li>
+                <li><em>Malware Attachment</em> — schädlicher Anhang</li>
+                <li><em>Link in Attachment</em> — Link im Dokument</li>
+                <li><em>Link to Malware</em> — Direkt-Link zu Malware</li>
+                <li><em>Drive-by URL</em> — bösartige Webseite</li>
+                <li><em>OAuth Consent Grant</em> — gefälschte App-Berechtigungs-Anfrage (besonders aktuell)</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Payload wählen.</strong> Microsoft liefert Hunderte fertige Payloads in vielen Sprachen — wählen Sie eine deutschsprachige Variante, am besten mit einem Bezug zu Ihrem Branchen­alltag (Paket­benachrichtigung, Bewerbung, Microsoft-Sicherheits­warnung, …). Mit Klick auf eine Payload sehen Sie eine Vorschau.
+        </li>
+        <li>
+            <strong>Empfänger auswählen.</strong> Für die erste Kampagne 10–30 Pilot-User. Spätere Kampagnen können auf Gruppen abzielen oder alle User auf einmal.
+        </li>
+        <li>
+            <strong>Training konfigurieren.</strong> User, die auf den Link klicken / Daten eingeben / die Mail nicht melden, bekommen automatisch ein Training zugewiesen (Microsoft empfiehlt das „NIST"-Trainingspfad).
+        </li>
+        <li>
+            <strong>Phishing-Landing-Page wählen.</strong> Bei <em>Credential Harvest</em> sieht der User nach Eingabe seiner Daten eine kurze Erklärungs-Seite („Dies war eine Simulation — bitte verwenden Sie nie Ihr echtes Passwort auf solchen Seiten").
+        </li>
+        <li>
+            <strong>Zeitfenster setzen.</strong> Empfohlen: 2-Wochen-Fenster, in denen die Mail zufällig verteilt wird. Microsoft hat ein „Region-Aware-Delivery"-Feature, das die Mail in den lokalen Bürozeiten ausliefert.
+        </li>
+        <li>
+            <strong>Starten.</strong> Vor dem finalen Klick auf <em>Submit</em> erhalten Sie eine Zusammenfassung — prüfen Sie sie sorgfältig.
+        </li>
+    </ol>
+
+    <h3>4. Während der Kampagne</h3>
+    <ul>
+        <li>Im Defender-Portal können Sie den Live-Status sehen — wieviele User die Mail bekommen haben, wieviele geklickt haben, wieviele „kompromittiert" sind.</li>
+        <li>Im Tool wird die Simulation unter <a href="/phishingsim">/phishingsim</a> mit denselben Daten gespiegelt.</li>
+        <li>Helpdesk-Tickets von Usern, die fragen „ist diese Mail echt?" sind erwünschte Reaktionen — kein Anlass zur Sorge.</li>
+    </ul>
+
+    <h3>5. Nachbereitung</h3>
+    <ol>
+        <li>
+            <strong>Reporting-Quote analysieren.</strong> Wenn weniger als 30 % der User die Phishing-Mail gemeldet haben, ist das ein klares Schulungs­signal — das Reporting-Plugin ist entweder unbekannt oder nicht installiert.
+        </li>
+        <li>
+            <strong>Compromised-User zuweisen.</strong> User, die geklickt + Daten eingegeben haben, bekommen automatisch Trainings — überprüfen Sie nach 14 Tagen die Abschluss­quote. Wer das Training nicht abschließt, bekommt eine Eskalation an den Vorgesetzten.
+        </li>
+        <li>
+            <strong>Transparenter Bericht an die Belegschaft.</strong> Senden Sie eine anonymisierte Zusammenfassung („28 % der Mitarbeiter haben geklickt, 12 % haben Credentials eingegeben, 65 % haben die Mail gemeldet — wir machen die nächste Runde in 3 Monaten"). Das fördert Awareness ohne Beschämung.
+        </li>
+        <li>
+            <strong>Datenschutz-konform speichern.</strong> Defender speichert die Daten 90 Tage automatisch; für längere Aufbewahrung müssen Sie sie exportieren — was bei DSGVO problematisch ist, weil Mitarbeiter dann namentlich auftauchen.
+        </li>
+    </ol>
+
+    <h3>6. Kadenz</h3>
+    <p>Empfehlung: <strong>alle 2–3 Monate</strong> eine Kampagne, je mit anderer Technik und anderem Payload. Studien zeigen, dass die Klick-Quote bei einer konstanten Kampagne nach ca. 18 Monaten von typisch 25 % auf unter 5 % sinkt.</p>
+
+    <h3>7. Häufige Fallstricke</h3>
+    <ul>
+        <li><strong>Personalrat/Betriebsrat nicht eingebunden.</strong> Kann zu Beschwerden und im schlimmsten Fall zu Untersagung führen. Vorher klären.</li>
+        <li><strong>Beschämungs-Kommunikation.</strong> Wer dem Marketing einen Brief schickt „Sie sind unser bester Klicker", verliert die Belegschaft. Stattdessen anonyme Aggregate.</li>
+        <li><strong>Zu seltene Wiederholung.</strong> Eine Phishing-Simulation pro Jahr bringt fast nichts — Skills verblassen schnell.</li>
+        <li><strong>Standard-Payloads ohne Anpassung.</strong> Microsoft-Standard-Templates sind oft zu generisch. Erstellen Sie für die zweite/dritte Kampagne <em>Custom Payloads</em>, die Ihren Branchen-Kontext aufnehmen.</li>
+        <li><strong>Verteilung über Mail-Allow-Listen umgehen.</strong> Defender Simulator ist standardmäßig auf der Allow-Liste — wenn Ihre Anti-Spam-Regeln zu aggressiv sind, kann die Simulations-Mail trotzdem gefiltert werden. Prüfen Sie im Vorhinein mit einer Test-Simulation an die IT-Abteilung.</li>
+    </ul>
+
+    <div class="tip-box">
+        <i class="bi bi-lightbulb"></i>
+        <strong>Pro-Tipp:</strong> Nach 2–3 erfolgreichen Kampagnen lassen sich die Simulationen mit der <em>Automation</em>-Funktion im Defender-Portal auch selbst-fahrend einrichten — Microsoft wählt dann pro Quartal eine neue Technik + Payload aus und versendet die Mail an User-Gruppen, die schon eine Weile keine Simulation mehr bekommen haben.
+    </div>
+
+    <h3>8. Weiterführende Links</h3>
+    <ul>
+        <li><a href="https://learn.microsoft.com/de-de/defender-office-365/attack-simulation-training-get-started" target="_blank" rel="noopener">Microsoft Learn — Attack Simulation Training</a></li>
+        <li><a href="https://learn.microsoft.com/de-de/defender-office-365/attack-simulation-training-payloads" target="_blank" rel="noopener">Payload-Bibliothek</a></li>
+        <li><a href="https://learn.microsoft.com/de-de/defender-office-365/attack-simulation-training-simulation-automations" target="_blank" rel="noopener">Simulation Automations</a></li>
+        <li><a href="https://www.bsi.bund.de/DE/Themen/Verbraucherinnen-und-Verbraucher/Cyber-Sicherheitslage/Methoden-der-Cyber-Kriminalitaet/Spam-Phishing-Co/Phishing/phishing_node.html" target="_blank" rel="noopener">BSI — Phishing-Methoden</a></li>
+    </ul>
+</div>
+
+<!-- Identity Providers ──────────────────────────────────── -->
+<div class="man-section" id="identityproviders">
+    <h2><i class="bi bi-person-bounding-box text-primary"></i> External Identity Provider Trust</h2>
+    <p>Listet alle konfigurierten externen Identity Providers im Tenant (Google, Facebook, Apple für B2C-Szenarien) sowie federierte Domains (ADFS, Okta, Ping Identity, …). Jeder zusätzliche IdP ist eine Erweiterung der Angriffsfläche — sollte periodisch auditiert werden.</p>
+    <p><span class="perm-tag">IdentityProvider.Read.All</span> <span class="perm-tag">Domain.Read.All</span></p>
+</div>
+
+<!-- Customer Lockbox ───────────────────────────────────── -->
+<div class="man-section" id="customerlockbox">
+    <h2><i class="bi bi-lock-fill text-primary"></i> Customer Lockbox</h2>
+    <p>Ohne Customer Lockbox darf Microsoft Support im Notfall direkt auf Ihre Daten zugreifen — Sie erfahren es nicht. Mit aktiviertem Lockbox muss jeder Microsoft-Support-Zugriff aktiv von einem Tenant-Admin approvt werden, sonst gibt es <strong>keinen</strong> Zugriff.</p>
+    <p><strong>Voraussetzung:</strong> Microsoft 365 E5 oder als Add-on.</p>
+    <p>Microsoft Graph stellt für diese Einstellung keinen Schreib-Endpunkt zur Verfügung — Konfiguration daher im M365 Admin Center → Security &amp; Privacy. Das Tool tracked nur den manuell eingetragenen Aktivierungs-Status, die Approver-Liste, die SLA-Reaktionszeit und das Datum der letzten Review (halbjährlich empfohlen).</p>
 </div>
 
 <!-- Geräte ───────────────────────────────────────────────── -->
