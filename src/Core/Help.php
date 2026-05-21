@@ -172,6 +172,10 @@ class Help
             'title' => 'Einrichtungs-Assistent',
             'body'  => 'Fünf-Schritte-Tour für die ersten 10 Minuten nach Erstinstallation: Tenant-Verbindung, Berechtigungen, Benachrichtigungen, Branding, Compliance-Profil.',
         ],
+        'bestpractice' => [
+            'title' => 'Best-Practice-Leitfaden',
+            'body'  => 'Interaktiver Schritt-für-Schritt-Leitfaden zur Tenant-Härtung — 8 Phasen, jede mit konkreten Aufgaben, Zeitabschätzung und direktem Modul-Link. Schritte können abgehakt werden, Fortschritt wird gespeichert.',
+        ],
         'notifications' => [
             'title' => 'In-App-Benachrichtigungen',
             'body'  => 'Die Glocke oben rechts zeigt Tenant-Ereignisse (neue Risiko-Anmeldungen, Hardening-Aktionen, Cron-Fehler) seit deinem letzten Besuch. Klick markiert als gelesen.',

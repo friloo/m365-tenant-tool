@@ -47,6 +47,7 @@ $_navDefs = [
     ['section' => null,                  'icon' => 'shield-fill-check',    'label' => 'Security Posture',       'route' => 'securityposture',            'admin' => false],
     ['section' => null,                  'icon' => 'file-earmark-lock',    'label' => 'DSGVO-Status',           'route' => 'securityposture#cat-dsgvo-datenschutz', 'admin' => false],
     ['section' => null,                  'icon' => 'sliders2-vertical',    'label' => 'Tenant-Härtung',         'route' => 'hardening',                  'admin' => false],
+    ['section' => null,                  'icon' => 'compass',              'label' => 'Härtungs-Leitfaden',     'route' => 'bestpractice',               'admin' => false],
     ['section' => null,                  'icon' => 'patch-check',          'label' => 'Compliance-Profile',     'route' => 'complianceprofile',          'admin' => true],
     ['section' => null,                  'icon' => 'key-fill',             'label' => 'Break-Glass-Accounts',   'route' => 'breakglass',                 'admin' => false],
     ['section' => null,                  'icon' => 'lightning-charge',     'label' => 'PIM (JIT-Admin)',        'route' => 'pim',                        'admin' => false],
