@@ -77,11 +77,19 @@ use App\Core\Csrf;
 </div>
 
 <script>
-(function () {
+// base.php loads bootstrap.js at the END of <body>, so this inline
+// view-script runs BEFORE bootstrap is defined. Defer everything to
+// DOMContentLoaded — by that point all synchronous scripts further
+// down the document (including bootstrap.bundle.min.js) have loaded.
+document.addEventListener('DOMContentLoaded', function () {
     const META = document.querySelector('meta[name="csrf-token"]');
     const CSRF = META ? META.content : '';
 
     const modalEl = document.getElementById('profileApplyModal');
+    if (!modalEl || typeof bootstrap === 'undefined') {
+        console.error('compliance-profile: bootstrap not loaded or modal missing');
+        return;
+    }
     const modal   = new bootstrap.Modal(modalEl);
     const bar     = document.getElementById('apProgressBar');
     const cntEl   = document.getElementById('apProgressCount');
@@ -197,5 +205,5 @@ use App\Core\Csrf;
             });
         });
     });
-})();
+});
 </script>
