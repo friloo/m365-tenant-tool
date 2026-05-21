@@ -18,6 +18,7 @@ use App\Modules\ShareReview\ShareReviewService;
 use App\Modules\StaleAccounts\StaleAccountsService;
 use App\Modules\Users\UsersService;
 use App\Modules\WeeklyReport\WeeklyReportService;
+use App\Modules\ExecutiveReport\ExecutiveReportService;
 use App\Queue\QueueWorker;
 
 class CronRunner
@@ -383,6 +384,21 @@ class CronRunner
                     }
                     $service = new WeeklyReportService($graph);
                     return $service->generate();
+                },
+            ],
+
+            'executive_report' => [
+                'label'            => 'Monatlicher Executive-Report',
+                'description'      => 'Versendet am ersten Tag jedes Monats den Executive-Report an die Geschäftsführung. Läuft täglich und prüft selbst, ob heute der 1. ist.',
+                'default_interval' => 1440,
+                'handler'          => function () use ($graph): string {
+                    if (Config::getInstance()->get('executive_report_enabled', '0') !== '1') {
+                        return 'Executive-Report deaktiviert — übersprungen';
+                    }
+                    if ((int)date('j') !== 1) {
+                        return 'Heute nicht der 1. des Monats — übersprungen';
+                    }
+                    return (new ExecutiveReportService($graph))->generate();
                 },
             ],
 
