@@ -149,6 +149,10 @@ class ComplianceProfileService
 
     /**
      * Apply a profile by running each HardeningService action in turn.
+     * Each call is individually try/catch'd — one Graph failure must
+     * never sink the whole cascade. We also try to raise the script
+     * timeout, because healthcare/finance profiles run 13 PATCHes and
+     * the shared-host default of 30 s can be tight.
      *
      * @return array{ok:bool, results: list<array{id:string, ok:bool, msg:string}>}
      */
@@ -158,12 +162,21 @@ class ComplianceProfileService
         if (!isset($profiles[$profileKey])) {
             return ['ok' => false, 'results' => [['id' => $profileKey, 'ok' => false, 'msg' => 'Unbekanntes Profil.']]];
         }
+        @set_time_limit(180);
+
         $results = [];
         $okCount = 0;
         foreach ($profiles[$profileKey]['actions'] as $actionId) {
-            $r = $this->hardening->apply($actionId);
-            $results[] = ['id' => $actionId, 'ok' => (bool)$r['ok'], 'msg' => (string)$r['msg']];
-            if ($r['ok']) $okCount++;
+            try {
+                $r = $this->hardening->apply($actionId);
+                $ok  = (bool)($r['ok']  ?? false);
+                $msg = (string)($r['msg'] ?? '');
+            } catch (\Throwable $e) {
+                $ok  = false;
+                $msg = 'Ausnahme: ' . $e->getMessage();
+            }
+            $results[] = ['id' => $actionId, 'ok' => $ok, 'msg' => $msg];
+            if ($ok) $okCount++;
         }
         return ['ok' => $okCount === count($results), 'results' => $results];
     }

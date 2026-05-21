@@ -778,6 +778,7 @@ $router->post('/setup/reset',               [\App\Modules\SetupWizard\SetupWizar
 
 // ── Compliance-Profile ─────────────────────────────────────
 $router->get('/complianceprofile',          [\App\Modules\ComplianceProfile\ComplianceProfileController::class, 'index']);
+$router->get('/complianceprofile/apply',    function () { \App\Core\Redirect::to('/complianceprofile'); });
 $router->post('/complianceprofile/apply',   [\App\Modules\ComplianceProfile\ComplianceProfileController::class, 'apply']);
 
 // ── Audit-Diff ─────────────────────────────────────────────
