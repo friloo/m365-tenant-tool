@@ -96,6 +96,7 @@ $_navDefs = [
     ['section' => null,                  'icon' => 'magic',                'label' => 'Einrichtungs-Assistent', 'route' => 'setup',                      'admin' => true],
     ['section' => null,                  'icon' => 'diagram-2',            'label' => 'Workflows',              'route' => 'workflows',                  'admin' => true],
     ['section' => null,                  'icon' => 'key',                  'label' => 'API-Schlüssel',          'route' => 'settings/api-keys',          'admin' => true],
+    ['section' => null,                  'icon' => 'book',                 'label' => 'API-Dokumentation',      'route' => 'api/docs',                   'admin' => true],
     ['section' => null,                  'icon' => 'cloud-arrow-down',     'label' => 'Updates',                'route' => 'settings/update',            'admin' => true],
     ['section' => null,                  'icon' => 'journal-check',        'label' => 'App Audit-Log',          'route' => 'settings/app-audit',         'admin' => true],
     ['section' => null,                  'icon' => 'shield-lock',          'label' => '2FA-Einstellungen',      'route' => 'settings/2fa',               'admin' => true],
