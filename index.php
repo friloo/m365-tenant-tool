@@ -640,6 +640,15 @@ $router->post('/backup/save',               [\App\Modules\Backup\BackupControlle
 $router->get('/hardening',                  [\App\Modules\Hardening\HardeningController::class, 'index']);
 $router->post('/hardening/apply',           [\App\Modules\Hardening\HardeningController::class, 'apply']);
 
+// ── MFA-Fatigue-Erkennung ──────────────────────────────────
+$router->get('/mfafatigue',                 [\App\Modules\MfaFatigue\MfaFatigueController::class, 'index']);
+
+// ── Insider-Threat-Light ───────────────────────────────────
+$router->get('/insiderthreat',              [\App\Modules\InsiderThreat\InsiderThreatController::class, 'index']);
+
+// ── Cross-Tenant-Access ────────────────────────────────────
+$router->get('/crosstenantaccess',          [\App\Modules\CrossTenantAccess\CrossTenantAccessController::class, 'index']);
+
 // ── Executive-Report ───────────────────────────────────────
 $router->get('/executivereport',            [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'index']);
 $router->post('/executivereport/save',      [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'save']);
