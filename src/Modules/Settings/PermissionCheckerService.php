@@ -84,8 +84,14 @@ class PermissionCheckerService
             ],
             'SharePointTenantSettings.ReadWrite.All' => [
                 'desc'     => 'SharePoint-Tenant-Einstellungen lesen und schreiben',
-                'features' => ['Freigaberichtlinien lesen', 'Freigaberichtlinien setzen'],
+                'features' => ['Freigaberichtlinien lesen', 'Freigaberichtlinien setzen', 'Tenant-Härtung (Sharing-Toggles)'],
                 'section'  => 'Speicher & Freigaben',
+                'write'    => true,
+            ],
+            'Policy.ReadWrite.Authorization' => [
+                'desc'     => 'Authorization-Policy ändern (Gast-Einladungs-Regeln, App-Consent-Defaults)',
+                'features' => ['Tenant-Härtung: Gast-Einladungen einschränken', 'Tenant-Härtung: App-Consent'],
+                'section'  => 'Sicherheit',
                 'write'    => true,
             ],
             // ── Exchange & Mailboxes ───────────────────────────────────

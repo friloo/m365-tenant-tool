@@ -636,6 +636,10 @@ $router->get('/authstrength',               [\App\Modules\AuthStrength\AuthStren
 $router->get('/backup',                     [\App\Modules\Backup\BackupController::class, 'index']);
 $router->post('/backup/save',               [\App\Modules\Backup\BackupController::class, 'save']);
 
+// ── Tenant-Härtung (Quick-Actions) ─────────────────────────
+$router->get('/hardening',                  [\App\Modules\Hardening\HardeningController::class, 'index']);
+$router->post('/hardening/apply',           [\App\Modules\Hardening\HardeningController::class, 'apply']);
+
 // ── Executive-Report ───────────────────────────────────────
 $router->get('/executivereport',            [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'index']);
 $router->post('/executivereport/save',      [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'save']);
