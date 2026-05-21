@@ -49,6 +49,8 @@ $_navDefs = [
     ['section' => null,                  'icon' => 'key-fill',             'label' => 'Break-Glass-Accounts',   'route' => 'breakglass',                 'admin' => false],
     ['section' => null,                  'icon' => 'lightning-charge',     'label' => 'PIM (JIT-Admin)',        'route' => 'pim',                        'admin' => false],
     ['section' => null,                  'icon' => 'arrow-right-square',   'label' => 'Auto-Forward-Audit',     'route' => 'mailboxrules',               'admin' => false],
+    ['section' => null,                  'icon' => 'app-indicator',        'label' => 'OAuth-App-Audit',        'route' => 'oauthaudit',                 'admin' => false],
+    ['section' => null,                  'icon' => 'shield-shaded',        'label' => 'DLP-Vorfälle',           'route' => 'dlpincidents',               'admin' => false],
     ['section' => null,                  'icon' => 'bar-chart-line',       'label' => 'Secure Score',           'route' => 'securescore',                'admin' => false],
     ['section' => null,                  'icon' => 'bell',                 'label' => 'Defender Alerts',        'route' => 'defenderalerts',             'admin' => false],
     ['section' => null,                  'icon' => 'exclamation-triangle', 'label' => 'Risiko-Anmeldungen',     'route' => 'riskysignins',               'admin' => false],

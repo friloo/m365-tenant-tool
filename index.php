@@ -623,6 +623,12 @@ $router->get('/mailboxrules',               [\App\Modules\MailboxRules\MailboxRu
 $router->get('/breakglass',                 [\App\Modules\BreakGlass\BreakGlassController::class, 'index']);
 $router->post('/breakglass/save',           [\App\Modules\BreakGlass\BreakGlassController::class, 'save']);
 
+// ── OAuth-App-Audit ────────────────────────────────────────
+$router->get('/oauthaudit',                 [\App\Modules\OAuthAudit\OAuthAuditController::class, 'index']);
+
+// ── DLP-Vorfälle ──────────────────────────────────────────
+$router->get('/dlpincidents',               [\App\Modules\DlpIncidents\DlpIncidentsController::class, 'index']);
+
 // ── Teams Governance ───────────────────────────────────────
 $router->get('/teamsgovernance',            [\App\Modules\TeamsGovernance\TeamsGovernanceController::class, 'index']);
 
