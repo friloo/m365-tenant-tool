@@ -8,6 +8,7 @@ use App\Core\Config;
 use App\Core\Redirect;
 use App\Core\Session;
 use App\Core\View;
+use App\Modules\Hardening\HardeningService;
 use App\Modules\Notifications\NotificationService;
 
 class ComplianceProfileController
@@ -22,6 +23,14 @@ class ComplianceProfileController
         ]);
     }
 
+    /**
+     * Legacy synchronous apply — still callable, but for healthcare/finance
+     * profiles (13 actions) the cumulative Graph latency can crash long
+     * before the response comes back. Falls back to applyStep() under the
+     * hood by looping all actions and aggregating. The UI now uses
+     * applyStep() directly via JavaScript so the user sees per-action
+     * progress and nothing can time out.
+     */
     public function apply(): void
     {
         LocalAuth::requireAdmin();
@@ -57,5 +66,70 @@ class ComplianceProfileController
             'Profil: ' . $key . ' — ' . json_encode($result['results'], JSON_UNESCAPED_UNICODE));
 
         Redirect::to('/complianceprofile');
+    }
+
+    /**
+     * AJAX-style single-action endpoint. Returns JSON. The UI calls this
+     * once per action in the profile, in sequence, so the user sees
+     * progress and individual Graph slowness never piles up into a
+     * 60+-second blocked request that web-server worker pools tend to
+     * sever (= ERR_CONNECTION_CLOSED in the browser).
+     *
+     * On the last action it also stamps `compliance_profile` in config
+     * and pushes the summary notification.
+     */
+    public function applyStep(): void
+    {
+        LocalAuth::requireAdmin();
+        @set_time_limit(60);
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: no-store');
+
+        $profileKey = (string)($_POST['profile']   ?? '');
+        $actionId   = (string)($_POST['action_id'] ?? '');
+        $index      = (int)($_POST['index']        ?? 0);
+        $isLast     = !empty($_POST['final']);
+
+        $profiles = ComplianceProfileService::profiles();
+        if (!isset($profiles[$profileKey])) {
+            echo json_encode(['ok' => false, 'msg' => 'Unbekanntes Profil.']);
+            return;
+        }
+        if (!in_array($actionId, $profiles[$profileKey]['actions'], true)) {
+            echo json_encode(['ok' => false, 'msg' => 'Aktion "' . $actionId . '" gehört nicht zum Profil ' . $profileKey . '.']);
+            return;
+        }
+
+        try {
+            /** @var HardeningService $hs */
+            $hs     = app_service(HardeningService::class);
+            $result = $hs->apply($actionId);
+            $ok     = (bool)($result['ok']  ?? false);
+            $msg    = (string)($result['msg'] ?? '');
+        } catch (\Throwable $e) {
+            $ok  = false;
+            $msg = 'Ausnahme: ' . $e->getMessage();
+        }
+
+        AppAudit::log('compliance_profile_step', 'complianceprofile',
+            "Profil {$profileKey} · Schritt " . ($index + 1) . ' · ' . $actionId . ' · ' . ($ok ? 'OK' : 'FEHLER') . ' · ' . $msg);
+
+        if ($isLast) {
+            Config::getInstance()->set('compliance_profile', $profileKey);
+            NotificationService::push(
+                'Compliance-Profil angewendet',
+                'Profil "' . ($profiles[$profileKey]['name'] ?? $profileKey) . '" durchgelaufen.',
+                'success',
+                '/complianceprofile',
+                'compliance'
+            );
+        }
+
+        echo json_encode([
+            'ok'        => $ok,
+            'msg'       => $msg,
+            'action_id' => $actionId,
+            'index'     => $index,
+        ]);
     }
 }
