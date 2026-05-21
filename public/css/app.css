@@ -437,6 +437,15 @@ body {
     overflow: hidden;
 }
 
+/* Default inner padding for cards that don't use the explicit
+   header-custom/body-custom wrappers. Modern browsers (Chrome/Edge/
+   Safari/Firefox 121+) only — older browsers fall back to no padding,
+   matching the previous behaviour. */
+.content-card:not(:has(.card-header-custom)):not(:has(.card-body-custom)) {
+    padding: 20px 24px;
+}
+.content-card.p-0 { padding: 0 !important; }
+
 .content-card .card-header-custom {
     padding: 16px 20px;
     border-bottom: 1px solid #f3f4f6;
