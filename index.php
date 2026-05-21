@@ -613,6 +613,16 @@ $router->post('/accessreview/{id}/apply',    [\App\Modules\AccessReview\AccessRe
 // ── Domain Health ──────────────────────────────────────────
 $router->get('/domainhealth',               [\App\Modules\DomainHealth\DomainHealthController::class, 'index']);
 
+// ── PIM Übersicht ──────────────────────────────────────────
+$router->get('/pim',                        [\App\Modules\Pim\PimController::class, 'index']);
+
+// ── Mailbox-Regeln (Auto-Forward-Audit) ────────────────────
+$router->get('/mailboxrules',               [\App\Modules\MailboxRules\MailboxRulesController::class, 'index']);
+
+// ── Break-Glass-Accounts ───────────────────────────────────
+$router->get('/breakglass',                 [\App\Modules\BreakGlass\BreakGlassController::class, 'index']);
+$router->post('/breakglass/save',           [\App\Modules\BreakGlass\BreakGlassController::class, 'save']);
+
 // ── Teams Governance ───────────────────────────────────────
 $router->get('/teamsgovernance',            [\App\Modules\TeamsGovernance\TeamsGovernanceController::class, 'index']);
 
