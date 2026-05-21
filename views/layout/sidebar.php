@@ -77,6 +77,7 @@ $_navDefs = [
     ['section' => null,                  'icon' => 'trash2',               'label' => 'Papierkorb',             'route' => 'deletedobjects',             'admin' => false],
     ['section' => null,                  'icon' => 'clipboard-check',      'label' => 'Access Reviews',         'route' => 'accessreview',               'admin' => false],
     ['section' => null,                  'icon' => 'clock-history',        'label' => 'Audit-Log',              'route' => 'auditlog',                   'admin' => false],
+    ['section' => null,                  'icon' => 'arrow-left-right',     'label' => 'Audit-Diff',             'route' => 'auditdiff',                  'admin' => false],
     ['section' => null,                  'icon' => 'journal-text',         'label' => 'Sign-in-Log',            'route' => 'signinlog',                  'admin' => false],
     ['section' => null,                  'icon' => 'shield-lock',          'label' => 'DLP-Richtlinien',        'route' => 'dlppolicies',                'admin' => false],
     ['section' => null,                  'icon' => 'archive',              'label' => 'Aufbewahrung',           'route' => 'retentionpolicies',          'admin' => false],

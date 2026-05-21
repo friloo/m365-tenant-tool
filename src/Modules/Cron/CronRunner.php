@@ -598,6 +598,36 @@ class CronRunner
                     return "{$count} neue Risiko-Benutzer — E-Mail gesendet";
                 },
             ],
+
+            'audit_diff_snapshot' => [
+                'description'      => 'Tenant-Snapshot für Audit-Diff erstellen',
+                'schedule_minutes' => 1440, // daily
+                'handler'          => function () use ($graph): string {
+                    $svc = new \App\Modules\AuditDiff\SnapshotService($graph);
+                    $id  = $svc->capture('daily');
+                    \App\Modules\AuditDiff\SnapshotService::trim(365, 365);
+                    return "Snapshot #{$id} erstellt";
+                },
+            ],
+
+            'notification_trim' => [
+                'description'      => 'Alte In-App-Benachrichtigungen aufräumen',
+                'schedule_minutes' => 1440,
+                'handler'          => function (): string {
+                    $deleted = \App\Modules\Notifications\NotificationService::trim(500, 90);
+                    return "{$deleted} alte Benachrichtigungen entfernt";
+                },
+            ],
+
+            'workflow_runner' => [
+                'description'      => 'Geplante Workflow-Automatisierungen ausführen',
+                'schedule_minutes' => 15,
+                'handler'          => function () use ($graph): string {
+                    $svc = new \App\Modules\Workflows\WorkflowService($graph);
+                    $r   = $svc->runDue();
+                    return "Ausgeführt: {$r['ran']} Workflows · {$r['actions']} Aktionen";
+                },
+            ],
         ];
     }
 

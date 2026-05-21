@@ -780,6 +780,10 @@ $router->post('/setup/reset',               [\App\Modules\SetupWizard\SetupWizar
 $router->get('/complianceprofile',          [\App\Modules\ComplianceProfile\ComplianceProfileController::class, 'index']);
 $router->post('/complianceprofile/apply',   [\App\Modules\ComplianceProfile\ComplianceProfileController::class, 'apply']);
 
+// ── Audit-Diff ─────────────────────────────────────────────
+$router->get('/auditdiff',                  [\App\Modules\AuditDiff\AuditDiffController::class, 'index']);
+$router->post('/auditdiff/capture',         [\App\Modules\AuditDiff\AuditDiffController::class, 'capture']);
+
 // ── KI-Sicherheitsberater ──────────────────────────────────
 $router->get('/ai',              [\App\Modules\AiAdvisor\AiAdvisorController::class, 'index']);
 $router->post('/ai/analyze',     [\App\Modules\AiAdvisor\AiAdvisorController::class, 'analyze']);
