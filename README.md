@@ -17,57 +17,118 @@ Ein webbasiertes Admin-Dashboard für einen einzelnen Microsoft 365 Tenant. Grei
 |---|---|---|
 | **Dashboard** | Aggregierte Übersicht: Benutzer, Lizenzen, Freigaben, Geräte, Score, offene Alerts | — |
 | **Benutzer** | Alle User mit MFA-Status, Anmeldestatus, Lizenzanzahl, letzter Login; Filter nach aktiv/inaktiv/kein MFA/keine Lizenz | Aktivieren/Deaktivieren, MFA reset, Lizenz zuweisen/entziehen, **Bulk-Aktionen** (mehrere gleichzeitig) |
+| **Onboarding-Wizard** | 4-Schritt-Assistent zum Anlegen neuer User mit Lizenz + Gruppen | Anlegen (Graph POST /users), Lizenz zuweisen, Gruppen-Membership |
+| **Offboarding** | Vollautomatischer Offboarding-Assistent | Konto deaktivieren, Sessions revoken, Lizenzen entziehen, Gruppen-Memberships entfernen |
 | **Gastbenutzer** | B2B-Gäste, Einladungsstatus, zuletzt aktiv, nie angemeldet | Deaktivieren, Entfernen |
-| **Gruppen & Teams** | Alle M365-Gruppen und Microsoft Teams mit Mitgliederzahl, Typ, Sichtbarkeit | Mitglieder hinzufügen/entfernen |
+| **Gruppen & Teams** | Alle M365-Gruppen und Microsoft Teams mit Mitgliederzahl, Typ, Sichtbarkeit | Mitglieder hinzufügen/entfernen, Owner setzen, Gruppen anlegen/löschen |
 | **Lizenzen** | Verbrauchsübersicht je SKU, freie Slots, Nutzer ohne Lizenz | — |
+| **Lizenz-Berater** | Welche Nutzer haben zu viele/zu wenige Lizenzen — basierend auf konfigurierbaren Funktionskriterien | — |
 | **Inaktive Konten** | Benutzer ohne Anmeldung seit X Tagen (konfigurierbar), Lizenz-Kosten-Warnung; Aktionslog | Lizenzen entziehen; optionaler **Auto-Release per Cron** |
+| **Passwort-Ablauf** | Konten mit ablaufendem Passwort | — |
+| **MFA-Methoden** | Welche MFA-Methode je User registriert ist, Adoption-Quote | — |
+
+### Sicherheit & Identity
+
+| Modul | Was es zeigt | Aktionen |
+|---|---|---|
+| **Security Posture** | 35+ Hardening-Checks (Identität, CA, Geräte, Apps, Defender, **DSGVO/NIS-2/BSI**) | — |
+| **DSGVO-Status** | 8 Compliance-Checks: Tenant-Region, SP-Sharing, Sensitivity Labels, Audit-Log, Retention, DLP-Schutz, …  | — |
+| **Tenant-Härtung** (`/hardening`) | One-Click-Toggles für die wichtigsten Sicherheits-Einstellungen via Graph + Deep-Links zu Admin-Centers | Aktivieren/Deaktivieren direkt im Tool |
+| **PIM (JIT-Admin)** | Aktive Privileged-Rollen (JIT vs. dauerhaft), Eligible-Zuweisungen, 30-Tage-Aktivierungs-Audit | — |
+| **Break-Glass-Accounts** | Health-Check der Notfall-Admin-Accounts: Existiert? Global Admin? MFA? CA-ausgenommen? Letzter Test? | Konfigurieren |
+| **Auto-Forward-Audit** | Scannt alle Mailboxen auf Inbox-Regeln, die nach **extern** weiterleiten — häufigster Exfiltrationsvektor | — |
+| **OAuth-App-Audit** | Enterprise Apps mit Risk-Score: High-Privilege × Inaktivität, Microsoft- vs. 3rd-Party | Deep-Link zu Entra |
+| **DLP-Vorfälle** | Echte DLP-Treffer aus Audit-Logs (nicht nur Policies), Top-User, Tages-Trend | — |
+| **Authentication-Strength** | Phishing-resistente vs. schwache MFA-Methoden, User-Breakdown, Tenant-Strength-Policies | — |
+| **Secure Score** | Aktueller Score, 30-Tage-Verlauf (Chart), Maßnahmen nach Kategorie | — |
+| **Risiko-Anmeldungen** | At-Risk-Benutzer, Risk-Detections, risikoreiche Sign-ins | Als kompromittiert markieren, Risiko zurücksetzen |
+| **Defender Alerts** | Aktive Defender-Sicherheits­warnungen | Resolve |
+| **Conditional Access** | Alle CA-Policies mit State, Lücken-Analyse, Vorlagen-Wizards | Toggle, Anlegen, Löschen |
+| **Named Locations** | Vertrauenswürdige IP- und Länder-Standorte | Anlegen, Löschen |
+| **Admin-Rollen** | Alle Rollenzuweisungen gruppiert nach Rolle, Privileged-Markierungen | Zuweisen / Entfernen |
+| **App-Registrierungen** | App-Registrierungen, ablaufende Secrets, Berechtigungs-Typ | Secret hinzufügen / löschen |
+
+### Compliance & Audit
+
+| Modul | Was es zeigt | Aktionen |
+|---|---|---|
+| **Audit-Log** | Verzeichnis-Audits aus Graph | CSV-Export |
+| **Sign-in-Log** | Anmelde-Logs mit Filter (User, Status, App, Land, Risiko, Zeitraum) | CSV-Export |
+| **Inaktive Konten** | siehe oben | siehe oben |
+| **Access Reviews** | Periodische Zugriffsüberprüfungen für Gäste/Apps | Erstellen, Bulk-Entscheidungen, Apply |
+| **Papierkorb** | Soft-deleted Users + Groups | Restore, permanent löschen |
+| **DLP-Richtlinien** | Sensitivity Labels Übersicht | Deep-Link zu Purview |
+| **Aufbewahrungsrichtlinien** | eDiscovery-Fälle | Deep-Link zu Purview |
+| **Sensitivity Labels** | Information-Protection-Labels | Deep-Link zu Purview |
+
+### Geräte
+
+| Modul | Was es zeigt | Aktionen |
+|---|---|---|
+| **Geräte** | Intune-verwaltete Geräte, Compliance-Status, OS, BitLocker | Sync, Retire, Wipe |
 
 ### Exchange & Kommunikation
 
 | Modul | Was es zeigt | Aktionen |
 |---|---|---|
-| **Postfächer** | Mailbox-Nutzung aller User (Größe, Item-Anzahl, letzte Aktivität), Statistiken | CSV-Export |
-| **Dienststatus** | Live-Status aller M365-Dienste, aktive Incidents & Advisories, letzte Service-Meldungen | Auto-Refresh alle 5 Min. |
+| **Postfächer** | Mailbox-Nutzung aller User (Größe, Item-Anzahl, letzte Aktivität) + Detail-Ansicht (Forwarding, Auto-Reply) | Forwarding setzen, Auto-Reply, CSV-Export |
+| **Freigegebene Postfächer** | Liste der Shared Mailboxes | Anlegen |
+| **Externe Weiterleitungen** | Mailboxen mit externer Weiterleitung im Tenant-Setting | Entfernen |
+| **Mail Flow** | Exchange-Service-Status + Defender-for-Office-Alerts | — |
+| **Teams-Nutzung** | Teams-Usage-Bericht | — |
+| **Adoption-Report** | Service-Adoption Exchange/OneDrive/SharePoint/Teams | — |
+| **Message Center** | M365 Roadmap-Nachrichten, Wartungs-Updates | — |
+| **Dienststatus** | Live-Status aller M365-Dienste, aktive Incidents | Auto-Refresh |
 
 ### Speicher & Freigaben
 
 | Modul | Was es zeigt | Aktionen |
 |---|---|---|
-| **OneDrive** | Speichernutzung aller Nutzer | — |
+| **OneDrive** | Speichernutzung aller Nutzer + persönliche Drives | Drive provisionieren/de-provisionieren |
 | **SharePoint** | Site Collections, Drives, Speichernutzung pro Site | — |
 | **Freigaben** | Alle externen und anonymen Freigaben im Tenant | Widerrufen |
-| **Freigaben-Monitor** | Vollautomatisches Monitoring externer Freigaben: Erkennung, E-Mail-Review, Token-Link, Auto-Widerruf | Manuell widerrufen, Erinnerung senden, Scan auslösen |
-| **Freigaberichtlinien** | Globale SharePoint/OneDrive-Sharing-Einstellungen, Pro-Site-Konfiguration, Teams-Extern-Zugriff | Ändern (erfordert `SharePoint.ReadWrite.All`) |
+| **Freigaben-Monitor** | Vollautomatisches Monitoring externer Freigaben mit E-Mail-Review + Auto-Widerruf | Manuell widerrufen, Erinnerung senden, Scan auslösen |
+| **Freigaberichtlinien** | Globale SharePoint/OneDrive-Sharing-Einstellungen, Pro-Site-Konfiguration | Ändern |
 
-### Sicherheit
+### Berichte & KI
 
 | Modul | Was es zeigt | Aktionen |
 |---|---|---|
-| **Sicherheit** | Conditional Access Policies, Risikobenutzer-Übersicht | — |
-| **Secure Score** | Aktueller Score, 30-Tage-Verlauf (Chart), Maßnahmen nach Kategorie mit Fortschrittsbalken | — |
-| **Risiko-Anmeldungen** | At-Risk-Benutzer, Risk-Detections, risikoreiche Sign-ins; Typ-Labels auf Deutsch | Als kompromittiert markieren, Risiko zurücksetzen (Admin) |
-| **App-Registrierungen** | Alle App-Registrierungen und Enterprise Apps, ablaufende Secrets, Berechtigungs-Typ | — |
-| **Geräte** | Intune-verwaltete Geräte, Compliance-Status, OS-Versionen | CSV-Export |
-| **Audit-Log** | Verzeichnis-Audits und Sign-in-Logs aus Graph | CSV-Export |
+| **KI-Sicherheitsberater** (`/ai`) | KI-gestützte Gesamt-Übersicht: BSI + NIS-2 + DSGVO + Anomalien, konkrete Empfehlungen mit Artikel-Zitaten | Analyse starten, Protokoll einsehen |
+| **Executive-Report** | Monatliche HTML-Mail an Geschäftsführung mit Tenant-KPIs | Aktivieren, Vorschau, Test-Versand |
+| **Domain Health** | DNS / DKIM / DMARC / SPF pro Domain | — |
+| **Teams Governance** | Inaktive Teams, ohne Owner, ohne Members | — |
+| **Sign-in-Log** | Auditierte Anmeldungen | CSV-Export |
+| **Backup-Status** | Manuelles Tracking 3rd-Party-Backup mit Health-Score | Konfigurieren |
+| **Nutzungsberichte** | Aggregierte M365-Aktivität | — |
 
 ### Administration
 
 | Modul | Was es zeigt | Aktionen |
 |---|---|---|
-| **Cron & Automatisierung** | Alle geplanten Aufgaben mit Status, letztem Lauf, nächstem Lauf, Logs; Job-Queue-Statistiken und -Items | Job sofort ausführen, Intervall konfigurieren, fehlgeschlagene Jobs wiederholen |
-| **Einstellungen** | App, SMTP/Alerts, Operator-Konto, Freigaben-Monitor, Inaktive Konten (Auto-Release), Branding | Admin only |
+| **Cron & Automatisierung** | Alle geplanten Aufgaben mit Status, Logs; Job-Queue-Statistiken | Job sofort ausführen, Intervall konfigurieren |
+| **Einstellungen** | App, SMTP/Alerts, Freigaben-Monitor, Inaktive Konten, Branding, KI, …  — **mit Tab-Navigation** | Admin only |
+| **Benutzer-Zugang** (`/settings/users`) | M365-Benutzer mit Tool-Zugriff verwalten (Admin/Operator-Rollen) | Hinzufügen, Bearbeiten, Entfernen |
+| **Berechtigungen** (`/settings/permissions`) | Graph-API-Berechtigungs-Audit: welche Permissions hat die App, welche fehlen | — |
+| **App-Audit-Log** | Internes Audit aller Aktionen im Tool selbst | — |
+| **Updates** | OTA-Update-Mechanismus (Git-pull aus diesem Repo) | Check, Install |
 
 ### Querschnittsfunktionen
 
 - **CSV-Export** auf jedem Listenmodul
-- **Rollen-System**: `admin` (voll) · `operator` (schreibend, keine Einstellungen)
-- **Bulk-Aktionen** auf der Benutzerliste (Checkbox-Auswahl → Deaktivieren / Aktivieren / MFA reset) — asynchron über Job-Queue
-- **E-Mail-Alerts**: Risikobenutzer, MFA-Quote unter Schwellwert, anonyme Freigaben, Auto-Lizenzfreigabe
-- **Freigaben-Governance**: Besitzer per E-Mail befragen, Bestätigung per einmaligem Token-Link (kein Login), automatischer Widerruf bei Nicht-Reaktion, konfigurierbares Branding der öffentlichen Seite
-- **Job-Queue**: Schreib-Operationen auf die Graph API (Lizenzen, Bulk) werden asynchron über die DB-Queue verarbeitet — kein Timeout, automatisches Retry mit Exponential Backoff
+- **Rollen-System**: `admin` (voll) · `operator` (schreibend, keine Einstellungen) — verwaltet unter `/settings/users`
+- **2FA für Admin-Login** (TOTP-RFC-6238 — kompatibel mit Microsoft Authenticator, Google Authenticator, Aegis) inkl. Wiederherstellungs­codes
+- **Bulk-Aktionen** auf der Benutzerliste — asynchron über Job-Queue
+- **E-Mail-Alerts**: Risikobenutzer, MFA-Quote unter Schwellwert, anonyme Freigaben, Auto-Lizenzfreigabe, Defender-Alerts
+- **Freigaben-Governance**: Besitzer per E-Mail befragen, Bestätigung per einmaligem Token-Link (kein Login), automatischer Widerruf bei Nicht-Reaktion
+- **Job-Queue**: Schreib-Operationen (Lizenzen, Bulk) asynchron über DB-Queue mit Retry + Exponential Backoff
 - **Cron-Orchestrator**: Ein einziger Cron-Job (`* * * * *`) steuert alle Aufgaben über konfigurierbare Intervalle
 - **Graph-Cache**: API-Antworten in MySQL gecacht (konfigurierbare TTL, Standard 15 Min.)
 - **AES-256-GCM-Verschlüsselung** aller Credentials in der Datenbank
+- **CSRF-Schutz**, **CSP-Header**, **HSTS**, **SameSite=Strict Cookies**, **Brute-Force-Protection** auf Login
+- **Konkrete Fehler-Diagnose**: jede Graph-API-Fehlermeldung wird in eine deutsche Erklärung mit Lösungsweg übersetzt (`GraphErrorTranslator`)
+- **Mobile-responsive Layout**: Off-Canvas-Sidebar auf Phone, Touch-optimierte Buttons
+- **Anomalie-Erkennung**: Audit-Log + Sign-in-Log werden auf Anomalien geprüft (Credential-Stuffing, Impossible Travel, neue Länder) und fließen in den KI-Berater ein
 
 ---
 
@@ -173,57 +234,91 @@ Alle Intervalle werden danach im Web-UI unter **Cron & Automatisierung** konfigu
 ### Berechtigungen
 
 > Ein **Global Administrator** muss nach dem Hinzufügen aller Berechtigungen die Administratorzustimmung erteilen.
+> Im Tool unter `/settings/permissions` siehst du, welche Berechtigungen erteilt sind und welche fehlen.
 
 #### Benutzer & Verzeichnis
 
 | Berechtigung | Zweck | Typ |
 |---|---|---|
 | `User.Read.All` | Benutzer, MFA-Status, Anmeldungen lesen | **Erforderlich** |
-| `User.ReadWrite.All` | Aktivieren/Deaktivieren, Lizenzen zuweisen | **Erforderlich** |
-| `UserAuthenticationMethod.ReadWrite.All` | MFA-Methoden zurücksetzen | **Erforderlich** |
-| `Directory.Read.All` | Verzeichnisdaten, Gastbenutzer | **Erforderlich** |
-| `AuditLog.Read.All` | Sign-in-Logs und Audit-Log | **Erforderlich** |
+| `User.ReadWrite.All` | Benutzer anlegen (Onboarding), bearbeiten, löschen | **Erforderlich** für Schreib-Operationen |
+| `User.EnableDisableAccount.All` | Aktivieren/Deaktivieren | Empfohlen |
+| `User.ManageIdentities.All` | Authentifizierungsmethoden verwalten | Empfohlen |
+| `UserAuthenticationMethod.ReadWrite.All` | MFA-Methoden zurücksetzen, Detail-Lesen | **Erforderlich** |
+| `Directory.Read.All` | Verzeichnisdaten, Gastbenutzer, Domains | **Erforderlich** |
+| `Domain.Read.All` | Tenant-Domains lesen (für Onboarding-Picker + Domain Health) | Empfohlen |
+| `LicenseAssignment.ReadWrite.All` | Lizenzen zuweisen / entziehen | **Erforderlich** für Lizenz-Aktionen |
+| `Organization.Read.All` | Tenant-Region, Subscription-Info | Empfohlen |
+| `AuditLog.Read.All` | Sign-in-Logs, Audit-Log, MFA-Reports | **Erforderlich** |
+| `Reports.Read.All` | Nutzungsberichte (OneDrive, SharePoint, Teams, Mailbox) | **Erforderlich** |
 
 #### Gruppen & Teams
 
 | Berechtigung | Zweck | Typ |
 |---|---|---|
 | `Group.Read.All` | Gruppen und Teams lesen | **Erforderlich** |
-| `GroupMember.ReadWrite.All` | Mitglieder hinzufügen/entfernen | **Erforderlich** |
-| `TeamMember.Read.All` | Teams-Mitgliederlisten | Empfohlen |
+| `Group.ReadWrite.All` | Gruppen anlegen/löschen, Owner setzen, Mitglieder | **Erforderlich** für Schreib-Operationen |
+| `Team.ReadBasic.All` | Teams-Basisinfos | Empfohlen |
+| `Teamwork.Read.All` | Tenant-weite Teams-Settings (Governance) | Empfohlen |
+| `AppCatalog.Read.All` | Teams-App-Katalog | Optional |
 
 #### SharePoint, OneDrive & Freigaben
 
 | Berechtigung | Zweck | Typ |
 |---|---|---|
-| `Sites.Read.All` | SharePoint Sites lesen | **Erforderlich** |
+| `Sites.Read.All` | SharePoint Sites + OneDrive lesen | **Erforderlich** |
 | `Files.ReadWrite.All` | Freigaben lesen und widerrufen | **Erforderlich** |
-| `SharePoint.ReadWrite.All` | Globale Freigaberichtlinien ändern | Empfohlen |
+| `SharePointTenantSettings.ReadWrite.All` | Tenant-Sharing-Einstellungen ändern (Tenant-Härtung) | Empfohlen für Schreib |
 
-#### Lizenzen, Berichte & Mail
-
-| Berechtigung | Zweck | Typ |
-|---|---|---|
-| `Reports.Read.All` | Nutzungsberichte (OneDrive, SharePoint, Mailboxes) | **Erforderlich** |
-| `Mail.Send` | E-Mails über Graph senden (alternativ zu SMTP) | Optional |
-
-#### Geräte & Sicherheit
+#### Sicherheit & Identity
 
 | Berechtigung | Zweck | Typ |
 |---|---|---|
-| `DeviceManagementManagedDevices.Read.All` | Intune-Geräteverwaltung | Empfohlen |
-| `IdentityRiskyUser.ReadWrite.All` | Risikobenutzer lesen und Risiko zurücksetzen | Empfohlen |
-| `IdentityRiskEvent.Read.All` | Risk Detections lesen | Empfohlen |
-| `Policy.Read.All` | Conditional Access Policies | Empfohlen |
-| `SecurityEvents.Read.All` | Microsoft Defender Alerts | Optional |
-| `Policy.ReadWrite.CrossTenantAccess` | Mandantenübergreifende Richtlinien | Optional |
+| `Policy.Read.All` | Conditional Access Policies, Named Locations, Auth-Strength, Tenant-Policies | **Erforderlich** |
+| `Policy.ReadWrite.ConditionalAccess` | CA-Policies + Named Locations + Auth-Strength anlegen/ändern/löschen | **Erforderlich** für Schreib |
+| `RoleManagement.Read.Directory` | Admin-Rollen-Zuweisungen, PIM lesen | **Erforderlich** |
+| `RoleManagement.ReadWrite.Directory` | Admin-Rollen zuweisen/entfernen | Empfohlen |
+| `Application.Read.All` | App-Registrierungen, Enterprise-Apps, Service-Principals | **Erforderlich** |
+| `Application.ReadWrite.All` | App-Secrets verwalten, OAuth-Audit | Empfohlen |
+| `IdentityRiskyUser.Read.All` | Risiko-Benutzer (read-only) | **Erforderlich** |
+| `IdentityRiskyUser.ReadWrite.All` | Risiko bestätigen / verwerfen | Empfohlen für Schreib |
+| `IdentityRiskEvent.Read.All` | Risk Detections (Identity Protection) | Empfohlen (braucht Entra ID P2) |
+| `SecurityAlert.Read.All` / `SecurityAlert.ReadWrite.All` | Defender Alerts lesen + auflösen | Empfohlen |
+| `SecurityEvents.Read.All` | Secure Score und Sicherheitsereignisse | Empfohlen |
+| `BitLockerKey.Read.All` | BitLocker-Recovery-Keys auf Geräten | Optional |
 
-#### Dienststatus & Score
+#### E-Mail & Compliance
+
+| Berechtigung | Zweck | Typ |
+|---|---|---|
+| `Mail.ReadBasic.All` | Postfach-Basisinfos | Empfohlen |
+| `Mail.Read` | Mailbox-Regeln (Auto-Forward-Audit) | Empfohlen |
+| `MailboxSettings.ReadWrite` | Postfach-Settings, Auto-Reply, Forwarding | Empfohlen |
+| `InformationProtectionPolicy.Read.All` | Sensitivity Labels (DLP-Modul) | Empfohlen |
+| `eDiscovery.Read.All` | eDiscovery-Cases (Aufbewahrungsrichtlinien) | Optional |
+
+#### Geräte (Intune)
+
+| Berechtigung | Zweck | Typ |
+|---|---|---|
+| `DeviceManagementManagedDevices.Read.All` | Intune-Geräte lesen | Empfohlen |
+| `DeviceManagementManagedDevices.ReadWrite.All` | Sync, Retire, Wipe | Empfohlen für Schreib |
+| `DeviceManagementManagedDevices.PrivilegedOperations.All` | Privilegierte Aktionen (Sync/Retire/Wipe) | Empfohlen |
+
+#### Dienststatus & Roadmap
 
 | Berechtigung | Zweck | Typ |
 |---|---|---|
 | `ServiceHealth.Read.All` | M365-Dienststatus und Incidents | Empfohlen |
-| `SecurityEvents.Read.All` | Secure Score | Empfohlen |
+| `ServiceMessage.Read.All` | Message Center / Roadmap-Nachrichten | Optional |
+
+#### Sonstiges
+
+| Berechtigung | Zweck | Typ |
+|---|---|---|
+| `Mail.Send` | E-Mails über Graph senden (alternativ zu SMTP) | Optional |
+| `Policy.ReadWrite.CrossTenantAccess` | Mandantenübergreifende Richtlinien | Optional |
+
 
 ---
 

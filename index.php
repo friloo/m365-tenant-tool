@@ -636,6 +636,35 @@ $router->get('/authstrength',               [\App\Modules\AuthStrength\AuthStren
 $router->get('/backup',                     [\App\Modules\Backup\BackupController::class, 'index']);
 $router->post('/backup/save',               [\App\Modules\Backup\BackupController::class, 'save']);
 
+// ── Tenant-Härtung (Quick-Actions) ─────────────────────────
+$router->get('/hardening',                  [\App\Modules\Hardening\HardeningController::class, 'index']);
+$router->post('/hardening/apply',           [\App\Modules\Hardening\HardeningController::class, 'apply']);
+
+// ── MFA-Fatigue-Erkennung ──────────────────────────────────
+$router->get('/mfafatigue',                 [\App\Modules\MfaFatigue\MfaFatigueController::class, 'index']);
+
+// ── Insider-Threat-Light ───────────────────────────────────
+$router->get('/insiderthreat',              [\App\Modules\InsiderThreat\InsiderThreatController::class, 'index']);
+
+// ── Cross-Tenant-Access ────────────────────────────────────
+$router->get('/crosstenantaccess',          [\App\Modules\CrossTenantAccess\CrossTenantAccessController::class, 'index']);
+
+// ── Token-Lifetime / Sign-in-Frequency ─────────────────────
+$router->get('/tokenlifetime',              [\App\Modules\TokenLifetime\TokenLifetimeController::class, 'index']);
+
+// ── Phishing-Simulationen (Defender ATP) ───────────────────
+$router->get('/phishingsim',                [\App\Modules\PhishingSim\PhishingSimController::class, 'index']);
+
+// ── Lifecycle Workflows (Entra ID Governance) ──────────────
+$router->get('/lifecycle',                  [\App\Modules\Lifecycle\LifecycleController::class, 'index']);
+
+// ── External Identity Providers ────────────────────────────
+$router->get('/identityproviders',          [\App\Modules\IdentityProviders\IdentityProvidersController::class, 'index']);
+
+// ── Customer Lockbox ───────────────────────────────────────
+$router->get('/customerlockbox',            [\App\Modules\CustomerLockbox\CustomerLockboxController::class, 'index']);
+$router->post('/customerlockbox/save',      [\App\Modules\CustomerLockbox\CustomerLockboxController::class, 'save']);
+
 // ── Executive-Report ───────────────────────────────────────
 $router->get('/executivereport',            [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'index']);
 $router->post('/executivereport/save',      [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'save']);

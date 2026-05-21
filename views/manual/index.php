@@ -63,11 +63,35 @@
         <h6>Sicherheit</h6>
         <a href="#security">Sicherheit (CA)</a>
         <a href="#securityposture">Security Posture</a>
+        <a href="#dsgvo">DSGVO-Status</a>
+        <a href="#hardening">Tenant-Härtung</a>
         <a href="#securescore">Secure Score</a>
         <a href="#defender">Defender Alerts</a>
         <a href="#riskysignins">Risiko-Anmeldungen</a>
         <a href="#appregistrations">App-Registrierungen</a>
         <a href="#adminroles">Admin-Rollen</a>
+
+        <h6>Erweitertes Hardening</h6>
+        <a href="#pim">PIM (JIT-Admin)</a>
+        <a href="#breakglass">Break-Glass-Accounts</a>
+        <a href="#mailboxrules">Auto-Forward-Audit</a>
+        <a href="#oauthaudit">OAuth-App-Audit</a>
+        <a href="#dlpincidents">DLP-Vorfälle</a>
+        <a href="#authstrength">Auth-Strength</a>
+        <a href="#backup">Backup-Status</a>
+        <a href="#executivereport">Executive-Report</a>
+        <a href="#mfafatigue">MFA-Fatigue-Erkennung</a>
+        <a href="#insiderthreat">Insider-Threat-Detection</a>
+        <a href="#crosstenantaccess">Cross-Tenant-Access</a>
+        <a href="#tokenlifetime">Token-Lifetime</a>
+        <a href="#lifecycle">Lifecycle Workflows</a>
+        <a href="#phishingsim">Phishing-Simulationen</a>
+        <a class="sub" href="#phishing-anleitung">→ Anleitung Phishing-Sim</a>
+        <a href="#identityproviders">Identity Provider Trust</a>
+        <a href="#customerlockbox">Customer Lockbox</a>
+
+        <h6>KI & Reports</h6>
+        <a href="#ai">KI-Sicherheitsberater</a>
 
         <h6>Compliance & Audit</h6>
         <a href="#devices">Geräte</a>
@@ -464,6 +488,464 @@
     <p>Benutzer können direkt einer Rolle zugewiesen oder aus einer Rolle entfernt werden. Die Zuweisung erfolgt als permanente direkte Zuweisung (kein PIM).</p>
     <div class="warn-box"><i class="bi bi-exclamation-triangle"></i>Administratorrollen-Änderungen sind sicherheitskritisch. Die Vergabe der Rolle „Globaler Administrator" sollte auf das absolute Minimum beschränkt werden.</div>
     <p><span class="perm-tag">RoleManagement.Read.All</span> <span class="perm-tag">RoleManagement.ReadWrite.Directory</span></p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     ERWEITERTES HARDENING
+     8 Module für tiefe Sicherheits- und Compliance-Analysen
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- DSGVO-Status ─────────────────────────────────────────── -->
+<div class="man-section" id="dsgvo">
+    <h2><i class="bi bi-file-earmark-lock text-primary"></i> DSGVO-Status</h2>
+    <p>Eigene Kategorie innerhalb der Security Posture mit acht spezifischen DSGVO-Checks. Pro Check stehen das geprüfte Tenant-Setting und die relevanten DSGVO-Artikel.</p>
+    <h3>Was geprüft wird</h3>
+    <ul>
+        <li><strong>Tenant-Region in EU/EWR</strong> — der Datacenter-Standort entscheidet, ob die Verarbeitung primär unter Art. 6 (Rechtmäßigkeit) oder Art. 44–49 (Drittlandtransfer) fällt.</li>
+        <li><strong>SharePoint External Sharing restriktiv</strong> — die Tenant-Sharing-Capability darf für DSGVO-konforme Defaults nicht „Anyone-Links" als Default-Wert haben (Art. 25 Privacy by Default).</li>
+        <li><strong>Anonyme Freigabe-Links laufen ab</strong> — Speicherbegrenzung Art. 5 Abs. 1e: ohne Ablaufdatum bleibt der Link unbegrenzt nutzbar.</li>
+        <li><strong>Standard-Freigabetyp ist intern</strong> — Default-Linktyp sollte nicht Anyone sein.</li>
+        <li><strong>Sensitivity Labels veröffentlicht</strong> — Voraussetzung für Information Protection (Art. 32 Maßnahmen zur Datenintegrität).</li>
+        <li><strong>Aufbewahrungs-/eDiscovery-Fälle aktiv</strong> — Voraussetzung für Speicherbegrenzung und Lösch­pflichten (Art. 17).</li>
+        <li><strong>Audit-Log aktiv & abrufbar</strong> — Rechenschafts­pflicht Art. 5 Abs. 2 und Art. 32.</li>
+        <li><strong>DLP-/Label-Schutz für personenbezogene Daten</strong> — mindestens eine aktive Information-Protection-Maßnahme.</li>
+    </ul>
+    <div class="tip-box"><i class="bi bi-info-circle"></i>Direkt-Link: <a href="/securityposture#cat-dsgvo-datenschutz">/securityposture#cat-dsgvo-datenschutz</a></div>
+    <p><span class="perm-tag">Policy.Read.All</span> <span class="perm-tag">Domain.Read.All</span> <span class="perm-tag">InformationProtectionPolicy.Read.All</span> <span class="perm-tag">eDiscovery.Read.All</span> <span class="perm-tag">AuditLog.Read.All</span></p>
+</div>
+
+<!-- Tenant-Härtung ───────────────────────────────────────── -->
+<div class="man-section" id="hardening">
+    <h2><i class="bi bi-shield-fill-check text-primary"></i> Tenant-Härtung (Quick-Actions)</h2>
+    <p>Eine kuratierte Seite mit den wichtigsten Sicherheits-Einstellungen, die mit einem Klick aktiviert werden können — entweder direkt über die Graph API oder per Deep-Link in das richtige Admin-Center, wenn Microsoft den Endpunkt nicht öffentlich gemacht hat.</p>
+    <h3>Direkt schaltbar (via Graph API)</h3>
+    <ul>
+        <li><strong>Security Defaults</strong> — ein/aus (PATCH <code>/policies/identitySecurityDefaultsEnforcementPolicy</code>)</li>
+        <li><strong>SharePoint Tenant-Sharing</strong> — Anyone-Links global blocken oder einschränken</li>
+        <li><strong>Anonyme Link-Ablauffrist</strong> — z. B. auf 30 Tage setzen</li>
+        <li><strong>Default-Sharing-Linktyp</strong> — auf „intern" zwingen</li>
+        <li><strong>Block-Legacy-Authentication CA-Policy</strong> — mit einem Klick anlegen</li>
+        <li><strong>MFA-für-Alle CA-Policy</strong> — Template, das nach Bestätigung im Report-Only-Modus angelegt wird</li>
+        <li><strong>Block-Auto-Forwarding zu externen Empfängern</strong> — Authorization-Policy / Out­bound-Spam</li>
+        <li><strong>App-Consent einschränken</strong> — User-Consent auf „nur für verifizierte Publisher mit Low-Risk-Permissions"</li>
+        <li><strong>Guest-Invite-Restrictions</strong> — nur Admins dürfen einladen</li>
+    </ul>
+    <h3>Per Deep-Link ins Admin-Center</h3>
+    <p>Wo Graph keinen Schreib-Endpunkt anbietet (z. B. Audit-Log-Aktivierung, Defender-for-Office-Policies, Microsoft-Purview-DLP-Erstellung), öffnet der Button direkt die entsprechende Microsoft-Konsole.</p>
+    <p>Jede Aktion zeigt vor dem Ausführen den aktuellen Zustand, eine Erklärung des Effekts und eine BSI/NIS-2/DSGVO-Begründung.</p>
+    <p><span class="perm-tag">Policy.ReadWrite.ConditionalAccess</span> <span class="perm-tag">SharePointTenantSettings.ReadWrite.All</span> <span class="perm-tag">Policy.ReadWrite.Authorization</span></p>
+</div>
+
+<!-- PIM (JIT-Admin) ──────────────────────────────────────── -->
+<div class="man-section" id="pim">
+    <h2><i class="bi bi-lightning-charge text-primary"></i> PIM — Just-in-Time-Admin</h2>
+    <p>Übersicht über das Microsoft Entra Privileged Identity Management. Statt dauerhafter Admin-Zuweisungen sollen Administratoren als „eligible" konfiguriert sein und ihre Rolle nur bei Bedarf für eine begrenzte Zeit aktivieren — mit MFA und Begründung. Das ist die Empfehlung aus BSI IT-Grundschutz ORP.4.A23 und NIS-2 Art. 21(j).</p>
+    <h3>Was die Seite zeigt</h3>
+    <ul>
+        <li><strong>Aktiv erhöht</strong> — wer gerade eine Privileged-Role hat (entweder JIT-aktiviert oder dauerhaft zugewiesen).</li>
+        <li><strong>Eligible</strong> — wer eine Rolle aktivieren kann, sie aber gerade nicht nutzt.</li>
+        <li><strong>Dauerhafte Admins</strong> — als Zahl mit Schwellwert ≤ 2 (rot, wenn überschritten — solche Konten sollten zu Eligible umgestellt werden).</li>
+        <li><strong>Aktivierungen der letzten 30 Tage</strong> — Audit-Trail: wer hat wann welche Rolle aktiviert, mit Erfolg/Misserfolg.</li>
+    </ul>
+    <h3>Best Practice</h3>
+    <ul>
+        <li>Keine dauerhaften Global-Administrator-Zuweisungen.</li>
+        <li>Maximale Aktivierungs­dauer 8 Stunden, mit MFA-Pflicht.</li>
+        <li>Approval-Workflow für besonders kritische Rollen (z. B. „Privileged Role Administrator").</li>
+        <li>Audit-Trail mindestens 90 Tage aufbewahren.</li>
+    </ul>
+    <p><span class="perm-tag">RoleManagement.Read.Directory</span> <span class="perm-tag">AuditLog.Read.All</span></p>
+</div>
+
+<!-- Break-Glass-Accounts ────────────────────────────────── -->
+<div class="man-section" id="breakglass">
+    <h2><i class="bi bi-key-fill text-primary"></i> Break-Glass-Accounts</h2>
+    <p>Notfall-Administratorkonten sind die letzte Eskalationsstufe, wenn alle anderen Admin-Wege versagen — etwa wenn eine fehlerhafte Conditional-Access-Policy alle anderen Admins aussperrt, oder bei einem MFA-Ausfall. Microsoft empfiehlt mindestens <strong>zwei</strong> solcher Konten.</p>
+    <h3>Konfiguration</h3>
+    <p>Im Tool werden die UPNs der Break-Glass-Konten als Liste hinterlegt (kommagetrennt oder ein UPN pro Zeile). Für jeden Eintrag prüft das Tool automatisch:</p>
+    <ul>
+        <li><strong>Existiert das Konto im Tenant?</strong> Wenn nicht → kritisches Issue.</li>
+        <li><strong>Ist es aktiviert?</strong> Deaktivierte Notfall­konten sind unbrauchbar.</li>
+        <li><strong>Ist es dauerhaft als Global Administrator zugewiesen?</strong> PIM-Eligible reicht nicht — eine Aktivierung verlangt MFA, das im Notfall vielleicht nicht funktioniert.</li>
+        <li><strong>Hat das Konto eine MFA-Methode registriert?</strong> Empfohlen ist ein FIDO2-Hardware-Key, der im Tresor liegt.</li>
+        <li><strong>Aus welchen CA-Policies ist es ausgeschlossen?</strong> Wenn aus keiner — Sperre droht. Wenn aus allen — Risiko bei kompromittiertem Passwort.</li>
+        <li><strong>Wann war der letzte Login?</strong> Break-Glass-Konten sollten mindestens halbjährlich getestet werden, sonst weiß niemand, ob sie im Notfall funktionieren.</li>
+    </ul>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i>Microsoft empfiehlt für Break-Glass-Konten <strong>reine Cloud-Identitäten</strong> (nicht aus AD synchronisiert), <strong>komplexe Passwörter</strong> (mindestens 16 Zeichen, im Tresor verwahrt), und eine <strong>physische Ablage</strong> der Recovery-Methode (FIDO2-Key in zwei Standorten).</div>
+    <p><span class="perm-tag">User.Read.All</span> <span class="perm-tag">Policy.Read.All</span> <span class="perm-tag">RoleManagement.Read.Directory</span></p>
+</div>
+
+<!-- Auto-Forward-Audit ──────────────────────────────────── -->
+<div class="man-section" id="mailboxrules">
+    <h2><i class="bi bi-arrow-right-square text-primary"></i> Auto-Forward-Audit</h2>
+    <p>Scannt alle aktiven Mailboxen im Tenant nach Inbox-Regeln, die eingehende E-Mails automatisch an eine externe Adresse weiterleiten. <strong>Auto-Forward an externe Domains ist statistisch der häufigste Exfiltrations­vektor</strong> bei kompromittierten Konten: der Angreifer richtet eine versteckte Inbox-Regel ein, die alle eingehenden Mails an seine Adresse weiterleitet, oft Tage bevor der Account-Inhaber es bemerkt.</p>
+    <h3>Was die Seite zeigt</h3>
+    <ul>
+        <li><strong>Externe Auto-Forwards</strong> — rot markiert. Pro Treffer: Benutzer, Regel-Name, Ziel-Adresse, Active/Inactive.</li>
+        <li><strong>Interne Auto-Forwards</strong> — informativ (innerhalb der eigenen Domains).</li>
+        <li><strong>Lösch-Regeln</strong> — verdächtig in Kombination mit Phishing-Hijacks: ein Angreifer löscht automatisch alle Antworten und Sicherheits-Benachrichtigungen, damit der echte User nichts merkt.</li>
+    </ul>
+    <h3>Wie reagieren</h3>
+    <ul>
+        <li>Bei verdächtiger externer Weiterleitung: User-Konto sperren, Sessions revoken, Passwort-Reset erzwingen, Defender-Investigation öffnen.</li>
+        <li>Tenant-weit blockieren: Mail-Flow-Regel oder Exchange-Anti-Spam-Outbound-Policy mit <code>AutoForwardingMode = Off</code>.</li>
+    </ul>
+    <div class="tip-box"><i class="bi bi-info-circle"></i>Performance-Hinweis: der Scan dauert je nach Tenant-Größe 30 Sekunden bis 5 Minuten. Ergebnisse werden 30 Min. gecached; per <code>?refresh=1</code> erzwingbar.</div>
+    <p><span class="perm-tag">User.Read.All</span> <span class="perm-tag">Mail.Read</span> <span class="perm-tag">Domain.Read.All</span></p>
+</div>
+
+<!-- OAuth-App-Audit ─────────────────────────────────────── -->
+<div class="man-section" id="oauthaudit">
+    <h2><i class="bi bi-app-indicator text-primary"></i> OAuth-App-Audit</h2>
+    <p>Inventur aller Enterprise Apps (Service Principals) im Tenant mit Risiko-Bewertung. OAuth-Apps mit hohen Berechtigungen sind seit 2023 einer der Top-Vektoren für Tenant-Übernahme — typischerweise nach Migrationen, gekündigten 3rd-Party-Tools oder Phishing-Angriffen mit Illicit-Consent-Grant.</p>
+    <h3>Risiko-Bewertung</h3>
+    <p>Pro App wird ein Score 0–100 berechnet:</p>
+    <ul>
+        <li><strong>+20 pro High-Privilege-Permission</strong> — z. B. <code>Mail.ReadWrite.All</code>, <code>Files.ReadWrite.All</code>, <code>Sites.FullControl.All</code>, <code>User.ReadWrite.All</code>, <code>Directory.ReadWrite.All</code>, <code>full_access_as_app</code>.</li>
+        <li><strong>+25 wenn nie angemeldet</strong> — die App hat Permissions, nutzt sie aber nicht — typisch nach Migration.</li>
+        <li><strong>+30 wenn letzte Anmeldung > 365 Tage</strong>, +15 wenn > 180, +5 wenn > 90.</li>
+        <li>Microsoft-First-Party-Apps werden mit Score 0 markiert.</li>
+    </ul>
+    <h3>Filter</h3>
+    <p>Standardmäßig werden nur 3rd-Party-Apps gezeigt. Filter „Alle (inkl. Microsoft)" zeigt auch die etwa 100 Microsoft-eigenen Service Principals, die in jedem Tenant existieren.</p>
+    <h3>Was tun bei hohem Risiko</h3>
+    <p>Klick auf das Pfeil-Symbol öffnet die App direkt in Entra → Enterprise Applications. Dort: Berechtigungen prüfen, App ggf. deaktivieren oder löschen, alle bestehenden Token revoken.</p>
+    <p><span class="perm-tag">Application.Read.All</span> <span class="perm-tag">AuditLog.Read.All</span></p>
+</div>
+
+<!-- DLP-Vorfälle ────────────────────────────────────────── -->
+<div class="man-section" id="dlpincidents">
+    <h2><i class="bi bi-shield-shaded text-primary"></i> DLP-Vorfälle</h2>
+    <p>Während das DLP-Richtlinien-Modul anzeigt, <em>ob</em> DLP-Policies aktiv sind, zeigt diese Seite die <strong>tatsächlichen Treffer</strong> — also wer hat versucht, eine als „Vertraulich" gelabelte Datei nach außen zu teilen, wer hat versucht eine Kreditkarten-Nummer per Mail zu versenden, etc. Das ist der eigentliche Compliance-Audit-Wert (DSGVO Art. 5 + 32).</p>
+    <h3>Datenquelle</h3>
+    <p>Audit-Log Filter auf <code>category eq 'DataLossPrevention'</code> oder <code>activityDisplayName</code> mit DLP-/Sensitivity-Label-Prefix. Für detailliertere Daten (Inhalt der Auslöser, betroffene Felder) braucht es Microsoft Purview Premium.</p>
+    <h3>Aggregate</h3>
+    <ul>
+        <li><strong>Top User mit Treffern</strong> — wer wird wiederholt von DLP geblockt? Schulung nötig oder absichtlich?</li>
+        <li><strong>Top Aktivitäten</strong> — welche Regel-Typen lösen am häufigsten aus?</li>
+        <li><strong>Tages-Trend</strong> — Mini-Bar-Chart über den Zeitraum (7/30/90 Tage wählbar).</li>
+    </ul>
+    <p><span class="perm-tag">AuditLog.Read.All</span></p>
+</div>
+
+<!-- Authentication-Strength ─────────────────────────────── -->
+<div class="man-section" id="authstrength">
+    <h2><i class="bi bi-fingerprint text-primary"></i> Authentication-Strength</h2>
+    <p>Microsoft empfiehlt seit 2024 ausschließlich <strong>phishing-resistente MFA-Methoden</strong>: FIDO2-Security-Keys, Windows Hello for Business, Certificate-Based Authentication oder Hardware-OATH-Token. Microsoft Authenticator mit Number-Matching ist <strong>nicht</strong> phishing-resistent — Adversary-in-the-Middle-Angriffe (Evilginx, EvilProxy) können den Push-Code abfangen. SMS-OTP und Voice-Call sind erst recht unsicher.</p>
+    <h3>Klassifizierung der User</h3>
+    <ul>
+        <li><strong>Phishing-resistent</strong> — mindestens eine starke Methode registriert.</li>
+        <li><strong>Nur Software-MFA</strong> — Authenticator-App oder TOTP, aber keine FIDO2.</li>
+        <li><strong>Nur schwache MFA</strong> — nur SMS / Voice / E-Mail-OTP.</li>
+        <li><strong>Keine MFA</strong> — nur Passwort.</li>
+    </ul>
+    <h3>Methoden-Verteilung</h3>
+    <p>Pro Methode (FIDO2, Windows Hello, Authenticator, TOTP, SMS, E-Mail) wird die Adoption als horizontales Bar-Chart angezeigt. Starke Methoden grün, schwache rot.</p>
+    <h3>Tenant-Strength-Policies</h3>
+    <p>Listet die im Tenant konfigurierten Authentication-Strength-Policies (Built-in + Custom). Die Built-ins „Phishing-resistant MFA" und „Passwordless MFA" können in Conditional Access als Zugriffs­bedingung für kritische Apps verwendet werden.</p>
+    <p><span class="perm-tag">AuditLog.Read.All</span> <span class="perm-tag">Policy.Read.All</span></p>
+</div>
+
+<!-- Backup-Status ───────────────────────────────────────── -->
+<div class="man-section" id="backup">
+    <h2><i class="bi bi-database-fill-check text-primary"></i> Backup-Status</h2>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><strong>Microsoft sichert deine M365-Daten NICHT.</strong> Die Recycle-Bin-Frist von 30–93 Tagen ist kein Backup — nach Ransomware, versehentlichem Löschen, kompromittierten Admin-Konten oder Tenant-Kündigung sind die Daten weg. Für DSGVO Art. 32 (Verfügbarkeit), ISO 27001 A.12.3 und NIS-2 Art. 21(d) ist ein 3rd-Party-Backup-Tool Pflicht.</div>
+    <h3>Manuelles Tracking</h3>
+    <p>Da jedes 3rd-Party-Tool (Veeam, Druva, Spanning, AvePoint, Acronis, …) eigene APIs hat und keine einheitliche Microsoft-Backup-API existiert, lässt sich der Backup-Status nicht automatisch abfragen. Stattdessen pflegen Admins folgende Felder manuell:</p>
+    <ul>
+        <li>Anbieter + URL</li>
+        <li>Datum des letzten erfolgreichen Backup-Laufs + Status</li>
+        <li>Retention (in Tagen)</li>
+        <li>Coverage: welche Workloads sind gesichert (Mail, OneDrive, SharePoint, Teams)</li>
+        <li>Datum des letzten erfolgreichen Restore-Tests</li>
+    </ul>
+    <h3>Health-Score</h3>
+    <p>0–100, berechnet aus den oben genannten Feldern. Critical: kein Backup-Anbieter. High: Coverage unvollständig, letzter Lauf > 7 Tage alt, Restore-Test nie durchgeführt.</p>
+</div>
+
+<!-- KI-Sicherheitsberater ──────────────────────────────── -->
+<div class="man-section" id="ai">
+    <h2><i class="bi bi-robot text-primary"></i> KI-Sicherheitsberater</h2>
+    <p>Eine Gesamt-Übersicht des Tenants, die auf den anonymisierten Metriken aller Module aufbaut und durch ein optionales LLM zu einer Geschäftsführungs-tauglichen Zusammenfassung verdichtet wird.</p>
+    <h3>Was die KI sieht</h3>
+    <p><strong>Ausschließlich aggregierte Counts und Prozentwerte</strong>. Niemals UPNs, niemals Domain-Namen, niemals Geräte-Namen, niemals Tenant-IDs, niemals SKU-Bezeichnungen, niemals einzelne IP-Adressen oder Zeitstempel. Beispiel:</p>
+    <pre style="font-size:12px;background:#f9fafb;padding:10px;border-radius:6px;">{
+  "users":   {"total": 50, "mfa_pct": 60, "stale_90d": 5},
+  "devices": {"total": 80, "compliant_pct": 87},
+  "sharing": {"external": 50, "anonymous": 10},
+  "risky":   {"users_at_risk": 0},
+  "secure_score": {"current": 130, "max": 200}
+}</pre>
+    <h3>Empfehlungen</h3>
+    <p>Die konkreten Empfehlungen (mit Step-by-Step-Anleitung, BSI-/NIS-2-/DSGVO-Artikel-Zitaten und Microsoft-Doku-Links) kommen aus einer hartcodierten <code>RecommendationLibrary</code> — nicht aus der KI. Dadurch sind die Empfehlungen reproduzierbar und nicht-halluzinierend. Die KI liefert nur den 2–3-sätzigen Executive-Summary-Text und einen Score 0–100.</p>
+    <h3>Anomalie-Erkennung</h3>
+    <p>Zwei deterministische Anomaly-Services laufen im Hintergrund und fließen in den Kontext ein:</p>
+    <ul>
+        <li><strong>Audit-Log-Anomalien</strong> — 7-Tage-Rollup vs. 23-Tage-Baseline mit Poisson-Schwelle (avg + 2·√avg). Findet Aktivitäts-Spikes pro Kategorie.</li>
+        <li><strong>Sign-in-Anomalien</strong> — Credential-Stuffing-Signaturen (≥ 5 Failures + Success in 30 min), Impossible-Travel (Successful-Pair < 4 h, unterschiedliche Länder), Logins aus neuen Ländern, Off-Hours-Logins.</li>
+    </ul>
+    <h3>Protokoll</h3>
+    <p>Unter <em>Einstellungen → KI-Sicherheitsberater → Protokoll anzeigen</em> kann der Administrator nachsehen, welche exakten Daten beim letzten Aufruf an die KI gesendet wurden — als Audit-Trail für DSGVO-Compliance.</p>
+    <h3>Provider-Konfiguration</h3>
+    <ul>
+        <li><strong>OpenAI</strong> — gpt-4o-mini empfohlen, schnell und günstig</li>
+        <li><strong>DeepSeek</strong> — günstige Alternative</li>
+        <li><strong>Ollama (lokal)</strong> — komplett on-prem, keine Daten verlassen das Netz; llama3.2 funktioniert gut</li>
+    </ul>
+</div>
+
+<!-- Executive-Report ───────────────────────────────────── -->
+<div class="man-section" id="executivereport">
+    <h2><i class="bi bi-envelope-paper text-primary"></i> Executive-Report</h2>
+    <p>Monatliche HTML-Mail an die Geschäftsführung mit den wichtigsten Tenant-KPIs. Läuft automatisch am 1. jedes Monats via Cron.</p>
+    <h3>Inhalt</h3>
+    <ul>
+        <li><strong>Security-Score</strong> aus den Posture-Checks (grün/orange/rot je nach Wert).</li>
+        <li><strong>4 KPI-Tiles</strong>: Benutzer, Geräte (mit non-compliant), MFA-Quote, Conditional-Access-Policies.</li>
+        <li><strong>4 Risk-Tiles</strong>: Risikobenutzer, offene Defender Alerts, Gastbenutzer, Lizenz-SKUs.</li>
+        <li><strong>Top-Findings</strong> — bis zu 5 fehlgeschlagene Posture-Checks.</li>
+        <li><strong>Footer</strong> mit Link auf den KI-Berater für vollständige Empfehlungen.</li>
+    </ul>
+    <p>Empfänger ist standardmäßig die Alert-E-Mail-Adresse, kann aber pro Report-Typ überschrieben werden (mehrere durch Komma getrennt).</p>
+    <p>Buttons <em>„Vorschau im Browser"</em> und <em>„Jetzt versenden"</em> erlauben Tests, ohne auf den 1. des Monats zu warten.</p>
+</div>
+
+<!-- MFA-Fatigue ─────────────────────────────────────────── -->
+<div class="man-section" id="mfafatigue">
+    <h2><i class="bi bi-shield-slash text-primary"></i> MFA-Fatigue-Erkennung</h2>
+    <p>MFA-Fatigue ist die Strategie, mit der ein Angreifer ein gestohlenes Passwort doch noch nutzbar macht: er triggert wiederholt MFA-Push-Notifications auf dem Handy des Opfers, bis es genervt „Approve" tippt. Bekanntester Fall: Uber-Hack 2022.</p>
+    <h3>Was die Seite zeigt</h3>
+    <ul>
+        <li><strong>MFA-Denials gesamt</strong> im gewählten Zeitraum (24h / 7 Tage / 30 Tage).</li>
+        <li><strong>Verdächtige Cluster</strong> — pro User gruppiert in 30-Minuten-Fenster; ab 5 Denials gilt es als verdächtig.</li>
+        <li><strong>Erfolgreich (Approve!)</strong> — Cluster, in denen direkt nach den Denials eine erfolgreiche Anmeldung stand. Sofort-Maßnahmen einleiten!</li>
+    </ul>
+    <h3>Sofortmaßnahmen bei einem erfolgreichen Angriff</h3>
+    <ol>
+        <li>Konto sperren (<code>/users</code> → Benutzer → Deaktivieren).</li>
+        <li>Alle aktiven Sitzungen widerrufen (<code>revokeSignInSessions</code>).</li>
+        <li>Passwort-Reset erzwingen.</li>
+        <li>Inbox-Regeln im <a href="/mailboxrules">Auto-Forward-Audit</a> prüfen — typischerweise legt ein Angreifer als Erstes eine Weiterleitungs-Regel an.</li>
+        <li>Im <a href="/oauthaudit">OAuth-Audit</a> nachsehen, ob die App neuen Consents gegeben wurden.</li>
+    </ol>
+    <h3>Prävention</h3>
+    <ul>
+        <li>Auf <strong>Number-Matching</strong> umstellen (Microsoft hat das 2023 standardmäßig aktiviert).</li>
+        <li>Für privilegierte Konten: FIDO2 oder Windows Hello erzwingen (siehe <a href="/authstrength">Auth-Strength</a>).</li>
+        <li>Sign-in-Frequency in CA-Policies erhöhen, damit ein gekaperter Token nicht 90 Tage gültig bleibt (siehe <a href="/tokenlifetime">Token-Lifetime</a>).</li>
+    </ul>
+    <p><span class="perm-tag">AuditLog.Read.All</span></p>
+</div>
+
+<!-- Insider-Threat ──────────────────────────────────────── -->
+<div class="man-section" id="insiderthreat">
+    <h2><i class="bi bi-eye-fill text-primary"></i> Insider-Threat-Detection (Light)</h2>
+    <p>Statistische Anomalie-Erkennung pro User, basierend auf Sign-in- und Audit-Log-Daten. Das volle Microsoft Purview Insider Risk Management ist mächtiger, aber lizenz-pflichtig (E5 / Compliance-Add-on); dieses Modul liefert die wichtigsten Signale ohne zusätzliche Lizenz.</p>
+    <h3>Erfasste Signale</h3>
+    <ul>
+        <li><strong>Off-Hours-Anmeldungen</strong> — wieviel Prozent der Logins fanden zwischen 22:00 und 06:00 statt? &gt; 50 % = Score +25, &gt; 25 % = +10.</li>
+        <li><strong>Geo-Diversität</strong> — Anmeldungen aus &gt; 3 verschiedenen Ländern in 30 Tagen = +15.</li>
+        <li><strong>Massendownloads</strong> — ≥ 50 OneDrive-File-Reads in einer Stunde = +15 pro Burst.</li>
+        <li><strong>Mass-Mail-Send</strong> — ≥ 100 Mails in einer Stunde = +20 pro Burst.</li>
+        <li><strong>Lösch-Aktivität</strong> — ≥ 100 Lösch-Events = +25, ≥ 30 = +10.</li>
+        <li><strong>Sharing-Aktivität</strong> — ≥ 50 Sharing-Events = +20.</li>
+    </ul>
+    <p>Der Gesamt-Score wird auf 100 gecappt. User mit Score ≥ 50 sind High-Risk und sollten geprüft werden — entweder ein legitimer „Power User" (Marketing, Außendienst) oder ein Insider-Threat-Verdachtsfall.</p>
+    <p><span class="perm-tag">AuditLog.Read.All</span></p>
+</div>
+
+<!-- Cross-Tenant-Access ────────────────────────────────── -->
+<div class="man-section" id="crosstenantaccess">
+    <h2><i class="bi bi-arrow-left-right text-primary"></i> Cross-Tenant-Access (B2B/Federation)</h2>
+    <p>Regelt, welche externen Tenants Zugriff auf Ihre Ressourcen haben und in welche externen Tenants Ihre User dürfen. Drei Ebenen:</p>
+    <h3>Default-Policy</h3>
+    <p>Gilt für alle externen Tenants ohne expliziten Eintrag. Microsoft-Default: B2B-Kollaboration erlaubt, B2B-Direct-Connect (Teams-Federation) blockiert, kein Trust für MFA/Compliant-Device.</p>
+    <h3>Partner-spezifisch</h3>
+    <p>Pro bekanntem Partner können Overrides definiert werden — z. B. eine engere Beziehung mit konkreten Tochterunternehmen, in denen MFA-Trust gegenseitig akzeptiert wird (dann muss der Gast nicht ein zweites Mal MFA durchlaufen).</p>
+    <h3>Service-Provider (MSP)</h3>
+    <p>Markiert einen Tenant als „Managed Service Provider" — gibt diesem erweiterte Verwaltungs-Berechtigungen für unseren Tenant. Sicherheits-kritisch.</p>
+    <p><span class="perm-tag">Policy.Read.All</span> · Schreib-Operationen über Entra-Portal.</p>
+</div>
+
+<!-- Token-Lifetime ──────────────────────────────────────── -->
+<div class="man-section" id="tokenlifetime">
+    <h2><i class="bi bi-clock-history text-primary"></i> Token-Lifetime &amp; Sign-in-Frequency</h2>
+    <p>Microsoft hat 2021 die globalen Token-Lifetime-Policies deprecated. Heute steuert man die effektive Anmelde-Frequenz über das <code>signInFrequency</code>-Setting in Conditional-Access-Policies.</p>
+    <h3>Empfohlene Werte</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr style="background:#f3f4f6;"><th style="padding:6px;text-align:left;border:1px solid #e5e7eb;">App-Klasse</th><th style="padding:6px;text-align:left;border:1px solid #e5e7eb;">Sign-in-Frequency</th></tr></thead>
+        <tbody>
+            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Privileged Roles (Admin)</td><td style="padding:6px;border:1px solid #e5e7eb;">4 Stunden</td></tr>
+            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Sensitive Apps (Finance, HR)</td><td style="padding:6px;border:1px solid #e5e7eb;">12 Stunden</td></tr>
+            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Standard Office-Apps</td><td style="padding:6px;border:1px solid #e5e7eb;">7 Tage</td></tr>
+            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Privater Browser (Persistent-Browser)</td><td style="padding:6px;border:1px solid #e5e7eb;">Niemals persistent</td></tr>
+        </tbody>
+    </table>
+    <p>Konfiguration: <a href="https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies" target="_blank" rel="noopener">Entra → Conditional Access → Policy</a> → Sitzung → Sign-in frequency.</p>
+    <p><span class="perm-tag">Policy.Read.All</span></p>
+</div>
+
+<!-- Lifecycle Workflows ─────────────────────────────────── -->
+<div class="man-section" id="lifecycle">
+    <h2><i class="bi bi-diagram-2 text-primary"></i> Lifecycle Workflows</h2>
+    <p>Microsoft Entra ID Governance bietet automatisierte Workflows für die drei Lebens­phasen eines Mitarbeiter­kontos:</p>
+    <ul>
+        <li><strong>Joiner</strong> — beim Eintritt: zu Standard-Gruppen hinzufügen, Welcome-Mail senden, Manager benachrichtigen, Lizenzen zuweisen.</li>
+        <li><strong>Mover</strong> — bei Abteilungs-Wechsel: alte Gruppen entfernen, neue zuweisen, Mailbox-Permissions anpassen.</li>
+        <li><strong>Leaver</strong> — beim Austritt: Konto deaktivieren, Lizenzen entziehen, Manager benachrichtigen, nach X Tagen löschen.</li>
+    </ul>
+    <p>Voraussetzung: <strong>Microsoft Entra ID Governance</strong> (separate Lizenz oder im E5-Bundle).</p>
+    <p>Konfiguration im Entra-Portal — das Tool zeigt nur die definierten Workflows mit ihrem Status. Schreib-Operationen sind über die Graph-API möglich, sind aber nicht im Tool integriert (komplexe Task-Definitionen würden ihre eigene UI brauchen).</p>
+</div>
+
+<!-- Phishing-Simulationen Modul + ausführliche Anleitung ─── -->
+<div class="man-section" id="phishingsim">
+    <h2><i class="bi bi-bullseye text-primary"></i> Phishing-Simulationen</h2>
+    <p>Übersicht der durchgeführten Phishing-Simulationen aus Microsoft Defender Attack Simulation Training. Pro Simulation werden Empfänger-Anzahl, Klick-Rate, „Compromised"-Rate (User hat Credentials eingegeben oder Datei geöffnet) und Reporting-Rate (User hat die Phishing-Mail korrekt gemeldet) angezeigt.</p>
+    <h3>Wichtige Kennzahlen</h3>
+    <ul>
+        <li><strong>Compromised-Rate &lt; 5 %</strong> ist ein gutes Ziel. &gt; 20 % bedeutet dringender Schulungs­bedarf.</li>
+        <li><strong>Reporting-Rate &gt; 50 %</strong> zeigt, dass die User das „Report Phishing"-Plugin in Outlook aktiv nutzen.</li>
+        <li><strong>Training-Quote</strong> — wieviele der erwischten User haben das zugewiesene Training auch abgeschlossen.</li>
+    </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     AUSFÜHRLICHE PHISHING-SIMULATIONS-ANLEITUNG
+     ═══════════════════════════════════════════════════════════ -->
+<div class="man-section" id="phishing-anleitung">
+    <h2><i class="bi bi-book-half text-primary"></i> Anleitung: Phishing-Simulationen mit Microsoft aufsetzen</h2>
+    <p>Schritt-für-Schritt-Anleitung, wie Sie mit Microsoft Defender Attack Simulation Training eine kontrollierte Phishing-Kampagne in Ihrem Tenant durchführen — von der Vorbereitung über die Durchführung bis zur Nachbereitung.</p>
+
+    <h3>1. Voraussetzungen</h3>
+    <ul>
+        <li><strong>Lizenz:</strong> Microsoft Defender for Office 365 <em>Plan 2</em> (in <code>Microsoft 365 E5</code> und <code>Microsoft 365 A5</code> enthalten) oder als Add-on buchbar.</li>
+        <li><strong>Rolle:</strong> Sie benötigen eine der folgenden Microsoft-Entra-Rollen:
+            <ul>
+                <li><em>Globaler Administrator</em></li>
+                <li><em>Sicherheits-Administrator</em></li>
+                <li><em>Attack-Simulation-Administrator</em> (empfohlene Mindest­rolle)</li>
+            </ul>
+        </li>
+        <li><strong>Postfach-Verzeichnis:</strong> Defender Attack Simulator nutzt die normale Tenant-Verzeichnis-Liste, also sind alle aktiven Mailboxen automatisch verfügbar.</li>
+        <li><strong>Vorgespräche:</strong> Betriebs­rat und Daten­schutz­beauftragten <strong>vor</strong> der ersten Simulation einbinden — in Deutschland ist eine Phishing-Simulation eine Mitarbeiter-Schulungs­maßnahme, die u. U. mitbestimmungs­pflichtig ist (§ 87 Abs. 1 Nr. 6 BetrVG).</li>
+    </ul>
+
+    <h3>2. Vorbereitung &amp; Kommunikation</h3>
+    <ol>
+        <li>
+            <strong>Pilotphase planen.</strong> Niemals direkt den ganzen Tenant ins kalte Wasser werfen — beginnen Sie mit einer Pilotgruppe von 10–30 Personen aus IT, Marketing oder Verwaltung.
+        </li>
+        <li>
+            <strong>Vorab-Kommunikation:</strong> ankündigen, dass „in den nächsten Wochen Phishing-Simulationen stattfinden werden, ohne konkreten Termin". Das ist nicht der Verrat — Mitarbeiter sollen wissen, dass es passieren <em>kann</em>, aber nicht <em>wann</em>.
+        </li>
+        <li>
+            <strong>Reporting-Plugin in Outlook aktivieren:</strong> stellen Sie sicher, dass der Button „Report Phishing" oder „Report Message" in Outlook für alle User sichtbar ist (Defender-Portal → Email &amp; collaboration → Policies → User reported settings).
+        </li>
+        <li>
+            <strong>Training-Module vorbereiten:</strong> Microsoft bringt einen Standard-Pool von ca. 70 Trainings­videos mit. Schauen Sie sie sich vorher an und wählen Sie 3–5 aus, die zu Ihrer Kampagne passen.
+        </li>
+    </ol>
+
+    <h3>3. Erste Simulation anlegen</h3>
+    <ol>
+        <li>
+            <strong>Defender-Portal öffnen:</strong>
+            <a href="https://security.microsoft.com/attacksimulator" target="_blank" rel="noopener">security.microsoft.com/attacksimulator</a> → Reiter <em>Simulations</em> → <em>+ Launch a simulation</em>.
+        </li>
+        <li>
+            <strong>Technik wählen.</strong> Microsoft bietet sechs Standard-Techniken — beginnen Sie mit <em>Credential Harvest</em> (gefälschte Login-Seite), das ist statistisch der häufigste reale Angriffstyp.
+            <ul style="margin-top:6px;">
+                <li><em>Credential Harvest</em> — gefälschte Anmelde-Seite</li>
+                <li><em>Malware Attachment</em> — schädlicher Anhang</li>
+                <li><em>Link in Attachment</em> — Link im Dokument</li>
+                <li><em>Link to Malware</em> — Direkt-Link zu Malware</li>
+                <li><em>Drive-by URL</em> — bösartige Webseite</li>
+                <li><em>OAuth Consent Grant</em> — gefälschte App-Berechtigungs-Anfrage (besonders aktuell)</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Payload wählen.</strong> Microsoft liefert Hunderte fertige Payloads in vielen Sprachen — wählen Sie eine deutschsprachige Variante, am besten mit einem Bezug zu Ihrem Branchen­alltag (Paket­benachrichtigung, Bewerbung, Microsoft-Sicherheits­warnung, …). Mit Klick auf eine Payload sehen Sie eine Vorschau.
+        </li>
+        <li>
+            <strong>Empfänger auswählen.</strong> Für die erste Kampagne 10–30 Pilot-User. Spätere Kampagnen können auf Gruppen abzielen oder alle User auf einmal.
+        </li>
+        <li>
+            <strong>Training konfigurieren.</strong> User, die auf den Link klicken / Daten eingeben / die Mail nicht melden, bekommen automatisch ein Training zugewiesen (Microsoft empfiehlt das „NIST"-Trainingspfad).
+        </li>
+        <li>
+            <strong>Phishing-Landing-Page wählen.</strong> Bei <em>Credential Harvest</em> sieht der User nach Eingabe seiner Daten eine kurze Erklärungs-Seite („Dies war eine Simulation — bitte verwenden Sie nie Ihr echtes Passwort auf solchen Seiten").
+        </li>
+        <li>
+            <strong>Zeitfenster setzen.</strong> Empfohlen: 2-Wochen-Fenster, in denen die Mail zufällig verteilt wird. Microsoft hat ein „Region-Aware-Delivery"-Feature, das die Mail in den lokalen Bürozeiten ausliefert.
+        </li>
+        <li>
+            <strong>Starten.</strong> Vor dem finalen Klick auf <em>Submit</em> erhalten Sie eine Zusammenfassung — prüfen Sie sie sorgfältig.
+        </li>
+    </ol>
+
+    <h3>4. Während der Kampagne</h3>
+    <ul>
+        <li>Im Defender-Portal können Sie den Live-Status sehen — wieviele User die Mail bekommen haben, wieviele geklickt haben, wieviele „kompromittiert" sind.</li>
+        <li>Im Tool wird die Simulation unter <a href="/phishingsim">/phishingsim</a> mit denselben Daten gespiegelt.</li>
+        <li>Helpdesk-Tickets von Usern, die fragen „ist diese Mail echt?" sind erwünschte Reaktionen — kein Anlass zur Sorge.</li>
+    </ul>
+
+    <h3>5. Nachbereitung</h3>
+    <ol>
+        <li>
+            <strong>Reporting-Quote analysieren.</strong> Wenn weniger als 30 % der User die Phishing-Mail gemeldet haben, ist das ein klares Schulungs­signal — das Reporting-Plugin ist entweder unbekannt oder nicht installiert.
+        </li>
+        <li>
+            <strong>Compromised-User zuweisen.</strong> User, die geklickt + Daten eingegeben haben, bekommen automatisch Trainings — überprüfen Sie nach 14 Tagen die Abschluss­quote. Wer das Training nicht abschließt, bekommt eine Eskalation an den Vorgesetzten.
+        </li>
+        <li>
+            <strong>Transparenter Bericht an die Belegschaft.</strong> Senden Sie eine anonymisierte Zusammenfassung („28 % der Mitarbeiter haben geklickt, 12 % haben Credentials eingegeben, 65 % haben die Mail gemeldet — wir machen die nächste Runde in 3 Monaten"). Das fördert Awareness ohne Beschämung.
+        </li>
+        <li>
+            <strong>Datenschutz-konform speichern.</strong> Defender speichert die Daten 90 Tage automatisch; für längere Aufbewahrung müssen Sie sie exportieren — was bei DSGVO problematisch ist, weil Mitarbeiter dann namentlich auftauchen.
+        </li>
+    </ol>
+
+    <h3>6. Kadenz</h3>
+    <p>Empfehlung: <strong>alle 2–3 Monate</strong> eine Kampagne, je mit anderer Technik und anderem Payload. Studien zeigen, dass die Klick-Quote bei einer konstanten Kampagne nach ca. 18 Monaten von typisch 25 % auf unter 5 % sinkt.</p>
+
+    <h3>7. Häufige Fallstricke</h3>
+    <ul>
+        <li><strong>Personalrat/Betriebsrat nicht eingebunden.</strong> Kann zu Beschwerden und im schlimmsten Fall zu Untersagung führen. Vorher klären.</li>
+        <li><strong>Beschämungs-Kommunikation.</strong> Wer dem Marketing einen Brief schickt „Sie sind unser bester Klicker", verliert die Belegschaft. Stattdessen anonyme Aggregate.</li>
+        <li><strong>Zu seltene Wiederholung.</strong> Eine Phishing-Simulation pro Jahr bringt fast nichts — Skills verblassen schnell.</li>
+        <li><strong>Standard-Payloads ohne Anpassung.</strong> Microsoft-Standard-Templates sind oft zu generisch. Erstellen Sie für die zweite/dritte Kampagne <em>Custom Payloads</em>, die Ihren Branchen-Kontext aufnehmen.</li>
+        <li><strong>Verteilung über Mail-Allow-Listen umgehen.</strong> Defender Simulator ist standardmäßig auf der Allow-Liste — wenn Ihre Anti-Spam-Regeln zu aggressiv sind, kann die Simulations-Mail trotzdem gefiltert werden. Prüfen Sie im Vorhinein mit einer Test-Simulation an die IT-Abteilung.</li>
+    </ul>
+
+    <div class="tip-box">
+        <i class="bi bi-lightbulb"></i>
+        <strong>Pro-Tipp:</strong> Nach 2–3 erfolgreichen Kampagnen lassen sich die Simulationen mit der <em>Automation</em>-Funktion im Defender-Portal auch selbst-fahrend einrichten — Microsoft wählt dann pro Quartal eine neue Technik + Payload aus und versendet die Mail an User-Gruppen, die schon eine Weile keine Simulation mehr bekommen haben.
+    </div>
+
+    <h3>8. Weiterführende Links</h3>
+    <ul>
+        <li><a href="https://learn.microsoft.com/de-de/defender-office-365/attack-simulation-training-get-started" target="_blank" rel="noopener">Microsoft Learn — Attack Simulation Training</a></li>
+        <li><a href="https://learn.microsoft.com/de-de/defender-office-365/attack-simulation-training-payloads" target="_blank" rel="noopener">Payload-Bibliothek</a></li>
+        <li><a href="https://learn.microsoft.com/de-de/defender-office-365/attack-simulation-training-simulation-automations" target="_blank" rel="noopener">Simulation Automations</a></li>
+        <li><a href="https://www.bsi.bund.de/DE/Themen/Verbraucherinnen-und-Verbraucher/Cyber-Sicherheitslage/Methoden-der-Cyber-Kriminalitaet/Spam-Phishing-Co/Phishing/phishing_node.html" target="_blank" rel="noopener">BSI — Phishing-Methoden</a></li>
+    </ul>
+</div>
+
+<!-- Identity Providers ──────────────────────────────────── -->
+<div class="man-section" id="identityproviders">
+    <h2><i class="bi bi-person-bounding-box text-primary"></i> External Identity Provider Trust</h2>
+    <p>Listet alle konfigurierten externen Identity Providers im Tenant (Google, Facebook, Apple für B2C-Szenarien) sowie federierte Domains (ADFS, Okta, Ping Identity, …). Jeder zusätzliche IdP ist eine Erweiterung der Angriffsfläche — sollte periodisch auditiert werden.</p>
+    <p><span class="perm-tag">IdentityProvider.Read.All</span> <span class="perm-tag">Domain.Read.All</span></p>
+</div>
+
+<!-- Customer Lockbox ───────────────────────────────────── -->
+<div class="man-section" id="customerlockbox">
+    <h2><i class="bi bi-lock-fill text-primary"></i> Customer Lockbox</h2>
+    <p>Ohne Customer Lockbox darf Microsoft Support im Notfall direkt auf Ihre Daten zugreifen — Sie erfahren es nicht. Mit aktiviertem Lockbox muss jeder Microsoft-Support-Zugriff aktiv von einem Tenant-Admin approvt werden, sonst gibt es <strong>keinen</strong> Zugriff.</p>
+    <p><strong>Voraussetzung:</strong> Microsoft 365 E5 oder als Add-on.</p>
+    <p>Microsoft Graph stellt für diese Einstellung keinen Schreib-Endpunkt zur Verfügung — Konfiguration daher im M365 Admin Center → Security &amp; Privacy. Das Tool tracked nur den manuell eingetragenen Aktivierungs-Status, die Approver-Liste, die SLA-Reaktionszeit und das Datum der letzten Review (halbjährlich empfohlen).</p>
 </div>
 
 <!-- Geräte ───────────────────────────────────────────────── -->
