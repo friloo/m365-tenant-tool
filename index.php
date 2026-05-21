@@ -794,22 +794,70 @@ $router->post('/workflows/save',            [\App\Modules\Workflows\WorkflowsCon
 $router->post('/workflows/{id}/delete',     [\App\Modules\Workflows\WorkflowsController::class, 'delete']);
 $router->post('/workflows/{id}/run-now',    [\App\Modules\Workflows\WorkflowsController::class, 'runNow']);
 
-// ── REST API v1 (public, X-Api-Key auth) ──────────────────
+// ── REST API v1 (X-Api-Key auth on /api/v1/*, session-auth on docs) ──
 $router->get('/api',                            [\App\Modules\Api\ApiController::class, 'rootInfo']);
 $router->get('/api/docs',                       [\App\Modules\Api\ApiController::class, 'docs']);
 $router->get('/api/openapi.json',               [\App\Modules\Api\ApiController::class, 'openApiSpec']);
+
+// Dashboard
 $router->get('/api/v1/dashboard/metrics',       [\App\Modules\Api\ApiController::class, 'dashboardMetrics']);
 $router->get('/api/v1/dashboard/security',      [\App\Modules\Api\ApiController::class, 'dashboardSecurity']);
 $router->get('/api/v1/dashboard/licenses',      [\App\Modules\Api\ApiController::class, 'dashboardLicenses']);
+$router->get('/api/v1/metrics',                 [\App\Modules\Api\ApiController::class, 'metricsList']);
 $router->get('/api/v1/metrics/{name}/history',  [\App\Modules\Api\ApiController::class, 'metricHistory']);
+
+// Tenant
+$router->get('/api/v1/tenant',                  [\App\Modules\Api\ApiController::class, 'tenantInfo']);
+$router->get('/api/v1/domains',                 [\App\Modules\Api\ApiController::class, 'domains']);
+
+// Identity
+$router->get('/api/v1/users',                   [\App\Modules\Api\ApiController::class, 'usersList']);
+$router->get('/api/v1/users/{id}/mfa',          [\App\Modules\Api\ApiController::class, 'userMfa']);
+$router->get('/api/v1/users/{id}',              [\App\Modules\Api\ApiController::class, 'userGet']);
+$router->get('/api/v1/guests',                  [\App\Modules\Api\ApiController::class, 'guestsList']);
+$router->get('/api/v1/groups',                  [\App\Modules\Api\ApiController::class, 'groupsList']);
+$router->get('/api/v1/groups/{id}/members',     [\App\Modules\Api\ApiController::class, 'groupMembers']);
+$router->get('/api/v1/admin-roles',             [\App\Modules\Api\ApiController::class, 'adminRoles']);
+$router->get('/api/v1/licenses',                [\App\Modules\Api\ApiController::class, 'licensesList']);
+
+// Devices
+$router->get('/api/v1/devices',                 [\App\Modules\Api\ApiController::class, 'devicesList']);
+
+// Security
+$router->get('/api/v1/risky-users',             [\App\Modules\Api\ApiController::class, 'riskyUsers']);
+$router->get('/api/v1/defender-alerts',         [\App\Modules\Api\ApiController::class, 'defenderAlerts']);
+$router->get('/api/v1/conditional-access',      [\App\Modules\Api\ApiController::class, 'conditionalAccess']);
+$router->get('/api/v1/secure-score',            [\App\Modules\Api\ApiController::class, 'secureScore']);
+$router->get('/api/v1/sign-ins',                [\App\Modules\Api\ApiController::class, 'signIns']);
+$router->get('/api/v1/permissions',             [\App\Modules\Api\ApiController::class, 'permissionsCheck']);
+
+// Hardening
 $router->get('/api/v1/hardening',               [\App\Modules\Api\ApiController::class, 'hardeningList']);
-$router->get('/api/v1/compliance-profiles',     [\App\Modules\Api\ApiController::class, 'complianceProfiles']);
+$router->post('/api/v1/hardening/apply',        [\App\Modules\Api\ApiController::class, 'hardeningApply']);
+
+// Compliance
+$router->get('/api/v1/compliance-profiles',                 [\App\Modules\Api\ApiController::class, 'complianceProfiles']);
+$router->post('/api/v1/compliance-profiles/{key}/apply',    [\App\Modules\Api\ApiController::class, 'complianceProfileApply']);
+
+// Audit
 $router->get('/api/v1/snapshots',               [\App\Modules\Api\ApiController::class, 'snapshotList']);
+$router->post('/api/v1/snapshots',              [\App\Modules\Api\ApiController::class, 'snapshotCreate']);
 $router->get('/api/v1/snapshots/diff',          [\App\Modules\Api\ApiController::class, 'snapshotDiff']);
 $router->get('/api/v1/snapshots/{id}',          [\App\Modules\Api\ApiController::class, 'snapshotGet']);
+$router->get('/api/v1/audit-log',               [\App\Modules\Api\ApiController::class, 'auditLog']);
+
+// Operations
+$router->get('/api/v1/mailboxes',               [\App\Modules\Api\ApiController::class, 'mailboxes']);
+$router->get('/api/v1/service-health',          [\App\Modules\Api\ApiController::class, 'serviceHealth']);
+$router->get('/api/v1/message-center',          [\App\Modules\Api\ApiController::class, 'messageCenter']);
+
+// Workflows
+$router->get('/api/v1/workflows',               [\App\Modules\Api\ApiController::class, 'workflowsList']);
+$router->get('/api/v1/workflows/{id}/runs',     [\App\Modules\Api\ApiController::class, 'workflowRuns']);
+
+// Notifications
 $router->get('/api/v1/notifications',           [\App\Modules\Api\ApiController::class, 'notificationsList']);
 $router->post('/api/v1/notifications/push',     [\App\Modules\Api\ApiController::class, 'notificationsPush']);
-$router->get('/api/v1/audit-log',               [\App\Modules\Api\ApiController::class, 'auditLog']);
 
 // ── API-Keys Verwaltung (Admin-UI) ────────────────────────
 $router->get('/settings/api-keys',              [\App\Modules\Api\ApiKeysController::class, 'index']);
