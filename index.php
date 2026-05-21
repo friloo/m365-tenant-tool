@@ -649,6 +649,15 @@ $router->get('/insiderthreat',              [\App\Modules\InsiderThreat\InsiderT
 // ── Cross-Tenant-Access ────────────────────────────────────
 $router->get('/crosstenantaccess',          [\App\Modules\CrossTenantAccess\CrossTenantAccessController::class, 'index']);
 
+// ── Token-Lifetime / Sign-in-Frequency ─────────────────────
+$router->get('/tokenlifetime',              [\App\Modules\TokenLifetime\TokenLifetimeController::class, 'index']);
+
+// ── Phishing-Simulationen (Defender ATP) ───────────────────
+$router->get('/phishingsim',                [\App\Modules\PhishingSim\PhishingSimController::class, 'index']);
+
+// ── Lifecycle Workflows (Entra ID Governance) ──────────────
+$router->get('/lifecycle',                  [\App\Modules\Lifecycle\LifecycleController::class, 'index']);
+
 // ── Executive-Report ───────────────────────────────────────
 $router->get('/executivereport',            [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'index']);
 $router->post('/executivereport/save',      [\App\Modules\ExecutiveReport\ExecutiveReportController::class, 'save']);
