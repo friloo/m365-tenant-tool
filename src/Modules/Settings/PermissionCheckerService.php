@@ -101,6 +101,12 @@ class PermissionCheckerService
                 'section'  => 'Exchange & Kommunikation',
                 'write'    => false,
             ],
+            'Mail.Read' => [
+                'desc'     => 'Mailbox-Inhalte und Inbox-Regeln tenant-weit lesen',
+                'features' => ['Auto-Forward-Audit (Mailbox-Regeln scannen)'],
+                'section'  => 'Exchange & Kommunikation',
+                'write'    => false,
+            ],
             'MailboxSettings.ReadWrite' => [
                 'desc'     => 'Postfacheinstellungen lesen und schreiben',
                 'features' => ['Postfach-Detail', 'Auto-Antwort setzen', 'Weiterleitung setzen/entfernen', 'Externe Weiterleitungen', 'Freigegebene Postfächer'],
@@ -163,17 +169,47 @@ class PermissionCheckerService
                 'section'  => 'Sicherheit',
                 'write'    => false,
             ],
+            'RoleManagement.Read.Directory' => [
+                'desc'     => 'Admin-Rollenzuweisungen + PIM lesen',
+                'features' => ['PIM-Übersicht (JIT-Admin)', 'Admin-Rollen lesen (read-only)'],
+                'section'  => 'Sicherheit',
+                'write'    => false,
+            ],
             'RoleManagement.ReadWrite.Directory' => [
                 'desc'     => 'Admin-Rollenzuweisungen lesen und schreiben',
                 'features' => ['Admin-Rollen (Übersicht)', 'Admin-Rolle zuweisen', 'Admin-Rolle entfernen', 'Security Posture (Admin-MFA-Prüfung, PIM-Adoption)'],
                 'section'  => 'Sicherheit',
                 'write'    => true,
             ],
+            'Application.Read.All' => [
+                'desc'     => 'App-Registrierungen und Service-Principals lesen',
+                'features' => ['OAuth-App-Audit (Enterprise Apps Inventur + Risk-Score)'],
+                'section'  => 'Sicherheit',
+                'write'    => false,
+            ],
             'Application.ReadWrite.All' => [
                 'desc'     => 'App-Registrierungen lesen und verwalten',
                 'features' => ['App-Registrierungen (Detail)', 'App-Secret hinzufügen', 'App-Secret löschen', 'Enterprise Apps (Service Principals)'],
                 'section'  => 'Sicherheit',
                 'write'    => true,
+            ],
+            'AttackSimulation.Read.All' => [
+                'desc'     => 'Defender Attack-Simulation-Daten lesen',
+                'features' => ['Phishing-Simulationen (durchgeführte Kampagnen, Klick-/Compromised-Quote)'],
+                'section'  => 'Sicherheit',
+                'write'    => false,
+            ],
+            'LifecycleWorkflows.Read.All' => [
+                'desc'     => 'Entra-ID-Governance-Lifecycle-Workflows lesen',
+                'features' => ['Lifecycle-Workflows-Übersicht (Joiner/Mover/Leaver)'],
+                'section'  => 'Sicherheit',
+                'write'    => false,
+            ],
+            'IdentityProvider.Read.All' => [
+                'desc'     => 'Externe Identity Providers lesen',
+                'features' => ['Identity Provider Trust (Google, Facebook, SAML/WS-Fed)'],
+                'section'  => 'Sicherheit',
+                'write'    => false,
             ],
             'AppCatalog.Read.All' => [
                 'desc'     => 'Teams-App-Katalog lesen',
