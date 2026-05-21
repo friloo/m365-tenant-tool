@@ -785,6 +785,7 @@ $router->post('/bestpractice/reset',        [\App\Modules\BestPractice\BestPract
 $router->get('/complianceprofile',          [\App\Modules\ComplianceProfile\ComplianceProfileController::class, 'index']);
 $router->get('/complianceprofile/apply',    function () { \App\Core\Redirect::to('/complianceprofile'); });
 $router->post('/complianceprofile/apply',   [\App\Modules\ComplianceProfile\ComplianceProfileController::class, 'apply']);
+$router->post('/complianceprofile/apply-step', [\App\Modules\ComplianceProfile\ComplianceProfileController::class, 'applyStep']);
 
 // ── Audit-Diff ─────────────────────────────────────────────
 $router->get('/auditdiff',                  [\App\Modules\AuditDiff\AuditDiffController::class, 'index']);
