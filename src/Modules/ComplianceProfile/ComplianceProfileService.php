@@ -2,6 +2,7 @@
 
 namespace App\Modules\ComplianceProfile;
 
+use App\Graph\GraphClient;
 use App\Modules\Hardening\HardeningService;
 
 /**
@@ -21,7 +22,14 @@ use App\Modules\Hardening\HardeningService;
  */
 class ComplianceProfileService
 {
-    public function __construct(private HardeningService $hardening) {}
+    private HardeningService $hardening;
+
+    // Constructed by app_service(), which always injects GraphClient —
+    // so we accept that and build the HardeningService ourselves.
+    public function __construct(GraphClient $graph)
+    {
+        $this->hardening = new HardeningService($graph);
+    }
 
     /**
      * Returns all known profiles as an associative array.
