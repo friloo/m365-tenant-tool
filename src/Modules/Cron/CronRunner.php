@@ -466,6 +466,12 @@ class CronRunner
                             $appName
                         )
                     );
+                    \App\Modules\Notifications\NotificationService::push(
+                        "{$count} neue Defender-Warnungen",
+                        'Bitte unter /defenderalerts prüfen und bewerten.',
+                        'critical', '/defenderalerts', 'defender',
+                        'defender_' . date('YmdH')
+                    );
 
                     return "{$count} neue Alerts — E-Mail gesendet";
                 },

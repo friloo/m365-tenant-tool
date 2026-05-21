@@ -784,6 +784,38 @@ $router->post('/complianceprofile/apply',   [\App\Modules\ComplianceProfile\Comp
 $router->get('/auditdiff',                  [\App\Modules\AuditDiff\AuditDiffController::class, 'index']);
 $router->post('/auditdiff/capture',         [\App\Modules\AuditDiff\AuditDiffController::class, 'capture']);
 
+// ── DSGVO/NIS-2 Audit-Report ───────────────────────────────
+$router->get('/auditreport',                [\App\Modules\AuditReport\AuditReportController::class, 'index']);
+
+// ── Workflow-Automatisierung ───────────────────────────────
+$router->get('/workflows',                  [\App\Modules\Workflows\WorkflowsController::class, 'index']);
+$router->get('/workflows/edit/{id}',        [\App\Modules\Workflows\WorkflowsController::class, 'edit']);
+$router->post('/workflows/save',            [\App\Modules\Workflows\WorkflowsController::class, 'save']);
+$router->post('/workflows/{id}/delete',     [\App\Modules\Workflows\WorkflowsController::class, 'delete']);
+$router->post('/workflows/{id}/run-now',    [\App\Modules\Workflows\WorkflowsController::class, 'runNow']);
+
+// ── REST API v1 (public, X-Api-Key auth) ──────────────────
+$router->get('/api',                            [\App\Modules\Api\ApiController::class, 'rootInfo']);
+$router->get('/api/docs',                       [\App\Modules\Api\ApiController::class, 'docs']);
+$router->get('/api/openapi.json',               [\App\Modules\Api\ApiController::class, 'openApiSpec']);
+$router->get('/api/v1/dashboard/metrics',       [\App\Modules\Api\ApiController::class, 'dashboardMetrics']);
+$router->get('/api/v1/dashboard/security',      [\App\Modules\Api\ApiController::class, 'dashboardSecurity']);
+$router->get('/api/v1/dashboard/licenses',      [\App\Modules\Api\ApiController::class, 'dashboardLicenses']);
+$router->get('/api/v1/metrics/{name}/history',  [\App\Modules\Api\ApiController::class, 'metricHistory']);
+$router->get('/api/v1/hardening',               [\App\Modules\Api\ApiController::class, 'hardeningList']);
+$router->get('/api/v1/compliance-profiles',     [\App\Modules\Api\ApiController::class, 'complianceProfiles']);
+$router->get('/api/v1/snapshots',               [\App\Modules\Api\ApiController::class, 'snapshotList']);
+$router->get('/api/v1/snapshots/diff',          [\App\Modules\Api\ApiController::class, 'snapshotDiff']);
+$router->get('/api/v1/snapshots/{id}',          [\App\Modules\Api\ApiController::class, 'snapshotGet']);
+$router->get('/api/v1/notifications',           [\App\Modules\Api\ApiController::class, 'notificationsList']);
+$router->post('/api/v1/notifications/push',     [\App\Modules\Api\ApiController::class, 'notificationsPush']);
+$router->get('/api/v1/audit-log',               [\App\Modules\Api\ApiController::class, 'auditLog']);
+
+// ── API-Keys Verwaltung (Admin-UI) ────────────────────────
+$router->get('/settings/api-keys',              [\App\Modules\Api\ApiKeysController::class, 'index']);
+$router->post('/settings/api-keys/create',      [\App\Modules\Api\ApiKeysController::class, 'create']);
+$router->post('/settings/api-keys/{id}/revoke', [\App\Modules\Api\ApiKeysController::class, 'revoke']);
+
 // ── KI-Sicherheitsberater ──────────────────────────────────
 $router->get('/ai',              [\App\Modules\AiAdvisor\AiAdvisorController::class, 'index']);
 $router->post('/ai/analyze',     [\App\Modules\AiAdvisor\AiAdvisorController::class, 'analyze']);
