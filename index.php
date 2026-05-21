@@ -776,6 +776,11 @@ $router->get('/setup',                      [\App\Modules\SetupWizard\SetupWizar
 $router->post('/setup/save',                [\App\Modules\SetupWizard\SetupWizardController::class, 'save']);
 $router->post('/setup/reset',               [\App\Modules\SetupWizard\SetupWizardController::class, 'reset']);
 
+// ── Best-Practice-Leitfaden ────────────────────────────────
+$router->get('/bestpractice',               [\App\Modules\BestPractice\BestPracticeController::class, 'index']);
+$router->post('/bestpractice/mark',         [\App\Modules\BestPractice\BestPracticeController::class, 'markStep']);
+$router->post('/bestpractice/reset',        [\App\Modules\BestPractice\BestPracticeController::class, 'reset']);
+
 // ── Compliance-Profile ─────────────────────────────────────
 $router->get('/complianceprofile',          [\App\Modules\ComplianceProfile\ComplianceProfileController::class, 'index']);
 $router->get('/complianceprofile/apply',    function () { \App\Core\Redirect::to('/complianceprofile'); });
