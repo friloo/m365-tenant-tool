@@ -2,6 +2,11 @@
 /**
  * Stale Accounts Auto-Cleanup Cron Script
  *
+ * ⚠️ DEPRECATED — this logic is also implemented as the `stale_cleanup` job inside
+ * CronRunner (run-cron.php). Do NOT schedule this script alongside run-cron.php,
+ * or licenses get removed and warning emails sent TWICE. Prefer the single unified
+ * cron (run-cron.php); keep this standalone script only for legacy setups.
+ *
  * Cron example (daily at 03:00):
  *   0 3 * * * php /var/www/m365-tenant-tool/run-stale-cleanup.php >> /var/log/m365-stale-cleanup.log 2>&1
  *

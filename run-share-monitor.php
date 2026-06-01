@@ -1,6 +1,12 @@
 <?php
 /**
  * Share Governance Cron Script
+ *
+ * ⚠️ DEPRECATED — the same three phases (scan, review emails, auto-revoke) run as
+ * the `share_scan` / `share_emails` / `share_auto_revoke` jobs inside CronRunner
+ * (run-cron.php). Do NOT schedule this script alongside run-cron.php, or shares are
+ * scanned/revoked and emails sent TWICE. Prefer the single unified cron.
+ *
  * Run periodically (e.g. daily at 08:00):
  *   0 8 * * * php /path/to/m365-tenant-tool/run-share-monitor.php >> /var/log/share-monitor.log 2>&1
  */

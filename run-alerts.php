@@ -3,6 +3,11 @@
 /**
  * Alert runner — execute via cron:
  *   0 8 * * * php /var/www/m365tool/run-alerts.php >> /var/log/m365tool-alerts.log 2>&1
+ *
+ * Note: CronRunner (run-cron.php) ships its own alert_* jobs (Defender alerts,
+ * service incidents, new risky users). This AlertRunner covers a different set
+ * (risky-user threshold, MFA rate, anonymous shares). If you run both, expect
+ * overlapping notifications — review which alert source you want before enabling.
  */
 
 define('BASE_PATH', __DIR__);
