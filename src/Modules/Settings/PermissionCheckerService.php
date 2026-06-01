@@ -89,8 +89,14 @@ class PermissionCheckerService
                 'write'    => true,
             ],
             'Policy.ReadWrite.Authorization' => [
-                'desc'     => 'Authorization-Policy ändern (Gast-Einladungs-Regeln, App-Consent-Defaults)',
-                'features' => ['Tenant-Härtung: Gast-Einladungen einschränken', 'Tenant-Härtung: App-Consent'],
+                'desc'     => 'Authorization-Policy ändern (Gast-Einladungs-Regeln, App-Consent-Defaults, Gast-Rolle, User-Default-Permissions)',
+                'features' => ['Security Center: Gast-Einladungen einschränken', 'Security Center: Gast-Rolle & User-Standardrechte', 'Security Center: App-Consent'],
+                'section'  => 'Sicherheit',
+                'write'    => true,
+            ],
+            'Policy.ReadWrite.SecurityDefaults' => [
+                'desc'     => 'Security Defaults ein-/ausschalten',
+                'features' => ['Security Center: Security Defaults umschalten'],
                 'section'  => 'Sicherheit',
                 'write'    => true,
             ],

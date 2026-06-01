@@ -34,6 +34,19 @@ class GraphTokenManager
         return $token['access_token'];
     }
 
+    /**
+     * Discard the cached token and fetch a fresh one. Needed after granting new
+     * application permissions in Entra: app roles are embedded at token issuance,
+     * so a token cached before the grant keeps 403-ing on the new scopes until it
+     * expires (~1h). GraphClient calls this once on a write-403 to self-heal.
+     */
+    public function forceRefresh(): string
+    {
+        $token = $this->fetchNewToken();
+        $this->storeToken($token);
+        return $token['access_token'];
+    }
+
     private function fetchNewToken(): array
     {
         $tenantId     = $this->config->get('tenant_id');
