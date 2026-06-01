@@ -13,6 +13,7 @@ class ShareReviewService
     private int $graceDays;
     private bool $onlyAnonymous;
     private string $baseUrl;
+    private ?array $tenantDomains = null;
 
     public function __construct(private GraphClient $graph)
     {
@@ -21,6 +22,42 @@ class ShareReviewService
         $this->graceDays          = (int)($config->get('share_review_grace_days', '7'));
         $this->onlyAnonymous      = $config->get('share_review_only_anonymous', '0') === '1';
         $this->baseUrl            = rtrim($config->get('app_base_url', ''), '/');
+    }
+
+    /** Lower-cased verified tenant domains (cached for the request). */
+    private function tenantDomains(): array
+    {
+        if ($this->tenantDomains !== null) return $this->tenantDomains;
+        $domains = [];
+        try {
+            $data = $this->graph->get('/domains', ['$select' => 'id,isVerified'], 'tenant_domains', 3600);
+            foreach ($data['value'] ?? [] as $d) {
+                if (($d['isVerified'] ?? false) && !empty($d['id'])) {
+                    $domains[] = strtolower($d['id']);
+                }
+            }
+        } catch (\Throwable) {}
+        return $this->tenantDomains = $domains;
+    }
+
+    /** True if any grantee in a direct ("users") permission is outside the tenant. */
+    private function grantHasExternalUser(array $grantedToIdentities): bool
+    {
+        $domains = $this->tenantDomains();
+        // If we can't resolve tenant domains, fail safe: treat as external so a
+        // genuine external share is never silently ignored.
+        if (empty($domains)) return true;
+
+        foreach ($grantedToIdentities as $identity) {
+            $email = strtolower((string)($identity['user']['email'] ?? ''));
+            $at    = strrpos($email, '@');
+            if ($at === false) continue; // no email → can't prove internal
+            $dom = substr($email, $at + 1);
+            if (!in_array($dom, $domains, true)) {
+                return true; // at least one grantee is external
+            }
+        }
+        return false; // all grantees resolved to internal tenant domains
     }
 
     // ── Admin: list all tracked shares ──────────────────────
@@ -58,13 +95,19 @@ class ShareReviewService
     {
         $log = [];
 
+        $maxSites = 20;
         try {
-            $sites = $this->graph->paginate('/sites', ['search' => '*', '$select' => 'id,displayName'], 20);
+            $sites = $this->graph->paginate('/sites', ['search' => '*', '$select' => 'id,displayName'], $maxSites);
         } catch (\Throwable $e) {
             return ["ERROR: Could not fetch sites: " . $e->getMessage()];
         }
 
-        foreach (array_slice($sites, 0, 20) as $site) {
+        if (count($sites) >= $maxSites) {
+            $log[] = "HINWEIS: Aus Performance-Gründen werden nur die ersten {$maxSites} Sites "
+                   . "(je 3 Bibliotheken, Ordnertiefe 3) gescannt — die Abdeckung ist nicht vollständig.";
+        }
+
+        foreach (array_slice($sites, 0, $maxSites) as $site) {
             try {
                 $drives = $this->graph->paginate(
                     "/sites/{$site['id']}/drives",
@@ -109,6 +152,12 @@ class ShareReviewService
                 // Skip inherited/owner-only permissions (no link, no external grant)
                 $scope = $perm['link']['scope'] ?? null;
                 if (!$scope && !empty($perm['grantedToIdentities'])) {
+                    // A direct grant counts as a trackable external share only if at
+                    // least one grantee is outside the tenant. Internal-only grants
+                    // must NOT be tracked — auto-revoke would strip legitimate access.
+                    if (!$this->grantHasExternalUser($perm['grantedToIdentities'])) {
+                        continue;
+                    }
                     $scope = 'users';
                 }
                 if (!$scope) continue;
