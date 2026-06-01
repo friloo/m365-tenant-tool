@@ -1637,7 +1637,13 @@ class SecurityPostureService
                 'gdpr_audit_probe',
                 3600
             );
-            if (isset($data['value'])) {
+            // A swallowed 403 also returns ['value'=>[]] — don't report that as
+            // "pass". Check the last error first so a missing permission is
+            // surfaced instead of a false green.
+            if ($this->graph->getLastError() !== null) {
+                return array_merge($base, ['status' => 'warn', 'detail' => 'Audit-Log nicht abrufbar — Berechtigung AuditLog.Read.All prüfen.']);
+            }
+            if (!empty($data['value'])) {
                 return array_merge($base, ['status' => 'pass', 'detail' => 'Audit-Log liefert Daten.']);
             }
             return array_merge($base, ['status' => 'warn', 'detail' => 'Audit-Log antwortet, aber leer — Permission/Ausstellungsdatum prüfen.']);

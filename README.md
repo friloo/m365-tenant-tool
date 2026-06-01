@@ -295,6 +295,10 @@ Alle Intervalle werden danach im Web-UI unter **Cron & Automatisierung** konfigu
 | `IdentityRiskEvent.Read.All` | Risk Detections (Identity Protection) | Empfohlen (braucht Entra ID P2) |
 | `SecurityAlert.Read.All` / `SecurityAlert.ReadWrite.All` | Defender Alerts lesen + auflösen | Empfohlen |
 | `SecurityEvents.Read.All` | Secure Score und Sicherheitsereignisse | Empfohlen |
+| `Policy.ReadWrite.Authorization` | Gast-Einladungs-Regeln & App-Consent-Defaults (Tenant-Härtung) | Empfohlen für Schreib |
+| `AttackSimulation.Read.All` | Phishing-Simulationen (Defender Attack Simulation) | Optional |
+| `LifecycleWorkflows.Read.All` | Lifecycle Workflows (Entra ID Governance) | Optional |
+| `IdentityProvider.Read.All` | Externe Identity Provider (Google/Facebook/SAML/WS-Fed) | Optional |
 | `BitLockerKey.Read.All` | BitLocker-Recovery-Keys auf Geräten | Optional |
 
 #### E-Mail & Compliance

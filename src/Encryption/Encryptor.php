@@ -13,7 +13,7 @@ class Encryptor
             throw new \RuntimeException('Encryption key file not found: ' . $keyPath);
         }
         $raw = trim(file_get_contents($keyPath));
-        $this->key = base64_decode($raw);
+        $this->key = base64_decode($raw, true) ?: '';
         if (strlen($this->key) !== 32) {
             throw new \RuntimeException('Invalid encryption key length');
         }
@@ -40,7 +40,11 @@ class Encryptor
 
     public function decrypt(string $encoded): string
     {
-        $data = base64_decode($encoded);
+        $data = base64_decode($encoded, true);
+        // 12-byte IV + 16-byte tag = 28-byte minimum before any ciphertext.
+        if ($data === false || strlen($data) < 28) {
+            throw new \RuntimeException('Decryption failed: malformed ciphertext');
+        }
         $iv = substr($data, 0, 12);
         $tag = substr($data, 12, 16);
         $ciphertext = substr($data, 28);
