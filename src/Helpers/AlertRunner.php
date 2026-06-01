@@ -89,7 +89,10 @@ class AlertRunner
     private function getMfaPct(): array
     {
         try {
-            $data = $this->graph->paginate('/reports/credentialUserRegistrationDetails', [], 50);
+            // Use the modern registration report (with legacy fallback) via the
+            // shared service — the deprecated credentialUserRegistrationDetails
+            // endpoint 404s on current tenants and made this alert never fire.
+            $data  = (new \App\Modules\MfaMethods\MfaMethodsService($this->graph))->getAll();
             $total = count($data);
             $reg   = count(array_filter($data, fn($u) => $u['isMfaRegistered'] ?? false));
             $pct   = $total > 0 ? (int)round(($reg / $total) * 100) : 100;
