@@ -10,15 +10,7 @@ class SecurityService
 
     public function getConditionalAccessPolicies(): array
     {
-        try {
-            return $this->graph->paginate(
-                '/identity/conditionalAccess/policies',
-                ['$select' => 'id,displayName,state,createdDateTime,modifiedDateTime,conditions,grantControls'],
-                10,
-                'security_ca',
-                1800
-            );
-        } catch (\Throwable) { return []; }
+        return \App\Modules\ConditionalAccess\ConditionalAccessService::fetchAllPolicies($this->graph);
     }
 
     public function getRiskyUsers(): array

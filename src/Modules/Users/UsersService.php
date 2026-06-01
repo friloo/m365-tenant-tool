@@ -202,16 +202,18 @@ class UsersService
     {
         $result = $this->graph->get(
             "/users/{$userId}/memberOf",
-            ['$select' => 'id,displayName,groupTypes,onPremisesSyncEnabled'],
+            ['$select' => 'id,displayName,groupTypes,membershipRule,onPremisesSyncEnabled'],
             null,
             0
         );
         $memberships = $result['value'] ?? [];
         $removed = [];
         foreach ($memberships as $group) {
-            if (($group['onPremisesSyncEnabled'] ?? null) === true) {
-                continue;
-            }
+            // Skip anything that isn't a real group, plus dynamic and on-prem
+            // synced groups (membership there can't be changed via Graph).
+            if (($group['@odata.type'] ?? '') !== '#microsoft.graph.group') continue;
+            if (($group['onPremisesSyncEnabled'] ?? null) === true) continue;
+            if (!empty($group['membershipRule'])) continue;
             $groupId = $group['id'] ?? '';
             if (!$groupId) continue;
             try {

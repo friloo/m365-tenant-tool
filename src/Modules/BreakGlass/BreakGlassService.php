@@ -136,14 +136,9 @@ class BreakGlassService
 
         // CA-Policy-Exclusion (für die App-Permission braucht's Policy.Read.All)
         try {
-            $policies = $this->graph->get(
-                '/identity/conditionalAccess/policies',
-                ['$select' => 'id,displayName,state,conditions', '$top' => '200'],
-                'ca_policies_for_bg',
-                300
-            );
+            $policies = \App\Modules\ConditionalAccess\ConditionalAccessService::fetchAllPolicies($this->graph);
             $excludedFrom = [];
-            foreach ($policies['value'] ?? [] as $p) {
+            foreach ($policies as $p) {
                 if (($p['state'] ?? '') !== 'enabled') continue;
                 $excludedUsers = $p['conditions']['users']['excludeUsers'] ?? [];
                 if (in_array($user['id'], $excludedUsers, true)) {

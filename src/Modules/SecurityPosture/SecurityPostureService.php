@@ -1300,8 +1300,7 @@ class SecurityPostureService
     private function fetchCaPolicies(): array
     {
         try {
-            $data = $this->graph->get('/identity/conditionalAccess/policies', ['$top' => '200'], 'ca_policies', 900);
-            return $data['value'] ?? [];
+            return \App\Modules\ConditionalAccess\ConditionalAccessService::fetchAllPolicies($this->graph);
         } catch (\Throwable) {
             return [];
         }

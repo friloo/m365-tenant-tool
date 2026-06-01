@@ -219,9 +219,9 @@ class HardeningService
             'admin_url' => 'https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies',
         ];
         try {
-            $p = $this->graph->get('/identity/conditionalAccess/policies', ['$top' => '200'], 'hardening_ca', 300);
+            $pols = \App\Modules\ConditionalAccess\ConditionalAccessService::fetchAllPolicies($this->graph);
             $hasBlock = false;
-            foreach ($p['value'] ?? [] as $pol) {
+            foreach ($pols as $pol) {
                 if (($pol['state'] ?? '') !== 'enabled') continue;
                 $clientApps = $pol['conditions']['clientAppTypes'] ?? [];
                 if (in_array('exchangeActiveSync', $clientApps, true)

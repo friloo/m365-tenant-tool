@@ -24,19 +24,14 @@ class TokenLifetimeService
     public function getCaSignInFrequency(): array
     {
         try {
-            $data = $this->graph->get(
-                '/identity/conditionalAccess/policies',
-                ['$top' => '200'],
-                'tokenlife_ca',
-                900
-            );
+            $policies = \App\Modules\ConditionalAccess\ConditionalAccessService::fetchAllPolicies($this->graph);
         } catch (\Throwable $e) {
             error_log('TokenLifetime CA: ' . $e->getMessage());
             return [];
         }
 
         $result = [];
-        foreach ($data['value'] ?? [] as $p) {
+        foreach ($policies as $p) {
             $sif = $p['sessionControls']['signInFrequency'] ?? null;
             if (!$sif || !($sif['isEnabled'] ?? false)) continue;
             $result[] = [
