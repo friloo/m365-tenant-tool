@@ -34,51 +34,21 @@ class UsersService
 
     public function getMfaStatus(): array
     {
+        // Reuse MfaMethodsService as the single source for the registration
+        // report (modern endpoint + legacy fallback, normalised keys), then
+        // reshape into the UPN-keyed map the user list expects.
+        $rows = (new \App\Modules\MfaMethods\MfaMethodsService($this->graph))->getAll();
+
         $map = [];
-
-        // Modern endpoint (works on all current tenants)
-        try {
-            $data = $this->graph->paginate(
-                '/reports/authenticationMethods/userRegistrationDetails',
-                ['$select' => 'id,userPrincipalName,userDisplayName,isMfaRegistered,isMfaCapable,methodsRegistered,defaultMfaMethod', '$top' => '999'],
-                50,
-                'mfa_methods_detail',
-                1800
-            );
-            if (!empty($data)) {
-                foreach ($data as $row) {
-                    $upn = $row['userPrincipalName'] ?? '';
-                    if ($upn === '') continue;
-                    $map[$upn] = [
-                        'mfaRegistered' => $row['isMfaRegistered'] ?? false,
-                        'mfaCapable'    => $row['isMfaCapable']    ?? false,
-                        'methods'       => $row['methodsRegistered'] ?? [],
-                    ];
-                }
-                return $map;
-            }
-        } catch (\Throwable) {}
-
-        // Legacy fallback
-        try {
-            $data = $this->graph->paginate(
-                '/reports/credentialUserRegistrationDetails',
-                [],
-                50,
-                'mfa_methods_legacy',
-                1800
-            );
-            foreach ($data as $row) {
-                $upn = $row['userPrincipalName'] ?? '';
-                if ($upn === '') continue;
-                $map[$upn] = [
-                    'mfaRegistered' => $row['isMfaRegistered'] ?? false,
-                    'mfaCapable'    => $row['isCapable']       ?? ($row['isMfaRegistered'] ?? false),
-                    'methods'       => $row['authMethods']     ?? [],
-                ];
-            }
-        } catch (\Throwable) {}
-
+        foreach ($rows as $row) {
+            $upn = $row['userPrincipalName'] ?? '';
+            if ($upn === '') continue;
+            $map[$upn] = [
+                'mfaRegistered' => $row['isMfaRegistered'] ?? false,
+                'mfaCapable'    => $row['isMfaCapable']    ?? false,
+                'methods'       => $row['methodsRegistered'] ?? [],
+            ];
+        }
         return $map;
     }
 
