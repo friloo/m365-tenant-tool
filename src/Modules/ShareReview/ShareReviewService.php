@@ -79,7 +79,10 @@ class ShareReviewService
         $rows = DB::fetchAll('SELECT status, COUNT(*) as cnt FROM share_reviews GROUP BY status');
         $stats = ['active' => 0, 'pending_review' => 0, 'confirmed' => 0, 'revoked' => 0, 'expired' => 0];
         foreach ($rows as $r) {
-            $stats[$r['status']] = (int)$r['cnt'];
+            // Only count known statuses so an unexpected value can't inflate total.
+            if (array_key_exists($r['status'], $stats)) {
+                $stats[$r['status']] = (int)$r['cnt'];
+            }
         }
         $stats['total'] = array_sum($stats);
         $overdue = DB::fetchOne(
