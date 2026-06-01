@@ -606,8 +606,9 @@ class CronRunner
             ],
 
             'audit_diff_snapshot' => [
+                'label'            => 'Audit-Diff-Snapshot',
                 'description'      => 'Tenant-Snapshot für Audit-Diff erstellen',
-                'schedule_minutes' => 1440, // daily
+                'default_interval' => 1440, // daily
                 'handler'          => function () use ($graph): string {
                     $svc = new \App\Modules\AuditDiff\SnapshotService($graph);
                     $id  = $svc->capture('daily');
@@ -617,8 +618,9 @@ class CronRunner
             ],
 
             'notification_trim' => [
+                'label'            => 'Benachrichtigungen aufräumen',
                 'description'      => 'Alte In-App-Benachrichtigungen aufräumen',
-                'schedule_minutes' => 1440,
+                'default_interval' => 1440,
                 'handler'          => function (): string {
                     $deleted = \App\Modules\Notifications\NotificationService::trim(500, 90);
                     return "{$deleted} alte Benachrichtigungen entfernt";
@@ -626,8 +628,9 @@ class CronRunner
             ],
 
             'workflow_runner' => [
+                'label'            => 'Workflow-Runner',
                 'description'      => 'Geplante Workflow-Automatisierungen ausführen',
-                'schedule_minutes' => 15,
+                'default_interval' => 15,
                 'handler'          => function () use ($graph): string {
                     $svc = new \App\Modules\Workflows\WorkflowService($graph);
                     $r   = $svc->runDue();

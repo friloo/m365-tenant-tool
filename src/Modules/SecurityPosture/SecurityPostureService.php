@@ -539,7 +539,7 @@ class SecurityPostureService
             $users      = $this->graph->paginate(
                 '/reports/authenticationMethods/userRegistrationDetails',
                 ['$select' => 'id,isMfaRegistered', '$top' => '999'],
-                50, 'dash_mfa_pct', 1800
+                50, 'dash_mfa_registered', 1800
             );
             $total      = count($users);
             $registered = count(array_filter($users, fn($u) => $u['isMfaRegistered'] ?? false));
@@ -636,7 +636,7 @@ class SecurityPostureService
             $users    = $this->graph->paginate(
                 '/reports/authenticationMethods/userRegistrationDetails',
                 ['$select' => 'id,isPasswordlessCapable', '$top' => '999'],
-                50, 'dash_mfa_pct', 1800
+                50, 'dash_passwordless_capable', 1800
             );
             $capable = count(array_filter($users, fn($u) => $u['isPasswordlessCapable'] ?? false));
             $total   = count($users);
@@ -1111,7 +1111,7 @@ class SecurityPostureService
             $mfaData = $this->graph->paginate(
                 '/reports/authenticationMethods/userRegistrationDetails',
                 ['$select' => 'id,userPrincipalName,isMfaRegistered', '$top' => '999'],
-                50, 'dash_mfa_pct', 1800
+                50, 'dash_mfa_by_upn', 1800
             );
             $mfaByUpn = [];
             foreach ($mfaData as $row) {
@@ -1121,7 +1121,10 @@ class SecurityPostureService
             $noMfa = [];
             foreach ($admins as $admin) {
                 $upn = strtolower($admin['userPrincipalName'] ?? '');
-                if ($upn && isset($mfaByUpn[$upn]) && !$mfaByUpn[$upn]) {
+                // A real admin account (has a UPN) that is either flagged
+                // not-registered OR missing from the MFA report counts as "no MFA".
+                // Service principals/groups (no UPN) are skipped on purpose.
+                if ($upn && empty($mfaByUpn[$upn])) {
                     $noMfa[] = $admin['userPrincipalName'];
                 }
             }

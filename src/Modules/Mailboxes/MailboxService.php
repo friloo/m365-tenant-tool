@@ -29,8 +29,11 @@ class MailboxService
      */
     public function setForwarding(string $userId, string $forwardTo): void
     {
-        $this->graph->patch("/users/{$userId}", [
-            'forwardingSmtpAddress'    => $forwardTo,
+        // Forwarding lives on mailboxSettings, not on the user object. The read
+        // path (getMailboxDetail / getExternalForwards) reads these exact fields
+        // back from /mailboxSettings, so writes must target the same resource.
+        $this->graph->patch("/users/{$userId}/mailboxSettings", [
+            'forwardingSmtpAddress'      => $forwardTo,
             'deliverToMailboxAndForward' => true,
         ]);
     }
@@ -40,8 +43,8 @@ class MailboxService
      */
     public function removeForwarding(string $userId): void
     {
-        $this->graph->patch("/users/{$userId}", [
-            'forwardingSmtpAddress'    => null,
+        $this->graph->patch("/users/{$userId}/mailboxSettings", [
+            'forwardingSmtpAddress'      => null,
             'deliverToMailboxAndForward' => false,
         ]);
     }
@@ -419,7 +422,7 @@ class MailboxService
     {
         $this->graph->patch("/users/{$userId}/mailboxSettings", [
             'forwardingSmtpAddress'      => null,
-            'automaticForwardingEnabled' => false,
+            'deliverToMailboxAndForward' => false,
         ]);
     }
 
