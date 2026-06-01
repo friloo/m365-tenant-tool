@@ -98,40 +98,12 @@ class TeamsUsageService
     }
 
     /**
-     * Make a direct cURL request for the CSV report endpoint.
-     * The Graph reports endpoints redirect to a CSV download URL.
-     * We follow redirects with the bearer token and return raw CSV.
+     * Fetch the raw CSV report. Delegates the authenticated raw fetch to
+     * GraphClient; this module keeps its own parseCsv() for Teams columns.
      */
     private function fetchCsvReport(string $endpoint): string
     {
-        // Access token via reflection on GraphClient's private tokenManager
-        $rc     = new \ReflectionClass($this->graph);
-        $tmProp = $rc->getProperty('tokenManager');
-        $tmProp->setAccessible(true);
-        /** @var \App\Auth\GraphTokenManager $tm */
-        $tm    = $tmProp->getValue($this->graph);
-        $token = $tm->getToken();
-
-        $url = 'https://graph.microsoft.com/v1.0' . $endpoint;
-
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,   // follow redirect to actual CSV
-            CURLOPT_HTTPHEADER     => [
-                'Authorization: Bearer ' . $token,
-                'Accept: text/csv, application/json',
-            ],
-            CURLOPT_TIMEOUT => 30,
-        ]);
-        $body     = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
-
-        if ($httpCode >= 400 || $body === false || $body === '') {
-            return '';
-        }
-        return (string)$body;
+        return $this->graph->fetchRawReport($endpoint);
     }
 
     /**

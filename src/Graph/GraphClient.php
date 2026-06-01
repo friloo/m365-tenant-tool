@@ -315,6 +315,37 @@ class GraphClient
         return $result;
     }
 
+    /**
+     * Fetch the raw body of a Reports endpoint (following the CDN redirect),
+     * without any JSON/CSV parsing. Modules that need their own CSV column
+     * mapping use this instead of re-implementing the authenticated cURL call
+     * (previously copy-pasted with a ReflectionClass hack on tokenManager).
+     * Returns '' on any error.
+     */
+    public function fetchRawReport(string $endpoint): string
+    {
+        $url   = str_starts_with($endpoint, 'https://') ? $endpoint : ($this->baseUrl . $endpoint);
+        $token = $this->tokenManager->getToken();
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true, // follow redirect to the actual CSV
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Bearer ' . $token,
+                'Accept: text/csv, application/json',
+            ],
+            CURLOPT_TIMEOUT => 30,
+        ]);
+        $body     = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($httpCode >= 400 || $body === false || $body === '') {
+            return '';
+        }
+        return (string)$body;
+    }
+
     private function parseCsvReport(string $csv): array
     {
         // Strip UTF-8 BOM (\xef\xbb\xbf) that Graph CDN prepends to CSV files

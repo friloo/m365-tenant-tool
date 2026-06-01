@@ -129,60 +129,13 @@ class MailboxService
     }
 
     /**
-     * Make a direct cURL request for a report endpoint that returns CSV.
-     * We bypass the GraphClient JSON handling and get the raw text.
+     * Make a direct request for a report endpoint that returns CSV.
+     * Delegates the authenticated raw fetch to GraphClient; this module keeps
+     * its own parseCsv() for the mailbox-specific column mapping.
      */
     private function fetchCsvReport(string $endpoint): string
     {
-        // Obtain token via the same token manager the GraphClient uses.
-        // We access it through a small reflection trick or simply re-implement
-        // the HTTP call inline.  Since GraphClient exposes no raw-fetch helper
-        // we re-use the stored graph reference to get the token indirectly:
-        // GraphClient->getCache() lets us detect the cache, but for the token
-        // we need a different path.  The cleanest approach supported by the
-        // existing codebase is to let the client try and fall back to a cURL call
-        // using the token retrieved from the underlying GraphTokenManager.
-
-        // We call a non-existent property to retrieve what we need safely:
-        // Instead, use the graph object via its public interface by encoding
-        // a sentinel approach: try graph->get() which will throw on non-JSON,
-        // then fall back to a manual HTTP call.
-
-        // Try via GraphClient::get() first — if the response happens to have
-        // been wrapped (e.g. $skipToken next link etc.) it would return [].
-        // In practice Graph CSV endpoints redirect and the final CSV body is
-        // returned with Content-Type: text/csv; the client decodes it as [].
-        // We therefore reach into the response via our own cURL call.
-        // We need the access token. We can access it through Reflection on the
-        // GraphClient's private tokenManager.
-
-        $rc      = new \ReflectionClass($this->graph);
-        $tmProp  = $rc->getProperty('tokenManager');
-        $tmProp->setAccessible(true);
-        /** @var \App\Auth\GraphTokenManager $tm */
-        $tm    = $tmProp->getValue($this->graph);
-        $token = $tm->getToken();
-
-        $url = 'https://graph.microsoft.com/v1.0' . $endpoint;
-
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,   // follow the redirect to actual CSV
-            CURLOPT_HTTPHEADER     => [
-                'Authorization: Bearer ' . $token,
-                'Accept: text/csv, application/json',
-            ],
-            CURLOPT_TIMEOUT => 30,
-        ]);
-        $body     = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
-
-        if ($httpCode >= 400 || $body === false || $body === '') {
-            return '';
-        }
-        return (string)$body;
+        return $this->graph->fetchRawReport($endpoint);
     }
 
     /**
