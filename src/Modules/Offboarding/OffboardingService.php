@@ -14,6 +14,7 @@ class OffboardingService
     public function searchUsers(string $q): array
     {
         try {
+            $q      = \App\Graph\GraphClient::escapeODataValue($q);
             $filter = "startsWith(displayName,'{$q}') or startsWith(userPrincipalName,'{$q}')";
             $data   = $this->graph->get(
                 '/users',

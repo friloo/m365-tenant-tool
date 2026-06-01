@@ -385,8 +385,10 @@ class MailboxService
                 continue;
             }
 
-            // Extract domain from forwarding address (strip leading "smtp:" if present)
-            $cleanAddr = ltrim($fwdAddress, 'sSmMtTpP:');
+            // Extract domain from forwarding address (strip leading "smtp:" if present).
+            // NB: ltrim() with a charlist would eat any leading s/m/t/p chars, so use
+            // an anchored, case-insensitive prefix removal instead.
+            $cleanAddr = preg_replace('/^smtp:/i', '', $fwdAddress);
             $atPos     = strpos($cleanAddr, '@');
             if ($atPos === false) {
                 continue;

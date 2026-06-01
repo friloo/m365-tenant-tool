@@ -18,11 +18,19 @@ class GraphClient
         $this->cache        = $cache;
     }
 
+    /**
+     * Escape a value for safe interpolation into an OData $filter string literal.
+     * Single quotes are the only special character and are doubled per the spec.
+     */
+    public static function escapeODataValue(string $value): string
+    {
+        return str_replace("'", "''", $value);
+    }
+
     /** Returns the last silently-swallowed Graph error (403/404), or null. */
     public function getLastError(): ?array
     {
-        return $this->lastError;
-    }
+        return $this->lastError;    }
 
     public function get(string $endpoint, array $query = [], ?string $cacheKey = null, int $ttl = 900): array
     {

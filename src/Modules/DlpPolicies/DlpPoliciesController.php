@@ -38,7 +38,7 @@ class DlpPoliciesController
         $activeCount = count(array_filter($labels, fn($l) => $l['isActive'] ?? false));
 
         View::render('dlppolicies/index', [
-            'pageTitle'   => 'DLP-Richtlinien',
+            'pageTitle'   => 'Vertraulichkeitslabels (DLP)',
             'labels'      => $labels,
             'activeCount' => $activeCount,
             'diag'        => $diag,

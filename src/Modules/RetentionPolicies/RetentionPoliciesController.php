@@ -27,7 +27,7 @@ class RetentionPoliciesController
         $closedCount = count(array_filter($cases, fn($c) => ($c['status'] ?? '') === 'closed'));
 
         View::render('retentionpolicies/index', [
-            'pageTitle'   => 'Aufbewahrungsrichtlinien',
+            'pageTitle'   => 'eDiscovery-Fälle',
             'cases'       => $cases,
             'openCount'   => $openCount,
             'closedCount' => $closedCount,

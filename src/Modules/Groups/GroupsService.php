@@ -129,11 +129,13 @@ class GroupsService
     public function searchUsers(string $query): array
     {
         try {
-            return $this->graph->get('/users', [
+            $q = \App\Graph\GraphClient::escapeODataValue($query);
+            $data = $this->graph->get('/users', [
                 '$select' => 'id,displayName,userPrincipalName',
-                '$filter' => "startswith(displayName,'{$query}') or startswith(userPrincipalName,'{$query}')",
+                '$filter' => "startswith(displayName,'{$q}') or startswith(userPrincipalName,'{$q}')",
                 '$top'    => '10',
             ]);
+            return $data['value'] ?? [];
         } catch (\Throwable) { return []; }
     }
 

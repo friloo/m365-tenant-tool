@@ -374,6 +374,11 @@ class LicenseAdvisorService
 
         foreach ($allUsers as $user) {
             if (!($user['accountEnabled'] ?? true)) {
+                // Disabled but still licensed = the most wasteful case → surface it
+                // instead of skipping. Disabled + unlicensed is genuinely irrelevant.
+                if (!empty($user['assignedLicenses'] ?? [])) {
+                    $inactiveWasted[] = $user;
+                }
                 continue;
             }
 

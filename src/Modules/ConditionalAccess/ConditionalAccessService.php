@@ -187,10 +187,7 @@ class ConditionalAccessService
             $clients = $p['conditions']['clientAppTypes'] ?? [];
             $hasLegacy = in_array('exchangeActiveSync', $clients, true)
                       || in_array('other', $clients, true);
-            $block = ($p['grantControls']['operator'] ?? '') === 'OR'
-                  && in_array('block', $p['grantControls']['builtInControls'] ?? [], true);
-            // Also check if operator is null but builtInControls has block
-            $block = $block || in_array('block', $p['grantControls']['builtInControls'] ?? [], true);
+            $block = in_array('block', $p['grantControls']['builtInControls'] ?? [], true);
             return $hasLegacy && $block;
         });
         if (!empty($blockLegacy)) {

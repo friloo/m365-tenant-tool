@@ -84,8 +84,7 @@ $_navDefs = [
     ['section' => null,                  'icon' => 'arrow-left-right',     'label' => 'Audit-Diff',             'route' => 'auditdiff',                  'admin' => false],
     ['section' => null,                  'icon' => 'file-earmark-pdf',     'label' => 'DSGVO/NIS-2 Report',     'route' => 'auditreport',                'admin' => false],
     ['section' => null,                  'icon' => 'journal-text',         'label' => 'Sign-in-Log',            'route' => 'signinlog',                  'admin' => false],
-    ['section' => null,                  'icon' => 'shield-lock',          'label' => 'DLP-Richtlinien',        'route' => 'dlppolicies',                'admin' => false],
-    ['section' => null,                  'icon' => 'archive',              'label' => 'Aufbewahrung',           'route' => 'retentionpolicies',          'admin' => false],
+    ['section' => null,                  'icon' => 'archive',              'label' => 'eDiscovery-Fälle',       'route' => 'retentionpolicies',          'admin' => false],
     ['section' => null,                  'icon' => 'tags',                 'label' => 'Sensitivity Labels',     'route' => 'sensitivitylabels',          'admin' => false],
 
     // ── Berichte & Monitoring
