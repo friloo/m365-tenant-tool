@@ -42,34 +42,37 @@ $_navDefs = [
     ['section' => null,                  'icon' => 'eye-slash',            'label' => 'Freigaben-Monitor',      'route' => 'sharing/monitor',            'admin' => false],
     ['section' => null,                  'icon' => 'sliders',              'label' => 'Freigaberichtlinien',    'route' => 'sharing/policies',           'admin' => false],
 
-    // ── Sicherheit
-    ['section' => 'Sicherheit',          'icon' => 'shield-check',         'label' => 'Sicherheit',             'route' => 'security',                   'admin' => false],
+    // ── Sicherheit & Härtung (Status, Härtung, Scores)
+    ['section' => 'Sicherheit & Härtung','icon' => 'shield-check',         'label' => 'Sicherheit',             'route' => 'security',                   'admin' => false],
     ['section' => null,                  'icon' => 'shield-fill-check',    'label' => 'Security Posture',       'route' => 'securityposture',            'admin' => false],
     ['section' => null,                  'icon' => 'file-earmark-lock',    'label' => 'DSGVO-Status',           'route' => 'securityposture#cat-dsgvo-datenschutz', 'admin' => false],
     ['section' => null,                  'icon' => 'sliders2-vertical',    'label' => 'Tenant-Härtung',         'route' => 'hardening',                  'admin' => false],
     ['section' => null,                  'icon' => 'compass',              'label' => 'Härtungs-Leitfaden',     'route' => 'bestpractice',               'admin' => false],
     ['section' => null,                  'icon' => 'patch-check',          'label' => 'Compliance-Profile',     'route' => 'complianceprofile',          'admin' => true],
-    ['section' => null,                  'icon' => 'key-fill',             'label' => 'Break-Glass-Accounts',   'route' => 'breakglass',                 'admin' => false],
-    ['section' => null,                  'icon' => 'lightning-charge',     'label' => 'PIM (JIT-Admin)',        'route' => 'pim',                        'admin' => false],
-    ['section' => null,                  'icon' => 'arrow-right-square',   'label' => 'Auto-Forward-Audit',     'route' => 'mailboxrules',               'admin' => false],
-    ['section' => null,                  'icon' => 'app-indicator',        'label' => 'OAuth-App-Audit',        'route' => 'oauthaudit',                 'admin' => false],
-    ['section' => null,                  'icon' => 'shield-shaded',        'label' => 'DLP-Vorfälle',           'route' => 'dlpincidents',               'admin' => false],
-    ['section' => null,                  'icon' => 'fingerprint',          'label' => 'Auth-Strength',          'route' => 'authstrength',               'admin' => false],
-    ['section' => null,                  'icon' => 'database-fill-check',  'label' => 'Backup-Status',          'route' => 'backup',                     'admin' => false],
-    ['section' => null,                  'icon' => 'envelope-paper',       'label' => 'Executive-Report',       'route' => 'executivereport',            'admin' => false],
-    ['section' => null,                  'icon' => 'shield-slash',         'label' => 'MFA-Fatigue',            'route' => 'mfafatigue',                 'admin' => false],
-    ['section' => null,                  'icon' => 'eye-fill',             'label' => 'Insider-Threat',         'route' => 'insiderthreat',              'admin' => false],
-    ['section' => null,                  'icon' => 'arrow-left-right',     'label' => 'Cross-Tenant-Access',    'route' => 'crosstenantaccess',          'admin' => false],
-    ['section' => null,                  'icon' => 'clock-history',        'label' => 'Token-Lifetime',         'route' => 'tokenlifetime',              'admin' => false],
-    ['section' => null,                  'icon' => 'bullseye',             'label' => 'Phishing-Simulationen',  'route' => 'phishingsim',                'admin' => false],
-    ['section' => null,                  'icon' => 'diagram-2',            'label' => 'Lifecycle Workflows',    'route' => 'lifecycle',                  'admin' => false],
-    ['section' => null,                  'icon' => 'person-bounding-box',  'label' => 'Identity Provider Trust','route' => 'identityproviders',          'admin' => false],
-    ['section' => null,                  'icon' => 'lock-fill',            'label' => 'Customer Lockbox',       'route' => 'customerlockbox',            'admin' => false],
     ['section' => null,                  'icon' => 'bar-chart-line',       'label' => 'Secure Score',           'route' => 'securescore',                'admin' => false],
     ['section' => null,                  'icon' => 'bell',                 'label' => 'Defender Alerts',        'route' => 'defenderalerts',             'admin' => false],
     ['section' => null,                  'icon' => 'exclamation-triangle', 'label' => 'Risiko-Anmeldungen',     'route' => 'riskysignins',               'admin' => false],
-    ['section' => null,                  'icon' => 'grid-3x3-gap',         'label' => 'App-Registrierungen',    'route' => 'appregistrations',           'admin' => false],
+
+    // ── Identität & Bedrohungen (Detection)
+    ['section' => 'Identität & Bedrohungen','icon' => 'key-fill',          'label' => 'Break-Glass-Accounts',   'route' => 'breakglass',                 'admin' => false],
+    ['section' => null,                  'icon' => 'lightning-charge',     'label' => 'PIM (JIT-Admin)',        'route' => 'pim',                        'admin' => false],
+    ['section' => null,                  'icon' => 'fingerprint',          'label' => 'Auth-Strength',          'route' => 'authstrength',               'admin' => false],
+    ['section' => null,                  'icon' => 'shield-slash',         'label' => 'MFA-Fatigue',            'route' => 'mfafatigue',                 'admin' => false],
+    ['section' => null,                  'icon' => 'arrow-right-square',   'label' => 'Auto-Forward-Audit',     'route' => 'mailboxrules',               'admin' => false],
+    ['section' => null,                  'icon' => 'app-indicator',        'label' => 'OAuth-App-Audit',        'route' => 'oauthaudit',                 'admin' => false],
+    ['section' => null,                  'icon' => 'shield-shaded',        'label' => 'DLP-Vorfälle',           'route' => 'dlpincidents',               'admin' => false],
+    ['section' => null,                  'icon' => 'eye-fill',             'label' => 'Insider-Threat',         'route' => 'insiderthreat',              'admin' => false],
+    ['section' => null,                  'icon' => 'bullseye',             'label' => 'Phishing-Simulationen',  'route' => 'phishingsim',                'admin' => false],
+    ['section' => null,                  'icon' => 'arrow-left-right',     'label' => 'Cross-Tenant-Access',    'route' => 'crosstenantaccess',          'admin' => false],
+    ['section' => null,                  'icon' => 'clock-history',        'label' => 'Token-Lifetime',         'route' => 'tokenlifetime',              'admin' => false],
+    ['section' => null,                  'icon' => 'person-bounding-box',  'label' => 'Identity Provider Trust','route' => 'identityproviders',          'admin' => false],
+
+    // ── Apps & Konfiguration
+    ['section' => 'Apps & Konfiguration','icon' => 'grid-3x3-gap',         'label' => 'App-Registrierungen',    'route' => 'appregistrations',           'admin' => false],
+    ['section' => null,                  'icon' => 'diagram-2',            'label' => 'Lifecycle Workflows',    'route' => 'lifecycle',                  'admin' => false],
+    ['section' => null,                  'icon' => 'lock-fill',            'label' => 'Customer Lockbox',       'route' => 'customerlockbox',            'admin' => false],
     ['section' => null,                  'icon' => 'globe2',               'label' => 'Domain Health',          'route' => 'domainhealth',               'admin' => false],
+    ['section' => null,                  'icon' => 'database-fill-check',  'label' => 'Backup-Status',          'route' => 'backup',                     'admin' => false],
     ['section' => null,                  'icon' => 'robot',                'label' => 'KI-Berater',             'route' => 'ai',                         'admin' => false],
 
     // ── Compliance & Audit
@@ -88,6 +91,7 @@ $_navDefs = [
     // ── Berichte & Monitoring
     ['section' => 'Berichte & Monitoring','icon' => 'bar-chart-steps',     'label' => 'Nutzungsberichte',       'route' => 'usagereports',               'admin' => false],
     ['section' => null,                  'icon' => 'graph-up-arrow',       'label' => 'Adoptions-Report',       'route' => 'adoption',                   'admin' => false],
+    ['section' => null,                  'icon' => 'envelope-paper',       'label' => 'Executive-Report',       'route' => 'executivereport',            'admin' => false],
     ['section' => null,                  'icon' => 'heart-pulse',          'label' => 'Dienststatus',           'route' => 'servicehealth',              'admin' => false],
 
     // ── Administration (admin-only)
