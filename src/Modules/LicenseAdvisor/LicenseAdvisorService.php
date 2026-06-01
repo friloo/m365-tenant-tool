@@ -4,6 +4,7 @@ namespace App\Modules\LicenseAdvisor;
 
 use App\Core\Config;
 use App\Graph\GraphClient;
+use App\Helpers\SkuCatalog;
 
 class LicenseAdvisorService
 {
@@ -44,30 +45,6 @@ class LicenseAdvisorService
             'label' => 'Intune / Geräteverwaltung',
             'plans' => ['INTUNE_A', 'MDM_CORE', 'INTUNE_A_VL', 'INTUNE_O365'],
         ],
-    ];
-
-    const SKU_NAMES = [
-        'SPE_E3'                  => 'Microsoft 365 E3',
-        'SPE_E5'                  => 'Microsoft 365 E5',
-        'SPE_F1'                  => 'Microsoft 365 F1',
-        'SPE_F3'                  => 'Microsoft 365 F3',
-        'ENTERPRISEPACK'          => 'Office 365 E3',
-        'ENTERPRISEPREMIUM'       => 'Office 365 E5',
-        'STANDARDPACK'            => 'Office 365 E1',
-        'SPB'                     => 'Microsoft 365 Business Premium',
-        'O365_BUSINESS_PREMIUM'   => 'Microsoft 365 Business Standard',
-        'O365_BUSINESS_ESSENTIALS'=> 'Microsoft 365 Business Basic',
-        'O365_BUSINESS'           => 'Microsoft 365 Apps for Business',
-        'SMB_BUSINESS_PREMIUM'    => 'Microsoft 365 Business Standard',
-        'SMB_BUSINESS_ESSENTIALS' => 'Microsoft 365 Business Basic',
-        'EXCHANGESTANDARD'        => 'Exchange Online Plan 1',
-        'EXCHANGEENTERPRISE'      => 'Exchange Online Plan 2',
-        'EXCHANGE_S_ENTERPRISE'   => 'Exchange Online Plan 2',
-        'TEAMS_ESSENTIALS'        => 'Microsoft Teams Essentials',
-        'INTUNE_A'                => 'Microsoft Intune Plan 1',
-        'EMS'                     => 'Enterprise Mobility + Security E3',
-        'EMSPREMIUM'              => 'Enterprise Mobility + Security E5',
-        'FLOW_FREE'               => 'Power Automate Free',
     ];
 
     /**
@@ -267,7 +244,7 @@ class LicenseAdvisorService
             $result[] = [
                 'skuId'         => $sku['skuId'] ?? '',
                 'partNumber'    => $partNum,
-                'name'          => self::SKU_NAMES[$partNum] ?? str_replace('_', ' ', $partNum),
+                'name'          => SkuCatalog::name($partNum),
                 'consumed'      => $consumed,
                 'total'         => $enabled,
                 'available'     => max(0, $enabled - $consumed),

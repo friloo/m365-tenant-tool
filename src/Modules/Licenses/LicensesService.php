@@ -3,38 +3,10 @@
 namespace App\Modules\Licenses;
 
 use App\Graph\GraphClient;
+use App\Helpers\SkuCatalog;
 
 class LicensesService
 {
-    private array $skuNames = [
-        'SPE_E3'                => 'Microsoft 365 E3',
-        'SPE_E5'                => 'Microsoft 365 E5',
-        'SPE_F1'                => 'Microsoft 365 F3',
-        'ENTERPRISEPREMIUM'     => 'Microsoft 365 E5',
-        'ENTERPRISEPACK'        => 'Microsoft 365 E3',
-        'STANDARDPACK'          => 'Office 365 E1',
-        'DESKLESSPACK'          => 'Office 365 F3',
-        'BUSINESS_PREMIUM'      => 'Microsoft 365 Business Premium',
-        'O365_BUSINESS_ESSENTIALS' => 'Microsoft 365 Business Basic',
-        'O365_BUSINESS_PREMIUM' => 'Microsoft 365 Business Standard',
-        'TEAMS_EXPLORATORY'     => 'Teams Exploratory',
-        'AAD_PREMIUM'           => 'Azure AD Premium P1',
-        'AAD_PREMIUM_P2'        => 'Azure AD Premium P2',
-        'INTUNE_A'              => 'Intune',
-        'EMS'                   => 'EMS E3',
-        'EMSPREMIUM'            => 'EMS E5',
-        'POWER_BI_STANDARD'     => 'Power BI (Free)',
-        'PBI_PREMIUM_P1_ADDON'  => 'Power BI Premium P1',
-        'FLOW_FREE'             => 'Power Automate Free',
-        'PROJECTPREMIUM'        => 'Project Plan 5',
-        'VISIOCLIENT'           => 'Visio Plan 2',
-        'EXCHANGESTANDARD'      => 'Exchange Online Plan 1',
-        'EXCHANGEENTERPRISE'    => 'Exchange Online Plan 2',
-        'MCOSTANDARD'           => 'Skype for Business Online Plan 2',
-        'MCOPSTN1'              => 'Microsoft 365 Domestic Calling Plan',
-        'DEFENDER_ENDPOINT_P1'  => 'Microsoft Defender for Endpoint P1',
-    ];
-
     public function __construct(private GraphClient $graph) {}
 
     public function getSkus(): array
@@ -73,7 +45,7 @@ class LicensesService
 
     public function friendlyName(string $partNumber): string
     {
-        return $this->skuNames[$partNumber] ?? str_replace('_', ' ', $partNumber);
+        return SkuCatalog::name($partNumber);
     }
 
     public function getSubscriptionExpiry(): array

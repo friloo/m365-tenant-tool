@@ -109,10 +109,12 @@ class AiAdvisorService
             $skus = app_service(\App\Modules\Licenses\LicensesService::class)->getSkus();
             $skuCount = $highUtil = $overProvisioned = 0;
             foreach ($skus as $sku) {
-                $cap = $sku['prepaidUnits']['enabled'] ?? 0;
+                // getSkus() returns normalised keys total/consumed, not the raw
+                // Graph keys prepaidUnits/consumedUnits.
+                $cap = $sku['total'] ?? 0;
                 if ($cap <= 0) continue;
                 $skuCount++;
-                $used = $sku['consumedUnits'] ?? 0;
+                $used = $sku['consumed'] ?? 0;
                 $pct  = $used / $cap * 100;
                 if ($pct >= 90) $highUtil++;
                 if ($pct < 10 && $cap > 5) $overProvisioned++;
