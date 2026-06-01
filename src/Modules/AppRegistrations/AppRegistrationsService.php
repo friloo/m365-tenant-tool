@@ -39,22 +39,35 @@ class AppRegistrationsService
         }
     }
 
-    public function getServicePrincipals(): array
+    /**
+     * Single source for enumerating application service principals. Both this
+     * module and OAuthAudit consume it (shared cache key → one tenant query).
+     * Returns a superset of fields; callers read the subset they need.
+     */
+    public static function fetchApplicationServicePrincipals(GraphClient $graph): array
     {
         try {
-            return $this->graph->paginate(
+            return $graph->paginate(
                 '/servicePrincipals',
                 [
-                    '$select' => 'id,displayName,appId,accountEnabled,tags,createdDateTime,appOwnerOrganizationId,servicePrincipalType',
+                    '$select' => 'id,displayName,appId,servicePrincipalType,accountEnabled,'
+                               . 'appRoleAssignmentRequired,signInAudience,createdDateTime,tags,appOwnerOrganizationId',
                     '$filter' => "servicePrincipalType eq 'Application'",
+                    '$top'    => '200',
                 ],
-                5,
-                'appreg_serviceprincipals',
+                20,
+                'enterprise_sps',
                 1800
             );
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            error_log('fetchApplicationServicePrincipals: ' . $e->getMessage());
             return [];
         }
+    }
+
+    public function getServicePrincipals(): array
+    {
+        return self::fetchApplicationServicePrincipals($this->graph);
     }
 
     /**
