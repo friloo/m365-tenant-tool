@@ -103,11 +103,20 @@ class GraphClient
         }
 
         $ch = curl_init($url);
+        // Capture the real Retry-After response header (the previous code read
+        // CURLINFO_REDIRECT_COUNT, which is unrelated and always yielded 10s).
+        $retryAfterHeader = 0;
         $opts = [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER     => $headers,
             CURLOPT_TIMEOUT        => 30,
             CURLOPT_CUSTOMREQUEST  => $method,
+            CURLOPT_HEADERFUNCTION => function ($ch, $header) use (&$retryAfterHeader) {
+                if (stripos($header, 'Retry-After:') === 0) {
+                    $retryAfterHeader = (int)trim(substr($header, 12));
+                }
+                return strlen($header);
+            },
         ];
         if ($body !== null) {
             $opts[CURLOPT_POSTFIELDS] = json_encode($body);
@@ -116,13 +125,14 @@ class GraphClient
 
         $attempts = 0;
         while ($attempts < 3) {
+            $retryAfterHeader = 0;
             $response = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $attempts++;
 
             if ($httpCode === 429) {
-                // Rate limit — respect Retry-After
-                $retryAfter = (int)(curl_getinfo($ch, CURLINFO_REDIRECT_COUNT) ?: 10);
+                // Rate limit — respect the Retry-After header (fallback 10s).
+                $retryAfter = $retryAfterHeader > 0 ? $retryAfterHeader : 10;
                 sleep(min($retryAfter, 30));
                 continue;
             }
@@ -198,7 +208,9 @@ class GraphClient
         }
         $url    = $this->buildUrl($endpoint, $query);
         $result = $this->request('GET', $url, true);
-        if ($cacheKey) $this->cache->set($cacheKey, $result, $ttl);
+        // Don't cache results from a swallowed 403/404 (mirrors get()/paginate()),
+        // otherwise a transient permission error sticks for the whole TTL.
+        if ($cacheKey && $this->lastError === null) $this->cache->set($cacheKey, $result, $ttl);
         return $result;
     }
 
