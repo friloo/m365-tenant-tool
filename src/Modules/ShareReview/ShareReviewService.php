@@ -275,25 +275,18 @@ class ShareReviewService
         );
 
         foreach ($overdue as $share) {
-            try {
-                $this->graph->delete(
-                    "/drives/{$share['drive_id']}/items/{$share['item_id']}/permissions/{$share['permission_id']}"
-                );
-                DB::execute(
-                    "UPDATE share_reviews SET status='revoked', revoked_at=NOW() WHERE id=?",
-                    [$share['id']]
-                );
+            $err = $this->revokeGraphPermission($share);
+            DB::execute(
+                "UPDATE share_reviews SET status='revoked', revoked_at=NOW() WHERE id=?",
+                [$share['id']]
+            );
+            if ($err === null) {
                 $log[] = "AUTO-REVOKED: {$share['item_name']} (owner: {$share['owner_email']})";
-
                 // Notify owner of revocation
                 $this->sendRevocationNotice($share);
-            } catch (\Throwable $e) {
-                // Permission may already be gone — mark as revoked anyway
-                DB::execute(
-                    "UPDATE share_reviews SET status='revoked', revoked_at=NOW() WHERE id=?",
-                    [$share['id']]
-                );
-                $log[] = "REVOKED (Graph error, may already be removed): {$share['item_name']} — {$e->getMessage()}";
+            } else {
+                // Permission may already be gone — already marked revoked above.
+                $log[] = "REVOKED (Graph error, may already be removed): {$share['item_name']} — {$err}";
             }
         }
 
@@ -364,16 +357,29 @@ class ShareReviewService
 
     // ── Admin: manual revoke ─────────────────────────────────
 
+    /**
+     * Best-effort revoke of the underlying Graph permission for a share row.
+     * Swallows errors (the permission may already be gone). Returns the error
+     * message on failure, or null on success — callers decide how to log it.
+     */
+    private function revokeGraphPermission(array $share): ?string
+    {
+        try {
+            $this->graph->delete(
+                "/drives/{$share['drive_id']}/items/{$share['item_id']}/permissions/{$share['permission_id']}"
+            );
+            return null;
+        } catch (\Throwable $e) {
+            return $e->getMessage();
+        }
+    }
+
     public function manualRevoke(int $id): void
     {
         $share = DB::fetchOne('SELECT * FROM share_reviews WHERE id = ?', [$id]);
         if (!$share) throw new \RuntimeException('Share not found');
 
-        try {
-            $this->graph->delete(
-                "/drives/{$share['drive_id']}/items/{$share['item_id']}/permissions/{$share['permission_id']}"
-            );
-        } catch (\Throwable) {}
+        $this->revokeGraphPermission($share);
 
         DB::execute(
             "UPDATE share_reviews SET status='revoked', revoked_at=NOW() WHERE id=?",
