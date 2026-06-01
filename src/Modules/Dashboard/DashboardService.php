@@ -245,22 +245,6 @@ class DashboardService
 
     private function friendlySkuName(string $partNumber): string
     {
-        $map = [
-            'SPE_E3'           => 'Microsoft 365 E3',
-            'SPE_E5'           => 'Microsoft 365 E5',
-            'ENTERPRISEPREMIUM'=> 'Office 365 E3',
-            'ENTERPRISEPACK'   => 'Office 365 E3',
-            'STANDARDPACK'     => 'Office 365 E1',
-            'DESKLESSPACK'     => 'Office 365 F3',
-            'TEAMS_EXPLORATORY'=> 'Teams Exploratory',
-            'FLOW_FREE'        => 'Power Automate Free',
-            'POWER_BI_STANDARD'=> 'Power BI (free)',
-            'AAD_PREMIUM'      => 'Azure AD Premium P1',
-            'AAD_PREMIUM_P2'   => 'Azure AD Premium P2',
-            'INTUNE_A'         => 'Intune',
-            'EMS'              => 'EMS E3',
-            'EMSPREMIUM'       => 'EMS E5',
-        ];
-        return $map[$partNumber] ?? str_replace('_', ' ', $partNumber);
+        return \App\Helpers\SkuCatalog::name($partNumber);
     }
 }

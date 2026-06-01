@@ -6,9 +6,11 @@ use App\Database\DB;
 
 /**
  * Stateless authentication for the REST API. Clients send their key as
- * an `X-Api-Key` request header (or as `?api_key=` query string for
- * one-off tests). The key is sha256-hashed before lookup so the DB
- * row never contains the plaintext value.
+ * an `X-Api-Key` request header. The key is sha256-hashed before lookup
+ * so the DB row never contains the plaintext value.
+ *
+ * The key is intentionally NOT accepted as a query string: URLs end up in
+ * web-server/proxy access logs and Referer headers, which would leak the key.
  *
  * Scopes (comma-separated in app_api_keys.scopes):
  *   read   — GET endpoints (default)
@@ -30,7 +32,7 @@ class ApiAuth
     public static function require(string $scope = 'read'): array
     {
         $raw = self::extractKey();
-        if ($raw === '') self::reject(401, 'missing_api_key', 'Header X-Api-Key oder ?api_key= fehlt.');
+        if ($raw === '') self::reject(401, 'missing_api_key', 'Header X-Api-Key fehlt.');
 
         $row = null;
         try {
@@ -67,9 +69,8 @@ class ApiAuth
 
     private static function extractKey(): string
     {
-        $k = $_SERVER['HTTP_X_API_KEY'] ?? '';
-        if ($k === '' && !empty($_GET['api_key'])) $k = (string)$_GET['api_key'];
-        return trim((string)$k);
+        // Header only — never the query string (would leak the key into logs).
+        return trim((string)($_SERVER['HTTP_X_API_KEY'] ?? ''));
     }
 
     /** Generate a fresh plaintext key (40 chars hex). */

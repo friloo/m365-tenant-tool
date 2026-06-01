@@ -32,21 +32,34 @@ class QueueWorker
     /** Pull the next available job and mark it as processing. */
     private function fetchNext(): ?array
     {
-        // Claim the job atomically: update first, then fetch
-        $affected = DB::execute(
-            "UPDATE job_queue
-             SET status = 'processing', attempts = attempts + 1, updated_at = NOW()
-             WHERE status = 'pending'
-               AND available_at <= NOW()
-             ORDER BY id ASC
-             LIMIT 1"
-        );
+        // Claim atomically: pick a candidate id, then claim it with a conditional
+        // UPDATE guarded on status='pending'. Only one worker can win that row
+        // (MySQL row lock); the loser sees 0 affected and tries the next candidate.
+        // This avoids the "UPDATE LIMIT 1 + separate SELECT" race that could hand
+        // the same job to two parallel workers.
+        for ($try = 0; $try < 25; $try++) {
+            $cand = DB::fetchOne(
+                "SELECT id FROM job_queue
+                 WHERE status = 'pending' AND available_at <= NOW()
+                 ORDER BY id ASC LIMIT 1"
+            );
+            if (!$cand) return null;
 
-        if ($affected === 0) return null;
+            $id = (int)$cand['id'];
+            $affected = DB::execute(
+                "UPDATE job_queue
+                 SET status = 'processing', attempts = attempts + 1, updated_at = NOW()
+                 WHERE id = ? AND status = 'pending'",
+                [$id]
+            );
 
-        return DB::fetchOne(
-            "SELECT * FROM job_queue WHERE status = 'processing' ORDER BY id ASC LIMIT 1"
-        );
+            if ($affected === 1) {
+                return DB::fetchOne("SELECT * FROM job_queue WHERE id = ?", [$id]);
+            }
+            // Lost the race — another worker claimed it. Try the next candidate.
+        }
+
+        return null;
     }
 
     private function execute(array $job): void

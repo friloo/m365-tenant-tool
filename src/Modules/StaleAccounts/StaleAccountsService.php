@@ -97,7 +97,8 @@ class StaleAccountsService
      */
     public function removeLicenses(string $userId, array $skuIds): void
     {
-        $this->graph->patch("/users/{$userId}/assignLicense", [
+        // assignLicense is a Graph *action* and must be POST (PATCH → 405).
+        $this->graph->post("/users/{$userId}/assignLicense", [
             'addLicenses'    => [],
             'removeLicenses' => $skuIds,
         ]);

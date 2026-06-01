@@ -1,6 +1,12 @@
 <?php
 /**
  * Share Governance Cron Script
+ *
+ * ⚠️ DEPRECATED — the same three phases (scan, review emails, auto-revoke) run as
+ * the `share_scan` / `share_emails` / `share_auto_revoke` jobs inside CronRunner
+ * (run-cron.php). Do NOT schedule this script alongside run-cron.php, or shares are
+ * scanned/revoked and emails sent TWICE. Prefer the single unified cron.
+ *
  * Run periodically (e.g. daily at 08:00):
  *   0 8 * * * php /path/to/m365-tenant-tool/run-share-monitor.php >> /var/log/share-monitor.log 2>&1
  */
@@ -14,45 +20,16 @@ if (!file_exists(__DIR__ . '/storage/installed.lock')) {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use App\Auth\GraphTokenManager;
-use App\Cache\GraphCache;
-use App\Core\Config;
-use App\Core\Session;
-use App\Database\DB;
-use App\Encryption\Encryptor;
-use App\Graph\GraphClient;
+use App\Core\CliBootstrap;
 use App\Modules\ShareReview\ShareReviewService;
 
 // ── Bootstrap (same as index.php, minus HTTP) ──────────────
-
-$keyPath   = __DIR__ . '/storage/app.key';
-$encryptor = new Encryptor($keyPath);
-
-$bootstrapFile = __DIR__ . '/storage/db_bootstrap.ini';
-if (!file_exists($bootstrapFile)) {
-    echo "[ERROR] db_bootstrap.ini not found.\n";
+try {
+    ['graph' => $graphClient] = CliBootstrap::boot(__DIR__);
+} catch (\Throwable $e) {
+    echo "[ERROR] " . $e->getMessage() . "\n";
     exit(1);
 }
-
-$ini        = parse_ini_file($bootstrapFile);
-$dbPassword = $encryptor->decrypt($ini['db_password_enc']);
-DB::connect([
-    'host'     => $ini['db_host'],
-    'port'     => $ini['db_port'] ?? 3306,
-    'name'     => $ini['db_name'],
-    'user'     => $ini['db_user'],
-    'password' => $dbPassword,
-]);
-
-$config = Config::getInstance();
-$config->setEncryptor($encryptor);
-
-$tz = $config->get('timezone', 'Europe/Berlin');
-date_default_timezone_set($tz);
-
-$graphCache   = new GraphCache((int)$config->get('cache_ttl', 15));
-$tokenManager = new GraphTokenManager($encryptor);
-$graphClient  = new GraphClient($tokenManager, $graphCache);
 
 // ── Run share monitor tasks ─────────────────────────────────
 

@@ -92,7 +92,7 @@ class AdoptionService
         $rows = $this->graph->getReport(
             "/reports/getEmailActivityCounts(period='D30')",
             [],
-            'adoption_email_counts',
+            'rpt_email_counts_d30',
             3600
         );
 
@@ -129,7 +129,7 @@ class AdoptionService
         $rows = $this->graph->getReport(
             "/reports/getTeamsUserActivityCounts(period='D30')",
             [],
-            'adoption_teams_counts',
+            'rpt_teams_counts_d30',
             3600
         );
 

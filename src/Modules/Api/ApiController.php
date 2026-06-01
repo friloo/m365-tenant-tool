@@ -364,7 +364,8 @@ class ApiController
 
     public function hardeningApply(): void
     {
-        $key = ApiAuth::require('write');
+        // Tenant-wide security change → require the strongest scope, not just write.
+        $key = ApiAuth::require('admin');
         $body = self::parseJsonBody();
         $action = (string)($body['action_id'] ?? '');
         if ($action === '') ApiAuth::reject(400, 'bad_request', 'Feld "action_id" erforderlich.');
@@ -385,7 +386,8 @@ class ApiController
 
     public function complianceProfileApply(string $key): void
     {
-        $apiKey = ApiAuth::require('write');
+        // Tenant-wide security change → require the strongest scope, not just write.
+        $apiKey = ApiAuth::require('admin');
         try {
             $r = app_service(ComplianceProfileService::class)->apply($key);
             AppAudit::log('api_compliance_apply', 'api', "Key: {$apiKey['name']} · Profil: {$key}");

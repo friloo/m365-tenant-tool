@@ -61,7 +61,10 @@ class Router
 
     private function toRegex(string $pattern): string
     {
-        $regex = preg_replace('/\{[a-z_]+\}/', '([^/]+)', $pattern);
+        // Placeholders may be camelCase ({userId}, {policyId}, {noteId}, …), so
+        // match \w+ — the previous [a-z_]+ silently failed to replace any
+        // camelCase placeholder, leaving those routes permanently unmatchable.
+        $regex = preg_replace('/\{\w+\}/', '([^/]+)', $pattern);
         return '#^' . $regex . '$#i';
     }
 

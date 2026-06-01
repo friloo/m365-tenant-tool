@@ -130,7 +130,8 @@ class RiskySignInsService
      */
     public function confirmCompromised(string $userId): void
     {
-        $this->graph->patch('/identityProtection/riskyUsers/confirmCompromised', [
+        // riskyUsers/confirmCompromised is a Graph *action* and must be POST (PATCH → 405).
+        $this->graph->post('/identityProtection/riskyUsers/confirmCompromised', [
             'userIds' => [$userId],
         ]);
     }
@@ -140,7 +141,8 @@ class RiskySignInsService
      */
     public function dismissRisk(string $userId): void
     {
-        $this->graph->patch('/identityProtection/riskyUsers/dismiss', [
+        // riskyUsers/dismiss is a Graph *action* and must be POST (PATCH → 405).
+        $this->graph->post('/identityProtection/riskyUsers/dismiss', [
             'userIds' => [$userId],
         ]);
     }

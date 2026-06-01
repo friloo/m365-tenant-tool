@@ -7,13 +7,44 @@
     <div class="alert alert-danger alert-dismissible mb-3"><i class="bi bi-exclamation-triangle me-2"></i><?= $e($error) ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 <?php endif; ?>
 
+<?php
+$s = $summary ?? ['on'=>0,'off'=>0,'warn'=>0,'info'=>0,'unknown'=>0,'total'=>0,'score'=>0];
+$scoreColor = $s['score'] >= 80 ? '#16a34a' : ($s['score'] >= 50 ? '#d97706' : '#dc2626');
+?>
+<div class="content-card mb-3">
+    <div class="card-body-custom">
+        <div class="d-flex flex-wrap align-items-center gap-4">
+            <div class="text-center" style="min-width:120px;">
+                <div class="fw-bold" style="font-size:2.2rem;line-height:1;color:<?= $scoreColor ?>;"><?= (int)$s['score'] ?>%</div>
+                <div class="text-muted small mt-1">Härtungs-Score</div>
+            </div>
+            <div class="flex-grow-1">
+                <div class="fw-semibold mb-2"><i class="bi bi-shield-fill-check me-1" style="color:#0078d4;"></i>Security Center — Status &amp; Einstellungen an einem Ort</div>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                    <span class="badge bg-success"><?= (int)$s['on'] ?> OK</span>
+                    <span class="badge bg-danger"><?= (int)$s['off'] ?> zu härten</span>
+                    <span class="badge bg-warning text-dark"><?= (int)$s['warn'] ?> prüfen</span>
+                    <span class="badge bg-info text-dark"><?= (int)$s['info'] ?> manuell</span>
+                    <?php if (!empty($s['unknown'])): ?><span class="badge bg-secondary"><?= (int)$s['unknown'] ?> unbekannt</span><?php endif; ?>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="/securityposture" class="btn btn-sm btn-outline-primary"><i class="bi bi-shield-fill-check me-1"></i>Vollständige Posture</a>
+                    <a href="/securescore" class="btn btn-sm btn-outline-primary"><i class="bi bi-bar-chart-line me-1"></i>Secure Score</a>
+                    <a href="/securityposture#cat-dsgvo-datenschutz" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-earmark-lock me-1"></i>DSGVO-Status</a>
+                    <a href="/complianceprofile" class="btn btn-sm btn-outline-primary"><i class="bi bi-patch-check me-1"></i>Compliance-Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="alert alert-info d-flex gap-3 mb-3">
     <i class="bi bi-shield-fill-check flex-shrink-0 mt-1" style="font-size:1.4rem;color:#0078d4;"></i>
     <div>
-        <strong>Quick-Härtung deines Tenants.</strong>
-        Hier kannst du die wichtigsten Sicherheits-Einstellungen mit einem Klick aktivieren oder über
-        Deep-Links direkt in das richtige Admin-Center springen. Jede Aktion zeigt vorher den aktuellen
-        Zustand und schreibt das Audit-Log mit, damit nachvollziehbar bleibt, was, wann, von wem geändert wurde.
+        <strong>Grundlegende Sicherheits-Einstellungen für alle Module.</strong>
+        Hier siehst du den aktuellen Zustand jeder zentralen Einstellung und kannst sie mit einem Klick
+        aktivieren oder per Deep-Link ins passende Admin-Center springen. Jede Aktion schreibt das
+        Audit-Log mit, damit nachvollziehbar bleibt, was, wann, von wem geändert wurde.
     </div>
 </div>
 

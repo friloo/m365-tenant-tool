@@ -34,23 +34,7 @@ class OAuthAuditService
      */
     public function listEnterpriseApps(): array
     {
-        try {
-            $sps = $this->graph->paginate(
-                '/servicePrincipals',
-                [
-                    '$select' => 'id,displayName,appId,servicePrincipalType,accountEnabled,'
-                               . 'appRoleAssignmentRequired,signInAudience,createdDateTime,tags',
-                    '$filter' => "servicePrincipalType eq 'Application'",
-                    '$top'    => '200',
-                ],
-                20,
-                'oauth_sps',
-                3600
-            );
-        } catch (\Throwable $e) {
-            error_log('OAuthAudit list: ' . $e->getMessage());
-            return [];
-        }
+        $sps = \App\Modules\AppRegistrations\AppRegistrationsService::fetchApplicationServicePrincipals($this->graph);
 
         // Sign-in-Aktivität pro App via aggregated report (letzte 30 Tage)
         $signInMap = $this->getSignInActivityMap();

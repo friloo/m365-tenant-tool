@@ -44,7 +44,7 @@ class UsageReportsService
             $rows = $this->graph->getReport(
                 "/reports/getEmailActivityCounts(period='D{$period}')",
                 [],
-                "usage_email_counts_{$period}",
+                "rpt_email_counts_d{$period}",
                 3600
             );
             foreach ($rows as $row) {
@@ -63,7 +63,7 @@ class UsageReportsService
             $rows = $this->graph->getReport(
                 "/reports/getTeamsUserActivityCounts(period='D{$period}')",
                 [],
-                "usage_teams_counts_{$period}",
+                "rpt_teams_counts_d{$period}",
                 3600
             );
             foreach ($rows as $row) {

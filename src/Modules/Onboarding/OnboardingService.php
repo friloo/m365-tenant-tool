@@ -10,15 +10,7 @@ class OnboardingService
 
     private function friendlySkuName(string $skuPartNumber): string
     {
-        return match ($skuPartNumber) {
-            'ENTERPRISEPACK'    => 'Office 365 E3',
-            'SPE_E3'            => 'Microsoft 365 E3',
-            'SPE_E5'            => 'Microsoft 365 E5',
-            'BUSINESS_PREMIUM'  => 'Microsoft 365 Business Premium',
-            'EXCHANGESTANDARD'  => 'Exchange Online (Plan 1)',
-            'TEAMS_EXPLORATORY' => 'Teams Exploratory',
-            default             => $skuPartNumber,
-        };
+        return \App\Helpers\SkuCatalog::name($skuPartNumber);
     }
 
     public function getAvailableLicenses(): array

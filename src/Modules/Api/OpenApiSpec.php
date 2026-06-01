@@ -197,13 +197,13 @@ class OpenApiSpec
 
             // Hardening
             ['get',  '/api/v1/hardening',       'Hardening', 'Alle Härtungs-Items mit Status'],
-            ['post', '/api/v1/hardening/apply', 'Hardening', 'Hardening-Aktion anwenden (Scope: write)', [
+            ['post', '/api/v1/hardening/apply', 'Hardening', 'Hardening-Aktion anwenden (Scope: admin)', [
                 'body' => $hardeningBody,
             ]],
 
             // Compliance
             ['get',  '/api/v1/compliance-profiles',          'Compliance', 'Verfügbare Compliance-Profile'],
-            ['post', '/api/v1/compliance-profiles/{key}/apply', 'Compliance', 'Compliance-Profil anwenden (Scope: write)', [
+            ['post', '/api/v1/compliance-profiles/{key}/apply', 'Compliance', 'Compliance-Profil anwenden (Scope: admin)', [
                 'params' => [$pathParam('key', 'string', 'standard, healthcare, finance, public, education')],
             ]],
 

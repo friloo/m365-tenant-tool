@@ -435,6 +435,9 @@ $router->get('/auth/microsoft/callback', [\App\Modules\Auth\MicrosoftAuthControl
 // Dashboard
 $router->get('/',        [\App\Modules\Dashboard\DashboardController::class, 'index']);
 
+// Modul-Übersicht (module map)
+$router->get('/overview', [\App\Modules\Overview\OverviewController::class, 'index']);
+
 // Users
 $router->get('/users',                            [\App\Modules\Users\UsersController::class, 'index']);
 $router->get('/users/export',                     [\App\Modules\Users\UsersController::class, 'export']);

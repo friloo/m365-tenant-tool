@@ -43,14 +43,14 @@ class Mailer
 
         $read(); // greeting
         $write('EHLO m365tool');
-        while (($line = $read()) && $line[3] !== ' ') {}
+        while (($line = $read()) && strlen($line) >= 4 && $line[3] !== ' ') {}
 
         if ($port === 587) {
             $write('STARTTLS');
             $read();
             stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
             $write('EHLO m365tool');
-            while (($line = $read()) && $line[3] !== ' ') {}
+            while (($line = $read()) && strlen($line) >= 4 && $line[3] !== ' ') {}
         }
 
         if ($user) {

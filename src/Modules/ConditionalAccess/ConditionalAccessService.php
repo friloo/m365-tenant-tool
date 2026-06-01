@@ -9,12 +9,15 @@ class ConditionalAccessService
     public function __construct(private GraphClient $graph) {}
 
     /**
-     * Fetch all Conditional Access policies.
+     * Single source of truth for fetching all Conditional Access policies as
+     * full objects (one shared cache key so the tenant is queried once). Several
+     * modules (Security, SecurityPosture, Hardening, BreakGlass, TokenLifetime)
+     * previously each fetched this endpoint with their own cache key.
      */
-    public function getPolicies(): array
+    public static function fetchAllPolicies(GraphClient $graph): array
     {
         try {
-            $data = $this->graph->get(
+            $data = $graph->get(
                 '/identity/conditionalAccess/policies',
                 ['$top' => '200'],
                 'ca_policies',
@@ -22,9 +25,17 @@ class ConditionalAccessService
             );
             return $data['value'] ?? [];
         } catch (\Throwable $e) {
-            error_log('ConditionalAccess getPolicies: ' . $e->getMessage());
+            error_log('ConditionalAccess fetchAllPolicies: ' . $e->getMessage());
             return [];
         }
+    }
+
+    /**
+     * Fetch all Conditional Access policies.
+     */
+    public function getPolicies(): array
+    {
+        return self::fetchAllPolicies($this->graph);
     }
 
     /** Returns the last Graph error, or null. */
@@ -187,10 +198,7 @@ class ConditionalAccessService
             $clients = $p['conditions']['clientAppTypes'] ?? [];
             $hasLegacy = in_array('exchangeActiveSync', $clients, true)
                       || in_array('other', $clients, true);
-            $block = ($p['grantControls']['operator'] ?? '') === 'OR'
-                  && in_array('block', $p['grantControls']['builtInControls'] ?? [], true);
-            // Also check if operator is null but builtInControls has block
-            $block = $block || in_array('block', $p['grantControls']['builtInControls'] ?? [], true);
+            $block = in_array('block', $p['grantControls']['builtInControls'] ?? [], true);
             return $hasLegacy && $block;
         });
         if (!empty($blockLegacy)) {

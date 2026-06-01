@@ -7,11 +7,19 @@ class Session
     public static function start(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
+            // Treat the request as HTTPS unless HTTPS is explicitly 'off'. Also
+            // honour a TLS-terminating proxy via X-Forwarded-Proto. Avoids both
+            // (a) marking the cookie secure on plain HTTP (HTTPS='off') and
+            // (b) failing to mark it secure behind a reverse proxy.
+            $https = $_SERVER['HTTPS'] ?? '';
+            $fwd   = strtolower($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '');
+            $secure = ($https !== '' && strtolower($https) !== 'off') || $fwd === 'https';
+
             ini_set('session.use_strict_mode', '1');
             session_set_cookie_params([
                 'lifetime' => 0,
                 'path'     => '/',
-                'secure'   => isset($_SERVER['HTTPS']),
+                'secure'   => $secure,
                 'httponly' => true,
                 'samesite' => 'Strict',
             ]);

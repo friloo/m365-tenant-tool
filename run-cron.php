@@ -31,40 +31,16 @@ if (!flock($lock, LOCK_EX | LOCK_NB)) {
 }
 
 // ── Bootstrap ───────────────────────────────────────────────
-use App\Auth\GraphTokenManager;
-use App\Cache\GraphCache;
-use App\Core\Config;
-use App\Database\DB;
-use App\Encryption\Encryptor;
-use App\Graph\GraphClient;
+use App\Core\CliBootstrap;
 use App\Modules\Cron\CronRunner;
 
-$encryptor = new Encryptor(__DIR__ . '/storage/app.key');
-
-$ini = parse_ini_file(__DIR__ . '/storage/db_bootstrap.ini');
-if (!$ini) {
-    fwrite(STDERR, "[cron] db_bootstrap.ini not found or invalid.\n");
+try {
+    ['graph' => $graphClient] = CliBootstrap::boot(__DIR__);
+} catch (\Throwable $e) {
+    fwrite(STDERR, "[cron] Bootstrap failed: " . $e->getMessage() . "\n");
     flock($lock, LOCK_UN);
     exit(1);
 }
-
-DB::connect([
-    'host'     => $ini['db_host'],
-    'port'     => $ini['db_port'] ?? 3306,
-    'name'     => $ini['db_name'],
-    'user'     => $ini['db_user'],
-    'password' => $encryptor->decrypt($ini['db_password_enc']),
-]);
-
-$config = Config::getInstance();
-$config->setEncryptor($encryptor);
-date_default_timezone_set($config->get('timezone', 'Europe/Berlin'));
-DB::get()->exec("SET time_zone = '" . (new \DateTime())->format('P') . "'");
-
-$graphClient = new GraphClient(
-    new GraphTokenManager($encryptor),
-    new GraphCache((int)$config->get('cache_ttl', 15))
-);
 
 // ── Run ─────────────────────────────────────────────────────
 try {

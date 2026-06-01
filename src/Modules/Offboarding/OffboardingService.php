@@ -14,6 +14,7 @@ class OffboardingService
     public function searchUsers(string $q): array
     {
         try {
+            $q      = \App\Graph\GraphClient::escapeODataValue($q);
             $filter = "startsWith(displayName,'{$q}') or startsWith(userPrincipalName,'{$q}')";
             $data   = $this->graph->get(
                 '/users',
@@ -125,10 +126,11 @@ class OffboardingService
      */
     public function removeFromAllGroups(string $userId): int
     {
-        $gData  = $this->graph->get("/users/{$userId}/memberOf", ['$select' => 'id,displayName,groupTypes,membershipRule'], null, 0);
+        $gData  = $this->graph->get("/users/{$userId}/memberOf", ['$select' => 'id,displayName,groupTypes,membershipRule,onPremisesSyncEnabled'], null, 0);
         $groups = array_filter($gData['value'] ?? [], fn($g) =>
             ($g['@odata.type'] ?? '') === '#microsoft.graph.group'
-            && empty($g['membershipRule']) // skip dynamic groups
+            && empty($g['membershipRule'])                      // skip dynamic groups
+            && ($g['onPremisesSyncEnabled'] ?? null) !== true   // skip on-prem synced groups
         );
 
         $count = 0;

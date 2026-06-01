@@ -49,6 +49,8 @@ class LocalAuth
         Session::set('username', $username);
         Session::set('role', $role);
         Session::set('login_time', time());
+        // Seed last_activity so the idle-timeout window starts at login.
+        Session::set('last_activity', time());
     }
 
     public static function role(): string

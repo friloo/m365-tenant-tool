@@ -17,13 +17,23 @@ class HardeningController
 
         // Gruppieren nach Kategorie
         $byCategory = [];
+        $summary    = ['on' => 0, 'off' => 0, 'warn' => 0, 'info' => 0, 'unknown' => 0, 'total' => 0];
         foreach ($items as $item) {
             $byCategory[$item['category']][] = $item;
+            $st = $item['status'] ?? 'unknown';
+            if (!isset($summary[$st])) $st = 'unknown';
+            $summary[$st]++;
+            $summary['total']++;
         }
+        // Hardening-Score: Anteil der bereits gehärteten ("on") Einstellungen,
+        // die einen klaren Soll-Zustand haben (info/manuell zählt nicht mit).
+        $scored = $summary['on'] + $summary['off'] + $summary['warn'];
+        $summary['score'] = $scored > 0 ? (int)round($summary['on'] / $scored * 100) : 0;
 
         View::render('hardening/index', [
-            'pageTitle'  => 'Tenant-Härtung',
+            'pageTitle'  => 'Security Center',
             'byCategory' => $byCategory,
+            'summary'    => $summary,
             'flash'      => Session::getFlash('success'),
             'error'      => Session::getFlash('error'),
         ]);

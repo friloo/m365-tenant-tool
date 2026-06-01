@@ -146,8 +146,7 @@ class AuthStrengthService
         $m = strtolower($m);
         return match (true) {
             str_contains($m, 'fido')                    => 'FIDO2 Security Key',
-            str_contains($m, 'windowsHello')
-                || str_contains($m, 'windowshello')     => 'Windows Hello for Business',
+            str_contains($m, 'windowshello')            => 'Windows Hello for Business',
             str_contains($m, 'x509')
                 || str_contains($m, 'certificate')      => 'Certificate-Based Auth',
             str_contains($m, 'authenticator')

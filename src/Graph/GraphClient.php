@@ -18,11 +18,19 @@ class GraphClient
         $this->cache        = $cache;
     }
 
+    /**
+     * Escape a value for safe interpolation into an OData $filter string literal.
+     * Single quotes are the only special character and are doubled per the spec.
+     */
+    public static function escapeODataValue(string $value): string
+    {
+        return str_replace("'", "''", $value);
+    }
+
     /** Returns the last silently-swallowed Graph error (403/404), or null. */
     public function getLastError(): ?array
     {
-        return $this->lastError;
-    }
+        return $this->lastError;    }
 
     public function get(string $endpoint, array $query = [], ?string $cacheKey = null, int $ttl = 900): array
     {
@@ -103,11 +111,20 @@ class GraphClient
         }
 
         $ch = curl_init($url);
+        // Capture the real Retry-After response header (the previous code read
+        // CURLINFO_REDIRECT_COUNT, which is unrelated and always yielded 10s).
+        $retryAfterHeader = 0;
         $opts = [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER     => $headers,
             CURLOPT_TIMEOUT        => 30,
             CURLOPT_CUSTOMREQUEST  => $method,
+            CURLOPT_HEADERFUNCTION => function ($ch, $header) use (&$retryAfterHeader) {
+                if (stripos($header, 'Retry-After:') === 0) {
+                    $retryAfterHeader = (int)trim(substr($header, 12));
+                }
+                return strlen($header);
+            },
         ];
         if ($body !== null) {
             $opts[CURLOPT_POSTFIELDS] = json_encode($body);
@@ -116,13 +133,14 @@ class GraphClient
 
         $attempts = 0;
         while ($attempts < 3) {
+            $retryAfterHeader = 0;
             $response = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $attempts++;
 
             if ($httpCode === 429) {
-                // Rate limit — respect Retry-After
-                $retryAfter = (int)(curl_getinfo($ch, CURLINFO_REDIRECT_COUNT) ?: 10);
+                // Rate limit — respect the Retry-After header (fallback 10s).
+                $retryAfter = $retryAfterHeader > 0 ? $retryAfterHeader : 10;
                 sleep(min($retryAfter, 30));
                 continue;
             }
@@ -198,7 +216,9 @@ class GraphClient
         }
         $url    = $this->buildUrl($endpoint, $query);
         $result = $this->request('GET', $url, true);
-        if ($cacheKey) $this->cache->set($cacheKey, $result, $ttl);
+        // Don't cache results from a swallowed 403/404 (mirrors get()/paginate()),
+        // otherwise a transient permission error sticks for the whole TTL.
+        if ($cacheKey && $this->lastError === null) $this->cache->set($cacheKey, $result, $ttl);
         return $result;
     }
 
@@ -293,6 +313,37 @@ class GraphClient
             $this->cache->set($cacheKey, $result, $ttl);
         }
         return $result;
+    }
+
+    /**
+     * Fetch the raw body of a Reports endpoint (following the CDN redirect),
+     * without any JSON/CSV parsing. Modules that need their own CSV column
+     * mapping use this instead of re-implementing the authenticated cURL call
+     * (previously copy-pasted with a ReflectionClass hack on tokenManager).
+     * Returns '' on any error.
+     */
+    public function fetchRawReport(string $endpoint): string
+    {
+        $url   = str_starts_with($endpoint, 'https://') ? $endpoint : ($this->baseUrl . $endpoint);
+        $token = $this->tokenManager->getToken();
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true, // follow redirect to the actual CSV
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Bearer ' . $token,
+                'Accept: text/csv, application/json',
+            ],
+            CURLOPT_TIMEOUT => 30,
+        ]);
+        $body     = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($httpCode >= 400 || $body === false || $body === '') {
+            return '';
+        }
+        return (string)$body;
     }
 
     private function parseCsvReport(string $csv): array
