@@ -239,25 +239,16 @@ class OneDriveService
      */
     public function deprovisionDrive(string $userId): void
     {
-        // Resolve the site ID from the drive's sharePointIds
-        $drive = $this->graph->get(
-            "/users/{$userId}/drive",
-            ['$select' => 'id,sharePointIds,webUrl'],
-            null,
-            0
+        // Microsoft Graph does NOT support deleting a OneDrive/SharePoint site
+        // (there is no DELETE /sites/{id}; it returns "Invalid request"). OneDrive
+        // sites can only be removed via the SharePoint Admin Center or PnP
+        // PowerShell (Remove-SPOSite), which need SharePoint-specific app-only
+        // auth — not this tool's Graph token. Fail with a clear, actionable error
+        // instead of issuing the unsupported call.
+        throw new \RuntimeException(
+            'OneDrive-Sites können nicht über die Graph-API gelöscht werden. '
+            . 'Bitte im SharePoint Admin Center → „Aktive Sites" nach der OneDrive-URL des '
+            . 'Benutzers suchen und dort löschen (alternativ per PnP PowerShell: Remove-SPOSite).'
         );
-
-        if (empty($drive['id'])) {
-            throw new \RuntimeException('Kein OneDrive für diesen Benutzer gefunden.');
-        }
-
-        $siteId = $drive['sharePointIds']['siteId'] ?? null;
-        if (!$siteId) {
-            throw new \RuntimeException('SharePoint Site-ID konnte nicht ermittelt werden.');
-        }
-
-        $this->graph->delete("/sites/{$siteId}");
-        $this->graph->getCache()->forget('od_personal_report');
-        $this->graph->getCache()->forget("drive_{$userId}");
     }
 }

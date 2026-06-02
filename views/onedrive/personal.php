@@ -149,14 +149,12 @@ $total = count($list);
                                     </button>
                                 </form>
                             <?php else: ?>
-                                <form method="post" action="/onedrive/deprovision/<?= $e($u['id']) ?>" style="display:inline;">
-                                    <?= \App\Core\Csrf::field() ?>
-                                    <button type="submit" class="btn btn-sm btn-outline-danger"
-                                            title="OneDrive löschen (Papierkorb)"
-                                            onclick="return confirm('ACHTUNG: Das OneDrive von <?= $e(addslashes($u['displayName'])) ?> wird gelöscht und in den SharePoint-Papierkorb verschoben.\n\nNach 93 Tagen werden alle Daten endgültig gelöscht.\n\nFortfahren?')">
-                                        <i class="bi bi-cloud-minus me-1"></i> Entfernen
-                                    </button>
-                                </form>
+                                <a href="https://admin.microsoft.com/sharepoint?page=siteManagement&modern=true"
+                                   target="_blank" rel="noopener"
+                                   class="btn btn-sm btn-outline-secondary"
+                                   title="OneDrive-/SharePoint-Sites können nicht über die Graph-API gelöscht werden. Lösche das Laufwerk im SharePoint Admin Center → Aktive Sites (nach der OneDrive-URL des Benutzers suchen).">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i> Im SP-Admin entfernen
+                                </a>
                             <?php endif; ?>
                         </td>
                     </tr>
