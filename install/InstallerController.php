@@ -21,6 +21,40 @@ class InstallerController
         return file_exists($this->lockPath);
     }
 
+    /**
+     * Defence in depth: even if the lock file is missing (deleted, or an aborted
+     * finish), refuse to re-run the installer when the DB already holds an admin
+     * password — otherwise an unauthenticated visitor could reset it. Any error
+     * (no DB config yet, unreachable DB) means "not configured" → allow installer.
+     */
+    public function hasExistingConfig(): bool
+    {
+        $bootstrap = dirname(__DIR__) . '/storage/db_bootstrap.ini';
+        if (!file_exists($bootstrap) || !file_exists($this->keyPath)) {
+            return false;
+        }
+        try {
+            $enc = new \App\Encryption\Encryptor($this->keyPath);
+            $ini = @parse_ini_file($bootstrap);
+            if (!is_array($ini) || empty($ini['db_password_enc']) || empty($ini['db_host'])) {
+                return false;
+            }
+            \App\Database\DB::connect([
+                'host'     => $ini['db_host'],
+                'port'     => $ini['db_port'] ?? 3306,
+                'name'     => $ini['db_name'] ?? '',
+                'user'     => $ini['db_user'] ?? '',
+                'password' => $enc->decrypt($ini['db_password_enc']),
+            ]);
+            $row = \App\Database\DB::fetchOne(
+                "SELECT value FROM app_config WHERE `key` = 'admin_password' LIMIT 1"
+            );
+            return !empty($row['value']);
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
     public function run(): void
     {
         session_start();

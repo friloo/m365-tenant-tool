@@ -479,11 +479,19 @@ chown -R www-data:www-data /var/www/m365-tenant-tool/storage/
 
 ### Empfehlungen
 
-- `storage/` per Apache-Config vor Webzugriff sperren (im VirtualHost oben enthalten)
+- **`storage/` zwingend serverseitig sperren** — dort liegen `app.key` (AES-Master-Key)
+  und `db_bootstrap.ini` (verschlüsseltes DB-Passwort). Verlass dich **nicht allein auf
+  `.htaccess`**: Bei NGINX oder `AllowOverride None` wird es ignoriert. Am besten die App
+  **außerhalb des DocumentRoot** deployen und nur `public/` + `index.php` ausliefern, oder
+  `storage/` per Server-Config (`<Directory> Require all denied` / NGINX `location`) blocken.
+- **Installer nach Setup abriegeln** — nach Abschluss ist er per `storage/installed.lock`
+  gesperrt; zusätzlich verweigert er sich, sobald die DB bereits ein Admin-Passwort enthält.
+  Idealerweise das `install/`-Verzeichnis nach der Installation ganz entfernen/sperren.
 - HTTPS erzwingen (HTTP → HTTPS Redirect), `app.key` separat ins Backup
 - MySQL-Benutzer nur mit `SELECT, INSERT, UPDATE, DELETE` auf die App-Datenbank
 - Azure-AD-Secret mit kurzer Laufzeit (6–12 Monate) und Rotationsplan
 - 2FA für den Admin-Login aktivieren (`/settings/2fa`)
+- Debug-Details nur serverseitig über `M365_DEBUG=1` aktivieren (nie dauerhaft in Produktion)
 
 ---
 

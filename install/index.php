@@ -11,7 +11,9 @@ require_once __DIR__ . '/InstallerController.php';
 
 $installer = new InstallerController();
 
-if ($installer->isInstalled()) {
+// Refuse the installer if already installed (lock file) OR if the DB already
+// holds an admin password (defence in depth against a deleted/aborted lock).
+if ($installer->isInstalled() || $installer->hasExistingConfig()) {
     header('Location: ../login');
     exit;
 }
