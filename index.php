@@ -219,10 +219,12 @@ if (!file_exists($bootstrapFile)) {
     }
 }
 
-// Ensure required tables exist. Running DDL on every request is fragile (a
-// read-only replica or a user who has lost DDL privileges would fatal here),
-// so do it once per process and tolerate failures — the installer is the
-// authoritative source for schema.
+// Ensure required tables exist. These are also defined in src/Database/Schema.sql
+// (the authoritative source the installer runs); this idempotent block is the
+// upgrade safety net so OTA updates that add tables work without a reinstall, and
+// so a cron-first start before any web request still has the schema. Running DDL
+// on every request is fragile (read-only replica / lost DDL privileges would fatal
+// here), so it is wrapped in try/catch and tolerated.
 $ddl = [
     "CREATE TABLE IF NOT EXISTS m365_users (
         id               INT AUTO_INCREMENT PRIMARY KEY,
