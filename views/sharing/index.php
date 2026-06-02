@@ -3,6 +3,8 @@ $items      = $summary['items']  ?? [];
 $byType     = $summary['byType'] ?? [];
 $hasScanned = $summary['hasScanned'] ?? false;
 ?>
+<?php \App\Core\View::partial('partials/module_tabs', ['tabs' => [['label'=>'Freigaben','href'=>'/sharing','icon'=>'link-45deg'],['label'=>'Monitor','href'=>'/sharing/monitor','icon'=>'eye-slash'],['label'=>'Richtlinien','href'=>'/sharing/policies','icon'=>'sliders'],]]); ?>
+
 
 <?php if (!empty($flash)): ?>
     <div class="alert alert-success alert-dismissible mb-3"><i class="bi bi-check-circle me-2"></i><?= $e($flash) ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>

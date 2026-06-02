@@ -46,8 +46,10 @@ class Navigation
             ['section' => null,                  'icon' => 'cloud',                'label' => 'OneDrive',               'route' => 'onedrive',                   'admin' => false],
             ['section' => null,                  'icon' => 'share',                'label' => 'SharePoint',             'route' => 'sharepoint',                 'admin' => false],
             ['section' => null,                  'icon' => 'link-45deg',           'label' => 'Freigaben',              'route' => 'sharing',                    'admin' => false],
-            ['section' => null,                  'icon' => 'eye-slash',            'label' => 'Freigaben-Monitor',      'route' => 'sharing/monitor',            'admin' => false],
-            ['section' => null,                  'icon' => 'sliders',              'label' => 'Freigaberichtlinien',    'route' => 'sharing/policies',           'admin' => false],
+            // Monitor & Richtlinien sind als Tabs in der Freigaben-Ansicht erreichbar
+            // (Sub-Pfade von /sharing → Active-State bleibt korrekt).
+            ['section' => null, 'icon' => null, 'label' => null, 'route' => 'sharing/monitor',  'admin' => false],
+            ['section' => null, 'icon' => null, 'label' => null, 'route' => 'sharing/policies', 'admin' => false],
 
             // ── Sicherheit & Härtung (Status, Härtung, Scores)
             ['section' => 'Sicherheit & Härtung','icon' => 'shield-check',         'label' => 'Sicherheit',             'route' => 'security',                   'admin' => false],
