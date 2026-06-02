@@ -38,15 +38,9 @@ class DashboardService
             }
         } catch (\Throwable) {}
 
-        // CA policies: reuse cache populated by CA module
+        // CA policies: reuse the shared provider (single cache key ca_policies)
         try {
-            $caPolicies = $this->graph->get(
-                '/identity/conditionalAccess/policies',
-                ['$top' => '200'],
-                'ca_policies',
-                900
-            );
-            $policies = $caPolicies['value'] ?? [];
+            $policies = \App\Modules\ConditionalAccess\ConditionalAccessService::fetchAllPolicies($this->graph);
             $status['ca_enabled']     = count(array_filter($policies, fn($p) => ($p['state'] ?? '') === 'enabled'));
             $status['ca_report_only'] = count(array_filter($policies, fn($p) => ($p['state'] ?? '') === 'enabledForReportingButNotEnforced'));
         } catch (\Throwable) {}

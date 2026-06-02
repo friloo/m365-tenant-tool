@@ -301,9 +301,8 @@ class ApiController
     {
         ApiAuth::require('read');
         try {
-            $r = app_graph()->get('/identity/conditionalAccess/policies',
-                ['$select' => 'id,displayName,state,createdDateTime,modifiedDateTime'], 'api_ca', 600);
-            self::json(['policies' => $r['value'] ?? []]);
+            $policies = \App\Modules\ConditionalAccess\ConditionalAccessService::fetchAllPolicies(app_graph());
+            self::json(['policies' => $policies]);
         } catch (\Throwable $e) { self::err($e); }
     }
 

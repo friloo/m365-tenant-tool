@@ -265,7 +265,9 @@ class UsersController
 
     public function bulkAction(): void
     {
-        LocalAuth::require();
+        // Mass disable / MFA-reset / license changes affect many users at once —
+        // require admin, consistent with single-user offboarding (requireAdmin).
+        LocalAuth::requireAdmin();
 
         $action  = $_POST['action'] ?? '';
         $userIds = array_values(array_filter(array_map('trim', (array)($_POST['user_ids'] ?? []))));

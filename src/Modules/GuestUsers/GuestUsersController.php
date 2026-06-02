@@ -40,7 +40,8 @@ class GuestUsersController
 
     public function remove(string $id): void
     {
-        LocalAuth::require();
+        // Hard DELETE of a user — admin only, consistent with other deletions.
+        LocalAuth::requireAdmin();
         try {
             app_service(GuestUsersService::class)->removeGuest($id);
             Session::flash('success', 'Gastbenutzer gelöscht.');
