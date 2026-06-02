@@ -21,9 +21,9 @@ $totalUsed = array_sum(array_column($drives, 'used'));
 <div class="row g-3 mb-4">
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">OneDrives (Stichprobe)</div>
+            <div class="metric-label">OneDrives<?= !empty($sample) ? ' (Stichprobe)' : '' ?></div>
             <div class="metric-value"><?= count($drives) ?></div>
-            <div class="metric-sub">von max. 50 Benutzern</div>
+            <div class="metric-sub"><?= !empty($sample) ? 'von max. 50 Benutzern' : 'alle provisionierten Laufwerke' ?></div>
         </div>
     </div>
     <div class="col-sm-4">

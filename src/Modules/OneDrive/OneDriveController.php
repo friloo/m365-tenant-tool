@@ -15,15 +15,22 @@ class OneDriveController
         LocalAuth::require();
         $service = app_service(OneDriveService::class);
 
-        $users = []; $drives = []; $loadErr = null;
+        $users = []; $drives = []; $loadErr = null; $sample = false;
         try { $users = app_service(UsersService::class)->getAll(); }
         catch (\Throwable $e) { $loadErr = 'Benutzer nicht ladbar: ' . $e->getMessage(); error_log('OneDrive index users: ' . $e->getMessage()); }
-        try { $drives = $service->getUserDrives($users); }
+
+        // Prefer the tenant usage report (covers ALL provisioned OneDrives in one
+        // call). Only if it's unavailable fall back to the per-user sample.
+        try {
+            $drives = $service->getStorageOverview($users);
+            if (empty($drives)) { $drives = $service->getUserDrives($users); $sample = true; }
+        }
         catch (\Throwable $e) { $loadErr = ($loadErr ? $loadErr . ' | ' : '') . 'Drives: ' . $e->getMessage(); error_log('OneDrive index drives: ' . $e->getMessage()); }
 
         View::render('onedrive/index', [
             'pageTitle' => 'OneDrive',
             'drives'    => $drives,
+            'sample'    => $sample,
             'error'     => Session::getFlash('error') ?: $loadErr,
         ]);
     }

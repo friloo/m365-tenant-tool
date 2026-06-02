@@ -63,6 +63,40 @@ class OneDriveService
     }
 
     /**
+     * Storage overview for ALL provisioned OneDrives via the tenant usage report
+     * (single Graph call), mapped to the index table shape. Joins display names
+     * from $users. Returns [] if the report is unavailable so the caller can fall
+     * back to the per-user sample.
+     */
+    public function getStorageOverview(array $users): array
+    {
+        $map = [];
+        try { $map = $this->getPersonalDrivesReport(); } catch (\Throwable) { $map = []; }
+        if (empty($map)) return [];
+
+        $nameByUpn = [];
+        foreach ($users as $u) {
+            $nameByUpn[strtolower($u['userPrincipalName'] ?? '')] = $u['displayName'] ?? ($u['userPrincipalName'] ?? '');
+        }
+
+        $result = [];
+        foreach ($map as $upn => $d) {
+            $used  = (int)($d['storageUsed'] ?? 0);
+            $total = (int)($d['storageAllocated'] ?? 0);
+            $result[] = [
+                'user'      => $nameByUpn[$upn] ?? $upn,
+                'upn'       => $upn,
+                'used'      => $used,
+                'total'     => $total,
+                'remaining' => max(0, $total - $used),
+                'state'     => ($total > 0 && $used / $total >= 0.9) ? 'warning' : 'normal',
+            ];
+        }
+        usort($result, fn($a, $b) => $b['used'] <=> $a['used']);
+        return $result;
+    }
+
+    /**
      * Returns a map of lowercase UPN → drive info for all provisioned OneDrives,
      * using the tenant-wide usage report (single API call, cached).
      */
