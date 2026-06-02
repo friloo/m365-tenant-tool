@@ -214,6 +214,19 @@ class UsersController
         Redirect::to('/users/' . $id);
     }
 
+    public function resetPassword(string $id): void
+    {
+        LocalAuth::requireAdmin();
+        try {
+            $pw = app_service(UsersService::class)->resetPassword($id);
+            AppAudit::log('password_reset', 'users', "User ID: {$id}");
+            Session::flash('success', 'Temporäres Passwort gesetzt (Änderung bei nächster Anmeldung erforderlich): ' . $pw);
+        } catch (\Throwable $e) {
+            Session::flash('error', 'Passwort-Reset fehlgeschlagen: ' . $e->getMessage());
+        }
+        Redirect::to('/users/' . $id);
+    }
+
     public function assignLicense(string $id): void
     {
         LocalAuth::require();

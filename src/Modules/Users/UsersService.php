@@ -81,7 +81,34 @@ class UsersService
         $this->graph->getCache()->forget("user_{$userId}");
     }
 
-    public function assignLicense(string $userId, string $skuId): void
+    /**
+     * Reset a user's password to a generated temporary one (or a supplied value)
+     * and require a change at next sign-in. Returns the password so the admin can
+     * hand it over once. Needs User.ReadWrite.All.
+     */
+    public function resetPassword(string $userId, ?string $newPassword = null, bool $forceChange = true): string
+    {
+        $password = ($newPassword !== null && $newPassword !== '') ? $newPassword : self::generatePassword();
+        $this->graph->patch("/users/{$userId}", [
+            'passwordProfile' => [
+                'password'                      => $password,
+                'forceChangePasswordNextSignIn' => $forceChange,
+            ],
+        ]);
+        $this->graph->getCache()->forget("user_{$userId}");
+        return $password;
+    }
+
+    /** Generate a random password that satisfies Entra complexity (upper/lower/digit/symbol). */
+    private static function generatePassword(int $len = 16): string
+    {
+        $sets = ['ABCDEFGHJKLMNPQRSTUVWXYZ', 'abcdefghijkmnpqrstuvwxyz', '23456789', '!@#$%*?-_'];
+        $pw   = '';
+        foreach ($sets as $s) { $pw .= $s[random_int(0, strlen($s) - 1)]; }
+        $all = implode('', $sets);
+        for ($i = strlen($pw); $i < $len; $i++) { $pw .= $all[random_int(0, strlen($all) - 1)]; }
+        return str_shuffle($pw);
+    }
     {
         $this->graph->post("/users/{$userId}/assignLicense", [
             'addLicenses'    => [['skuId' => $skuId, 'disabledPlans' => []]],

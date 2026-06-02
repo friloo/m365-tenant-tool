@@ -445,6 +445,7 @@ $router->get('/users/export',                     [\App\Modules\Users\UsersContr
 $router->get('/users/{id}',                       [\App\Modules\Users\UsersController::class, 'show']);
 $router->post('/users/{id}/toggle-enabled',       [\App\Modules\Users\UsersController::class, 'toggleEnabled']);
 $router->post('/users/{id}/reset-mfa',            [\App\Modules\Users\UsersController::class, 'resetMfa']);
+$router->post('/users/{id}/reset-password',        [\App\Modules\Users\UsersController::class, 'resetPassword']);
 $router->post('/users/{id}/assign-license',       [\App\Modules\Users\UsersController::class, 'assignLicense']);
 $router->post('/users/{id}/remove-license',       [\App\Modules\Users\UsersController::class, 'removeLicense']);
 $router->get('/users/{id}/edit',                  [\App\Modules\Users\UsersController::class, 'editForm']);
