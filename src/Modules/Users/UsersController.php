@@ -103,12 +103,14 @@ class UsersController
     public function offboarding(string $id): void
     {
         LocalAuth::requireAdmin();
-        $service  = app_service(UsersService::class);
+        // Reuse the dedicated services instead of duplicating Graph calls.
+        $off       = app_service(\App\Modules\Offboarding\OffboardingService::class);
+        $mbx       = app_service(\App\Modules\Mailboxes\MailboxService::class);
         $completed = [];
 
         if (!empty($_POST['revoke_sessions'])) {
             try {
-                $service->revokeSignInSessions($id);
+                $off->revokeSessions($id);
                 $completed[] = 'Sitzungen beendet';
             } catch (\Throwable $e) {
                 Session::flash('error', 'Sitzungen beenden fehlgeschlagen: ' . $e->getMessage());
@@ -117,7 +119,7 @@ class UsersController
 
         if (!empty($_POST['remove_licenses'])) {
             try {
-                $service->removeAllLicenses($id);
+                $off->removeAllLicenses($id);
                 $completed[] = 'Lizenzen entzogen';
             } catch (\Throwable $e) {
                 Session::flash('error', 'Lizenzen entziehen fehlgeschlagen: ' . $e->getMessage());
@@ -128,12 +130,10 @@ class UsersController
             $forwardTo = trim($_POST['forward_to'] ?? '');
             if ($forwardTo !== '') {
                 try {
-                    app_graph()->patch("/users/{$id}/mailboxSettings", [
-                        'forwardingSmtpAddress' => $forwardTo,
-                    ]);
+                    $mbx->setForwarding($id, $forwardTo);
                     $completed[] = 'E-Mail-Weiterleitung gesetzt';
-                } catch (\Throwable) {
-                    // silently skip — may require MailboxSettings.ReadWrite permission
+                } catch (\Throwable $e) {
+                    Session::flash('error', 'Weiterleitung fehlgeschlagen: ' . $e->getMessage());
                 }
             }
         }
@@ -142,13 +142,7 @@ class UsersController
             $oooMessage = trim($_POST['ooo_message'] ?? '');
             if ($oooMessage !== '') {
                 try {
-                    app_graph()->patch("/users/{$id}/mailboxSettings", [
-                        'automaticRepliesSetting' => [
-                            'status'               => 'alwaysEnabled',
-                            'internalReplyMessage' => $oooMessage,
-                            'externalReplyMessage' => $oooMessage,
-                        ],
-                    ]);
+                    $mbx->setAutoReply($id, $oooMessage, true);
                     $completed[] = 'Abwesenheitsnotiz aktiviert';
                 } catch (\Throwable $e) {
                     Session::flash('error', 'Abwesenheitsnotiz fehlgeschlagen: ' . $e->getMessage());

@@ -170,57 +170,7 @@ class UsersService
         $this->graph->getCache()->forget("user_{$userId}");
     }
 
-    public function revokeSignInSessions(string $userId): void
-    {
-        $this->graph->post("/users/{$userId}/revokeSignInSessions", []);
-    }
-
-    public function removeAllLicenses(string $userId): void
-    {
-        $user = $this->graph->get(
-            "/users/{$userId}",
-            ['$select' => 'assignedLicenses'],
-            null,
-            0
-        );
-        $licenses = $user['assignedLicenses'] ?? [];
-        if (empty($licenses)) {
-            return;
-        }
-        $skuIds = array_column($licenses, 'skuId');
-        $this->graph->post("/users/{$userId}/assignLicense", [
-            'addLicenses'    => [],
-            'removeLicenses' => $skuIds,
-        ]);
-        $this->graph->getCache()->forget('users_all');
-        $this->graph->getCache()->forget("user_{$userId}");
-        $this->graph->getCache()->forget('licenses_users');
-    }
-
-    public function removeFromAllGroups(string $userId): array
-    {
-        $result = $this->graph->get(
-            "/users/{$userId}/memberOf",
-            ['$select' => 'id,displayName,groupTypes,membershipRule,onPremisesSyncEnabled'],
-            null,
-            0
-        );
-        $memberships = $result['value'] ?? [];
-        $removed = [];
-        foreach ($memberships as $group) {
-            // Skip anything that isn't a real group, plus dynamic and on-prem
-            // synced groups (membership there can't be changed via Graph).
-            if (($group['@odata.type'] ?? '') !== '#microsoft.graph.group') continue;
-            if (($group['onPremisesSyncEnabled'] ?? null) === true) continue;
-            if (!empty($group['membershipRule'])) continue;
-            $groupId = $group['id'] ?? '';
-            if (!$groupId) continue;
-            try {
-                $this->graph->delete("/groups/{$groupId}/members/{$userId}/\$ref");
-                $removed[] = $group['displayName'] ?? $groupId;
-            } catch (\Throwable) {}
-        }
-        $this->graph->getCache()->forget("user_groups_{$userId}");
-        return $removed;
-    }
+    // Offboarding actions (revoke sessions / remove licenses / remove from groups)
+    // live in App\Modules\Offboarding\OffboardingService — the single source used
+    // by both the Offboarding module and the inline offboarding on the user page.
 }
