@@ -109,6 +109,8 @@ class UsersService
         for ($i = strlen($pw); $i < $len; $i++) { $pw .= $all[random_int(0, strlen($all) - 1)]; }
         return str_shuffle($pw);
     }
+
+    public function assignLicense(string $userId, string $skuId): void
     {
         $this->graph->post("/users/{$userId}/assignLicense", [
             'addLicenses'    => [['skuId' => $skuId, 'disabledPlans' => []]],
