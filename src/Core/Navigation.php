@@ -68,16 +68,18 @@ class Navigation
             ['section' => null,                  'icon' => 'arrow-right-square',   'label' => 'Auto-Forward-Audit',     'route' => 'mailboxrules',               'admin' => false],
             ['section' => null,                  'icon' => 'app-indicator',        'label' => 'OAuth-App-Audit',        'route' => 'oauthaudit',                 'admin' => false],
             ['section' => null,                  'icon' => 'shield-shaded',        'label' => 'DLP-Vorfälle',           'route' => 'dlpincidents',               'admin' => false],
-            ['section' => null,                  'icon' => 'eye-fill',             'label' => 'Insider-Threat',         'route' => 'insiderthreat',              'admin' => false],
+
+            // ── Erweiterte Sicherheit (Nischen-/Spezialmodule)
+            ['section' => 'Erweiterte Sicherheit','icon' => 'eye-fill',            'label' => 'Insider-Threat',         'route' => 'insiderthreat',              'admin' => false],
             ['section' => null,                  'icon' => 'bullseye',             'label' => 'Phishing-Simulationen',  'route' => 'phishingsim',                'admin' => false],
             ['section' => null,                  'icon' => 'arrow-left-right',     'label' => 'Cross-Tenant-Access',    'route' => 'crosstenantaccess',          'admin' => false],
             ['section' => null,                  'icon' => 'clock-history',        'label' => 'Token-Lifetime',         'route' => 'tokenlifetime',              'admin' => false],
             ['section' => null,                  'icon' => 'person-bounding-box',  'label' => 'Identity Provider Trust','route' => 'identityproviders',          'admin' => false],
+            ['section' => null,                  'icon' => 'lock-fill',            'label' => 'Customer Lockbox',       'route' => 'customerlockbox',            'admin' => false],
 
             // ── Apps & Konfiguration
             ['section' => 'Apps & Konfiguration','icon' => 'grid-3x3-gap',         'label' => 'App-Registrierungen',    'route' => 'appregistrations',           'admin' => false],
             ['section' => null,                  'icon' => 'diagram-2',            'label' => 'Lifecycle Workflows',    'route' => 'lifecycle',                  'admin' => false],
-            ['section' => null,                  'icon' => 'lock-fill',            'label' => 'Customer Lockbox',       'route' => 'customerlockbox',            'admin' => false],
             ['section' => null,                  'icon' => 'globe2',               'label' => 'Domain Health',          'route' => 'domainhealth',               'admin' => false],
             ['section' => null,                  'icon' => 'database-fill-check',  'label' => 'Backup-Status',          'route' => 'backup',                     'admin' => false],
             ['section' => null,                  'icon' => 'robot',                'label' => 'KI-Berater',             'route' => 'ai',                         'admin' => false],
