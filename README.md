@@ -540,7 +540,7 @@ Kern-Tabellen (das vollständige Schema liegt in `src/Database/Schema.sql`):
 | Symptom | Vorgehen |
 |---|---|
 | Weiße Seite / Interner Fehler | `/health` aufrufen – zeigt PHP-Version, geladene Extensions und ob `storage/`-Dateien existieren (ohne DB/Autoload) |
-| Detaillierte Fehlermeldungen sehen | Cookie/Param `m365_debug=1` setzen (zeigt Stacktraces; Admins sehen Details ohnehin) |
+| Detaillierte Fehlermeldungen sehen | Als Admin eingeloggt werden Stacktraces ohnehin angezeigt; serverseitig per Env-Var `M365_DEBUG=1` global aktivierbar (nicht über Cookie/URL — das wäre ein Info-Leak) |
 | „Verbindung nicht konfiguriert" | Tenant-Daten unter `/settings` ergänzen |
 | Modul zeigt „Berechtigung fehlt" | unter `/settings/permissions` prüfen, welche Graph-Permission fehlt, und Admin-Consent erteilen |
 | Cron läuft nicht | Logfile aus dem crontab-Eintrag prüfen; `run-cron.php` manuell als `www-data` ausführen |

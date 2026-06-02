@@ -12,14 +12,15 @@ if (ob_get_level() === 0) {
     ob_start();
 }
 
-// Debug mode: set cookie m365_debug=1 to see full stack traces and PHP
-// warnings inline. Production default is errors hidden + logged only.
-$debugMode = (($_COOKIE['m365_debug'] ?? '') === '1') || (($_GET['m365_debug'] ?? '') === '1');
+// Debug mode is SERVER-controlled only (env M365_DEBUG=1). It must NOT be a
+// freely-settable cookie/GET param — that would let any unauthenticated visitor
+// turn on inline PHP warnings and full stack traces (path/info disclosure).
+// Logged-in admins still get full error details via their session (see handlers).
+$debugMode = (getenv('M365_DEBUG') === '1') || (($_ENV['M365_DEBUG'] ?? '') === '1');
 ini_set('log_errors', '1');
 if ($debugMode) {
     ini_set('display_errors', '1');
     error_reporting(E_ALL);
-    setcookie('m365_debug', '1', ['expires' => time() + 3600, 'path' => '/', 'httponly' => true, 'samesite' => 'Strict']);
 } else {
     // Some shared hosts force display_errors=1 via php_admin_value; ini_set is
     // then a no-op. Restrict error_reporting so deprecated/notice/warning

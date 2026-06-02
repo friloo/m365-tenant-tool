@@ -52,11 +52,12 @@ class AuthController
         $creds = LocalAuth::attemptCredentials($username, $password);
 
         if ($creds !== null) {
-            DB::execute("DELETE FROM login_attempts WHERE ip_address = ?", [$ip]);
-
             // Check if TOTP 2FA is required (admin only when secret is configured)
             $totpSecret = Config::getInstance()->get('admin_totp_secret');
             if ($creds['role'] === 'admin' && $totpSecret) {
+                // Do NOT clear the attempt counter yet — login is only half done.
+                // Clearing here would let an attacker with the correct password
+                // reset the rate limit and brute-force 2FA codes.
                 Session::set('_2fa_pending', true);
                 Session::set('_2fa_credentials', $creds);
                 Session::set('_2fa_ip', $ip);
@@ -64,6 +65,7 @@ class AuthController
                 return;
             }
 
+            DB::execute("DELETE FROM login_attempts WHERE ip_address = ?", [$ip]);
             LocalAuth::setSessionDirect($creds);
             AppAudit::log('login_success', 'auth', "User: {$username}");
             Redirect::to('/');
@@ -91,6 +93,20 @@ class AuthController
     {
         if (!Session::get('_2fa_pending')) {
             Redirect::to('/login');
+            return;
+        }
+
+        // Rate-limit the 2FA step too (same IP window as the password step),
+        // otherwise codes could be brute-forced unbounded.
+        $ip = Session::get('_2fa_ip', $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
+        $attempts = DB::fetchOne(
+            "SELECT COUNT(*) AS c FROM login_attempts
+             WHERE ip_address = ? AND attempted_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)",
+            [$ip]
+        )['c'] ?? 0;
+        if ((int)$attempts >= 5) {
+            Session::flash('error', 'Zu viele fehlgeschlagene Versuche. Bitte warte 15 Minuten.');
+            Redirect::to('/login/2fa');
             return;
         }
 
@@ -133,6 +149,9 @@ class AuthController
 
     private function completeTwofaLogin(array $creds, string $auditAction): void
     {
+        // Login fully completed → now it's safe to clear the attempt counter.
+        $ip = Session::get('_2fa_ip', $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
+        DB::execute("DELETE FROM login_attempts WHERE ip_address = ?", [$ip]);
         Session::remove('_2fa_pending');
         Session::remove('_2fa_credentials');
         Session::remove('_2fa_ip');
