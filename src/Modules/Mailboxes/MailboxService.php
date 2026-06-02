@@ -364,7 +364,7 @@ class MailboxService
             ];
         }
 
-        $this->graph->getCache()->put($cacheKey, $result, 3600);
+        $this->graph->getCache()->set($cacheKey, $result, 3600);
 
         return $result;
     }
@@ -466,7 +466,7 @@ class MailboxService
             ];
         }
 
-        $this->graph->getCache()->put($cacheKey, $result, 1800);
+        $this->graph->getCache()->set($cacheKey, $result, 1800);
 
         return $result;
     }
