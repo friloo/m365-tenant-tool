@@ -18,7 +18,11 @@ class OneDriveController
         $users = []; $drives = []; $loadErr = null;
         try { $users = app_service(UsersService::class)->getAll(); }
         catch (\Throwable $e) { $loadErr = 'Benutzer nicht ladbar: ' . $e->getMessage(); error_log('OneDrive index users: ' . $e->getMessage()); }
-        try { $drives = $service->getUserDrives($users); }
+
+        // getStorageOverview covers ALL provisioned OneDrives: tenant usage report
+        // first, with an automatic per-user fallback (real names) when the report
+        // is missing or anonymised.
+        try { $drives = $service->getStorageOverview($users); }
         catch (\Throwable $e) { $loadErr = ($loadErr ? $loadErr . ' | ' : '') . 'Drives: ' . $e->getMessage(); error_log('OneDrive index drives: ' . $e->getMessage()); }
 
         View::render('onedrive/index', [
@@ -42,16 +46,11 @@ class OneDriveController
         $allUsers = []; $driveMap = []; $loadErr = null;
         try { $allUsers = app_service(UsersService::class)->getAll(); }
         catch (\Throwable $e) { $loadErr = 'Benutzer: ' . $e->getMessage(); error_log('OneDrive personal users: ' . $e->getMessage()); }
-        try { $driveMap = $service->getPersonalDrivesReport(); }
-        catch (\Throwable $e) { error_log('OneDrive personal report: ' . $e->getMessage()); }
+        // Report first, with automatic per-user fallback when the report is empty
+        // OR anonymised (concealed user names) — so names are always resolvable.
+        try { $driveMap = $service->getProvisionedDriveMap($allUsers); }
+        catch (\Throwable $e) { $driveMap = []; error_log('OneDrive personal drive map: ' . $e->getMessage()); }
         $reportMode = !empty($driveMap);
-
-        if (!$reportMode) {
-            // Report API returned empty (permission issue, anonymisation, or $format problem).
-            // Fall back to per-user drive checks for the first 150 users.
-            try { $driveMap = $service->getPersonalDrivesPerUser($allUsers, 150); }
-            catch (\Throwable $e) { $driveMap = []; error_log('OneDrive personal perUser: ' . $e->getMessage()); }
-        }
 
         $list = [];
         foreach ($allUsers as $user) {
