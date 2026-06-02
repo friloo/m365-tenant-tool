@@ -145,12 +145,14 @@
                                 <div class="d-flex gap-1 flex-wrap">
                                     <form method="POST" action="/riskysignins/<?= $e($userId) ?>/confirm-compromised"
                                           onsubmit="return confirm('Benutzer als kompromittiert markieren?');">
+                                        <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-danger" style="font-size:11px;padding:2px 8px;">
                                             <i class="bi bi-exclamation-octagon me-1"></i>Kompromittiert
                                         </button>
                                     </form>
                                     <form method="POST" action="/riskysignins/<?= $e($userId) ?>/dismiss-risk"
                                           onsubmit="return confirm('Risiko für diesen Benutzer zurücksetzen?');">
+                                        <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-outline-secondary" style="font-size:11px;padding:2px 8px;">
                                             <i class="bi bi-check2 me-1"></i>Zurücksetzen
                                         </button>

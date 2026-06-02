@@ -148,6 +148,7 @@ $gapClass = ['ok' => 'success',                    'warning' => 'warning',      
                 foreach ($stateOptions as $val => $label): ?>
                 <li>
                   <form method="POST" action="/conditionalaccess/<?= $pid ?>/toggle">
+                      <?= \App\Core\Csrf::field() ?>
                     <input type="hidden" name="state" value="<?= $e($val) ?>">
                     <button class="dropdown-item <?= $val === $state ? 'active' : '' ?>" type="submit"
                             <?= $val === 'enabled' ? 'onclick="return confirm(\'Richtlinie jetzt aktivieren? Teste sie zuerst im Report-Modus.\')"' : '' ?>>
@@ -171,6 +172,7 @@ $gapClass = ['ok' => 'success',                    'warning' => 'warning',      
               </button>
               <form method="POST" action="/conditionalaccess/<?= $pid ?>/delete"
                     onsubmit="return confirm('Richtlinie «<?= $e(addslashes($p['displayName'] ?? '')) ?>» wirklich löschen?\nDieser Vorgang kann nicht rückgängig gemacht werden.')">
+                  <?= \App\Core\Csrf::field() ?>
                 <button class="btn btn-outline-danger btn-sm" title="Löschen">
                   <i class="bi bi-trash3"></i>
                 </button>
@@ -222,6 +224,7 @@ $gapClass = ['ok' => 'success',                    'warning' => 'warning',      
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <form method="POST" action="/conditionalaccess/create" id="formCreateCa">
+          <?= \App\Core\Csrf::field() ?>
         <div class="modal-header">
           <h5 class="modal-title"><i class="bi bi-shield-plus me-2"></i>Neue Richtlinie anlegen</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

@@ -146,6 +146,7 @@
                                     <form method="POST"
                                           action="/defenderalerts/<?= $e($alertId) ?>/resolve"
                                           onsubmit="return confirm('Warnung als gelöst markieren?');">
+                                        <?= \App\Core\Csrf::field() ?>
                                         <button type="submit"
                                                 class="btn btn-sm btn-outline-success"
                                                 style="font-size:11px;padding:2px 8px;">
