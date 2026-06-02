@@ -16,6 +16,8 @@ class QueueWorker
      */
     public function processNext(int $max = 20): int
     {
+        $this->reapStuckJobs();
+
         $processed = 0;
 
         for ($i = 0; $i < $max; $i++) {
@@ -27,6 +29,25 @@ class QueueWorker
         }
 
         return $processed;
+    }
+
+    /**
+     * Requeue jobs stuck in 'processing' (worker died mid-execute: PHP timeout,
+     * OOM, fatal). Without this they'd never be picked up again (fetchNext only
+     * reads 'pending', retryFailed only 'failed'). Visibility timeout: 15 min.
+     */
+    private function reapStuckJobs(): void
+    {
+        try {
+            DB::execute(
+                "UPDATE job_queue
+                 SET status = 'pending', updated_at = NOW()
+                 WHERE status = 'processing'
+                   AND updated_at < DATE_SUB(NOW(), INTERVAL 15 MINUTE)"
+            );
+        } catch (\Throwable $e) {
+            error_log('[QueueWorker] reapStuckJobs: ' . $e->getMessage());
+        }
     }
 
     /** Pull the next available job and mark it as processing. */
