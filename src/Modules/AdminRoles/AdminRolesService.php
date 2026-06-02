@@ -66,6 +66,7 @@ class AdminRolesService
             'roleDefinitionId' => $roleTemplateId,
             'directoryScopeId' => '/',
         ]);
+        $this->bustAssignmentCache();
     }
 
     /**
@@ -76,6 +77,15 @@ class AdminRolesService
     public function removeRoleAssignment(string $assignmentId): void
     {
         $this->graph->delete('/roleManagement/directory/roleAssignments/' . $assignmentId);
+        $this->bustAssignmentCache();
+    }
+
+    /** Invalidate cached assignment lists so the UI reflects writes immediately. */
+    private function bustAssignmentCache(): void
+    {
+        $cache = $this->graph->getCache();
+        $cache->forget('admin_role_assignments');
+        $cache->forget('admin_roles_list');
     }
 
     /**
