@@ -66,13 +66,9 @@ class WeeklyReportService
         } catch (\Throwable) {}
 
         try {
-            $mfaData = $this->graph->get(
-                '/reports/credentialUserRegistrationDetails',
-                ['$top' => '999'],
-                'weekly_mfa_details',
-                300
-            );
-            $mfaRows      = $mfaData['value'] ?? [];
+            // Modern registration report (with legacy fallback) — the old
+            // credentialUserRegistrationDetails endpoint 404s on current tenants.
+            $mfaRows      = (new \App\Modules\MfaMethods\MfaMethodsService($this->graph))->getAll();
             $mfaRegistered = count(array_filter($mfaRows, fn($r) => !empty($r['isMfaRegistered'])));
             $mfaTotal      = count($mfaRows);
             if (is_int($usersTotal) && $usersTotal > 0) {
