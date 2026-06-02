@@ -63,21 +63,54 @@ class OneDriveService
     }
 
     /**
-     * Storage overview for ALL provisioned OneDrives via the tenant usage report
-     * (single Graph call), mapped to the index table shape. Joins display names
-     * from $users. Returns [] if the report is unavailable so the caller can fall
-     * back to the per-user sample.
+     * UPN → drive-info map for all provisioned OneDrives. Prefers the tenant
+     * usage report (one Graph call). If the report is empty OR anonymised (M365
+     * "concealed user names" replaces UPNs with an irreversible token that can't
+     * be joined to real users), falls back to per-user /drive lookups, which
+     * always return real UPNs. Shared by the overview and the personal-drives tab.
+     */
+    public function getProvisionedDriveMap(array $users): array
+    {
+        $realUpns = [];
+        foreach ($users as $u) {
+            $upn = strtolower($u['userPrincipalName'] ?? '');
+            if ($upn !== '') { $realUpns[$upn] = true; }
+        }
+
+        $map = [];
+        try { $map = $this->getPersonalDrivesReport(); } catch (\Throwable) { $map = []; }
+
+        $anonymised = false;
+        if (!empty($map)) {
+            $matches = 0;
+            foreach (array_keys($map) as $k) {
+                if (isset($realUpns[$k])) { $matches++; }
+            }
+            $anonymised = ($matches === 0);
+        }
+
+        if (empty($map) || $anonymised) {
+            $map = $this->getPersonalDrivesPerUser($users, 500);
+        }
+        return $map;
+    }
+
+    /**
+     * Storage overview for ALL provisioned OneDrives (via getProvisionedDriveMap),
+     * mapped to the index table shape and joined with real display names.
+     * Returns [] only if no data is obtainable at all.
      */
     public function getStorageOverview(array $users): array
     {
-        $map = [];
-        try { $map = $this->getPersonalDrivesReport(); } catch (\Throwable) { $map = []; }
-        if (empty($map)) return [];
-
         $nameByUpn = [];
         foreach ($users as $u) {
-            $nameByUpn[strtolower($u['userPrincipalName'] ?? '')] = $u['displayName'] ?? ($u['userPrincipalName'] ?? '');
+            $upn = strtolower($u['userPrincipalName'] ?? '');
+            if ($upn === '') continue;
+            $nameByUpn[$upn] = $u['displayName'] ?? $upn;
         }
+
+        $map = $this->getProvisionedDriveMap($users);
+        if (empty($map)) return [];
 
         $result = [];
         foreach ($map as $upn => $d) {
