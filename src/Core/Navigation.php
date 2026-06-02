@@ -30,6 +30,7 @@ class Navigation
             // ── Lizenzen
             ['section' => 'Lizenzen',            'icon' => 'award',                'label' => 'Lizenzen',               'route' => 'licenses',                   'admin' => false],
             ['section' => null,                  'icon' => 'lightbulb',            'label' => 'Lizenz-Berater',         'route' => 'licenseadvisor',             'admin' => false],
+            ['section' => null,                  'icon' => 'cash-coin',            'label' => 'Lizenzkosten',           'route' => 'licensecosts',               'admin' => false],
 
             // ── E-Mail & Exchange
             ['section' => 'E-Mail & Exchange',   'icon' => 'envelope',             'label' => 'Postfächer',             'route' => 'mailboxes',                  'admin' => false],
