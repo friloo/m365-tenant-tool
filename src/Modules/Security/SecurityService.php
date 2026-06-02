@@ -98,6 +98,7 @@ class SecurityService
             '/identity/conditionalAccess/policies/' . $policyId,
             ['state' => $newState]
         );
-        $this->graph->getCache()->forget('security_ca');
+        // The list is read from ConditionalAccessService's shared 'ca_policies' key.
+        $this->graph->getCache()->forget('ca_policies');
     }
 }

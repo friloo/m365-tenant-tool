@@ -134,6 +134,7 @@ class RiskySignInsService
         $this->graph->post('/identityProtection/riskyUsers/confirmCompromised', [
             'userIds' => [$userId],
         ]);
+        $this->bustRiskCache();
     }
 
     /**
@@ -145,6 +146,14 @@ class RiskySignInsService
         $this->graph->post('/identityProtection/riskyUsers/dismiss', [
             'userIds' => [$userId],
         ]);
+        $this->bustRiskCache();
+    }
+
+    /** Invalidate the risk lists so the index reflects the write immediately. */
+    private function bustRiskCache(): void
+    {
+        $this->graph->getCache()->forget('riskyusers_atrisk');
+        $this->graph->getCache()->forget('riskdetections_list');
     }
 
     /**

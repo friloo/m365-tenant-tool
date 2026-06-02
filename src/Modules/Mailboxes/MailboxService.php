@@ -217,16 +217,8 @@ class MailboxService
             'usageLocation' => 'DE',
         ]);
 
-        // Invalidate cached usage report so the next load picks up the new account.
-        try {
-            // GraphClient caches by key; bust the usage key if the client exposes a
-            // clearCache helper — otherwise silently skip (cache will expire naturally).
-            if (method_exists($this->graph, 'clearCache')) {
-                $this->graph->clearCache('mailboxes_usage');
-            }
-        } catch (\Throwable) {
-            // Non-critical — ignore.
-        }
+        // Invalidate the shared-mailbox list so the new account shows up.
+        $this->graph->getCache()->forget('mailbox_shared_list');
 
         return is_array($user) ? $user : [];
     }

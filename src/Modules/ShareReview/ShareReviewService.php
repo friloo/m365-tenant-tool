@@ -379,7 +379,12 @@ class ShareReviewService
         $share = DB::fetchOne('SELECT * FROM share_reviews WHERE id = ?', [$id]);
         if (!$share) throw new \RuntimeException('Share not found');
 
-        $this->revokeGraphPermission($share);
+        // Only mark as revoked if the Graph delete actually succeeded — otherwise
+        // surface the error instead of falsely reporting success.
+        $err = $this->revokeGraphPermission($share);
+        if ($err !== null) {
+            throw new \RuntimeException('Widerruf fehlgeschlagen: ' . $err);
+        }
 
         DB::execute(
             "UPDATE share_reviews SET status='revoked', revoked_at=NOW() WHERE id=?",

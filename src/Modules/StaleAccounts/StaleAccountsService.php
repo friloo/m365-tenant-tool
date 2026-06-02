@@ -102,6 +102,11 @@ class StaleAccountsService
             'addLicenses'    => [],
             'removeLicenses' => $skuIds,
         ]);
+        // Bust the lists that show this user's licensing so the change is visible.
+        $cache = $this->graph->getCache();
+        $cache->forget('stale_users_base');
+        $cache->forget('users_all');
+        $cache->forget('licenses_users');
     }
 
     /**
