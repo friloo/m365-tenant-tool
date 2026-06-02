@@ -355,7 +355,8 @@ crontab -u www-data -e
 |---|---|---|
 | `Policy.Read.All` | CA-Policies, Named Locations, Auth-Strength, Tenant-Policies | **Erforderlich** |
 | `Policy.ReadWrite.ConditionalAccess` | CA / Named Locations / Auth-Strength schreiben | für Schreib-Aktionen |
-| `Policy.ReadWrite.Authorization` | Gast-Einladungs-Regeln & App-Consent-Defaults | für Schreib-Aktionen |
+| `Policy.ReadWrite.Authorization` | Gast-Einladungs-Regeln, Gast-Rolle, User-Standardrechte, App-Consent | für Schreib-Aktionen |
+| `Policy.ReadWrite.SecurityDefaults` | Security Defaults ein-/ausschalten (Security Center) | für Schreib-Aktionen |
 | `RoleManagement.Read.Directory` | Admin-Rollen & PIM lesen | **Erforderlich** |
 | `RoleManagement.ReadWrite.Directory` | Admin-Rollen zuweisen/entfernen | Empfohlen |
 | `Application.Read.All` | App-Registrierungen, Enterprise Apps | **Erforderlich** |

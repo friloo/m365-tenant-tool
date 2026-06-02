@@ -371,6 +371,29 @@ class HardeningService
         ];
     }
 
+    /**
+     * Turn a write exception into a user-facing result. On a permission error it
+     * names the exact Graph application permission required for this action, so
+     * "insufficient privileges" becomes actionable. Note: GraphClient already
+     * retries write-403s once with a fresh token, so a stale-token false alarm
+     * has been ruled out by the time we get here.
+     */
+    private function writeError(\Throwable $e, string $perm): array
+    {
+        $msg = $e->getMessage();
+        $isPerm = stripos($msg, 'privilege') !== false
+               || stripos($msg, 'authorization') !== false
+               || stripos($msg, 'forbidden') !== false
+               || str_contains($msg, '403');
+        if ($isPerm) {
+            return ['ok' => false, 'msg' =>
+                "Fehlende Graph-Berechtigung: {$perm}. In der App-Registrierung als "
+                . "Anwendungsberechtigung ergänzen, Administratorzustimmung erteilen — danach wird "
+                . "das Token automatisch erneuert. (Original: {$msg})"];
+        }
+        return ['ok' => false, 'msg' => 'Fehler: ' . $msg];
+    }
+
     // ── Apply-Implementierungen ───────────────────────────────────────────
 
     private function applySecurityDefaults(bool $enabled): array
@@ -379,7 +402,7 @@ class HardeningService
             $this->graph->patch('/policies/identitySecurityDefaultsEnforcementPolicy', ['isEnabled' => $enabled]);
             return ['ok' => true, 'msg' => $enabled ? 'Security Defaults eingeschaltet.' : 'Security Defaults ausgeschaltet.'];
         } catch (\Throwable $e) {
-            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+            return $this->writeError($e, 'Policy.ReadWrite.SecurityDefaults');
         }
     }
 
@@ -389,7 +412,7 @@ class HardeningService
             $this->graph->patch('/admin/sharepoint/settings', ['sharingCapability' => $value]);
             return ['ok' => true, 'msg' => "SharePoint Sharing auf {$value} gesetzt."];
         } catch (\Throwable $e) {
-            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+            return $this->writeError($e, 'SharePointTenantSettings.ReadWrite.All');
         }
     }
 
@@ -401,7 +424,7 @@ class HardeningService
             ]);
             return ['ok' => true, 'msg' => "Anonyme Link-Ablauf auf {$days} Tage gesetzt."];
         } catch (\Throwable $e) {
-            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+            return $this->writeError($e, 'SharePointTenantSettings.ReadWrite.All');
         }
     }
 
@@ -411,7 +434,7 @@ class HardeningService
             $this->graph->patch('/admin/sharepoint/settings', ['defaultSharingLinkType' => $type]);
             return ['ok' => true, 'msg' => "Standard-Linktyp auf {$type} gesetzt."];
         } catch (\Throwable $e) {
-            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+            return $this->writeError($e, 'SharePointTenantSettings.ReadWrite.All');
         }
     }
 
@@ -437,7 +460,7 @@ class HardeningService
             $this->graph->getCache()->forget('hardening_ca');
             return ['ok' => true, 'msg' => "CA-Policy angelegt im Report-Only-Modus (ID {$id}). Bitte im Conditional-Access-Modul testen, dann auf 'enabled' umstellen."];
         } catch (\Throwable $e) {
-            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+            return $this->writeError($e, 'Policy.ReadWrite.ConditionalAccess');
         }
     }
 
@@ -449,7 +472,7 @@ class HardeningService
             ]);
             return ['ok' => true, 'msg' => 'Gast-Einladungen auf Admins/Guest-Inviter beschränkt.'];
         } catch (\Throwable $e) {
-            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+            return $this->writeError($e, 'Policy.ReadWrite.Authorization');
         }
     }
 
@@ -687,7 +710,7 @@ class HardeningService
                 ? "Idle-Sign-out aktiviert: Warnung nach {$warnMin} min, Sign-out nach {$signOutMin} min."
                 : 'Idle-Sign-out deaktiviert.'];
         } catch (\Throwable $e) {
-            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+            return $this->writeError($e, 'SharePointTenantSettings.ReadWrite.All');
         }
     }
 
@@ -697,7 +720,7 @@ class HardeningService
             $this->graph->patch('/admin/sharepoint/settings', ['oneDriveSharingCapability' => $value]);
             return ['ok' => true, 'msg' => "OneDrive External Sharing auf {$value} gesetzt."];
         } catch (\Throwable $e) {
-            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+            return $this->writeError($e, 'SharePointTenantSettings.ReadWrite.All');
         }
     }
 
@@ -709,7 +732,7 @@ class HardeningService
                 ? 'Re-Sharing durch externe Benutzer erlaubt.'
                 : 'Re-Sharing durch externe Benutzer blockiert.'];
         } catch (\Throwable $e) {
-            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+            return $this->writeError($e, 'SharePointTenantSettings.ReadWrite.All');
         }
     }
 
@@ -719,7 +742,7 @@ class HardeningService
             $this->graph->patch('/policies/authorizationPolicy', ['guestUserRoleId' => $roleId]);
             return ['ok' => true, 'msg' => 'Gast-Rolle auf ID ' . $roleId . ' gesetzt.'];
         } catch (\Throwable $e) {
-            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+            return $this->writeError($e, 'Policy.ReadWrite.Authorization');
         }
     }
 
@@ -731,7 +754,7 @@ class HardeningService
             ]);
             return ['ok' => true, 'msg' => "defaultUserRolePermissions.{$key} = " . ($value ? 'true' : 'false') . ' gesetzt.'];
         } catch (\Throwable $e) {
-            return ['ok' => false, 'msg' => 'Fehler: ' . $e->getMessage()];
+            return $this->writeError($e, 'Policy.ReadWrite.Authorization');
         }
     }
 }

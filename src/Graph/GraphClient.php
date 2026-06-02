@@ -97,7 +97,7 @@ class GraphClient
         return (int)($result['@odata.count'] ?? 0);
     }
 
-    private function request(string $method, string $url, bool $withCount = false, ?array $body = null): array
+    private function request(string $method, string $url, bool $withCount = false, ?array $body = null, bool $allowTokenRetry = true): array
     {
         $this->lastError = null;
         $token = $this->tokenManager->getToken();
@@ -160,6 +160,15 @@ class GraphClient
                     error_log("Graph 403 (missing permission) on {$url}: {$msg}");
                     $this->lastError = ['status' => 403, 'code' => $code, 'message' => $msg, 'url' => $url];
                     return ['value' => [], '@odata.count' => 0];
+                }
+                // Write 403: the most common cause is a token cached before a
+                // freshly-granted application permission (app roles are baked in
+                // at issuance). Force a single token refresh and retry once, so a
+                // correct-but-recently-granted permission self-heals.
+                if ($allowTokenRetry) {
+                    error_log("Graph 403 on write {$method} {$url} — forcing token refresh and retrying once");
+                    $this->tokenManager->forceRefresh();
+                    return $this->request($method, $url, $withCount, $body, false);
                 }
             }
 
