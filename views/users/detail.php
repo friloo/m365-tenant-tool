@@ -130,6 +130,16 @@ if ($neverExpires) {
                             <i class="bi bi-shield-x me-1"></i> MFA zurücksetzen
                         </button>
                     </form>
+                    <?php if (\App\Auth\LocalAuth::isAdmin()): ?>
+                    <!-- Passwort-Reset (Admin) -->
+                    <form method="post" action="/users/<?= $e($user['id']) ?>/reset-password" class="mt-2"
+                          onsubmit="return confirm('Ein neues temporäres Passwort erzeugen? Der Benutzer muss es bei der nächsten Anmeldung ändern. Das Passwort wird einmalig angezeigt.')">
+                        <?= \App\Core\Csrf::field() ?>
+                        <button type="submit" class="btn btn-sm btn-outline-warning w-100">
+                            <i class="bi bi-key me-1"></i> Passwort zurücksetzen
+                        </button>
+                    </form>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

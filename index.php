@@ -12,14 +12,15 @@ if (ob_get_level() === 0) {
     ob_start();
 }
 
-// Debug mode: set cookie m365_debug=1 to see full stack traces and PHP
-// warnings inline. Production default is errors hidden + logged only.
-$debugMode = (($_COOKIE['m365_debug'] ?? '') === '1') || (($_GET['m365_debug'] ?? '') === '1');
+// Debug mode is SERVER-controlled only (env M365_DEBUG=1). It must NOT be a
+// freely-settable cookie/GET param — that would let any unauthenticated visitor
+// turn on inline PHP warnings and full stack traces (path/info disclosure).
+// Logged-in admins still get full error details via their session (see handlers).
+$debugMode = (getenv('M365_DEBUG') === '1') || (($_ENV['M365_DEBUG'] ?? '') === '1');
 ini_set('log_errors', '1');
 if ($debugMode) {
     ini_set('display_errors', '1');
     error_reporting(E_ALL);
-    setcookie('m365_debug', '1', ['expires' => time() + 3600, 'path' => '/', 'httponly' => true, 'samesite' => 'Strict']);
 } else {
     // Some shared hosts force display_errors=1 via php_admin_value; ini_set is
     // then a no-op. Restrict error_reporting so deprecated/notice/warning
@@ -218,10 +219,12 @@ if (!file_exists($bootstrapFile)) {
     }
 }
 
-// Ensure required tables exist. Running DDL on every request is fragile (a
-// read-only replica or a user who has lost DDL privileges would fatal here),
-// so do it once per process and tolerate failures — the installer is the
-// authoritative source for schema.
+// Ensure required tables exist. These are also defined in src/Database/Schema.sql
+// (the authoritative source the installer runs); this idempotent block is the
+// upgrade safety net so OTA updates that add tables work without a reinstall, and
+// so a cron-first start before any web request still has the schema. Running DDL
+// on every request is fragile (read-only replica / lost DDL privileges would fatal
+// here), so it is wrapped in try/catch and tolerated.
 $ddl = [
     "CREATE TABLE IF NOT EXISTS m365_users (
         id               INT AUTO_INCREMENT PRIMARY KEY,
@@ -444,6 +447,7 @@ $router->get('/users/export',                     [\App\Modules\Users\UsersContr
 $router->get('/users/{id}',                       [\App\Modules\Users\UsersController::class, 'show']);
 $router->post('/users/{id}/toggle-enabled',       [\App\Modules\Users\UsersController::class, 'toggleEnabled']);
 $router->post('/users/{id}/reset-mfa',            [\App\Modules\Users\UsersController::class, 'resetMfa']);
+$router->post('/users/{id}/reset-password',        [\App\Modules\Users\UsersController::class, 'resetPassword']);
 $router->post('/users/{id}/assign-license',       [\App\Modules\Users\UsersController::class, 'assignLicense']);
 $router->post('/users/{id}/remove-license',       [\App\Modules\Users\UsersController::class, 'removeLicense']);
 $router->get('/users/{id}/edit',                  [\App\Modules\Users\UsersController::class, 'editForm']);

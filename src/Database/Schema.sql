@@ -124,3 +124,145 @@ CREATE TABLE IF NOT EXISTS job_queue (
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_queue_pick (status, available_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Runtime / app tables. These are ALSO created idempotently on the first web
+-- request (index.php) as an upgrade safety net; listed here so a fresh install
+-- (and a cron-first start before any web request) has the complete schema.
+-- ─────────────────────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS m365_users (
+    id               INT AUTO_INCREMENT PRIMARY KEY,
+    azure_object_id  VARCHAR(100) DEFAULT NULL,
+    upn              VARCHAR(255) NOT NULL,
+    display_name     VARCHAR(255) DEFAULT NULL,
+    role             ENUM('operator','admin') NOT NULL DEFAULT 'operator',
+    is_active        TINYINT(1) NOT NULL DEFAULT 1,
+    last_login       DATETIME DEFAULT NULL,
+    created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_upn (upn),
+    UNIQUE KEY uq_oid (azure_object_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS user_notes (
+    id            INT AUTO_INCREMENT PRIMARY KEY,
+    user_azure_id VARCHAR(100) NOT NULL,
+    note          TEXT NOT NULL,
+    created_by    VARCHAR(255) NOT NULL DEFAULT '',
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user (user_azure_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS access_reviews (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    title        VARCHAR(255) NOT NULL,
+    type         VARCHAR(50) NOT NULL DEFAULT 'guests',
+    status       ENUM('open','completed') DEFAULT 'open',
+    created_by   VARCHAR(255) NOT NULL,
+    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at DATETIME DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS access_review_items (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    review_id    INT NOT NULL,
+    user_id      VARCHAR(100) NOT NULL,
+    user_upn     VARCHAR(255) NOT NULL,
+    user_name    VARCHAR(255) NOT NULL,
+    last_signin  DATETIME DEFAULT NULL,
+    decision     ENUM('pending','approve','revoke') DEFAULT 'pending',
+    decided_by   VARCHAR(255) DEFAULT NULL,
+    decided_at   DATETIME DEFAULT NULL,
+    FOREIGN KEY (review_id) REFERENCES access_reviews(id) ON DELETE CASCADE,
+    INDEX idx_review (review_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS login_attempts (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    ip_address   VARCHAR(45) NOT NULL,
+    attempted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_ip_time (ip_address, attempted_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS app_audit_log (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    actor      VARCHAR(255) NOT NULL DEFAULT '',
+    action     VARCHAR(255) NOT NULL,
+    module     VARCHAR(100) NOT NULL DEFAULT '',
+    detail     TEXT,
+    ip_address VARCHAR(45),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_created (created_at),
+    INDEX idx_actor (actor)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS app_notifications (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    category   VARCHAR(64) NOT NULL DEFAULT 'info',
+    severity   ENUM('info','success','warn','critical') NOT NULL DEFAULT 'info',
+    title      VARCHAR(255) NOT NULL,
+    body       TEXT,
+    link       VARCHAR(255) DEFAULT NULL,
+    dedupe_key VARCHAR(128) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_dedupe (dedupe_key),
+    INDEX idx_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS app_notification_seen (
+    actor      VARCHAR(255) NOT NULL,
+    last_seen  DATETIME NOT NULL,
+    PRIMARY KEY (actor)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS app_tenant_snapshots (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    kind       VARCHAR(64) NOT NULL,
+    payload    LONGTEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_kind_created (kind, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS app_metric_history (
+    metric     VARCHAR(64) NOT NULL,
+    day        DATE NOT NULL,
+    value      DECIMAL(14,4) NOT NULL,
+    PRIMARY KEY (metric, day)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS app_api_keys (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    name       VARCHAR(120) NOT NULL,
+    key_hash   CHAR(64) NOT NULL,
+    scopes     VARCHAR(255) NOT NULL DEFAULT 'read',
+    created_by VARCHAR(255) NOT NULL DEFAULT '',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_used  DATETIME DEFAULT NULL,
+    revoked_at DATETIME DEFAULT NULL,
+    UNIQUE KEY uq_hash (key_hash)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS app_workflows (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    name        VARCHAR(160) NOT NULL,
+    trigger_key VARCHAR(80)  NOT NULL,
+    trigger_cfg TEXT,
+    actions     LONGTEXT     NOT NULL,
+    enabled     TINYINT(1)   NOT NULL DEFAULT 1,
+    created_by  VARCHAR(255) NOT NULL DEFAULT '',
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_run    DATETIME DEFAULT NULL,
+    last_status VARCHAR(20)  DEFAULT NULL,
+    last_msg    TEXT,
+    INDEX idx_trigger (trigger_key, enabled)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS app_workflow_runs (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    workflow_id INT NOT NULL,
+    ran_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status      VARCHAR(20) NOT NULL,
+    target      VARCHAR(255) DEFAULT NULL,
+    detail      TEXT,
+    INDEX idx_workflow (workflow_id, ran_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

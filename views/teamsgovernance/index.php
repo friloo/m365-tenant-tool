@@ -1,4 +1,6 @@
 <?php use App\Core\View; $e = fn($v) => View::escape($v); ?>
+<?php \App\Core\View::partial('partials/module_tabs', ['tabs' => [['label'=>'Übersicht','href'=>'/teamspolicies','icon'=>'collection'],['label'=>'Nutzung','href'=>'/teamsusage','icon'=>'camera-video'],['label'=>'Governance','href'=>'/teamsgovernance','icon'=>'people-fill'],]]); ?>
+
 
 <div class="row g-3 mb-4">
     <div class="col-sm-3">

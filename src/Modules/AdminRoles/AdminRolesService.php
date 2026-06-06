@@ -9,52 +9,6 @@ class AdminRolesService
     public function __construct(private GraphClient $graph) {}
 
     /**
-     * Returns directory roles with their members (legacy endpoint).
-     * Only roles with at least one member are included.
-     */
-    public function getRoleAssignments(): array
-    {
-        try {
-            $data = $this->graph->get(
-                '/directoryRoles',
-                ['$select' => 'id,displayName,description,roleTemplateId'],
-                'admin_roles_list',
-                1800
-            );
-            $roles = $data['value'] ?? [];
-        } catch (\Throwable) {
-            return [];
-        }
-
-        $result = [];
-        foreach ($roles as $role) {
-            $roleId = $role['id'] ?? '';
-            if ($roleId === '') {
-                continue;
-            }
-
-            try {
-                $membersData = $this->graph->get(
-                    '/directoryRoles/' . $roleId . '/members',
-                    ['$select' => 'id,displayName,userPrincipalName,accountEnabled'],
-                    null,
-                    null
-                );
-                $members = $membersData['value'] ?? [];
-            } catch (\Throwable) {
-                $members = [];
-            }
-
-            if (count($members) > 0) {
-                $role['members'] = $members;
-                $result[] = $role;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
      * Assign a role to a user via the unified RBAC API.
      *
      * @throws \Throwable on failure

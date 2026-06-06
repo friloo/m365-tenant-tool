@@ -2,6 +2,8 @@
 $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 $stats = $teamStats;
 ?>
+<?php \App\Core\View::partial('partials/module_tabs', ['tabs' => [['label'=>'Übersicht','href'=>'/teamspolicies','icon'=>'collection'],['label'=>'Nutzung','href'=>'/teamsusage','icon'=>'camera-video'],['label'=>'Governance','href'=>'/teamsgovernance','icon'=>'people-fill'],]]); ?>
+
 
 <!-- Summary cards -->
 <div class="row g-3 mb-4">

@@ -98,7 +98,7 @@
                             </td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <form method="post" action="/deleted/<?= $e($u['id']) ?>/restore" class="mb-0">
+                                    <form method="post" action="/deletedobjects/<?= $e($u['id']) ?>/restore" class="mb-0">
                                         <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-outline-success py-0 px-2"
                                                 style="font-size:11px;" title="Wiederherstellen">
@@ -106,7 +106,7 @@
                                         </button>
                                     </form>
                                     <?php if (\App\Auth\LocalAuth::role() === 'admin'): ?>
-                                    <form method="post" action="/deleted/<?= $e($u['id']) ?>/delete" class="mb-0"
+                                    <form method="post" action="/deletedobjects/<?= $e($u['id']) ?>/permanent-delete" class="mb-0"
                                           onsubmit="return confirm('Benutzer endgültig löschen? Diese Aktion kann nicht rückgängig gemacht werden.')">
                                         <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2"
@@ -171,7 +171,7 @@
                             </td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <form method="post" action="/deleted/<?= $e($g['id']) ?>/restore" class="mb-0">
+                                    <form method="post" action="/deletedobjects/<?= $e($g['id']) ?>/restore" class="mb-0">
                                         <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-outline-success py-0 px-2"
                                                 style="font-size:11px;" title="Wiederherstellen">
@@ -179,7 +179,7 @@
                                         </button>
                                     </form>
                                     <?php if (\App\Auth\LocalAuth::role() === 'admin'): ?>
-                                    <form method="post" action="/deleted/<?= $g['id'] ?>/delete" class="mb-0"
+                                    <form method="post" action="/deletedobjects/<?= $e($g['id']) ?>/permanent-delete" class="mb-0"
                                           onsubmit="return confirm('Gruppe endgültig löschen? Diese Aktion kann nicht rückgängig gemacht werden.')">
                                         <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2"

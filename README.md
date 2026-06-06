@@ -479,11 +479,19 @@ chown -R www-data:www-data /var/www/m365-tenant-tool/storage/
 
 ### Empfehlungen
 
-- `storage/` per Apache-Config vor Webzugriff sperren (im VirtualHost oben enthalten)
+- **`storage/` zwingend serverseitig sperren** — dort liegen `app.key` (AES-Master-Key)
+  und `db_bootstrap.ini` (verschlüsseltes DB-Passwort). Verlass dich **nicht allein auf
+  `.htaccess`**: Bei NGINX oder `AllowOverride None` wird es ignoriert. Am besten die App
+  **außerhalb des DocumentRoot** deployen und nur `public/` + `index.php` ausliefern, oder
+  `storage/` per Server-Config (`<Directory> Require all denied` / NGINX `location`) blocken.
+- **Installer nach Setup abriegeln** — nach Abschluss ist er per `storage/installed.lock`
+  gesperrt; zusätzlich verweigert er sich, sobald die DB bereits ein Admin-Passwort enthält.
+  Idealerweise das `install/`-Verzeichnis nach der Installation ganz entfernen/sperren.
 - HTTPS erzwingen (HTTP → HTTPS Redirect), `app.key` separat ins Backup
 - MySQL-Benutzer nur mit `SELECT, INSERT, UPDATE, DELETE` auf die App-Datenbank
 - Azure-AD-Secret mit kurzer Laufzeit (6–12 Monate) und Rotationsplan
 - 2FA für den Admin-Login aktivieren (`/settings/2fa`)
+- Debug-Details nur serverseitig über `M365_DEBUG=1` aktivieren (nie dauerhaft in Produktion)
 
 ---
 
@@ -540,7 +548,7 @@ Kern-Tabellen (das vollständige Schema liegt in `src/Database/Schema.sql`):
 | Symptom | Vorgehen |
 |---|---|
 | Weiße Seite / Interner Fehler | `/health` aufrufen – zeigt PHP-Version, geladene Extensions und ob `storage/`-Dateien existieren (ohne DB/Autoload) |
-| Detaillierte Fehlermeldungen sehen | Cookie/Param `m365_debug=1` setzen (zeigt Stacktraces; Admins sehen Details ohnehin) |
+| Detaillierte Fehlermeldungen sehen | Als Admin eingeloggt werden Stacktraces ohnehin angezeigt; serverseitig per Env-Var `M365_DEBUG=1` global aktivierbar (nicht über Cookie/URL — das wäre ein Info-Leak) |
 | „Verbindung nicht konfiguriert" | Tenant-Daten unter `/settings` ergänzen |
 | Modul zeigt „Berechtigung fehlt" | unter `/settings/permissions` prüfen, welche Graph-Permission fehlt, und Admin-Consent erteilen |
 | Cron läuft nicht | Logfile aus dem crontab-Eintrag prüfen; `run-cron.php` manuell als `www-data` ausführen |

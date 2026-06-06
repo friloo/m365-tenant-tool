@@ -78,6 +78,9 @@ class DefenderAlertsService
             throw new \InvalidArgumentException("Invalid alert status: {$status}");
         }
         $this->graph->patch("/security/alerts_v2/{$alertId}", ['status' => $status]);
+        // The list is cached under 'defender_alerts' (filtered to non-resolved) —
+        // bust it so a resolved alert disappears immediately.
+        $this->graph->getCache()->forget('defender_alerts');
     }
 
     /**

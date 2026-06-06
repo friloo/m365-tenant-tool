@@ -8,32 +8,6 @@ class OneDriveService
 {
     public function __construct(private GraphClient $graph) {}
 
-    public function getUsageReport(): array
-    {
-        try {
-            // Get usage report via CSV (period D30)
-            $data = $this->graph->get(
-                '/reports/getOneDriveUsageAccountDetail(period=\'D30\')',
-                [],
-                'onedrive_usage',
-                3600
-            );
-            return $data['value'] ?? $data;
-        } catch (\Throwable) { return []; }
-    }
-
-    public function getStorageSummary(): array
-    {
-        try {
-            return $this->graph->get(
-                '/reports/getOneDriveUsageSummary(period=\'D30\')',
-                [],
-                'onedrive_summary',
-                3600
-            );
-        } catch (\Throwable) { return []; }
-    }
-
     public function getUserDrives(array $users): array
     {
         $result = [];

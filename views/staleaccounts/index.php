@@ -169,6 +169,7 @@
                                 <?php if ($hasLicense): ?>
                                     <form method="POST" action="/staleaccounts/<?= $e($userId) ?>/remove-license"
                                           onsubmit="return confirm('Alle Lizenzen für diesen Benutzer entfernen?');">
+                                        <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-warning" style="font-size:11px;padding:2px 8px;">
                                             <i class="bi bi-x-circle me-1"></i>Lizenzen entfernen
                                         </button>

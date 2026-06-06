@@ -81,6 +81,35 @@ class UsersService
         $this->graph->getCache()->forget("user_{$userId}");
     }
 
+    /**
+     * Reset a user's password to a generated temporary one (or a supplied value)
+     * and require a change at next sign-in. Returns the password so the admin can
+     * hand it over once. Needs User.ReadWrite.All.
+     */
+    public function resetPassword(string $userId, ?string $newPassword = null, bool $forceChange = true): string
+    {
+        $password = ($newPassword !== null && $newPassword !== '') ? $newPassword : self::generatePassword();
+        $this->graph->patch("/users/{$userId}", [
+            'passwordProfile' => [
+                'password'                      => $password,
+                'forceChangePasswordNextSignIn' => $forceChange,
+            ],
+        ]);
+        $this->graph->getCache()->forget("user_{$userId}");
+        return $password;
+    }
+
+    /** Generate a random password that satisfies Entra complexity (upper/lower/digit/symbol). */
+    private static function generatePassword(int $len = 16): string
+    {
+        $sets = ['ABCDEFGHJKLMNPQRSTUVWXYZ', 'abcdefghijkmnpqrstuvwxyz', '23456789', '!@#$%*?-_'];
+        $pw   = '';
+        foreach ($sets as $s) { $pw .= $s[random_int(0, strlen($s) - 1)]; }
+        $all = implode('', $sets);
+        for ($i = strlen($pw); $i < $len; $i++) { $pw .= $all[random_int(0, strlen($all) - 1)]; }
+        return str_shuffle($pw);
+    }
+
     public function assignLicense(string $userId, string $skuId): void
     {
         $this->graph->post("/users/{$userId}/assignLicense", [
@@ -141,57 +170,7 @@ class UsersService
         $this->graph->getCache()->forget("user_{$userId}");
     }
 
-    public function revokeSignInSessions(string $userId): void
-    {
-        $this->graph->post("/users/{$userId}/revokeSignInSessions", []);
-    }
-
-    public function removeAllLicenses(string $userId): void
-    {
-        $user = $this->graph->get(
-            "/users/{$userId}",
-            ['$select' => 'assignedLicenses'],
-            null,
-            0
-        );
-        $licenses = $user['assignedLicenses'] ?? [];
-        if (empty($licenses)) {
-            return;
-        }
-        $skuIds = array_column($licenses, 'skuId');
-        $this->graph->post("/users/{$userId}/assignLicense", [
-            'addLicenses'    => [],
-            'removeLicenses' => $skuIds,
-        ]);
-        $this->graph->getCache()->forget('users_all');
-        $this->graph->getCache()->forget("user_{$userId}");
-        $this->graph->getCache()->forget('licenses_users');
-    }
-
-    public function removeFromAllGroups(string $userId): array
-    {
-        $result = $this->graph->get(
-            "/users/{$userId}/memberOf",
-            ['$select' => 'id,displayName,groupTypes,membershipRule,onPremisesSyncEnabled'],
-            null,
-            0
-        );
-        $memberships = $result['value'] ?? [];
-        $removed = [];
-        foreach ($memberships as $group) {
-            // Skip anything that isn't a real group, plus dynamic and on-prem
-            // synced groups (membership there can't be changed via Graph).
-            if (($group['@odata.type'] ?? '') !== '#microsoft.graph.group') continue;
-            if (($group['onPremisesSyncEnabled'] ?? null) === true) continue;
-            if (!empty($group['membershipRule'])) continue;
-            $groupId = $group['id'] ?? '';
-            if (!$groupId) continue;
-            try {
-                $this->graph->delete("/groups/{$groupId}/members/{$userId}/\$ref");
-                $removed[] = $group['displayName'] ?? $groupId;
-            } catch (\Throwable) {}
-        }
-        $this->graph->getCache()->forget("user_groups_{$userId}");
-        return $removed;
-    }
+    // Offboarding actions (revoke sessions / remove licenses / remove from groups)
+    // live in App\Modules\Offboarding\OffboardingService — the single source used
+    // by both the Offboarding module and the inline offboarding on the user page.
 }

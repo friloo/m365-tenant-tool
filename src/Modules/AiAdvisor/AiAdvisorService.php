@@ -179,12 +179,7 @@ class AiAdvisorService
 
         // Conditional Access — counts by state
         try {
-            $ca = app_graph()->get(
-                '/identity/conditionalAccess/policies',
-                ['$top' => '200', '$select' => 'state'],
-                'ca_policies', 900
-            );
-            $pol = $ca['value'] ?? [];
+            $pol = \App\Modules\ConditionalAccess\ConditionalAccessService::fetchAllPolicies(app_graph());
             $ctx['conditional_access'] = [
                 'total'       => count($pol),
                 'enabled'     => count(array_filter($pol, fn($p) => ($p['state'] ?? '') === 'enabled')),

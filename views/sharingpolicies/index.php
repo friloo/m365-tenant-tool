@@ -6,6 +6,8 @@ $e = fn($v) => View::escape($v);
 $sp = $spSettings ?? [];
 $hasSpError = isset($sp['_error']);
 ?>
+<?php \App\Core\View::partial('partials/module_tabs', ['tabs' => [['label'=>'Freigaben','href'=>'/sharing','icon'=>'link-45deg'],['label'=>'Monitor','href'=>'/sharing/monitor','icon'=>'eye-slash'],['label'=>'Richtlinien','href'=>'/sharing/policies','icon'=>'sliders'],]]); ?>
+
 
 <?php if ($flash): ?>
     <div class="alert alert-success alert-dismissible mb-4">

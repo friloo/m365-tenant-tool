@@ -31,7 +31,8 @@ class UsageReportsService
                 $exchange   = (int)($latest['exchange']   ?? 0);
                 $oneDrive   = (int)($latest['oneDrive']   ?? $latest['onedrive']   ?? 0);
                 $sharePoint = (int)($latest['sharePoint'] ?? $latest['sharepoint'] ?? 0);
-                $teams      = (int)($latest['teams']      ?? $latest['microsoft365'] ?? 0);
+                // Report column is "Microsoft Teams" → normalises to microsoftTeams.
+                $teams      = (int)($latest['microsoftTeams'] ?? $latest['teams'] ?? 0);
             }
         } catch (\Throwable $e) {
             error_log('UsageReports getServiceUserCounts: ' . $e->getMessage());

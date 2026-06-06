@@ -125,6 +125,7 @@ $countryCatalog = [
           <td class="text-end">
             <form method="POST" action="/namedlocations/<?= $e($loc['id']) ?>/delete"
                   onsubmit="return confirm('Standort «<?= $e(addslashes($loc['displayName'])) ?>» wirklich löschen?\nAlle CA-Richtlinien, die ihn referenzieren, müssen angepasst werden.')">
+                <?= \App\Core\Csrf::field() ?>
               <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash3"></i></button>
             </form>
           </td>
@@ -176,6 +177,7 @@ $countryCatalog = [
           <td class="text-end">
             <form method="POST" action="/namedlocations/<?= $e($loc['id']) ?>/delete"
                   onsubmit="return confirm('IP-Standort «<?= $e(addslashes($loc['displayName'])) ?>» wirklich löschen?')">
+                <?= \App\Core\Csrf::field() ?>
               <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash3"></i></button>
             </form>
           </td>
@@ -199,6 +201,7 @@ $countryCatalog = [
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <form method="POST" action="/namedlocations/create-country">
+          <?= \App\Core\Csrf::field() ?>
         <div class="modal-header">
           <h5 class="modal-title"><i class="bi bi-globe2 me-2"></i>Länder-Standort anlegen</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -259,6 +262,7 @@ $countryCatalog = [
   <div class="modal-dialog">
     <div class="modal-content">
       <form method="POST" action="/namedlocations/create-ip">
+          <?= \App\Core\Csrf::field() ?>
         <div class="modal-header">
           <h5 class="modal-title"><i class="bi bi-hdd-network me-2"></i>IP-Standort anlegen</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

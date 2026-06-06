@@ -664,6 +664,10 @@ class SecurityPostureService
                 ['$count' => 'true', '$top' => '1', '$select' => 'id', '$filter' => "riskState eq 'atRisk'"],
                 'dash_risky', 300
             );
+            // A swallowed 403 yields count 0 — don't report that as a clean "pass".
+            if ($this->graph->getLastError() !== null) {
+                return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (IdentityRiskyUser.Read.All erforderlich).']);
+            }
             $count = (int)($data['@odata.count'] ?? count($data['value'] ?? []));
             if ($count === 0) {
                 return array_merge($base, ['status' => 'pass', 'detail' => 'Keine Benutzer mit aktivem Risikostatus.']);
@@ -854,6 +858,9 @@ class SecurityPostureService
                 ['$filter' => "status eq 'new' or status eq 'inProgress'", '$top' => '1', '$count' => 'true'],
                 'dash_alerts', 300
             );
+            if ($this->graph->getLastError() !== null) {
+                return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder Defender nicht lizenziert.']);
+            }
             $count = (int)($data['@odata.count'] ?? count($data['value'] ?? []));
             if ($count === 0) {
                 return array_merge($base, ['status' => 'pass', 'detail' => 'Keine offenen Defender-Sicherheitswarnungen.']);
@@ -963,6 +970,9 @@ class SecurityPostureService
         ];
         try {
             $data      = $this->graph->get('/applications', ['$select' => 'id,displayName,passwordCredentials', '$top' => '100'], 'applications_secrets', 900);
+            if ($this->graph->getLastError() !== null) {
+                return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (Application.Read.All erforderlich).']);
+            }
             $now       = time();
             $threshold = strtotime('+30 days');
             $expired = $soon = 0;

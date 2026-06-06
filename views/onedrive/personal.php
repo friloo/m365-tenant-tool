@@ -149,12 +149,19 @@ $total = count($list);
                                     </button>
                                 </form>
                             <?php else: ?>
-                                <a href="https://admin.microsoft.com/sharepoint?page=siteManagement&modern=true"
-                                   target="_blank" rel="noopener"
-                                   class="btn btn-sm btn-outline-secondary"
-                                   title="OneDrive-/SharePoint-Sites können nicht über die Graph-API gelöscht werden. Lösche das Laufwerk im SharePoint Admin Center → Aktive Sites (nach der OneDrive-URL des Benutzers suchen).">
-                                    <i class="bi bi-box-arrow-up-right me-1"></i> Im SP-Admin entfernen
-                                </a>
+                                <?php if (!empty($u['siteUrl'])): ?>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            title="Kopiert die OneDrive-URL und öffnet das SharePoint Admin Center. Dort unter „Aktive Sites" die URL in die Suche einfügen — OneDrives sind sonst ausgeblendet — und die Site löschen."
+                                            onclick='odRemove(<?= htmlspecialchars(json_encode($u["siteUrl"]), ENT_QUOTES) ?>)'>
+                                        <i class="bi bi-cloud-minus me-1"></i> OneDrive löschen…
+                                    </button>
+                                <?php else: ?>
+                                    <a href="https://admin.microsoft.com/sharepoint?page=siteManagement&modern=true"
+                                       target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"
+                                       title="OneDrive-Sites können nur im SharePoint Admin Center gelöscht werden (unter „Aktive Sites" nach der OneDrive-URL suchen).">
+                                        <i class="bi bi-box-arrow-up-right me-1"></i> Im SP-Admin entfernen
+                                    </a>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -183,4 +190,24 @@ function filterOdp() {
     });
     document.getElementById('odpTable').dispatchEvent(new CustomEvent('hs:filter'));
 }
+
+// OneDrive sites can't be deleted via Graph. Copy the OneDrive URL to the
+// clipboard and open the SharePoint Admin Center → Active sites, where the
+// admin pastes the URL into the search (OneDrives are hidden otherwise) and
+// deletes the site.
+function odRemove(siteUrl) {
+    const adminUrl = 'https://admin.microsoft.com/sharepoint?page=siteManagement&modern=true';
+    const go = () => {
+        alert('OneDrive-URL wurde in die Zwischenablage kopiert:\n\n' + siteUrl +
+              '\n\nIm gleich geöffneten SharePoint Admin Center unter „Aktive Sites" die URL ' +
+              'in das Suchfeld einfügen, die Site auswählen und löschen.');
+        window.open(adminUrl, '_blank', 'noopener');
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(siteUrl).then(go, go);
+    } else {
+        go();
+    }
+}
+
 </script>

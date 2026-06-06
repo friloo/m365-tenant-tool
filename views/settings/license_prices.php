@@ -42,6 +42,7 @@
 </div>
 
 <form method="POST" action="/settings/license-prices/save">
+    <?= \App\Core\Csrf::field() ?>
 
 <?php
 $tiers = [];

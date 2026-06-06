@@ -14,29 +14,34 @@ class SensitivityLabelsService
      */
     public function getLabels(): array
     {
+        // sensitivityLabels lives in the BETA endpoint (v1.0 has no such path —
+        // a v1.0 call 404s and is swallowed by GraphClient, so the previous
+        // v1.0-first order returned empty and never reached the fallback).
         try {
             $data = $this->graph->get(
-                '/security/informationProtection/sensitivityLabels',
+                'https://graph.microsoft.com/beta/security/informationProtection/sensitivityLabels',
                 ['$top' => '200'],
                 'sensitivity_labels',
                 1800
             );
-            return $data['value'] ?? [];
+            if ($this->graph->getLastError() === null && !empty($data['value'])) {
+                return $data['value'];
+            }
         } catch (\Throwable $e) {
-            error_log('SensitivityLabels getLabels (v1): ' . $e->getMessage());
+            error_log('SensitivityLabels getLabels (beta): ' . $e->getMessage());
         }
 
-        // Fallback: try the beta endpoint pattern
+        // Legacy fallback (older information-protection labels endpoint).
         try {
             $data = $this->graph->get(
                 '/informationProtection/policy/labels',
                 [],
-                'sensitivity_labels_v2',
+                'sensitivity_labels_legacy',
                 1800
             );
             return $data['value'] ?? [];
         } catch (\Throwable $e) {
-            error_log('SensitivityLabels getLabels (v2): ' . $e->getMessage());
+            error_log('SensitivityLabels getLabels (legacy): ' . $e->getMessage());
             return [];
         }
     }

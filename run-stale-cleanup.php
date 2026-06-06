@@ -27,6 +27,7 @@ if (!file_exists(__DIR__ . '/storage/installed.lock')) {
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\CliBootstrap;
+use App\Database\DB;
 use App\Helpers\Mailer;
 use App\Modules\StaleAccounts\StaleAccountsService;
 
