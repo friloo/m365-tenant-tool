@@ -135,7 +135,7 @@ class PermissionCheckerService
             // ── Security ──────────────────────────────────────────────
             'Policy.Read.All' => [
                 'desc'     => 'Alle Richtlinien lesen (CA, Named Locations, Auth-Richtlinien)',
-                'features' => ['Conditional Access (Übersicht & Analyse)', 'Named Locations', 'Security Posture (Security Defaults, App-Zustimmungsrichtlinie, Gasteinladungsrichtlinie, CA-Sitzungssteuerung)'],
+                'features' => ['Conditional Access (Übersicht & Analyse)', 'Named Locations', 'Authentifizierungsmethoden (Anzeige)', 'Security Posture (Security Defaults, App-Zustimmungsrichtlinie, Gasteinladungsrichtlinie, CA-Sitzungssteuerung)'],
                 'section'  => 'Sicherheit',
                 'write'    => false,
             ],
@@ -144,6 +144,18 @@ class PermissionCheckerService
                 'features' => ['Sicherheit (CA-Richtlinien anzeigen)', 'CA-Richtlinie aktivieren/deaktivieren'],
                 'section'  => 'Sicherheit',
                 'write'    => true,
+            ],
+            'Policy.ReadWrite.AuthenticationMethod' => [
+                'desc'     => 'Authentifizierungsmethoden-Richtlinie lesen und schreiben',
+                'features' => ['Authentifizierungsmethoden aktivieren/deaktivieren (FIDO2, Authenticator, SMS, Voice …)'],
+                'section'  => 'Sicherheit',
+                'write'    => true,
+            ],
+            'RoleManagementPolicy.Read.Directory' => [
+                'desc'     => 'PIM-Rollenrichtlinien (Aktivierungsregeln) lesen',
+                'features' => ['PIM-Einstellungen (MFA-/Begründungs-/Genehmigungspflicht, max. Aktivierungsdauer je Rolle)'],
+                'section'  => 'Sicherheit',
+                'write'    => false,
             ],
             'SecurityAlert.ReadWrite.All' => [
                 'desc'     => 'Sicherheitswarnungen lesen und verwalten',

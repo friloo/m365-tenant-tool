@@ -11,37 +11,13 @@ class DlpPoliciesController
     {
         LocalAuth::require();
 
-        // Sensitivity-Labels: Microsoft hat den Pfad /security/informationProtection/
-        // sensitivityLabels in v1.0 entfernt — er existiert nur noch in beta.
-        // Probiere beta zuerst, dann v1.0 delegated als Fallback.
-        $graph  = app_graph();
-        $labels = [];
-        $diag   = null;
-        foreach ([
-            'https://graph.microsoft.com/beta/security/informationProtection/sensitivityLabels',
-            '/informationProtection/policy/labels',
-        ] as $endpoint) {
-            try {
-                $data = $graph->get($endpoint, ['$select' => 'id,name,isActive,priority'], 'dlp_sens_labels_' . md5($endpoint), 1800);
-                if ($graph->getLastError() !== null) continue;
-                $labels = $data['value'] ?? [];
-                $diag   = null;
-                break;
-            } catch (\Throwable $e) {
-                $diag = \App\Graph\GraphErrorTranslator::fromThrowable($e, 'InformationProtectionPolicy.Read.All');
-            }
-        }
-        if (empty($labels) && $diag === null) {
-            $diag = \App\Graph\GraphErrorTranslator::translate($graph->getLastError(), 'InformationProtectionPolicy.Read.All');
-        }
-
-        $activeCount = count(array_filter($labels, fn($l) => $l['isActive'] ?? false));
-
+        // DLP policies have NO Microsoft Graph API (neither v1.0 nor beta). They are
+        // managed only in the Purview portal / Security & Compliance PowerShell.
+        // This page is therefore an honest pointer, not a (previously misleading)
+        // sensitivity-label list. Live DLP *incidents* are available via the
+        // dedicated "DLP-Vorfälle" module (audit-log based).
         View::render('dlppolicies/index', [
-            'pageTitle'   => 'Vertraulichkeitslabels (DLP)',
-            'labels'      => $labels,
-            'activeCount' => $activeCount,
-            'diag'        => $diag,
+            'pageTitle' => 'Data Loss Prevention (DLP)',
         ]);
     }
 }

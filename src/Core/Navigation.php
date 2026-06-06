@@ -25,6 +25,7 @@ class Navigation
             ['section' => null,                  'icon' => 'key',                  'label' => 'Passwort-Ablauf',        'route' => 'passwordexpiry',             'admin' => false],
             ['section' => null,                  'icon' => 'shield-shaded',        'label' => 'Conditional Access',     'route' => 'conditionalaccess',          'admin' => false],
             ['section' => null,                  'icon' => 'geo-alt',              'label' => 'Named Locations',        'route' => 'namedlocations',             'admin' => false],
+            ['section' => null,                  'icon' => 'fingerprint',          'label' => 'Authentifizierungsmethoden','route' => 'authmethods',             'admin' => false],
             ['section' => null,                  'icon' => 'person-lock',          'label' => 'Admin-Rollen',           'route' => 'adminroles',                 'admin' => false],
 
             // ── Lizenzen
@@ -65,11 +66,13 @@ class Navigation
             // ── Identität & Bedrohungen (Detection)
             ['section' => 'Identität & Bedrohungen','icon' => 'key-fill',          'label' => 'Break-Glass-Accounts',   'route' => 'breakglass',                 'admin' => false],
             ['section' => null,                  'icon' => 'lightning-charge',     'label' => 'PIM (JIT-Admin)',        'route' => 'pim',                        'admin' => false],
+            ['section' => null,                  'icon' => 'sliders',              'label' => 'PIM-Einstellungen',      'route' => 'pimsettings',                'admin' => false],
             ['section' => null,                  'icon' => 'fingerprint',          'label' => 'Auth-Strength',          'route' => 'authstrength',               'admin' => false],
             ['section' => null,                  'icon' => 'shield-slash',         'label' => 'MFA-Fatigue',            'route' => 'mfafatigue',                 'admin' => false],
             ['section' => null,                  'icon' => 'arrow-right-square',   'label' => 'Auto-Forward-Audit',     'route' => 'mailboxrules',               'admin' => false],
             ['section' => null,                  'icon' => 'app-indicator',        'label' => 'OAuth-App-Audit',        'route' => 'oauthaudit',                 'admin' => false],
             ['section' => null,                  'icon' => 'shield-shaded',        'label' => 'DLP-Vorfälle',           'route' => 'dlpincidents',               'admin' => false],
+            ['section' => null,                  'icon' => 'file-earmark-x',       'label' => 'DLP-Richtlinien',        'route' => 'dlppolicies',                'admin' => false],
 
             // ── Erweiterte Sicherheit (Nischen-/Spezialmodule)
             ['section' => 'Erweiterte Sicherheit','icon' => 'eye-fill',            'label' => 'Insider-Threat',         'route' => 'insiderthreat',              'admin' => false],
@@ -95,7 +98,8 @@ class Navigation
             ['section' => null,                  'icon' => 'arrow-left-right',     'label' => 'Audit-Diff',             'route' => 'auditdiff',                  'admin' => false],
             ['section' => null,                  'icon' => 'file-earmark-pdf',     'label' => 'DSGVO/NIS-2 Report',     'route' => 'auditreport',                'admin' => false],
             ['section' => null,                  'icon' => 'journal-text',         'label' => 'Sign-in-Log',            'route' => 'signinlog',                  'admin' => false],
-            ['section' => null,                  'icon' => 'archive',              'label' => 'eDiscovery-Fälle',       'route' => 'retentionpolicies',          'admin' => false],
+            ['section' => null,                  'icon' => 'archive',              'label' => 'eDiscovery-Fälle',       'route' => 'ediscovery',                 'admin' => false],
+            ['section' => null,                  'icon' => 'hourglass-split',      'label' => 'Aufbewahrung (Retention)','route' => 'retention',                 'admin' => false],
             ['section' => null,                  'icon' => 'tags',                 'label' => 'Sensitivity Labels',     'route' => 'sensitivitylabels',          'admin' => false],
 
             // ── Berichte & Monitoring
