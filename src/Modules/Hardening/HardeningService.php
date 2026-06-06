@@ -111,7 +111,7 @@ class HardeningService
                 ? [['id' => 'security_defaults_off', 'label' => 'Ausschalten (nur bei aktivem CA)', 'style' => 'outline-warning']]
                 : [['id' => 'security_defaults_on',  'label' => 'Einschalten (Basis-Schutz)',       'style' => 'outline-primary']];
         } catch (\Throwable $e) {
-            $base['detail'] = 'Status nicht lesbar: ' . $e->getMessage();
+            $base['detail'] = 'Status nicht lesbar: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES);
         }
         return $base;
     }
@@ -142,7 +142,7 @@ class HardeningService
                 'existingExternalUserSharingOnly'   => 'Nur an bekannte Gäste — restriktiv und gut.',
                 'externalUserSharingOnly'           => 'Nur authentifizierte Externe — akzeptabel.',
                 'externalUserAndGuestSharing'       => 'Anyone-Links sind erlaubt — DSGVO-Risiko.',
-                default                             => "Wert: {$cap}",
+                default                             => 'Wert: ' . htmlspecialchars($cap, ENT_QUOTES),
             };
             $base['actions'] = [
                 ['id' => 'sp_sharing_strict', 'label' => 'Auf "bekannte Gäste" stellen', 'style' => 'outline-primary'],
@@ -150,7 +150,7 @@ class HardeningService
             ];
         } catch (\Throwable $e) {
             $base['status'] = 'unknown';
-            $base['detail'] = 'Status nicht lesbar: ' . $e->getMessage();
+            $base['detail'] = 'Status nicht lesbar: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES);
         }
         return $base;
     }
@@ -176,7 +176,7 @@ class HardeningService
             ];
         } catch (\Throwable $e) {
             $base['status'] = 'unknown';
-            $base['detail'] = $e->getMessage();
+            $base['detail'] = htmlspecialchars($e->getMessage(), ENT_QUOTES);
         }
         return $base;
     }
@@ -196,14 +196,14 @@ class HardeningService
             $type = $s['defaultSharingLinkType'] ?? '';
             $base['status'] = in_array($type, ['internal', 'direct'], true) ? 'on'
                             : ($type === 'anonymousAccess' ? 'off' : 'warn');
-            $base['detail'] = "Aktuell: {$type}";
+            $base['detail'] = 'Aktuell: ' . htmlspecialchars($type, ENT_QUOTES);
             $base['actions'] = [
                 ['id' => 'sp_default_internal', 'label' => 'Standard: nur Organisation', 'style' => 'outline-primary'],
                 ['id' => 'sp_default_direct',   'label' => 'Standard: bestimmte Personen', 'style' => 'outline-secondary'],
             ];
         } catch (\Throwable $e) {
             $base['status'] = 'unknown';
-            $base['detail'] = $e->getMessage();
+            $base['detail'] = htmlspecialchars($e->getMessage(), ENT_QUOTES);
         }
         return $base;
     }
@@ -241,7 +241,7 @@ class HardeningService
             }
         } catch (\Throwable $e) {
             $base['status'] = 'unknown';
-            $base['detail'] = $e->getMessage();
+            $base['detail'] = htmlspecialchars($e->getMessage(), ENT_QUOTES);
         }
         return $base;
     }
@@ -283,7 +283,7 @@ class HardeningService
                 'adminsGuestInvitersAndAllMembers' => 'warn',
                 default                  => 'unknown',
             };
-            $base['detail'] = "allowInvitesFrom = {$current}";
+            $base['detail'] = 'allowInvitesFrom = ' . htmlspecialchars($current, ENT_QUOTES);
             if ($current !== 'adminsAndGuestInviters' && $current !== 'none') {
                 $base['actions'] = [
                     ['id' => 'guest_invite_admins', 'label' => 'Auf "nur Admins" beschränken', 'style' => 'outline-primary'],
@@ -291,7 +291,7 @@ class HardeningService
             }
         } catch (\Throwable $e) {
             $base['status'] = 'unknown';
-            $base['detail'] = $e->getMessage();
+            $base['detail'] = htmlspecialchars($e->getMessage(), ENT_QUOTES);
         }
         return $base;
     }
@@ -504,7 +504,7 @@ class HardeningService
                 : [['id' => 'sp_idle_signout_on',  'label' => 'Aktivieren (Sign-out nach 4 h, Warnung nach 3 h)', 'style' => 'outline-primary']];
         } catch (\Throwable $e) {
             $base['status'] = 'unknown';
-            $base['detail'] = $e->getMessage();
+            $base['detail'] = htmlspecialchars($e->getMessage(), ENT_QUOTES);
         }
         return $base;
     }
@@ -528,14 +528,14 @@ class HardeningService
                 'externalUserAndGuestSharing'                 => 'off',
                 default                                       => 'unknown',
             };
-            $base['detail'] = "Aktuell: {$cap}";
+            $base['detail'] = 'Aktuell: ' . htmlspecialchars($cap, ENT_QUOTES);
             $base['actions'] = [
                 ['id' => 'sp_onedrive_strict', 'label' => 'Auf "bekannte Gäste" stellen', 'style' => 'outline-primary'],
                 ['id' => 'sp_onedrive_off',    'label' => 'OneDrive-External-Sharing deaktivieren', 'style' => 'outline-danger'],
             ];
         } catch (\Throwable $e) {
             $base['status'] = 'unknown';
-            $base['detail'] = $e->getMessage();
+            $base['detail'] = htmlspecialchars($e->getMessage(), ENT_QUOTES);
         }
         return $base;
     }
@@ -562,7 +562,7 @@ class HardeningService
                 : [['id' => 'sp_allow_external_reshare', 'label' => 'Re-Sharing erlauben (nicht empfohlen)', 'style' => 'outline-secondary']];
         } catch (\Throwable $e) {
             $base['status'] = 'unknown';
-            $base['detail'] = $e->getMessage();
+            $base['detail'] = htmlspecialchars($e->getMessage(), ENT_QUOTES);
         }
         return $base;
     }
@@ -589,14 +589,14 @@ class HardeningService
                 '2af84b1e-32c8-42b7-82bc-daa82404023b' => 'Restricted Guest — minimale Rechte.',
                 '10dae51f-b6af-4016-8d66-8c2a99b929b3' => 'Default Guest (volle Lese-Rechte auf Verzeichnis) — DSGVO-Risiko.',
                 'a0b1b346-4d3e-4e8b-98f8-753987be4970' => 'User Guest (Standard).',
-                default => "Unbekannte Role-ID: {$rid}",
+                default => 'Unbekannte Role-ID: ' . htmlspecialchars($rid, ENT_QUOTES),
             };
             $base['actions'] = $rid === '2af84b1e-32c8-42b7-82bc-daa82404023b'
                 ? [['id' => 'guest_role_member',     'label' => 'Auf Default-Guest zurück (nicht empfohlen)', 'style' => 'outline-secondary']]
                 : [['id' => 'guest_role_restricted', 'label' => 'Auf Restricted-Guest umstellen', 'style' => 'outline-primary']];
         } catch (\Throwable $e) {
             $base['status'] = 'unknown';
-            $base['detail'] = $e->getMessage();
+            $base['detail'] = htmlspecialchars($e->getMessage(), ENT_QUOTES);
         }
         return $base;
     }
@@ -689,7 +689,7 @@ class HardeningService
                 : [['id' => $offAction, 'label' => 'Wieder erlauben', 'style' => 'outline-secondary']];
         } catch (\Throwable $e) {
             $base['status'] = 'unknown';
-            $base['detail'] = $e->getMessage();
+            $base['detail'] = htmlspecialchars($e->getMessage(), ENT_QUOTES);
             $base['actions'] = [];
         }
         return $base;

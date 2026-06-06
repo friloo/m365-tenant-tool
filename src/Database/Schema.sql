@@ -184,6 +184,14 @@ CREATE TABLE IF NOT EXISTS login_attempts (
     INDEX idx_ip_time (ip_address, attempted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Throttles repeated invalid REST API key attempts (per source IP).
+CREATE TABLE IF NOT EXISTS api_auth_failures (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    ip_address   VARCHAR(45) NOT NULL,
+    attempted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_ip_time (ip_address, attempted_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS app_audit_log (
     id         INT AUTO_INCREMENT PRIMARY KEY,
     actor      VARCHAR(255) NOT NULL DEFAULT '',
