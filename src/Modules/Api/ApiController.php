@@ -30,7 +30,7 @@ use App\Modules\Workflows\WorkflowService;
  *   - Tenant info      — organization, domains
  *
  * Auth model:
- *   - X-Api-Key header (or ?api_key=) verified via ApiAuth.
+ *   - X-Api-Key header (header only — never query string) verified via ApiAuth.
  *   - /api/docs and /api/openapi.json are restricted to logged-in
  *     tool users (LocalAuth) so the spec stays internal.
  */
@@ -151,7 +151,9 @@ class ApiController
             '$select' => 'id,userPrincipalName,displayName,accountEnabled,mail,jobTitle,department,createdDateTime,userType',
             '$top'    => (string)$top,
         ];
-        if ($filter !== '') $params['$filter'] = $filter;
+        if ($filter !== '') {
+            $params['$filter'] = self::safeFilter($filter) ?? self::badRequest('Ungültiger $filter-Ausdruck.');
+        }
 
         try {
             $r = app_graph()->get('/users', $params);
@@ -324,7 +326,9 @@ class ApiController
             '$top' => (string)$top,
             '$select' => 'id,userPrincipalName,createdDateTime,ipAddress,status,appDisplayName,location,riskLevelAggregated',
         ];
-        if ($filter !== '') $params['$filter'] = $filter;
+        if ($filter !== '') {
+            $params['$filter'] = self::safeFilter($filter) ?? self::badRequest('Ungültiger $filter-Ausdruck.');
+        }
         try {
             $r = app_graph()->get('/auditLogs/signIns', $params);
             self::json(['sign_ins' => $r['value'] ?? []]);
@@ -552,6 +556,31 @@ class ApiController
         http_response_code(500);
         if (!headers_sent()) header('Content-Type: application/json; charset=utf-8');
         echo json_encode(['error' => 'internal_error', 'message' => $e->getMessage()]);
+        exit;
+    }
+
+    /**
+     * Validate a client-supplied OData $filter before forwarding it to Graph.
+     * A read-scope key must not be able to smuggle arbitrary OData beyond the
+     * UI's intent, so we allow only a conservative character set and cap length.
+     * Returns the (unchanged) filter if safe, or null if it must be rejected.
+     */
+    private static function safeFilter(string $filter): ?string
+    {
+        if ($filter === '') return '';
+        if (strlen($filter) > 256) return null;
+        // Letters/digits/space + punctuation legitimate OData filters use
+        // (' ( ) , . : / @ + -). Blocks ; < > & = $ { } \ which have no place
+        // in a field/operator expression and would widen the surface.
+        if (!preg_match("#^[A-Za-z0-9 _.,:'()/@+\\-]+$#", $filter)) return null;
+        return $filter;
+    }
+
+    private static function badRequest(string $message): never
+    {
+        http_response_code(400);
+        if (!headers_sent()) header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => 'invalid_filter', 'message' => $message], JSON_UNESCAPED_UNICODE);
         exit;
     }
 

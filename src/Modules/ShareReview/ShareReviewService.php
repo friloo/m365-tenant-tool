@@ -14,6 +14,8 @@ class ShareReviewService
     private bool $onlyAnonymous;
     private string $baseUrl;
     private ?array $tenantDomains = null;
+    /** Set to true whenever a scan hits a hard limit (sites/drives/folders/pagination). */
+    private bool $scanTruncated = false;
 
     public function __construct(private GraphClient $graph)
     {
@@ -97,6 +99,7 @@ class ShareReviewService
     public function scanAndSync(): array
     {
         $log = [];
+        $this->scanTruncated = false;
 
         $maxSites = 20;
         try {
@@ -106,8 +109,7 @@ class ShareReviewService
         }
 
         if (count($sites) >= $maxSites) {
-            $log[] = "HINWEIS: Aus Performance-Gründen werden nur die ersten {$maxSites} Sites "
-                   . "(je 3 Bibliotheken, Ordnertiefe 3) gescannt — die Abdeckung ist nicht vollständig.";
+            $this->scanTruncated = true;
         }
 
         foreach (array_slice($sites, 0, $maxSites) as $site) {
@@ -119,11 +121,25 @@ class ShareReviewService
                 );
             } catch (\Throwable) { continue; }
 
+            if (count($drives) > 3) $this->scanTruncated = true;
+
             foreach (array_slice($drives, 0, 3) as $drive) {
                 // Walk folder tree with permissions expanded inline — no separate permission calls needed
                 $this->scanFolder($drive['id'], 'root', $site, $log, 3);
             }
         }
+
+        // Be honest about coverage: a "no external shares" result is only meaningful
+        // if the scan was actually exhaustive. Surface incompleteness explicitly so
+        // neither the UI nor the cron log implies full tenant coverage when it isn't.
+        array_unshift(
+            $log,
+            $this->scanTruncated
+                ? "WARNUNG: Abdeckung UNVOLLSTÄNDIG — aus Performance-Gründen wurden nur die "
+                  . "ersten {$maxSites} Sites (je 3 Bibliotheken, Ordnertiefe 3, max. 15 Unterordner/Ebene) "
+                  . "gescannt. Nicht gefundene Freigaben bedeuten NICHT, dass keine existieren."
+                : "Abdeckung vollständig im Rahmen der Limits ({$maxSites} Sites, Ordnertiefe 3)."
+        );
 
         return $log;
     }
@@ -212,6 +228,7 @@ class ShareReviewService
         }
 
         if ($depth > 0) {
+            if (count($subfolders) > 15) $this->scanTruncated = true;
             foreach (array_slice($subfolders, 0, 15) as $subfolderId) {
                 $this->scanFolder($driveId, $subfolderId, $site, $log, $depth - 1);
             }

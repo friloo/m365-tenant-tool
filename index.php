@@ -274,6 +274,12 @@ $ddl = [
         attempted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         INDEX idx_ip_time (ip_address, attempted_at)
     )",
+    "CREATE TABLE IF NOT EXISTS api_auth_failures (
+        id           INT AUTO_INCREMENT PRIMARY KEY,
+        ip_address   VARCHAR(45) NOT NULL,
+        attempted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_ip_time (ip_address, attempted_at)
+    )",
     "CREATE TABLE IF NOT EXISTS app_audit_log (
         id         INT AUTO_INCREMENT PRIMARY KEY,
         actor      VARCHAR(255) NOT NULL DEFAULT '',

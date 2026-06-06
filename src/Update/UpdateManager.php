@@ -319,7 +319,25 @@ class UpdateManager
 
             if ($relative === '' || $relative === false) continue; // top-level dir entry itself
 
+            // Zip Slip guard: reject absolute paths, Windows drive letters and any
+            // ".." traversal so a crafted entry like "../../index.php" cannot escape
+            // $targetDir and overwrite arbitrary files (→ RCE on update).
+            $relative = str_replace('\\', '/', $relative);
+            if ($relative[0] === '/'
+                || preg_match('#^[A-Za-z]:#', $relative)
+                || preg_match('#(^|/)\.\.(/|$)#', $relative)) {
+                continue; // skip unsafe entry
+            }
+
             $destPath = $targetDir . '/' . $relative;
+
+            // Defence in depth: the resolved parent directory must stay inside $targetDir.
+            $baseReal = realpath($targetDir);
+            $parentReal = realpath(dirname($destPath));
+            if ($baseReal !== false && $parentReal !== false
+                && !str_starts_with($parentReal . '/', $baseReal . '/')) {
+                continue;
+            }
 
             if (str_ends_with($name, '/')) {
                 // Directory entry

@@ -90,7 +90,7 @@ $cardBorder = fn (string $status) => match ($status) {
                         <?php if (!empty($item['detail'])): ?>
                             <div class="small mb-3 p-2 rounded" style="background:#f8fafc;border:1px solid #e2e8f0;">
                                 <span class="text-muted">Aktueller Status:</span>
-                                <?= $item['detail'] /* enthält teils HTML-Links — bewusst nicht escaped */ ?>
+                                <?= $item['detail'] /* trusted HTML: static markup only; dynamic Graph values are htmlspecialchars()-escaped at source in HardeningService */ ?>
                             </div>
                         <?php endif; ?>
                         <div class="d-flex flex-wrap gap-2">
