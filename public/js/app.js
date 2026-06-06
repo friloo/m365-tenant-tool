@@ -523,3 +523,35 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('canvas.sparkline-canvas').forEach(drawSparkline);
     });
 })();
+
+// Copy-to-clipboard for code/PowerShell snippets (.ps-snippet > .js-copy).
+(function () {
+    function fallbackCopy(text, done) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { /* ignore */ }
+        document.body.removeChild(ta);
+    }
+    document.addEventListener('click', function (ev) {
+        const btn = ev.target.closest('.js-copy');
+        if (!btn) return;
+        const snippet = btn.closest('.ps-snippet');
+        const code = snippet && snippet.querySelector('code');
+        if (!code) return;
+        const text = code.textContent;
+        const done = function () {
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check2 me-1"></i>Kopiert!';
+            setTimeout(function () { btn.innerHTML = orig; }, 1500);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done).catch(function () { fallbackCopy(text, done); });
+        } else {
+            fallbackCopy(text, done);
+        }
+    });
+})();

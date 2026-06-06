@@ -304,3 +304,29 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
     </div>
 </div>
 <?php endif; ?>
+
+<?php
+// ── Schutzrichtlinien konfigurieren (Defender for Office 365 / EOP) ──
+// Keine Microsoft-Graph-Write-API → Microsoft-Defender-Portal oder Exchange-Online-PowerShell.
+echo \App\Core\Ui::externalCard(
+    'Schutzrichtlinien konfigurieren (Defender for Office 365 / EOP)',
+    'Anti-Phishing, Anti-Spam, Anti-Malware, Safe Links/Attachments und Transport-Regeln lassen sich '
+    . '<strong>nicht über die Microsoft Graph API</strong> setzen. Konfiguration im '
+    . '<strong>Microsoft-Defender-Portal</strong> oder per <strong>Exchange-Online-PowerShell</strong>:',
+    [
+        ['https://security.microsoft.com/presetSecurityPolicies', 'Preset-Sicherheitsrichtlinien (Defender)'],
+        ['https://security.microsoft.com/antiphishing', 'Anti-Phishing (Defender)'],
+        ['https://security.microsoft.com/safelinksv2', 'Safe Links (Defender)'],
+        ['https://admin.exchange.microsoft.com/#/transportrules', 'Transport-Regeln (Exchange Admin)'],
+    ],
+    [
+        ["Connect-ExchangeOnline -UserPrincipalName admin@deine-domain.de", 'Mit Exchange Online PowerShell verbinden'],
+        ["Set-AntiPhishPolicy -Identity \"Office365 AntiPhish Default\" `\n  -EnableSpoofIntelligence \$true `\n  -EnableMailboxIntelligence \$true `\n  -EnableMailboxIntelligenceProtection \$true `\n  -EnableFirstContactSafetyTips \$true", 'Anti-Phishing härten'],
+        ["Set-HostedOutboundSpamFilterPolicy -Identity Default -AutoForwardingMode Off", 'Externe Auto-Weiterleitung tenant-weit blockieren'],
+        ["New-SafeLinksPolicy -Name \"SafeLinks Std\" `\n  -EnableSafeLinksForEmail \$true -EnableSafeLinksForTeams \$true `\n  -EnableSafeLinksForOffice \$true -ScanUrls \$true -DeliverMessageAfterScan \$true\n\nNew-SafeLinksRule -Name \"SafeLinks Std\" -SafeLinksPolicy \"SafeLinks Std\" `\n  -RecipientDomainIs (Get-AcceptedDomain).Name", 'Safe Links aktivieren'],
+        ["New-SafeAttachmentPolicy -Name \"SafeAtt Std\" -Enable \$true -Action Block\n\nNew-SafeAttachmentRule -Name \"SafeAtt Std\" -SafeAttachmentPolicy \"SafeAtt Std\" `\n  -RecipientDomainIs (Get-AcceptedDomain).Name", 'Safe Attachments aktivieren'],
+        ["Set-ExternalInOutlook -Enabled \$true", '„External\"-Tag in Outlook aktivieren'],
+    ],
+    'shield-shaded'
+);
+?>

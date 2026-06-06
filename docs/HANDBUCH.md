@@ -148,6 +148,12 @@ Malware, Safe Links/Attachments), **DLP-Richtlinien**, **Purview Sensitivity Lab
 Outlook**. Diese konfigurierst du im jeweiligen Portal bzw. per Exchange-Online-/Security-&-
 Compliance-PowerShell. Vollständige Liste: [`CIS-COVERAGE.md`](CIS-COVERAGE.md).
 
+> **Hilfestellung im Tool:** Auf diesen Seiten (DLP-Richtlinien, Aufbewahrung, Mail Flow & Schutz,
+> Domain Health/DKIM, Sensitivity Labels) findest du **direkte Deep-Links** ins richtige Portal
+> **und fertige PowerShell-Befehle mit „Kopieren"-Button** — verbinden (`Connect-ExchangeOnline` /
+> `Connect-IPPSSession`), Status auflisten und ein einsatzfertiges Beispiel zum Anlegen. So musst
+> du die Befehle nicht selbst zusammensuchen.
+
 ## 7 · Fehlerdiagnose
 
 | Symptom | Vorgehen |

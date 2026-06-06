@@ -134,6 +134,9 @@ Orientierung: **CIS Microsoft 365 Foundations Benchmark** und **Microsoft Secure
 - **🔴 Nicht über Graph:** **Defender for Office 365 / EOP-Policies, DLP, Purview-Labels &
   Retention, Transport-Regeln, DKIM, External-Tag**. Diese erfordern zwingend
   **Exchange-Online-/Security-&-Compliance-PowerShell** bzw. die jeweiligen Portale.
+  Für genau diese Bereiche bietet das Tool auf den betreffenden Seiten **direkte Deep-Links**
+  ins Portal **und kopierbare PowerShell-Befehle** (Verbinden, Auflisten, einsatzfertiges
+  Beispiel), sodass die Konfiguration mit einem Klick/Copy startet.
 
 **Praxis-Empfehlung:** Das Tool als zentrales Cockpit für Identität/Apps/Gäste/Sharing nutzen
 (inkl. der hier neuen Module Authentifizierungsmethoden & PIM-Einstellungen). Für einen
