@@ -9,22 +9,16 @@ use App\Core\View;
 
 class SecurityController
 {
+    /**
+     * The standalone "Sicherheit" dashboard only aggregated what the dedicated
+     * modules already show (Conditional Access, Risiko-Anmeldungen, MFA-Methoden,
+     * Sign-in-Log) and duplicated the CA toggle. It was folded away to leave a
+     * clear pair: Security Posture (status) + Security Center (hardening).
+     */
     public function index(): void
     {
         LocalAuth::require();
-        $service    = app_service(SecurityService::class);
-        $policies   = $service->getConditionalAccessPolicies();
-        $riskyUsers = $service->getRiskyUsers();
-        $mfa        = $service->getMfaSummary();
-        $signIns    = $service->getRecentSignIns(30);
-
-        View::render('security/index', [
-            'pageTitle'  => 'Sicherheit',
-            'policies'   => $policies,
-            'riskyUsers' => $riskyUsers,
-            'mfa'        => $mfa,
-            'signIns'    => $signIns,
-        ]);
+        Redirect::to('/hardening');
     }
 
     public function toggleCaPolicy(string $policyId): void
@@ -36,7 +30,7 @@ class SecurityController
 
         if (!in_array($newState, $allowedStates, true)) {
             Session::flash('error', 'Ungültiger Status.');
-            Redirect::to('/security');
+            Redirect::to('/hardening');
             return;
         }
 
@@ -48,6 +42,6 @@ class SecurityController
             Session::flash('error', 'Fehler: ' . $e->getMessage());
         }
 
-        Redirect::to('/security');
+        Redirect::to('/hardening');
     }
 }

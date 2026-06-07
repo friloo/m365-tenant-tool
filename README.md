@@ -134,7 +134,7 @@ Es läuft auf **eigener Infrastruktur** (klassischer LAMP-Stack), speichert alle
 | Modul | Was es zeigt | Aktionen |
 |---|---|---|
 | **Postfächer** | Mailbox-Nutzung (Größe, Items, Aktivität) + Detail (Forwarding, Auto-Reply) | Forwarding setzen, Auto-Reply, CSV-Export |
-| **Freigegebene Postfächer** · **Externe Weiterleitungen** | Shared Mailboxes; Mailboxen mit externer Weiterleitung | Anlegen · Entfernen |
+| **Freigegebene Postfächer** · **Weiterleitungen & Regeln** | Shared Mailboxes; externe Weiterleitung per Postfach-Einstellung **und** Posteingangsregeln (Auto-Forward-Audit) in einer Ansicht | Anlegen · Entfernen |
 | **Mail Flow** | Exchange-Service-Status + Defender-for-Office-Alerts | — |
 | **Teams-Übersicht** · **Teams-Nutzung** · **Teams Governance** | Policies; Usage-Bericht; inaktive Teams / ohne Owner / ohne Members | — |
 | **Geräte (Intune)** | Verwaltete Geräte, Compliance, OS, BitLocker | Sync, Retire, Wipe |
@@ -151,7 +151,7 @@ Es läuft auf **eigener Infrastruktur** (klassischer LAMP-Stack), speichert alle
 | **Freigaben** | Alle externen und anonymen Freigaben | Widerrufen |
 | **Freigaben-Monitor** | Vollautomatisches Monitoring externer Freigaben mit E-Mail-Review + Auto-Widerruf | Widerrufen, erinnern, Scan auslösen |
 | **Freigaberichtlinien** | Globale & Pro-Site-Sharing-Einstellungen | Ändern |
-| **Nutzungsberichte** · **Adoption-Report** | Aggregierte M365-Aktivität; Service-Adoption | — |
+| **Nutzung & Adoption** | Aggregierte M365-Aktivität und Service-Adoption in einer Ansicht (zwei Tabs) | — |
 | **Executive-Report** | Monatliche KPI-Mail an die Geschäftsführung | Aktivieren, Vorschau, Test-Versand |
 | **Domain Health** | DNS / SPF / DKIM / DMARC pro Domain | — |
 | **Backup-Status** | Tracking eines 3rd-Party-Backups mit Health-Score | Konfigurieren |

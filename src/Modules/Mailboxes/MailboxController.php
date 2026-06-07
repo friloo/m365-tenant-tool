@@ -7,6 +7,7 @@ use App\Core\Redirect;
 use App\Core\Session;
 use App\Core\View;
 use App\Helpers\CsvExporter;
+use App\Modules\MailboxRules\MailboxRulesService;
 
 class MailboxController
 {
@@ -143,14 +144,28 @@ class MailboxController
 
         if (($_GET['refresh'] ?? '') === '1') {
             app_graph()->getCache()->forget('mailbox_external_forwards');
+            app_service(MailboxRulesService::class)->clearCache();
         }
 
-        $service  = app_service(MailboxService::class);
-        $forwards = $service->getExternalForwards();
+        // Two complementary external-forwarding channels on one page:
+        //  - mailbox-level forwarding (forwardingSmtpAddress)
+        //  - inbox rules that forward/redirect (messageRules)
+        $forwards = app_service(MailboxService::class)->getExternalForwards();
+        $report   = app_service(MailboxRulesService::class)->scanAll(500);
 
-        View::render('mailboxes/external-forwards', [
-            'pageTitle' => 'Externe Weiterleitungen',
+        $rulesDiag = null;
+        if (($report['scanned_users'] ?? 0) === 0) {
+            $rulesDiag = \App\Graph\GraphErrorTranslator::translate(
+                app_graph()->getLastError(),
+                'MailboxSettings.Read'
+            );
+        }
+
+        View::render('mailboxes/forwarding', [
+            'pageTitle' => 'Weiterleitungen & Regeln',
             'forwards'  => $forwards,
+            'report'    => $report,
+            'rulesDiag' => $rulesDiag,
             'flash'     => Session::getFlash('success'),
             'error'     => Session::getFlash('error'),
         ]);

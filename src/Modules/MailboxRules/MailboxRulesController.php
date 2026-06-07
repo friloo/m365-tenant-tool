@@ -3,31 +3,18 @@
 namespace App\Modules\MailboxRules;
 
 use App\Auth\LocalAuth;
-use App\Core\View;
+use App\Core\Redirect;
 
 class MailboxRulesController
 {
+    /**
+     * Auto-Forward-Audit was merged into the unified "Weiterleitungen & Regeln"
+     * page (/mailboxes/external-forwards), which now shows both mailbox-level
+     * forwarding and inbox-rule forwarding. Kept as a redirect for old links.
+     */
     public function index(): void
     {
         LocalAuth::require();
-        $service = app_service(MailboxRulesService::class);
-
-        if (isset($_GET['refresh'])) $service->clearCache();
-
-        $report = $service->scanAll(500);
-
-        $diag = null;
-        if ($report['scanned_users'] === 0) {
-            $diag = \App\Graph\GraphErrorTranslator::translate(
-                app_graph()->getLastError(),
-                'MailboxSettings.Read'
-            );
-        }
-
-        View::render('mailboxrules/index', [
-            'pageTitle' => 'Outlook-Regeln & Auto-Weiterleitungen',
-            'report'    => $report,
-            'diag'      => $diag,
-        ]);
+        Redirect::to('/mailboxes/external-forwards');
     }
 }

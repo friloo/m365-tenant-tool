@@ -70,19 +70,16 @@ class Navigation
             ['hub' => 'zugriff', 'icon' => 'key-fill',          'label' => 'Break-Glass-Accounts',    'route' => 'breakglass',             'admin' => false],
 
             // ── Bedrohungen & Response ──────────────────────────────────
-            ['hub' => 'bedrohungen', 'icon' => 'shield-check',       'label' => 'Sicherheit',          'route' => 'security',          'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'bar-chart-line',     'label' => 'Secure Score',        'route' => 'securescore',       'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'bell',               'label' => 'Defender Alerts',     'route' => 'defenderalerts',    'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'exclamation-triangle','label' => 'Risiko-Anmeldungen', 'route' => 'riskysignins',      'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'shield-slash',       'label' => 'MFA-Fatigue',         'route' => 'mfafatigue',        'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'eye-fill',           'label' => 'Insider-Threat',      'route' => 'insiderthreat',     'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'bullseye',           'label' => 'Phishing-Simulationen','route' => 'phishingsim',      'admin' => false],
-            ['hub' => 'bedrohungen', 'icon' => 'app-indicator',      'label' => 'OAuth-App-Audit',     'route' => 'oauthaudit',        'admin' => false],
-            ['hub' => 'bedrohungen', 'icon' => 'arrow-right-square', 'label' => 'Auto-Forward-Audit',  'route' => 'mailboxrules',      'admin' => false],
 
             // ── E-Mail-Sicherheit ───────────────────────────────────────
             ['hub' => 'email', 'icon' => 'envelope',        'label' => 'Postfächer',             'route' => 'mailboxes',                   'admin' => false],
-            ['hub' => 'email', 'icon' => 'forward-fill',    'label' => 'Externe Weiterleitungen','route' => 'mailboxes/external-forwards', 'admin' => false],
+            ['hub' => 'email', 'icon' => 'forward-fill',    'label' => 'Weiterleitungen & Regeln','route' => 'mailboxes/external-forwards', 'admin' => false],
             ['hub' => 'email', 'icon' => 'arrow-left-right','label' => 'Mail Flow & Schutz',     'route' => 'mailflow',                    'admin' => false],
             ['hub' => 'email', 'icon' => 'globe2',          'label' => 'Domain Health',          'route' => 'domainhealth',                'admin' => false],
             ['hub' => 'email', 'icon' => 'airplane',        'label' => 'EXO Migration',          'route' => 'exchangemigration',           'admin' => false],
@@ -128,14 +125,14 @@ class Navigation
             ['hub' => 'lizenzen', 'icon' => 'award',           'label' => 'Lizenzen',          'route' => 'licenses',         'admin' => false],
             ['hub' => 'lizenzen', 'icon' => 'lightbulb',       'label' => 'Lizenz-Berater',    'route' => 'licenseadvisor',   'admin' => false],
             ['hub' => 'lizenzen', 'icon' => 'cash-coin',       'label' => 'Lizenzkosten',      'route' => 'licensecosts',     'admin' => false],
-            ['hub' => 'lizenzen', 'icon' => 'bar-chart-steps', 'label' => 'Nutzungsberichte',  'route' => 'usagereports',     'admin' => false],
-            ['hub' => 'lizenzen', 'icon' => 'graph-up-arrow',  'label' => 'Adoptions-Report',  'route' => 'adoption',         'admin' => false],
+            ['hub' => 'lizenzen', 'icon' => 'bar-chart-steps', 'label' => 'Nutzung & Adoption', 'route' => 'usagereports',     'admin' => false],
             ['hub' => 'lizenzen', 'icon' => 'envelope-paper',  'label' => 'Executive-Report',  'route' => 'executivereport',  'admin' => false],
             ['hub' => 'lizenzen', 'icon' => 'heart-pulse',     'label' => 'Dienststatus',      'route' => 'servicehealth',    'admin' => false],
             ['hub' => 'lizenzen', 'icon' => null, 'label' => null, 'route' => 'licenses/expiry', 'admin' => false],
 
             // ── Apps & Automatisierung ──────────────────────────────────
             ['hub' => 'apps', 'icon' => 'grid-3x3-gap', 'label' => 'App-Registrierungen', 'route' => 'appregistrations', 'admin' => false],
+            ['hub' => 'apps', 'icon' => 'app-indicator','label' => 'OAuth-/Enterprise-Apps','route' => 'oauthaudit',      'admin' => false],
             ['hub' => 'apps', 'icon' => 'diagram-2',    'label' => 'Lifecycle Workflows', 'route' => 'lifecycle',        'admin' => false],
             ['hub' => 'apps', 'icon' => 'robot',        'label' => 'KI-Berater',          'route' => 'ai',              'admin' => false],
             ['hub' => 'apps', 'icon' => 'diagram-2',    'label' => 'Workflows',           'route' => 'workflows',       'admin' => true],
