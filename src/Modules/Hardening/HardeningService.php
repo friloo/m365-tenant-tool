@@ -182,57 +182,47 @@ class HardeningService
         return $base;
     }
 
-    private function itemSpAnonLinkExpiry(): array
+    /** Honest info item for a SharePoint tenant setting that Graph cannot manage (PowerShell only). */
+    private function spoOnlyItem(string $id, string $title, string $desc, string $why, string $psCmd): array
     {
-        $base = [
-            'id'        => 'sp_anon_expiry',
-            'title'     => 'Anonyme Freigabe-Links laufen ab',
+        $ps = \App\Core\Ui::psBlock(
+            "Connect-SPOService -Url https://<tenant>-admin.sharepoint.com\n" . $psCmd,
+            'Per SharePoint-PowerShell setzen'
+        );
+        return [
+            'id'        => $id,
+            'title'     => $title,
             'category'  => 'Speicher',
-            'desc'      => 'Wenn anonyme Links erlaubt sind, sollten sie zeitlich begrenzt sein — sonst bleiben sie unbegrenzt nutzbar (Speicherbegrenzung Art. 5 Abs. 1e DSGVO).',
-            'why'       => 'DSGVO Art. 5 Abs. 1 lit. e (Speicherbegrenzung).',
+            'desc'      => $desc,
+            'why'       => $why,
+            'status'    => 'info',
+            'detail'    => 'Diese Einstellung ist <strong>nicht über Microsoft Graph</strong> verfügbar '
+                         . '(nicht Teil der SharePoint-Tenant-Settings in Graph v1.0) — daher nur per SharePoint-PowerShell:' . $ps,
+            'actions'   => [['id' => '__link', 'label' => 'SharePoint-Sharing-Einstellungen', 'href' => 'https://admin.microsoft.com/sharepoint?page=sharing', 'style' => 'outline-primary']],
             'admin_url' => 'https://admin.microsoft.com/sharepoint?page=sharing',
         ];
-        try {
-            $s    = $this->graph->get('/admin/sharepoint/settings', [], null, 0);
-            $days = (int)($s['requireAnonymousLinksExpireInDays'] ?? 0);
-            $base['status'] = $days > 0 && $days <= 90 ? 'on' : ($days > 90 ? 'warn' : 'off');
-            $base['detail'] = $days > 0 ? "Aktueller Ablauf: {$days} Tage" : 'Kein Ablauf — Links bleiben unbegrenzt.';
-            $base['actions'] = [
-                ['id' => 'sp_anon_expiry_30', 'label' => 'Auf 30 Tage setzen',  'style' => 'outline-primary'],
-                ['id' => 'sp_anon_expiry_90', 'label' => 'Auf 90 Tage setzen',  'style' => 'outline-secondary'],
-            ];
-        } catch (\Throwable $e) {
-            $base['status'] = 'unknown';
-            $base['detail'] = htmlspecialchars($e->getMessage(), ENT_QUOTES);
-        }
-        return $base;
+    }
+
+    private function itemSpAnonLinkExpiry(): array
+    {
+        return $this->spoOnlyItem(
+            'sp_anon_expiry',
+            'Anonyme Freigabe-Links laufen ab',
+            'Wenn anonyme Links erlaubt sind, sollten sie zeitlich begrenzt sein — sonst bleiben sie unbegrenzt nutzbar.',
+            'DSGVO Art. 5 Abs. 1 lit. e (Speicherbegrenzung).',
+            'Set-SPOTenant -RequireAnonymousLinksExpireInDays 30'
+        );
     }
 
     private function itemSpDefaultLinkType(): array
     {
-        $base = [
-            'id'        => 'sp_default_link',
-            'title'     => 'Default-Freigabetyp auf intern',
-            'category'  => 'Speicher',
-            'desc'      => 'Wenn ein User auf „Teilen" klickt, welcher Link-Typ wird vorausgewählt? Anyone als Default begünstigt versehentliche Datenweitergabe.',
-            'why'       => 'DSGVO Art. 25 (Privacy by Default).',
-            'admin_url' => 'https://admin.microsoft.com/sharepoint?page=sharing',
-        ];
-        try {
-            $s    = $this->graph->get('/admin/sharepoint/settings', [], null, 0);
-            $type = $s['defaultSharingLinkType'] ?? '';
-            $base['status'] = in_array($type, ['internal', 'direct'], true) ? 'on'
-                            : ($type === 'anonymousAccess' ? 'off' : 'warn');
-            $base['detail'] = 'Aktuell: ' . htmlspecialchars($type, ENT_QUOTES);
-            $base['actions'] = [
-                ['id' => 'sp_default_internal', 'label' => 'Standard: nur Organisation', 'style' => 'outline-primary'],
-                ['id' => 'sp_default_direct',   'label' => 'Standard: bestimmte Personen', 'style' => 'outline-secondary'],
-            ];
-        } catch (\Throwable $e) {
-            $base['status'] = 'unknown';
-            $base['detail'] = htmlspecialchars($e->getMessage(), ENT_QUOTES);
-        }
-        return $base;
+        return $this->spoOnlyItem(
+            'sp_default_link',
+            'Default-Freigabetyp auf intern',
+            'Wenn ein User auf „Teilen" klickt, welcher Link-Typ ist vorausgewählt? „Anyone" als Default begünstigt versehentliche Datenweitergabe.',
+            'DSGVO Art. 25 (Privacy by Default).',
+            'Set-SPOTenant -DefaultSharingLinkType Internal   # oder: Direct (bestimmte Personen)'
+        );
     }
 
     private function itemBlockLegacyAuth(): array
@@ -445,24 +435,15 @@ class HardeningService
 
     private function applySpAnonExpiry(int $days): array
     {
-        try {
-            $this->graph->patch('/admin/sharepoint/settings', [
-                'requireAnonymousLinksExpireInDays' => $days,
-            ]);
-            return ['ok' => true, 'msg' => "Anonyme Link-Ablauf auf {$days} Tage gesetzt."];
-        } catch (\Throwable $e) {
-            return $this->writeError($e, 'SharePointTenantSettings.ReadWrite.All');
-        }
+        // requireAnonymousLinksExpireInDays is NOT a Graph sharepointSettings field —
+        // a PATCH is silently ignored. Be honest instead of faking success.
+        return ['ok' => false, 'msg' => "Nicht über Microsoft Graph setzbar — per SharePoint-PowerShell: Set-SPOTenant -RequireAnonymousLinksExpireInDays {$days}."];
     }
 
     private function applySpDefaultLinkType(string $type): array
     {
-        try {
-            $this->graph->patch('/admin/sharepoint/settings', ['defaultSharingLinkType' => $type]);
-            return ['ok' => true, 'msg' => "Standard-Linktyp auf {$type} gesetzt."];
-        } catch (\Throwable $e) {
-            return $this->writeError($e, 'SharePointTenantSettings.ReadWrite.All');
-        }
+        // defaultSharingLinkType is NOT a Graph sharepointSettings field (PATCH ignored).
+        return ['ok' => false, 'msg' => 'Nicht über Microsoft Graph setzbar — per SharePoint-PowerShell: Set-SPOTenant -DefaultSharingLinkType ' . ucfirst($type) . '.'];
     }
 
     private function applyBlockLegacyAuth(): array
@@ -538,33 +519,13 @@ class HardeningService
 
     private function itemSpOneDriveSharing(): array
     {
-        $base = [
-            'id'        => 'sp_onedrive_sharing',
-            'title'     => 'OneDrive External Sharing einschränken',
-            'category'  => 'Speicher',
-            'desc'      => 'Separates Setting für OneDrive (unabhängig vom Tenant-weiten SharePoint-Sharing). Begrenzt, an wen Mitarbeiter ihre OneDrive-Dateien teilen können.',
-            'why'       => 'DSGVO Art. 25 + 32, BSI APP.5.2.',
-            'admin_url' => 'https://admin.microsoft.com/sharepoint?page=sharing',
-        ];
-        try {
-            $s = $this->graph->get('/admin/sharepoint/settings', [], null, 0);
-            $cap = $s['oneDriveSharingCapability'] ?? '';
-            $base['status'] = match ($cap) {
-                'disabled', 'existingExternalUserSharingOnly' => 'on',
-                'externalUserSharingOnly'                     => 'warn',
-                'externalUserAndGuestSharing'                 => 'off',
-                default                                       => 'unknown',
-            };
-            $base['detail'] = 'Aktuell: ' . htmlspecialchars($cap, ENT_QUOTES);
-            $base['actions'] = [
-                ['id' => 'sp_onedrive_strict', 'label' => 'Auf "bekannte Gäste" stellen', 'style' => 'outline-primary'],
-                ['id' => 'sp_onedrive_off',    'label' => 'OneDrive-External-Sharing deaktivieren', 'style' => 'outline-danger'],
-            ];
-        } catch (\Throwable $e) {
-            $base['status'] = 'unknown';
-            $base['detail'] = htmlspecialchars($e->getMessage(), ENT_QUOTES);
-        }
-        return $base;
+        return $this->spoOnlyItem(
+            'sp_onedrive_sharing',
+            'OneDrive External Sharing einschränken',
+            'Separates Setting für OneDrive (unabhängig vom Tenant-weiten SharePoint-Sharing). Begrenzt, an wen Mitarbeiter ihre OneDrive-Dateien teilen können.',
+            'DSGVO Art. 25 + 32, BSI APP.5.2.',
+            'Set-SPOTenant -OneDriveSharingCapability ExistingExternalUserSharingOnly   # oder: Disabled'
+        );
     }
 
     private function itemSpExternalReshare(): array
@@ -743,12 +704,8 @@ class HardeningService
 
     private function applySpOneDriveSharing(string $value): array
     {
-        try {
-            $this->graph->patch('/admin/sharepoint/settings', ['oneDriveSharingCapability' => $value]);
-            return ['ok' => true, 'msg' => "OneDrive External Sharing auf {$value} gesetzt."];
-        } catch (\Throwable $e) {
-            return $this->writeError($e, 'SharePointTenantSettings.ReadWrite.All');
-        }
+        // oneDriveSharingCapability is NOT a Graph sharepointSettings field (PATCH ignored).
+        return ['ok' => false, 'msg' => "Nicht über Microsoft Graph setzbar — per SharePoint-PowerShell: Set-SPOTenant -OneDriveSharingCapability {$value}."];
     }
 
     private function applySpExternalReshare(bool $allow): array
