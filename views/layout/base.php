@@ -193,6 +193,9 @@
 
             <div class="topbar-right">
                 <span class="refresh-badge" id="lastRefresh" data-ts="<?= time() * 1000 ?>" title="Letzter Datenabruf"></span>
+                <button id="favToggle" type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" title="Zu Favoriten hinzufügen">
+                    <i class="bi bi-star"></i>
+                </button>
                 <a href="?refresh=1" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" title="Daten aktualisieren">
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>

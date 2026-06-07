@@ -555,3 +555,145 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 })();
+
+// ── Hub tab bar: priority+ overflow with a "Mehr" dropdown ───────────
+(function () {
+    function layout(nav) {
+        const list     = nav.querySelector('.hub-tabs-list');
+        const moreWrap = nav.querySelector('.hub-tabs-more');
+        const menu     = nav.querySelector('.hub-more-menu');
+        const btn      = nav.querySelector('.hub-more-btn');
+        if (!list || !moreWrap || !menu) return;
+
+        // Restore every tab into the list in its original order.
+        Array.prototype.slice.call(menu.querySelectorAll('.hub-tab')).forEach(function (a) { list.appendChild(a); });
+        let tabs = Array.prototype.slice.call(list.querySelectorAll('.hub-tab'));
+        tabs.sort(function (a, b) { return (+a.dataset.order) - (+b.dataset.order); });
+        tabs.forEach(function (a) { list.appendChild(a); });
+        moreWrap.style.display = 'none';
+        menu.classList.remove('open');
+        if (btn) btn.classList.remove('has-active');
+
+        let total = 0;
+        tabs.forEach(function (t) { total += t.offsetWidth; });
+        if (total <= nav.clientWidth + 1) return; // everything fits
+
+        moreWrap.style.display = '';
+        const budget = nav.clientWidth - moreWrap.offsetWidth;
+        let used = 0, visibleCount = 0;
+        for (let i = 0; i < tabs.length; i++) {
+            const w = tabs[i].offsetWidth;
+            if (used + w <= budget) { used += w; visibleCount++; } else break;
+        }
+        if (visibleCount < 1) visibleCount = 1;
+
+        let visible  = tabs.slice(0, visibleCount);
+        let overflow = tabs.slice(visibleCount);
+
+        // Keep the active tab visible even if it would overflow.
+        const activeIdx = tabs.findIndex(function (t) { return t.classList.contains('active'); });
+        if (activeIdx >= visibleCount) {
+            const active = tabs[activeIdx];
+            overflow = overflow.filter(function (t) { return t !== active; });
+            const dropped = visible.pop();
+            if (dropped) overflow.unshift(dropped);
+            visible.push(active);
+        }
+
+        visible.forEach(function (t) { list.appendChild(t); });
+        overflow.forEach(function (t) { menu.appendChild(t); });
+        if (btn) btn.classList.toggle('has-active', !!menu.querySelector('.hub-tab.active'));
+    }
+
+    function init() {
+        const nav = document.querySelector('.hub-tabs');
+        if (!nav) return;
+        const btn  = nav.querySelector('.hub-more-btn');
+        const menu = nav.querySelector('.hub-more-menu');
+        if (btn && menu) {
+            btn.addEventListener('click', function (e) { e.stopPropagation(); menu.classList.toggle('open'); });
+            document.addEventListener('click', function (e) { if (!nav.contains(e.target)) menu.classList.remove('open'); });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') menu.classList.remove('open'); });
+        }
+        let raf;
+        const relayout = function () { cancelAnimationFrame(raf); raf = requestAnimationFrame(function () { layout(nav); }); };
+        layout(nav);
+        window.addEventListener('resize', relayout);
+        window.addEventListener('load', relayout); // re-measure once icon font is ready
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+
+// ── Favorites (client-side, localStorage) ────────────────────────────
+(function () {
+    const KEY = 'm365_favorites';
+    function read()  { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } }
+    function write(list) { try { localStorage.setItem(KEY, JSON.stringify(list)); } catch (e) {} }
+    function curPath() { return (location.pathname || '/').replace(/\/+$/, '') || '/'; }
+    function curTitle() {
+        const el = document.querySelector('.page-title');
+        return el ? el.textContent.trim() : (document.title || curPath());
+    }
+
+    const toggle = document.getElementById('favToggle');
+    function refreshStar() {
+        if (!toggle) return;
+        const has  = read().some(function (f) { return f.path === curPath(); });
+        const icon = toggle.querySelector('i');
+        if (icon) icon.className = has ? 'bi bi-star-fill' : 'bi bi-star';
+        toggle.classList.toggle('is-fav', has);
+        toggle.title = has ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen';
+    }
+    if (toggle) {
+        toggle.addEventListener('click', function () {
+            const p = curPath();
+            let list = read();
+            if (list.some(function (f) { return f.path === p; })) {
+                list = list.filter(function (f) { return f.path !== p; });
+            } else {
+                list.push({ path: p, title: curTitle() });
+            }
+            write(list);
+            refreshStar();
+            renderFavs();
+        });
+        refreshStar();
+    }
+
+    function renderFavs() {
+        const grid = document.getElementById('favGrid');
+        if (!grid) return;
+        const empty = document.getElementById('favEmpty');
+        const list  = read();
+        grid.innerHTML = '';
+        if (!list.length) { if (empty) empty.style.display = ''; return; }
+        if (empty) empty.style.display = 'none';
+        list.forEach(function (f) {
+            const col = document.createElement('div');
+            col.className = 'col-sm-6 col-lg-4';
+            const a = document.createElement('a');
+            a.className = 'fav-card';
+            a.href = f.path;
+            const ico = document.createElement('span');
+            ico.className = 'fav-card-icon';
+            ico.innerHTML = '<i class="bi bi-star-fill"></i>';
+            const lbl = document.createElement('span');
+            lbl.className = 'fav-card-label';
+            lbl.textContent = f.title || f.path; // textContent → no XSS
+            const rm = document.createElement('button');
+            rm.type = 'button';
+            rm.className = 'fav-remove';
+            rm.title = 'Aus Favoriten entfernen';
+            rm.innerHTML = '<i class="bi bi-x-lg"></i>';
+            rm.addEventListener('click', function (ev) {
+                ev.preventDefault(); ev.stopPropagation();
+                write(read().filter(function (x) { return x.path !== f.path; }));
+                renderFavs();
+                refreshStar();
+            });
+            a.appendChild(ico); a.appendChild(lbl); a.appendChild(rm);
+            col.appendChild(a); grid.appendChild(col);
+        });
+    }
+    renderFavs();
+})();

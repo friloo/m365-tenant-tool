@@ -1005,13 +1005,46 @@ body {
 
 .hub-tabs {
     display: flex;
-    gap: 2px;
-    overflow-x: auto;
+    align-items: stretch;
     background: #fff;
     border-bottom: 1px solid #e5e7eb;
     padding: 0 16px;
-    scrollbar-width: thin;
 }
+.hub-tabs-list {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.hub-tabs-list::-webkit-scrollbar { display: none; }
+.hub-tabs-more { flex: 0 0 auto; position: relative; }
+.hub-more-btn { background: transparent; border: 0; cursor: pointer; }
+.hub-more-btn.has-active { color: var(--ms-blue); font-weight: 600; }
+.hub-more-caret { font-size: 11px !important; opacity: .7; }
+.hub-more-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    min-width: 230px;
+    max-height: 70vh;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.14);
+    padding: 6px;
+    z-index: 60;
+}
+.hub-more-menu.open { display: flex; flex-direction: column; }
+.hub-more-menu .hub-tab {
+    border-bottom: 0 !important;
+    border-radius: 6px;
+    padding: 9px 12px;
+    width: 100%;
+}
+.hub-more-menu .hub-tab.active { background: var(--ms-blue-light); }
 .hub-tabs .hub-tab {
     display: inline-flex;
     align-items: center;
@@ -1031,3 +1064,40 @@ body {
 }
 .hub-tabs .hub-tab i { font-size: 14px; }
 @media print { .hub-tabs { display: none; } }
+
+/* ── Favorites ───────────────────────────────────────────────────────── */
+#favToggle.is-fav { color: #f59e0b; border-color: #f59e0b; }
+.fav-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #111827;
+    transition: box-shadow .15s, border-color .15s;
+}
+.fav-card:hover { border-color: var(--ms-blue); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+.fav-card-icon {
+    flex: 0 0 auto;
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--ms-blue-light);
+    color: var(--ms-blue);
+    border-radius: 8px;
+    font-size: 18px;
+}
+.fav-card-label { font-weight: 600; font-size: 14px; word-break: break-word; }
+.fav-remove {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 26px; height: 26px;
+    border: 0; border-radius: 6px;
+    background: transparent; color: #9ca3af;
+    cursor: pointer; font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+}
+.fav-remove:hover { background: #fee2e2; color: #dc2626; }
