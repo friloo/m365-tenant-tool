@@ -82,8 +82,12 @@ Ergebnis in Security Posture gegenprüfen → mit dem echten Entra/Purview-Porta
 | Break-Glass-Accounts | Health-Check der Notfall-Admins (Existenz, Global Admin, MFA, CA-Ausnahme) |
 | PIM (JIT-Admin) | Aktive/eligible privilegierte Rollen, 30-Tage-Aktivierungs-Audit |
 | **PIM-Einstellungen** | **Read-only:** Aktivierungsregeln je Rolle — MFA-/Begründungs-/Genehmigungspflicht, max. Dauer; privilegierte Rollen hervorgehoben |
-| Auth-Strength · MFA-Fatigue · Auto-Forward-Audit · OAuth-App-Audit | Detektions-/Audit-Ansichten |
+| Auth-Strength · MFA-Fatigue · Insider-Threat · Phishing-Sim | Detektions-Ansichten |
 | DLP-Vorfälle | DLP-Treffer aus dem Audit-Log |
+
+> Hinweis: **Auto-Forward-Audit** wurde mit **Externe Weiterleitungen** zur Seite
+> *Weiterleitungen & Regeln* zusammengeführt; **OAuth-App-Audit** liegt jetzt als
+> *OAuth-/Enterprise-Apps* neben den App-Registrierungen.
 | **DLP-Richtlinien** | **Hinweis-Seite:** DLP-Policies haben keine Graph-API → Deep-Link Purview |
 
 **PIM-Einstellungen (neu):** Für jede Verzeichnisrolle wird angezeigt, ob bei der Aktivierung
@@ -96,7 +100,7 @@ benötigt Entra ID P2 und `RoleManagementPolicy.Read.Directory`.
 
 | Modul | Zweck | Aktionen |
 |---|---|---|
-| Postfächer / Externe Weiterleitungen | Mailbox-Nutzung & Forwarding | Forwarding/Auto-Reply setzen, externe Weiterleitung entfernen, Shared Mailbox anlegen |
+| Postfächer / **Weiterleitungen & Regeln** | Mailbox-Nutzung; externe Weiterleitung über **Postfach-Einstellung UND Posteingangsregeln** (zwei Tabs) | Forwarding/Auto-Reply setzen, Weiterleitung entfernen, Shared Mailbox anlegen |
 | Mail Flow & Schutz | Service-Status + Defender-for-Office-Alerts (Anzeige) | — |
 | OneDrive / SharePoint / Freigaben | Speichernutzung; externe/anonyme Freigaben | Drive (de-)provisionieren; Freigaben widerrufen |
 | Freigaben-Monitor | Automatisches Monitoring externer Freigaben mit E-Mail-Review + Auto-Widerruf | Widerrufen, erinnern, Scan |
