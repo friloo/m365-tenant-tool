@@ -344,7 +344,7 @@ sudo chmod 600 /var/www/m365-tenant-tool/storage/app.key /var/www/m365-tenant-to
 sudo tee /etc/php/8.3/fpm/conf.d/99-m365-session.ini >/dev/null <<'EOF'
 session.cookie_httponly = 1
 session.cookie_secure   = 1
-session.cookie_samesite = Strict
+session.cookie_samesite = Lax   ; Lax (nicht Strict) — sonst bricht der Microsoft-OAuth-Login
 session.use_strict_mode = 1
 expose_php = Off
 EOF

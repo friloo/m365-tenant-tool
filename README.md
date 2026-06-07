@@ -182,7 +182,7 @@ Es läuft auf **eigener Infrastruktur** (klassischer LAMP-Stack), speichert alle
 - **Graph-Cache** in MySQL (konfigurierbare TTL, Standard 15 Min.)
 - **Anomalie-Erkennung** auf Audit- & Sign-in-Logs (Credential-Stuffing, Impossible Travel, neue Länder)
 - **Konkrete Fehler-Diagnose** – jede Graph-Fehlermeldung wird in eine deutsche Erklärung mit Lösungsweg übersetzt
-- **Sicherheits-Header** – CSRF-Schutz, CSP, HSTS, `SameSite=Strict`-Cookies, Brute-Force-Schutz auf dem Login
+- **Sicherheits-Header** – CSRF-Schutz, CSP, HSTS, `SameSite=Lax`-Cookies, Brute-Force-Schutz auf dem Login
 - **Inline-Hilfe** – `?`-Bubbles mit deutschsprachigen Erklärungen zu Fachbegriffen
 
 ---

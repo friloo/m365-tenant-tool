@@ -262,12 +262,12 @@ FLUSH PRIVILEGES;
       sudo -u deploy git -C /opt/m365-tenant-tool pull --ff-only
       sudo -u deploy composer install --no-dev --optimize-autoloader
       ```
-- [ ] Idle-Timeout (30 Min.) ist eingebaut; Session-Cookies `HttpOnly`/`SameSite=Strict`
+- [ ] Idle-Timeout (30 Min.) ist eingebaut; Session-Cookies `HttpOnly`/`SameSite=Lax` (Lax wegen OAuth-Login)
       sicherstellen (PHP-FPM-Pool/`php.ini`, da `php_value` in `.htaccess` mit FPM nicht greift):
       ```ini
       session.cookie_httponly = 1
       session.cookie_secure   = 1
-      session.cookie_samesite = Strict
+      session.cookie_samesite = Lax   ; Lax (nicht Strict) — sonst bricht der Microsoft-OAuth-Login
       session.use_strict_mode = 1
       ```
 
