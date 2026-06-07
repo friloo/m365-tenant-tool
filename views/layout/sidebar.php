@@ -3,12 +3,10 @@ use App\Auth\LocalAuth;
 use App\Core\Navigation;
 
 $currentPath = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+$allRoutes   = Navigation::routes();
+$isAdmin     = LocalAuth::isAdmin();
 
-// Nav definitions live in the central Navigation class (shared with /overview).
-$_allNavRoutes = Navigation::routes();
-
-// ── Helpers ─────────────────────────────────────────────────────────────────
-
+// ── Standalone nav item (Dashboard / Übersicht / Handbuch) ───────────────────
 function navItem(string $icon, string $label, string $route, string $current, array $allRoutes): void {
     if ($route === '') {
         $isMatch = $current === '';
@@ -35,82 +33,23 @@ function navItem(string $icon, string $label, string $route, string $current, ar
           </a>";
 }
 
-function routeIsActive(string $route, string $current, array $allRoutes): bool {
-    if ($route === '') return $current === '';
-    if ($current !== $route && !str_starts_with($current, $route . '/')) return false;
-    foreach ($allRoutes as $r) {
-        if ($r !== $route && str_starts_with($r, $route . '/') &&
-            ($current === $r || str_starts_with($current, $r . '/'))) {
-            return false;
-        }
-    }
-    return true;
-}
-
-// ── Build groups (from the shared Navigation source) ─────────────────────────
-$isAdmin = LocalAuth::isAdmin();
-$groups  = Navigation::groups($isAdmin);
-
-// ── Dashboard + Übersicht (always visible, outside accordion) ────────────────
+$activeHub = Navigation::activeHubKey($currentPath);
 ?>
-<?php navItem('speedometer2', 'Dashboard', '', $currentPath, $_allNavRoutes); ?>
-<?php navItem('grid-1x2', 'Modul-Übersicht', 'overview', $currentPath, $_allNavRoutes); ?>
+<?php navItem('speedometer2', 'Dashboard', '', $currentPath, $allRoutes); ?>
+<?php navItem('grid-1x2', 'Modul-Übersicht', 'overview', $currentPath, $allRoutes); ?>
 
-<?php
-// ── Render accordion groups ───────────────────────────────────────────────────
-foreach ($groups as $gi => $group):
-    $groupId  = 'sg' . $gi;
-    $hasActive = false;
-    foreach ($group['items'] as $item) {
-        if (routeIsActive($item['route'], $currentPath, $_allNavRoutes)) {
-            $hasActive = true;
-            break;
-        }
-    }
-    $classes = 'sidebar-group' . ($hasActive ? ' has-active' : '');
-?>
-<div class="<?= $classes ?>" data-group="<?= $groupId ?>">
-    <div class="sidebar-section-toggle" onclick="sidebarGroupToggle(this)" title="<?= htmlspecialchars($group['name']) ?>">
-        <span class="nav-group-label"><?= htmlspecialchars($group['name']) ?></span>
-        <i class="bi bi-chevron-down sidebar-chevron"></i>
-    </div>
-    <div class="sidebar-group-items">
-        <?php foreach ($group['items'] as $item): ?>
-            <?php navItem($item['icon'], $item['label'], $item['route'], $currentPath, $_allNavRoutes); ?>
-        <?php endforeach; ?>
-    </div>
-</div>
+<div class="sidebar-hub-label">Bereiche</div>
+<?php foreach (Navigation::hubs() as $hub): ?>
+    <?php
+    $landing = Navigation::hubLandingRoute($hub['key'], $isAdmin);
+    if ($landing === '') continue;                 // hub has no items visible to this role
+    $active = ($activeHub === $hub['key']) ? 'active' : '';
+    ?>
+    <a href="/<?= htmlspecialchars($landing, ENT_QUOTES) ?>" class="nav-item <?= $active ?>" data-hub="<?= htmlspecialchars($hub['key'], ENT_QUOTES) ?>">
+        <span class="nav-icon"><i class="bi bi-<?= htmlspecialchars($hub['icon'], ENT_QUOTES) ?>"></i></span>
+        <span class="nav-label"><?= htmlspecialchars($hub['label'], ENT_QUOTES) ?></span>
+    </a>
 <?php endforeach; ?>
 
-<!-- Handbuch — standalone below accordion -->
-<?php navItem('book', 'Handbuch', 'manual', $currentPath, $_allNavRoutes); ?>
-
-<script>
-(function () {
-    function loadState() {
-        try { return JSON.parse(localStorage.getItem('sb_groups') || '{}'); } catch(e) { return {}; }
-    }
-    function saveState() {
-        const s = {};
-        document.querySelectorAll('.sidebar-group[data-group]').forEach(function(g) {
-            s[g.dataset.group] = g.classList.contains('open');
-        });
-        try { localStorage.setItem('sb_groups', JSON.stringify(s)); } catch(e) {}
-    }
-
-    // Apply initial state: active group always open; others per localStorage (default closed)
-    const saved = loadState();
-    document.querySelectorAll('.sidebar-group[data-group]').forEach(function(g) {
-        if (g.classList.contains('has-active')) {
-            g.classList.add('open');
-        } else if (saved[g.dataset.group] === true) {
-            g.classList.add('open');
-        }
-    });
-
-    window.sidebarGroupToggle = function(btn) {
-        btn.closest('.sidebar-group').classList.toggle('open');
-        saveState();
-    };
-})();
-</script>
+<div class="sidebar-hub-label">Hilfe</div>
+<?php navItem('book', 'Handbuch', 'manual', $currentPath, $allRoutes); ?>

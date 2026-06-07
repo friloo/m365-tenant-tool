@@ -266,6 +266,9 @@
             </div>
         </header>
 
+        <!-- Hub tab bar (modules of the active hub) -->
+        <?php require BASE_PATH . '/views/layout/hub_tabs.php'; ?>
+
         <!-- Page content -->
         <main class="page-content">
             <?php

@@ -991,3 +991,43 @@ body {
 .diff-line.mod .diff-marker { color: #b45309; }
 .diff-value-old { color: #6b7280; text-decoration: line-through; font-family: monospace; }
 .diff-value-new { color: #111827; font-family: monospace; }
+
+/* ── Hub navigation (sidebar hub list + content tab bar) ─────────────── */
+.sidebar-hub-label {
+    padding: 14px 16px 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.30);
+}
+.sidebar.collapsed .sidebar-hub-label { display: none; }
+
+.hub-tabs {
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0 16px;
+    scrollbar-width: thin;
+}
+.hub-tabs .hub-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #4b5563;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+}
+.hub-tabs .hub-tab:hover { color: var(--ms-blue); background: #f8fafc; }
+.hub-tabs .hub-tab.active {
+    color: var(--ms-blue);
+    border-bottom-color: var(--ms-blue);
+    font-weight: 600;
+}
+.hub-tabs .hub-tab i { font-size: 14px; }
+@media print { .hub-tabs { display: none; } }
