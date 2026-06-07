@@ -3,6 +3,7 @@
 namespace App\Modules\ExchangeMigration;
 
 use App\Graph\GraphClient;
+use App\Helpers\PublicDns;
 
 class ExchangeMigrationService
 {
@@ -185,43 +186,37 @@ class ExchangeMigrationService
 
     private function checkMx(string $domain): array
     {
-        $records = @dns_get_record($domain, DNS_MX) ?: [];
+        $records = PublicDns::lookup($domain, 'MX'); // entries: "<pref> <target>"
         if (empty($records)) {
             return ['status' => 'missing', 'label' => 'Kein MX-Eintrag gefunden', 'records' => []];
         }
 
-        $targets = array_column($records, 'target');
-        $o365    = array_filter($targets, fn($t) => str_ends_with(strtolower($t), '.mail.protection.outlook.com'));
+        $targets = array_map(function ($d) {
+            $parts = preg_split('/\s+/', trim($d));
+            return strtolower(rtrim((string)end($parts), '.'));
+        }, $records);
+        $o365 = array_filter($targets, fn($t) => str_ends_with($t, '.mail.protection.outlook.com'));
 
         if (!empty($o365)) {
             return ['status' => 'ok', 'label' => 'Zeigt auf Exchange Online', 'records' => $targets];
         }
-
-        // Check if any record still points to on-prem (heuristic)
         return ['status' => 'warning', 'label' => 'MX zeigt noch nicht auf Exchange Online', 'records' => $targets];
     }
 
     private function checkSpf(string $domain): array
     {
-        $records = @dns_get_record($domain, DNS_TXT) ?: [];
-        foreach ($records as $r) {
-            $txt = $r['txt'] ?? $r['entries'][0] ?? '';
-            if (str_starts_with($txt, 'v=spf1')) {
-                $hasO365 = str_contains($txt, 'spf.protection.outlook.com')
-                        || str_contains($txt, 'include:spf.protection.outlook.com');
-                $all     = $this->extractSpfAll($txt);
-
-                if ($hasO365) {
-                    $status = ($all === '-all' || $all === '~all') ? 'ok' : 'warning';
-                    $label  = $hasO365
-                        ? "SPF enthält Exchange Online" . ($all ? " ($all)" : '')
-                        : 'SPF gefunden, aber ohne Exchange Online';
-                } else {
-                    $status = 'warning';
-                    $label  = 'SPF gefunden, aber ohne Exchange Online (spf.protection.outlook.com fehlt)';
-                }
-                return ['status' => $status, 'label' => $label, 'record' => $txt];
+        foreach (PublicDns::lookup($domain, 'TXT') as $txt) {
+            if (stripos($txt, 'v=spf1') !== 0) continue;
+            $hasO365 = stripos($txt, 'spf.protection.outlook.com') !== false;
+            $all     = $this->extractSpfAll($txt);
+            if ($hasO365) {
+                $status = ($all === '-all' || $all === '~all') ? 'ok' : 'warning';
+                $label  = 'SPF enthält Exchange Online' . ($all ? " ($all)" : '');
+            } else {
+                $status = 'warning';
+                $label  = 'SPF gefunden, aber ohne Exchange Online (spf.protection.outlook.com fehlt)';
             }
+            return ['status' => $status, 'label' => $label, 'record' => $txt];
         }
         return ['status' => 'missing', 'label' => 'Kein SPF-Eintrag gefunden', 'record' => null];
     }
@@ -230,26 +225,25 @@ class ExchangeMigrationService
     {
         $results = [];
         foreach (['selector1', 'selector2'] as $sel) {
-            $host    = "{$sel}._domainkey.{$domain}";
-            $records = @dns_get_record($host, DNS_CNAME) ?: [];
-            if (!empty($records)) {
-                $target  = $records[0]['target'] ?? '';
-                $isO365  = str_contains(strtolower($target), '_domainkey') && str_contains(strtolower($target), 'onmicrosoft.com');
+            $host  = "{$sel}._domainkey.{$domain}";
+            $cname = PublicDns::lookup($host, 'CNAME');
+            if (!empty($cname)) {
+                $target = strtolower($cname[0]);
+                $isO365 = str_contains($target, '_domainkey') && str_contains($target, 'onmicrosoft.com');
                 $results[$sel] = ['found' => true, 'target' => $target, 'o365' => $isO365];
             } else {
-                // Try TXT as fallback (some DNS providers publish DKIM as TXT)
-                $txtRecords = @dns_get_record($host, DNS_TXT) ?: [];
-                if (!empty($txtRecords)) {
-                    $txt = $txtRecords[0]['txt'] ?? '';
-                    $results[$sel] = ['found' => true, 'target' => substr($txt, 0, 60) . '...', 'o365' => str_contains($txt, 'v=DKIM1')];
+                // Some providers publish DKIM as TXT rather than CNAME.
+                $txt = PublicDns::lookup($host, 'TXT');
+                if (!empty($txt)) {
+                    $results[$sel] = ['found' => true, 'target' => substr($txt[0], 0, 60) . '…', 'o365' => str_contains($txt[0], 'v=DKIM1')];
                 } else {
                     $results[$sel] = ['found' => false, 'target' => null, 'o365' => false];
                 }
             }
         }
 
-        $anyFound  = $results['selector1']['found'] || $results['selector2']['found'];
-        $anyO365   = ($results['selector1']['o365'] ?? false) || ($results['selector2']['o365'] ?? false);
+        $anyFound = $results['selector1']['found'] || $results['selector2']['found'];
+        $anyO365  = ($results['selector1']['o365'] ?? false) || ($results['selector2']['o365'] ?? false);
 
         if ($anyO365) {
             $status = 'ok';
@@ -267,25 +261,19 @@ class ExchangeMigrationService
 
     private function checkDmarc(string $domain): array
     {
-        $host    = "_dmarc.{$domain}";
-        $records = @dns_get_record($host, DNS_TXT) ?: [];
+        foreach (PublicDns::lookup("_dmarc.{$domain}", 'TXT') as $txt) {
+            if (stripos($txt, 'v=DMARC1') !== 0) continue;
+            // \b avoids matching the "p=" inside "sp=".
+            preg_match('/\bp=\s*([a-z]+)/i', $txt, $pm);
+            $policy = strtolower(trim($pm[1] ?? 'none'));
+            $hasRua = (bool)preg_match('/\brua=/i', $txt);
 
-        foreach ($records as $r) {
-            $txt = $r['txt'] ?? $r['entries'][0] ?? '';
-            if (str_starts_with($txt, 'v=DMARC1')) {
-                preg_match('/p=([^;]+)/i', $txt, $pm);
-                $policy = strtolower(trim($pm[1] ?? 'none'));
-                preg_match('/rua=([^;]+)/i', $txt, $rm);
-                $rua = trim($rm[1] ?? '');
-
-                $status = match($policy) {
-                    'reject', 'quarantine' => 'ok',
-                    'none'  => 'warning',
-                    default => 'warning',
-                };
-                $label = "DMARC gefunden (p={$policy}" . ($rua ? ", rua vorhanden" : '') . ')';
-                return ['status' => $status, 'label' => $label, 'record' => $txt, 'policy' => $policy];
-            }
+            $status = match ($policy) {
+                'reject', 'quarantine' => 'ok',
+                default => 'warning',
+            };
+            $label = "DMARC gefunden (p={$policy}" . ($hasRua ? ', rua vorhanden' : '') . ')';
+            return ['status' => $status, 'label' => $label, 'record' => $txt, 'policy' => $policy];
         }
 
         return ['status' => 'missing', 'label' => 'Kein DMARC-Eintrag gefunden', 'record' => null, 'policy' => null];
@@ -296,43 +284,44 @@ class ExchangeMigrationService
         $host = "autodiscover.{$domain}";
 
         // CNAME check (preferred)
-        $cname = @dns_get_record($host, DNS_CNAME) ?: [];
+        $cname = PublicDns::lookup($host, 'CNAME');
         if (!empty($cname)) {
-            $target = strtolower($cname[0]['target'] ?? '');
+            $target = strtolower($cname[0]);
             $isO365 = str_contains($target, 'autodiscover.outlook.com');
             return [
-                'status'  => $isO365 ? 'ok' : 'warning',
-                'label'   => $isO365
+                'status' => $isO365 ? 'ok' : 'warning',
+                'label'  => $isO365
                     ? 'Autodiscover → autodiscover.outlook.com (CNAME)'
                     : "Autodiscover CNAME zeigt auf: {$target}",
-                'type'    => 'CNAME',
-                'target'  => $cname[0]['target'] ?? '',
+                'type'   => 'CNAME',
+                'target' => $cname[0],
             ];
         }
 
-        // SRV check (_autodiscover._tcp.<domain>)
-        $srv = @dns_get_record("_autodiscover._tcp.{$domain}", DNS_SRV) ?: [];
+        // SRV check (_autodiscover._tcp.<domain>) — data: "<pri> <weight> <port> <target>"
+        $srv = PublicDns::lookup("_autodiscover._tcp.{$domain}", 'SRV');
         if (!empty($srv)) {
-            $target = strtolower($srv[0]['target'] ?? '');
+            $parts  = preg_split('/\s+/', trim($srv[0]));
+            $target = strtolower((string)end($parts));
             $isO365 = str_contains($target, 'outlook.com');
             return [
-                'status'  => $isO365 ? 'ok' : 'warning',
-                'label'   => $isO365
+                'status' => $isO365 ? 'ok' : 'warning',
+                'label'  => $isO365
                     ? 'Autodiscover SRV → Outlook.com'
                     : "Autodiscover SRV zeigt auf: {$target}",
-                'type'    => 'SRV',
-                'target'  => $srv[0]['target'] ?? '',
+                'type'   => 'SRV',
+                'target' => $target,
             ];
         }
 
         // A record as last resort — could be on-prem
-        $a = @dns_get_record($host, DNS_A) ?: [];
+        $a = PublicDns::lookup($host, 'A');
         if (!empty($a)) {
             return [
                 'status' => 'warning',
-                'label'  => 'Autodiscover hat A-Eintrag (möglicherweise on-prem: ' . ($a[0]['ip'] ?? '') . ')',
+                'label'  => 'Autodiscover hat A-Eintrag (möglicherweise on-prem: ' . $a[0] . ')',
                 'type'   => 'A',
-                'target' => $a[0]['ip'] ?? '',
+                'target' => $a[0],
             ];
         }
 
@@ -364,11 +353,15 @@ class ExchangeMigrationService
         $license = $this->getLicenseCoverage();
         $hybrid  = $this->getHybridUserStats();
 
-        // Only check non-onmicrosoft domains that are verified and not initial
+        // organization.verifiedDomains entries are ALL verified by definition and
+        // carry a 'name' (not 'id' / 'isVerified' — those are /domains fields). The
+        // old filter checked $d['isVerified'] which never exists here, so every
+        // custom domain was dropped → "only onmicrosoft". Keep all real domains
+        // except the onmicrosoft.com routing domains.
         $domains = array_values(array_filter(
             $org['verifiedDomains'],
-            fn($d) => !str_ends_with(strtolower($d['name'] ?? ''), '.onmicrosoft.com')
-                   && ($d['isVerified'] ?? false)
+            fn($d) => !empty($d['name'])
+                   && !str_ends_with(strtolower($d['name']), '.onmicrosoft.com')
         ));
 
         $domainChecks = [];
