@@ -101,6 +101,8 @@ Es läuft auf **eigener Infrastruktur** (klassischer LAMP-Stack), speichert alle
 | **DSGVO-Status** | Compliance-Checks: Tenant-Region, SP-Sharing, Sensitivity Labels, Audit-Log, Retention, DLP … | — |
 | **Compliance-Profile** | 5 Branchen-Presets (Standard/DSGVO, Healthcare/KRITIS, Finance/BaFin/DORA, Public/BSI, Bildung) | One-Click anwenden |
 | **PIM (JIT-Admin)** | Aktive privilegierte Rollen (JIT vs. dauerhaft), Eligible-Zuweisungen, 30-Tage-Aktivierungs-Audit | — |
+| **PIM-Einstellungen** | Aktivierungsregeln je Rolle (MFA-/Begründungs-/Genehmigungspflicht, max. Dauer); privilegierte Rollen hervorgehoben | — (read-only; Editieren im Entra-Portal) |
+| **Authentifizierungsmethoden** | Tenant-Richtlinie aller Methoden (FIDO2, Authenticator, SMS, Voice, E-Mail …) mit CIS-Empfehlung je Methode | Methode aktivieren/deaktivieren |
 | **Break-Glass-Accounts** | Health-Check der Notfall-Admins: Existiert? Global Admin? MFA? CA-ausgenommen? | Konfigurieren |
 | **Auto-Forward-Audit** | Inbox-Regeln, die nach **extern** weiterleiten – häufigster Exfiltrationsvektor | — |
 | **OAuth-App-Audit** | Enterprise Apps mit Risk-Score (High-Privilege × Inaktivität, Microsoft vs. 3rd-Party) | Deep-Link zu Entra |
@@ -355,9 +357,11 @@ crontab -u www-data -e
 |---|---|---|
 | `Policy.Read.All` | CA-Policies, Named Locations, Auth-Strength, Tenant-Policies | **Erforderlich** |
 | `Policy.ReadWrite.ConditionalAccess` | CA / Named Locations / Auth-Strength schreiben | für Schreib-Aktionen |
+| `Policy.ReadWrite.AuthenticationMethod` | Authentifizierungsmethoden-Richtlinie schreiben (Methoden an/aus) | für Schreib-Aktionen |
 | `Policy.ReadWrite.Authorization` | Gast-Einladungs-Regeln, Gast-Rolle, User-Standardrechte, App-Consent | für Schreib-Aktionen |
 | `Policy.ReadWrite.SecurityDefaults` | Security Defaults ein-/ausschalten (Security Center) | für Schreib-Aktionen |
 | `RoleManagement.Read.Directory` | Admin-Rollen & PIM lesen | **Erforderlich** |
+| `RoleManagementPolicy.Read.Directory` | PIM-Aktivierungsregeln je Rolle lesen (PIM-Einstellungen) | Empfohlen (Entra ID P2) |
 | `RoleManagement.ReadWrite.Directory` | Admin-Rollen zuweisen/entfernen | Empfohlen |
 | `Application.Read.All` | App-Registrierungen, Enterprise Apps | **Erforderlich** |
 | `Application.ReadWrite.All` | App-Secrets verwalten | Empfohlen |
@@ -494,6 +498,29 @@ chown -R www-data:www-data /var/www/m365-tenant-tool/storage/
 - Debug-Details nur serverseitig über `M365_DEBUG=1` aktivieren (nie dauerhaft in Produktion)
 
 ---
+
+## Umfang & Grenzen
+
+Das Tool konfiguriert alles, was die **Microsoft Graph API schreibend** unterstützt
+(Identität, Conditional Access, Authentifizierungsmethoden, Gäste, App-Consent, SharePoint-/
+OneDrive-Sharing u. v. m.). Einige Tenant-Sicherheitsbereiche haben **keine Graph-Write-API**
+und erfordern das Microsoft-Portal bzw. PowerShell — u. a. **Defender-for-Office-365-/EOP-
+Policies** (Anti-Phishing/Spam/Malware, Safe Links/Attachments), **DLP**, **Purview-Labels &
+Retention**, **Transport-Regeln** und **DKIM**. Diese Module sind im Tool ehrlich als Anzeige/
+Deep-Link gekennzeichnet.
+
+➡️ Vollständige Gegenüberstellung (was geht im Tool, was im Portal/PowerShell):
+**[`docs/CIS-COVERAGE.md`](docs/CIS-COVERAGE.md)**.
+
+## Dokumentation
+
+| Dokument | Inhalt |
+|---|---|
+| [`docs/HANDBUCH.md`](docs/HANDBUCH.md) | Benutzerhandbuch — alle Module & typische Abläufe |
+| [`docs/INSTALL-UBUNTU.md`](docs/INSTALL-UBUNTU.md) | Installation von blankem Ubuntu bis produktiv (inkl. Härtung) |
+| [`docs/DEPLOYMENT-HARDENING.md`](docs/DEPLOYMENT-HARDENING.md) | Härtungs-Leitfaden für isolierten Server |
+| [`docs/CIS-COVERAGE.md`](docs/CIS-COVERAGE.md) | Coverage-Matrix Tool ↔ CIS M365 / Secure Score |
+| [`docs/SECURITY-EVAL-2026-06.md`](docs/SECURITY-EVAL-2026-06.md) | Sicherheits-Evaluierung & behobene Schwachstellen |
 
 ## Projektstruktur
 

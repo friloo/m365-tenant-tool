@@ -114,8 +114,23 @@ $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 </div>
 <?php endif ?>
 
-<div class="alert alert-info small mb-0">
-  <i class="bi bi-info-circle-fill me-1"></i>
-  Verwaltung im <a href="https://compliance.microsoft.com/informationprotection" target="_blank" rel="noopener noreferrer">Microsoft Purview Compliance Portal</a>.
-  Erfordert Microsoft 365 E3/E5 oder Azure Information Protection.
-</div>
+<?php
+// Anzeige der Labels erfolgt oben (Graph, read-only). Anlegen/Veröffentlichen hat keine
+// Graph-Write-API → Purview-Portal oder Security-&-Compliance-PowerShell.
+echo \App\Core\Ui::externalCard(
+    'Labels anlegen &amp; veröffentlichen',
+    'Sensitivity Labels lassen sich über Graph nur <strong>lesen</strong> (oben). Anlegen, '
+    . 'Verschlüsselung/Markierung konfigurieren und per Label-Policy veröffentlichen erfolgt im '
+    . '<strong>Microsoft-Purview-Portal</strong> oder per <strong>PowerShell</strong>. '
+    . 'Erfordert Microsoft 365 E3/E5 bzw. Azure Information Protection.',
+    [
+        ['https://purview.microsoft.com/informationprotection/labels', 'Labels im Purview-Portal'],
+    ],
+    [
+        ["Connect-IPPSSession -UserPrincipalName admin@deine-domain.de", 'Mit Security & Compliance PowerShell verbinden'],
+        ["Get-Label | Format-Table Name,DisplayName,IsEnabled", 'Vorhandene Labels auflisten'],
+        ["New-Label -Name \"Vertraulich\" -DisplayName \"Vertraulich\" `\n  -Tooltip \"Nur intern, vertraulich\" -EncryptionEnabled \$true\n\nNew-LabelPolicy -Name \"Standard\" -Labels \"Vertraulich\" `\n  -ExchangeLocation All", 'Label anlegen & veröffentlichen'],
+    ],
+    'tags'
+);
+?>

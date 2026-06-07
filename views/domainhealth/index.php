@@ -141,6 +141,26 @@ if (!empty($dmarcIssues)):
     </p>
 </div>
 
+<?php
+// ── DKIM aktivieren (kein Graph-Write) → Defender-Portal oder Exchange-Online-PowerShell ──
+echo \App\Core\Ui::externalCard(
+    'DKIM aktivieren',
+    'DKIM-Signierung lässt sich <strong>nicht über die Microsoft Graph API</strong> aktivieren. '
+    . 'Schritt 1: Befehl ausführen (legt die Signaturkonfiguration an). Schritt 2: die beiden von '
+    . 'Microsoft angezeigten <code>CNAME</code>-Records (selector1/selector2) bei deinem DNS-Anbieter '
+    . 'veröffentlichen. Schritt 3: DKIM einschalten. SPF/DMARC sind reine DNS-Einträge.',
+    [
+        ['https://security.microsoft.com/dkimv2', 'DKIM im Defender-Portal'],
+    ],
+    [
+        ["Connect-ExchangeOnline -UserPrincipalName admin@deine-domain.de", 'Mit Exchange Online PowerShell verbinden'],
+        ["Get-DkimSigningConfig | Format-Table Domain,Enabled,Status", 'DKIM-Status je Domain prüfen'],
+        ["New-DkimSigningConfig -DomainName deine-domain.de -Enabled \$false\n# danach die angezeigten CNAMEs im DNS anlegen, dann:\nSet-DkimSigningConfig -Identity deine-domain.de -Enabled \$true", 'DKIM einrichten & aktivieren'],
+    ],
+    'shield-lock'
+);
+?>
+
 <script>
 initTableSearch('dhSearch', 'dhTable');
 </script>

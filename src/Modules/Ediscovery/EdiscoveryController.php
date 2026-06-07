@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Modules\RetentionPolicies;
+namespace App\Modules\Ediscovery;
 
 use App\Auth\LocalAuth;
 use App\Core\View;
 
-class RetentionPoliciesController
+class EdiscoveryController
 {
     public function index(): void
     {
@@ -26,7 +26,7 @@ class RetentionPoliciesController
         $openCount   = count(array_filter($cases, fn($c) => ($c['status'] ?? '') === 'active'));
         $closedCount = count(array_filter($cases, fn($c) => ($c['status'] ?? '') === 'closed'));
 
-        View::render('retentionpolicies/index', [
+        View::render('ediscovery/index', [
             'pageTitle'   => 'eDiscovery-Fälle',
             'cases'       => $cases,
             'openCount'   => $openCount,

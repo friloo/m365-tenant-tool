@@ -774,11 +774,22 @@ $router->get('/onboarding',                 [\App\Modules\Onboarding\OnboardingC
 $router->post('/onboarding',                [\App\Modules\Onboarding\OnboardingController::class, 'create']);
 $router->post('/onboarding/create',         [\App\Modules\Onboarding\OnboardingController::class, 'create']);
 
-// ── DLP Policies ───────────────────────────────────────────
+// ── DLP Policies (honest pointer — DLP has no Graph API) ───
 $router->get('/dlppolicies',                [\App\Modules\DlpPolicies\DlpPoliciesController::class, 'index']);
 
-// ── Retention Policies ─────────────────────────────────────
-$router->get('/retentionpolicies',          [\App\Modules\RetentionPolicies\RetentionPoliciesController::class, 'index']);
+// ── Retention (honest pointer — no Graph API) ──────────────
+$router->get('/retention',                  [\App\Modules\Retention\RetentionController::class, 'index']);
+
+// ── eDiscovery cases (was mislabeled /retentionpolicies) ───
+$router->get('/ediscovery',                 [\App\Modules\Ediscovery\EdiscoveryController::class, 'index']);
+$router->get('/retentionpolicies',          [\App\Modules\Ediscovery\EdiscoveryController::class, 'index']); // legacy alias
+
+// ── Authentication Methods Policy (read + write) ───────────
+$router->get('/authmethods',                [\App\Modules\AuthMethods\AuthMethodsController::class, 'index']);
+$router->post('/authmethods/{id}/set-state',[\App\Modules\AuthMethods\AuthMethodsController::class, 'setState']);
+
+// ── PIM role activation settings (read-only) ───────────────
+$router->get('/pimsettings',                [\App\Modules\PimSettings\PimSettingsController::class, 'index']);
 
 // ── In-App-Notifications ───────────────────────────────────
 $router->get('/notifications',              [\App\Modules\Notifications\NotificationsController::class, 'index']);
