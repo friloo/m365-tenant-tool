@@ -229,7 +229,12 @@ class ExchangeMigrationService
             $cname = PublicDns::lookup($host, 'CNAME');
             if (!empty($cname)) {
                 $target = strtolower($cname[0]);
-                $isO365 = str_contains($target, '_domainkey') && str_contains($target, 'onmicrosoft.com');
+                // Microsoft DKIM CNAME targets, both the classic and the newer form:
+                //   …_domainkey.<tenant>.onmicrosoft.com           (classic)
+                //   …_domainkey.<tenant>.<region>.dkim.mail.microsoft (current)
+                $isO365 = str_contains($target, 'onmicrosoft.com')
+                       || str_contains($target, 'dkim.mail.microsoft')
+                       || str_contains($target, '.mail.microsoft');
                 $results[$sel] = ['found' => true, 'target' => $target, 'o365' => $isO365];
             } else {
                 // Some providers publish DKIM as TXT rather than CNAME.
