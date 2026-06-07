@@ -76,7 +76,6 @@ class Navigation
             ['hub' => 'bedrohungen', 'icon' => 'shield-slash',       'label' => 'MFA-Fatigue',         'route' => 'mfafatigue',        'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'eye-fill',           'label' => 'Insider-Threat',      'route' => 'insiderthreat',     'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'bullseye',           'label' => 'Phishing-Simulationen','route' => 'phishingsim',      'admin' => false],
-            ['hub' => 'bedrohungen', 'icon' => 'app-indicator',      'label' => 'OAuth-App-Audit',     'route' => 'oauthaudit',        'admin' => false],
 
             // ── E-Mail-Sicherheit ───────────────────────────────────────
             ['hub' => 'email', 'icon' => 'envelope',        'label' => 'Postfächer',             'route' => 'mailboxes',                   'admin' => false],
@@ -133,6 +132,7 @@ class Navigation
 
             // ── Apps & Automatisierung ──────────────────────────────────
             ['hub' => 'apps', 'icon' => 'grid-3x3-gap', 'label' => 'App-Registrierungen', 'route' => 'appregistrations', 'admin' => false],
+            ['hub' => 'apps', 'icon' => 'app-indicator','label' => 'OAuth-/Enterprise-Apps','route' => 'oauthaudit',      'admin' => false],
             ['hub' => 'apps', 'icon' => 'diagram-2',    'label' => 'Lifecycle Workflows', 'route' => 'lifecycle',        'admin' => false],
             ['hub' => 'apps', 'icon' => 'robot',        'label' => 'KI-Berater',          'route' => 'ai',              'admin' => false],
             ['hub' => 'apps', 'icon' => 'diagram-2',    'label' => 'Workflows',           'route' => 'workflows',       'admin' => true],
