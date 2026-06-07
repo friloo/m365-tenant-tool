@@ -11,11 +11,19 @@ class GraphClient
     private GraphTokenManager $tokenManager;
     private GraphCache $cache;
     private ?array $lastError = null;
+    /** When true, cached responses are bypassed (re-fetched) — set on ?refresh=1. */
+    private bool $forceFresh = false;
 
     public function __construct(GraphTokenManager $tokenManager, GraphCache $cache)
     {
         $this->tokenManager = $tokenManager;
         $this->cache        = $cache;
+    }
+
+    /** Bypass the response cache for this request (manual "Aktualisieren"). */
+    public function setForceFresh(bool $forceFresh): void
+    {
+        $this->forceFresh = $forceFresh;
     }
 
     /**
@@ -34,7 +42,7 @@ class GraphClient
 
     public function get(string $endpoint, array $query = [], ?string $cacheKey = null, int $ttl = 900): array
     {
-        if ($cacheKey) {
+        if ($cacheKey && !$this->forceFresh) {
             $cached = $this->cache->get($cacheKey);
             if (!empty($cached)) {
                 return $cached;
@@ -58,7 +66,7 @@ class GraphClient
 
     public function paginate(string $endpoint, array $query = [], int $maxPages = 20, ?string $cacheKey = null, int $ttl = 900): array
     {
-        if ($cacheKey) {
+        if ($cacheKey && !$this->forceFresh) {
             $cached = $this->cache->get($cacheKey);
             if (!empty($cached)) {
                 return $cached;
@@ -218,7 +226,7 @@ class GraphClient
     /** GET with ConsistencyLevel: eventual — required for $search and $count queries */
     public function getEventual(string $endpoint, array $query = [], ?string $cacheKey = null, int $ttl = 900): array
     {
-        if ($cacheKey) {
+        if ($cacheKey && !$this->forceFresh) {
             $cached = $this->cache->get($cacheKey);
             if (!empty($cached)) return $cached;
             if ($cached === []) $this->cache->forget($cacheKey);

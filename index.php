@@ -380,6 +380,9 @@ try {
 $graphCache   = new GraphCache((int)$config->get('cache_ttl', 15));
 $tokenManager = new GraphTokenManager($encryptor);
 $graphClient  = new GraphClient($tokenManager, $graphCache);
+// Header "Aktualisieren" (?refresh=1) must really re-fetch from Graph, not just
+// re-render cached data — bypass the response cache for the whole request.
+$graphClient->setForceFresh(($_GET['refresh'] ?? '') === '1');
 
 function app_graph(): GraphClient {
     global $graphClient;
