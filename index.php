@@ -447,6 +447,9 @@ $router->get('/',        [\App\Modules\Dashboard\DashboardController::class, 'in
 // Modul-Übersicht (module map)
 $router->get('/overview', [\App\Modules\Overview\OverviewController::class, 'index']);
 
+// Favoriten (client-side, localStorage)
+$router->get('/favorites', [\App\Modules\Favorites\FavoritesController::class, 'index']);
+
 // Users
 $router->get('/users',                            [\App\Modules\Users\UsersController::class, 'index']);
 $router->get('/users/export',                     [\App\Modules\Users\UsersController::class, 'export']);
