@@ -13,11 +13,12 @@ class DomainHealthController
 
         $service = app_service(DomainHealthService::class);
 
-        if (($_GET['refresh'] ?? '') === '1') {
+        $refresh = ($_GET['refresh'] ?? '') === '1';
+        if ($refresh) {
             app_graph()->getCache()->forget('domains_all');
         }
 
-        $domains = $service->getAll();
+        $domains = $service->getAll($refresh);
         $summary = $service->getSummary($domains);
 
         View::render('domainhealth/index', [
