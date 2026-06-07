@@ -105,11 +105,38 @@ class HardeningService
         try {
             $r = $this->graph->get('/policies/identitySecurityDefaultsEnforcementPolicy', [], null, 0);
             $enabled = (bool)($r['isEnabled'] ?? false);
-            $base['status'] = $enabled ? 'on' : 'off';
-            $base['detail'] = $enabled ? 'Security Defaults sind eingeschaltet.' : 'Security Defaults sind ausgeschaltet.';
-            $base['actions'] = $enabled
-                ? [['id' => 'security_defaults_off', 'label' => 'Ausschalten (nur bei aktivem CA)', 'style' => 'outline-warning']]
-                : [['id' => 'security_defaults_on',  'label' => 'Einschalten (Basis-Schutz)',       'style' => 'outline-primary']];
+
+            if ($enabled) {
+                $base['status']  = 'on';
+                $base['detail']  = 'Security Defaults sind eingeschaltet (Basis-MFA erzwungen).';
+                $base['actions'] = [['id' => 'security_defaults_off', 'label' => 'Ausschalten (nur bei aktivem CA)', 'style' => 'outline-warning']];
+            } else {
+                // OFF is the RECOMMENDED state once Conditional Access enforces MFA —
+                // Microsoft even blocks having both on at once. Only flag a problem if
+                // there is ALSO no active CA policy (then there's no MFA baseline).
+                $caEnabled = 0;
+                try {
+                    foreach (\App\Modules\ConditionalAccess\ConditionalAccessService::fetchAllPolicies($this->graph) as $p) {
+                        if (($p['state'] ?? '') === 'enabled') $caEnabled++;
+                    }
+                } catch (\Throwable) {
+                    $caEnabled = -1; // CA state unreadable
+                }
+
+                if ($caEnabled > 0) {
+                    $base['status']  = 'on';
+                    $base['detail']  = "Ausgeschaltet — durch {$caEnabled} aktive Conditional-Access-Policy(s) ersetzt. Das ist der empfohlene Zustand.";
+                    $base['actions'] = [];
+                } elseif ($caEnabled === 0) {
+                    $base['status']  = 'off';
+                    $base['detail']  = 'Ausgeschaltet UND keine aktive Conditional-Access-Policy — es gibt KEINE MFA-Baseline! Entweder Security Defaults einschalten oder CA-Policies erzwingen.';
+                    $base['actions'] = [['id' => 'security_defaults_on', 'label' => 'Einschalten (Basis-Schutz)', 'style' => 'outline-primary']];
+                } else {
+                    $base['status']  = 'warn';
+                    $base['detail']  = 'Ausgeschaltet. CA-Status nicht lesbar (Policy.Read.All?) — bitte prüfen, ob Conditional-Access-Policies MFA erzwingen.';
+                    $base['actions'] = [['id' => 'security_defaults_on', 'label' => 'Einschalten (Basis-Schutz)', 'style' => 'outline-primary']];
+                }
+            }
         } catch (\Throwable $e) {
             $base['detail'] = 'Status nicht lesbar: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES);
         }
