@@ -119,20 +119,31 @@ class BreakGlassService
             $entry['issues'][] = 'Konto ist deaktiviert — im Notfall nicht nutzbar!';
         }
 
-        // Global Admin? Direct assignment prüfen
+        // Transitive group memberships — needed because both the Global Admin role
+        // and CA exclusions are frequently assigned via groups, not just directly.
+        $groupIds = [];
         try {
-            $roleAssign = $this->graph->get(
-                '/roleManagement/directory/roleAssignments',
-                [
-                    '$filter' => "principalId eq '{$user['id']}' and roleDefinitionId eq '" . self::ROLE_GLOBAL_ADMIN . "'",
-                    '$top'    => '1',
-                ],
-                null, 0
+            $memberOf = $this->graph->paginate(
+                '/users/' . rawurlencode($user['id']) . '/transitiveMemberOf',
+                ['$select' => 'id'],
+                20, null, 0
             );
-            $entry['isGlobalAdmin'] = !empty($roleAssign['value']);
+            $groupIds = array_values(array_filter(array_column($memberOf, 'id')));
+        } catch (\Throwable) {}
+
+        // Global Admin — permanent assignment, direct OR via a role-assignable group.
+        try {
+            $gaAssign = $this->graph->paginate(
+                '/roleManagement/directory/roleAssignments',
+                ['$filter' => "roleDefinitionId eq '" . self::ROLE_GLOBAL_ADMIN . "'", '$select' => 'principalId'],
+                10, null, 0
+            );
+            $principals = array_column($gaAssign, 'principalId');
+            $entry['isGlobalAdmin'] = in_array($user['id'], $principals, true)
+                || !empty(array_intersect($groupIds, $principals));
         } catch (\Throwable) {}
         if (!$entry['isGlobalAdmin']) {
-            $entry['issues'][] = 'Hat keine permanent Global-Administrator-Rolle (oder via PIM Eligible — das ist im Notfall problematisch, weil PIM-Aktivierung MFA verlangt).';
+            $entry['issues'][] = 'Hat keine permanente Global-Administrator-Rolle (auch nicht über eine Gruppe). Nur via PIM-Eligible wäre im Notfall problematisch, weil die Aktivierung MFA verlangt.';
         }
 
         // MFA-Registration
@@ -156,14 +167,15 @@ class BreakGlassService
             $excludedFrom = [];
             foreach ($policies as $p) {
                 if (($p['state'] ?? '') !== 'enabled') continue;
-                $excludedUsers = $p['conditions']['users']['excludeUsers'] ?? [];
-                if (in_array($user['id'], $excludedUsers, true)) {
+                $exUsers  = $p['conditions']['users']['excludeUsers']  ?? [];
+                $exGroups = $p['conditions']['users']['excludeGroups'] ?? [];
+                if (in_array($user['id'], $exUsers, true) || array_intersect($exGroups, $groupIds)) {
                     $excludedFrom[] = $p['displayName'] ?? $p['id'];
                 }
             }
             $entry['caExcluded'] = $excludedFrom;
             if (empty($excludedFrom)) {
-                $entry['issues'][] = 'Account ist aus KEINER CA-Policy ausgeschlossen — Gefahr: bei einem CA-Fehler sperrst du dich aus.';
+                $entry['issues'][] = 'Account ist aus KEINER aktiven CA-Policy ausgeschlossen (weder direkt noch über eine Gruppe) — Gefahr: bei einem CA-Fehler sperrst du dich aus.';
             }
         } catch (\Throwable) {
             $entry['caExcluded'] = null;
