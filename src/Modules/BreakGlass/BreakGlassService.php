@@ -74,9 +74,13 @@ class BreakGlassService
         ];
 
         try {
+            // NOTE: signInActivity must NOT be in $select when addressing a user
+            // by UPN — Graph then demands a GUID key ("Get By Key only supports
+            // UserId and the key has to be a valid Guid"). Fetch basics by UPN
+            // first; signInActivity is queried separately by id below.
             $user = $this->graph->get(
                 '/users/' . rawurlencode($upn),
-                ['$select' => 'id,displayName,userPrincipalName,accountEnabled,signInActivity,passwordPolicies'],
+                ['$select' => 'id,displayName,userPrincipalName,accountEnabled,passwordPolicies'],
                 null, 0
             );
         } catch (\Throwable $e) {
@@ -93,10 +97,22 @@ class BreakGlassService
         $entry['displayName']      = $user['displayName'] ?? $upn;
         $entry['accountEnabled']   = (bool)($user['accountEnabled'] ?? false);
         $entry['passwordPolicies'] = $user['passwordPolicies'] ?? null;
-        $last = $user['signInActivity']['lastSignInDateTime'] ?? null;
-        if ($last) {
-            $entry['lastSignIn']      = $last;
-            $entry['daysSinceSignIn'] = (int)floor((time() - strtotime($last)) / 86400);
+
+        // signInActivity: only valid when addressing by id (GUID), and needs
+        // AuditLog.Read.All + Entra ID P1 — keep optional so the rest still works.
+        try {
+            $act  = $this->graph->get(
+                '/users/' . rawurlencode($user['id']),
+                ['$select' => 'signInActivity'],
+                null, 0
+            );
+            $last = $act['signInActivity']['lastSignInDateTime'] ?? null;
+            if ($last) {
+                $entry['lastSignIn']      = $last;
+                $entry['daysSinceSignIn'] = (int)floor((time() - strtotime($last)) / 86400);
+            }
+        } catch (\Throwable) {
+            // No P1 / no AuditLog.Read.All — sign-in age stays unknown, not fatal.
         }
 
         if (!$entry['accountEnabled']) {
