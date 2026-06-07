@@ -6,7 +6,7 @@
     <title><?= \App\Core\View::escape($pageTitle ?? 'Dashboard') ?> — <?= \App\Core\View::escape(\App\Core\Config::getInstance()->get('app_name', 'M365 Tenant Tool')) ?></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="/public/css/app.css">
+    <link rel="stylesheet" href="/public/css/app.css?v=<?= @filemtime(BASE_PATH . '/public/css/app.css') ?: '1' ?>">
     <meta name="csrf-token" content="<?= \App\Core\Csrf::token() ?>">
     <script>
     // Both functions live in <head> so they are always defined before any
@@ -304,6 +304,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="/public/js/app.js"></script>
+<script src="/public/js/app.js?v=<?= @filemtime(BASE_PATH . '/public/js/app.js') ?: '1' ?>"></script>
 </body>
 </html>

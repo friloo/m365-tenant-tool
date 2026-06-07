@@ -183,6 +183,7 @@ body {
 .main-content {
     margin-left: var(--sidebar-width);
     flex: 1;
+    min-width: 0; /* allow shrinking below content min-width so nowrap tab bar can't blow out the page */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -1006,6 +1007,8 @@ body {
 .hub-tabs {
     display: flex;
     align-items: stretch;
+    min-width: 0;
+    max-width: 100%;
     background: #fff;
     border-bottom: 1px solid #e5e7eb;
     padding: 0 16px;
