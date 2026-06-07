@@ -78,11 +78,10 @@ class Navigation
             ['hub' => 'bedrohungen', 'icon' => 'eye-fill',           'label' => 'Insider-Threat',      'route' => 'insiderthreat',     'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'bullseye',           'label' => 'Phishing-Simulationen','route' => 'phishingsim',      'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'app-indicator',      'label' => 'OAuth-App-Audit',     'route' => 'oauthaudit',        'admin' => false],
-            ['hub' => 'bedrohungen', 'icon' => 'arrow-right-square', 'label' => 'Auto-Forward-Audit',  'route' => 'mailboxrules',      'admin' => false],
 
             // ── E-Mail-Sicherheit ───────────────────────────────────────
             ['hub' => 'email', 'icon' => 'envelope',        'label' => 'Postfächer',             'route' => 'mailboxes',                   'admin' => false],
-            ['hub' => 'email', 'icon' => 'forward-fill',    'label' => 'Externe Weiterleitungen','route' => 'mailboxes/external-forwards', 'admin' => false],
+            ['hub' => 'email', 'icon' => 'forward-fill',    'label' => 'Weiterleitungen & Regeln','route' => 'mailboxes/external-forwards', 'admin' => false],
             ['hub' => 'email', 'icon' => 'arrow-left-right','label' => 'Mail Flow & Schutz',     'route' => 'mailflow',                    'admin' => false],
             ['hub' => 'email', 'icon' => 'globe2',          'label' => 'Domain Health',          'route' => 'domainhealth',                'admin' => false],
             ['hub' => 'email', 'icon' => 'airplane',        'label' => 'EXO Migration',          'route' => 'exchangemigration',           'admin' => false],
