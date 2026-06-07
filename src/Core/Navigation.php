@@ -70,7 +70,6 @@ class Navigation
             ['hub' => 'zugriff', 'icon' => 'key-fill',          'label' => 'Break-Glass-Accounts',    'route' => 'breakglass',             'admin' => false],
 
             // ── Bedrohungen & Response ──────────────────────────────────
-            ['hub' => 'bedrohungen', 'icon' => 'shield-check',       'label' => 'Sicherheit',          'route' => 'security',          'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'bar-chart-line',     'label' => 'Secure Score',        'route' => 'securescore',       'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'bell',               'label' => 'Defender Alerts',     'route' => 'defenderalerts',    'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'exclamation-triangle','label' => 'Risiko-Anmeldungen', 'route' => 'riskysignins',      'admin' => false],

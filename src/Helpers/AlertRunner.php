@@ -27,7 +27,7 @@ class AlertRunner
                 $body = Mailer::alertTemplate(
                     '⚠️ Risikobenutzer erkannt',
                     "<p><strong>{$risky} Benutzer</strong> sind aktuell als risikobehaftet eingestuft.</p>
-                     <p><a href='/security' style='color:#0078d4;'>→ Sicherheitsmodul öffnen</a></p>",
+                     <p><a href='/securityposture' style='color:#0078d4;'>→ Sicherheitsmodul öffnen</a></p>",
                     $appName
                 );
                 if (Mailer::send($to, "[{$appName}] {$risky} Risikobenutzer", $body)) {
@@ -46,7 +46,7 @@ class AlertRunner
                     "<p>Nur <strong>{$pct}%</strong> der Benutzer haben MFA registriert
                      ({$registered} von {$total}).</p>
                      <p>Konfigurierter Schwellwert: <strong>{$threshold}%</strong></p>
-                     <p><a href='/security' style='color:#0078d4;'>→ Sicherheitsmodul öffnen</a></p>",
+                     <p><a href='/securityposture' style='color:#0078d4;'>→ Sicherheitsmodul öffnen</a></p>",
                     $appName
                 );
                 if (Mailer::send($to, "[{$appName}] MFA-Quote {$pct}% (Schwellwert: {$threshold}%)", $body)) {
