@@ -21,7 +21,13 @@ class Session
                 'path'     => '/',
                 'secure'   => $secure,
                 'httponly' => true,
-                'samesite' => 'Strict',
+                // 'Lax' (not 'Strict') is required so the session cookie is sent on
+                // the top-level redirect back from login.microsoftonline.com — with
+                // 'Strict' the OAuth callback loses the session, the state check
+                // fails, and Microsoft sign-in loops back to /login. CSRF stays
+                // covered by the app's per-request CSRF tokens (+ Lax blocks
+                // cross-site POST cookies anyway).
+                'samesite' => 'Lax',
             ]);
             session_start();
         }
