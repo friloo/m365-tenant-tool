@@ -310,6 +310,19 @@ $ddl = [
         last_seen  DATETIME NOT NULL,
         PRIMARY KEY (actor)
     )",
+    "CREATE TABLE IF NOT EXISTS app_approval_requests (
+        id           INT AUTO_INCREMENT PRIMARY KEY,
+        action_key   VARCHAR(64)  NOT NULL,
+        target       VARCHAR(191) NOT NULL DEFAULT '',
+        label        VARCHAR(255) NOT NULL DEFAULT '',
+        status       ENUM('pending','approved','rejected','executed') NOT NULL DEFAULT 'pending',
+        requested_by VARCHAR(255) NOT NULL,
+        requested_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        approved_by  VARCHAR(255) DEFAULT NULL,
+        decided_at   DATETIME DEFAULT NULL,
+        INDEX idx_lookup (action_key, target, status),
+        INDEX idx_status (status, requested_at)
+    )",
     "CREATE TABLE IF NOT EXISTS app_tenant_snapshots (
         id         INT AUTO_INCREMENT PRIMARY KEY,
         kind       VARCHAR(64) NOT NULL,
@@ -462,6 +475,11 @@ $router->get('/overview', [\App\Modules\Overview\OverviewController::class, 'ind
 
 // Action Center — guided "start here" configuration surface
 $router->get('/action-center', [\App\Modules\ActionCenter\ActionCenterController::class, 'index']);
+
+// Approvals (four-eyes principle)
+$router->get('/approvals',         [\App\Modules\Approvals\ApprovalsController::class, 'index']);
+$router->post('/approvals/approve', [\App\Modules\Approvals\ApprovalsController::class, 'approve']);
+$router->post('/approvals/reject',  [\App\Modules\Approvals\ApprovalsController::class, 'reject']);
 
 // Favoriten (client-side, localStorage)
 $router->get('/favorites', [\App\Modules\Favorites\FavoritesController::class, 'index']);

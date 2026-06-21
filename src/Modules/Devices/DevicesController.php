@@ -74,6 +74,10 @@ class DevicesController
     public function retire(string $id): void
     {
         LocalAuth::requireAdmin();
+        if (!\App\Modules\Approvals\ApprovalService::gate('device_retire', $id, t('Gerät zurücksetzen (Retire): :id', ['id' => $id]))) {
+            Session::flash('success', t('Zur Freigabe eingereicht — ein zweiter Administrator muss bestätigen.'));
+            Redirect::to('/devices');
+        }
         try {
             app_service(DevicesService::class)->retireDevice($id);
             Session::flash('success', t('Gerät wurde zurückgesetzt (Retire). Unternehmensdaten wurden entfernt.'));
@@ -86,6 +90,10 @@ class DevicesController
     public function wipe(string $id): void
     {
         LocalAuth::requireAdmin();
+        if (!\App\Modules\Approvals\ApprovalService::gate('device_wipe', $id, t('Gerät auf Werkseinstellungen zurücksetzen (Wipe): :id', ['id' => $id]))) {
+            Session::flash('success', t('Zur Freigabe eingereicht — ein zweiter Administrator muss bestätigen.'));
+            Redirect::to('/devices');
+        }
         try {
             app_service(DevicesService::class)->wipeDevice($id);
             Session::flash('success', t('Gerät wird auf Werkseinstellungen zurückgesetzt (Wipe). Dieser Vorgang kann nicht rückgängig gemacht werden.'));
