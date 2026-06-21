@@ -408,28 +408,28 @@
             <?= \App\Core\Csrf::field() ?>
             <div class="field-wrap">
                 <label class="field-label">
-                    Begründung <span>*</span>
+                    <?= te('Begründung') ?> <span>*</span>
                 </label>
                 <textarea name="reason" class="field-input" rows="3" required minlength="5"
-                    placeholder="z.B. Wird für die Zusammenarbeit mit Partner XY bis Ende Q2 benötigt."
+                    placeholder="<?= te('z.B. Wird für die Zusammenarbeit mit Partner XY bis Ende Q2 benötigt.') ?>"
                 ></textarea>
-                <div class="field-hint">Mindestens 5 Zeichen. Ihre Begründung wird protokolliert.</div>
+                <div class="field-hint"><?= te('Mindestens 5 Zeichen. Ihre Begründung wird protokolliert.') ?></div>
             </div>
 
             <div class="submit-row">
-                <button type="submit" class="btn-confirm" <?= !empty($isDemo) ? 'disabled title="Demo — Formular kann nicht abgeschickt werden"' : '' ?>>
+                <button type="submit" class="btn-confirm" <?= !empty($isDemo) ? 'disabled title="' . te('Demo — Formular kann nicht abgeschickt werden') . '"' : '' ?>>
                     <i class="bi bi-check-circle-fill"></i>
-                    Freigabe bestätigen
+                    <?= te('Freigabe bestätigen') ?>
                 </button>
                 <span class="extend-note">
-                    Verlängerung um <?= (int)($share['review_interval_days'] ?? 30) ?> Tage
+                    <?= te('Verlängerung um :n Tage', ['n' => (int)($share['review_interval_days'] ?? 30)]) ?>
                 </span>
             </div>
         </form>
 
         <?php else: ?>
         <div style="background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:14px 18px;font-size:14px;color:#854d0e;">
-            <i class="bi bi-exclamation-circle me-2"></i>Freigabe-Daten konnten nicht geladen werden.
+            <i class="bi bi-exclamation-circle me-2"></i><?= te('Freigabe-Daten konnten nicht geladen werden.') ?>
         </div>
         <?php endif; ?>
 
@@ -438,9 +438,9 @@
         <p class="footer-note">
             <i class="bi bi-shield-lock-fill"></i>
             <span>
-                Dieser Link ist personalisiert und kann nur einmal verwendet werden. Sie benötigen kein Passwort.
+                <?= te('Dieser Link ist personalisiert und kann nur einmal verwendet werden. Sie benötigen kein Passwort.') ?>
                 <?php if ($brandSupportEmail): ?>
-                    &nbsp;·&nbsp; Bei Fragen:
+                    &nbsp;·&nbsp; <?= te('Bei Fragen:') ?>
                     <a href="mailto:<?= htmlspecialchars($brandSupportEmail) ?>"><?= htmlspecialchars($brandSupportEmail) ?></a>
                 <?php endif; ?>
             </span>

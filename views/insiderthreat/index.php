@@ -5,11 +5,8 @@
 <div class="alert alert-info d-flex gap-3 mb-3">
     <i class="bi bi-eye-fill flex-shrink-0 mt-1" style="font-size:1.4rem;color:#0078d4;"></i>
     <div>
-        <strong>Light-Insider-Threat-Detection.</strong>
-        Statistische Anomalien pro User aus Sign-in- und Audit-Logs. Signale:
-        Off-Hours-Anmeldungen, viele Länder, Mass-Downloads (≥ 50 Files/h), Mass-Mail-Send (≥ 100/h),
-        viele Lösch-Events, viele Sharing-Events. Echtes Insider-Risk-Management (Microsoft Purview)
-        ist umfangreicher und lizenz-pflichtig, aber diese Light-Variante deckt die häufigsten Signale ab.
+        <strong><?= te('Light-Insider-Threat-Detection.') ?></strong>
+        <?= te('Statistische Anomalien pro User aus Sign-in- und Audit-Logs. Signale: Off-Hours-Anmeldungen, viele Länder, Mass-Downloads (≥ 50 Files/h), Mass-Mail-Send (≥ 100/h), viele Lösch-Events, viele Sharing-Events. Echtes Insider-Risk-Management (Microsoft Purview) ist umfangreicher und lizenz-pflichtig, aber diese Light-Variante deckt die häufigsten Signale ab.') ?>
     </div>
 </div>
 

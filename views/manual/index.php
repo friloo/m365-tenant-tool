@@ -311,195 +311,195 @@
 <!-- SharePoint ───────────────────────────────────────────── -->
 <div class="man-section" id="sharepoint">
     <h2><i class="bi bi-share text-primary"></i> SharePoint</h2>
-    <p>Listet alle SharePoint-Sites im Tenant mit URL, Typ (Kommunikationssite / Teamsite), Speichernutzung und letzter Aktivität.</p>
-    <p>Per Klick auf eine Site öffnet sich die Detailansicht mit den zugehörigen Dokumentbibliotheken.</p>
+    <p><?= te('Listet alle SharePoint-Sites im Tenant mit URL, Typ (Kommunikationssite / Teamsite), Speichernutzung und letzter Aktivität.') ?></p>
+    <p><?= te('Per Klick auf eine Site öffnet sich die Detailansicht mit den zugehörigen Dokumentbibliotheken.') ?></p>
     <p><span class="perm-tag">Sites.Read.All</span></p>
 </div>
 
 <!-- Freigaben ────────────────────────────────────────────── -->
 <div class="man-section" id="sharing">
-    <h2><i class="bi bi-link-45deg text-primary"></i> Freigaben</h2>
-    <p>Zeigt alle externen Freigaben (Sharing-Links) im Tenant — Dateien und Ordner, die per Link nach außen geteilt wurden.</p>
-    <p>Für jede Freigabe sind sichtbar: Dateiname, SharePoint-Site, Freigabe-Typ (Anonym, Org, Spezifisch), Ersteller, Ablaufdatum.</p>
+    <h2><i class="bi bi-link-45deg text-primary"></i> <?= te('Freigaben') ?></h2>
+    <p><?= te('Zeigt alle externen Freigaben (Sharing-Links) im Tenant — Dateien und Ordner, die per Link nach außen geteilt wurden.') ?></p>
+    <p><?= te('Für jede Freigabe sind sichtbar: Dateiname, SharePoint-Site, Freigabe-Typ (Anonym, Org, Spezifisch), Ersteller, Ablaufdatum.') ?></p>
 
-    <h3>Freigabe widerrufen</h3>
-    <p>Einzelne Freigabe-Links können direkt aus der Tabelle heraus widerrufen werden. Dies entfernt den Link, die Datei bleibt erhalten.</p>
-    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i>Das Widerrufen einer anonymen Freigabe deaktiviert den Link sofort — alle Personen, die über diesen Link zugegriffen haben, verlieren den Zugriff.</div>
+    <h3><?= te('Freigabe widerrufen') ?></h3>
+    <p><?= te('Einzelne Freigabe-Links können direkt aus der Tabelle heraus widerrufen werden. Dies entfernt den Link, die Datei bleibt erhalten.') ?></p>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><?= te('Das Widerrufen einer anonymen Freigabe deaktiviert den Link sofort — alle Personen, die über diesen Link zugegriffen haben, verlieren den Zugriff.') ?></div>
     <p><span class="perm-tag">Sites.Read.All</span> <span class="perm-tag">Files.ReadWrite.All</span></p>
 </div>
 
 <!-- Freigaben-Monitor ────────────────────────────────────── -->
 <div class="man-section" id="sharing-monitor">
-    <h2><i class="bi bi-eye-slash text-primary"></i> Freigaben-Monitor</h2>
-    <p>Der Freigaben-Monitor ermöglicht es, Benutzer regelmäßig per E-Mail zu ihren externen Freigaben zu befragen — sie können direkt aus der E-Mail heraus Freigaben bestätigen oder widerrufen.</p>
+    <h2><i class="bi bi-eye-slash text-primary"></i> <?= te('Freigaben-Monitor') ?></h2>
+    <p><?= te('Der Freigaben-Monitor ermöglicht es, Benutzer regelmäßig per E-Mail zu ihren externen Freigaben zu befragen — sie können direkt aus der E-Mail heraus Freigaben bestätigen oder widerrufen.') ?></p>
 
-    <h3>Wie es funktioniert</h3>
+    <h3><?= te('Wie es funktioniert') ?></h3>
     <ol>
-        <li>Der Cron-Job scannt täglich alle externen Freigaben</li>
-        <li>Benutzer erhalten eine E-Mail mit einer Liste ihrer aktiven Freigaben</li>
-        <li>Sie können jede Freigabe per Klick bestätigen oder widerrufen</li>
-        <li>Nicht reagierte Freigaben werden nach dem konfigurierten Zeitraum automatisch widerrufen</li>
+        <li><?= te('Der Cron-Job scannt täglich alle externen Freigaben') ?></li>
+        <li><?= te('Benutzer erhalten eine E-Mail mit einer Liste ihrer aktiven Freigaben') ?></li>
+        <li><?= te('Sie können jede Freigabe per Klick bestätigen oder widerrufen') ?></li>
+        <li><?= te('Nicht reagierte Freigaben werden nach dem konfigurierten Zeitraum automatisch widerrufen') ?></li>
     </ol>
 
-    <h3>Konfiguration</h3>
-    <p>Im Einstellungsbereich (<strong>Freigaben-Monitor</strong>): Review-Intervall (Standard: 30 Tage), Kulanzfrist (Standard: 7 Tage), nur anonyme Freigaben prüfen.</p>
+    <h3><?= te('Konfiguration') ?></h3>
+    <p><?= te('Im Einstellungsbereich (<strong>Freigaben-Monitor</strong>): Review-Intervall (Standard: 30 Tage), Kulanzfrist (Standard: 7 Tage), nur anonyme Freigaben prüfen.') ?></p>
 
-    <h3>Admin-Ansicht</h3>
-    <p>Die Admin-Ansicht zeigt alle aktiven Review-Anfragen mit Status. Von hier aus können Freigaben auch manuell widerrufen oder Erinnerungs-E-Mails versendet werden.</p>
+    <h3><?= te('Admin-Ansicht') ?></h3>
+    <p><?= te('Die Admin-Ansicht zeigt alle aktiven Review-Anfragen mit Status. Von hier aus können Freigaben auch manuell widerrufen oder Erinnerungs-E-Mails versendet werden.') ?></p>
     <p><span class="perm-tag">Sites.Read.All</span> <span class="perm-tag">Files.ReadWrite.All</span></p>
 </div>
 
 <!-- Freigaberichtlinien ──────────────────────────────────── -->
 <div class="man-section" id="sharing-policies">
-    <h2><i class="bi bi-sliders text-primary"></i> Freigaberichtlinien</h2>
-    <p>Verwaltet die tenant-weiten Freigabeeinstellungen für SharePoint und OneDrive:</p>
+    <h2><i class="bi bi-sliders text-primary"></i> <?= te('Freigaberichtlinien') ?></h2>
+    <p><?= te('Verwaltet die tenant-weiten Freigabeeinstellungen für SharePoint und OneDrive:') ?></p>
     <ul>
-        <li><strong>Tenant-Ebene</strong>: Maximale erlaubte Freigabe-Stufe (Anonym, Org, Org+Anonym deaktiviert, Nur eingeladene Benutzer)</li>
-        <li><strong>Site-Ebene</strong>: Freigabe-Einstellung für eine einzelne SharePoint-Site (kann restriktiver sein als die Tenant-Einstellung, aber nicht freizügiger)</li>
+        <li><strong><?= te('Tenant-Ebene') ?></strong>: <?= te('Maximale erlaubte Freigabe-Stufe (Anonym, Org, Org+Anonym deaktiviert, Nur eingeladene Benutzer)') ?></li>
+        <li><strong><?= te('Site-Ebene') ?></strong>: <?= te('Freigabe-Einstellung für eine einzelne SharePoint-Site (kann restriktiver sein als die Tenant-Einstellung, aber nicht freizügiger)') ?></li>
     </ul>
-    <div class="tip-box"><i class="bi bi-lightbulb"></i>Als Best Practice empfiehlt sich die Tenant-Einstellung auf „Nur authentifizierte Benutzer" und für einzelne Sites bei Bedarf spezifisch zu lockern.</div>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Als Best Practice empfiehlt sich die Tenant-Einstellung auf „Nur authentifizierte Benutzer" und für einzelne Sites bei Bedarf spezifisch zu lockern.') ?></div>
     <p><span class="perm-tag">Sites.ReadWrite.All</span></p>
 </div>
 
 <!-- Postfächer ───────────────────────────────────────────── -->
 <div class="man-section" id="mailboxes">
-    <h2><i class="bi bi-envelope text-primary"></i> Postfächer</h2>
-    <p>Zeigt alle Exchange Online-Postfächer (Benutzer, Shared, Room, Equipment) mit Größe, Quota, letzter Aktivität und Weiterleitungseinstellungen.</p>
+    <h2><i class="bi bi-envelope text-primary"></i> <?= te('Postfächer') ?></h2>
+    <p><?= te('Zeigt alle Exchange Online-Postfächer (Benutzer, Shared, Room, Equipment) mit Größe, Quota, letzter Aktivität und Weiterleitungseinstellungen.') ?></p>
 
-    <h3>Postfach-Detailseite</h3>
+    <h3><?= te('Postfach-Detailseite') ?></h3>
     <ul>
-        <li><strong>Weiterleitung einrichten</strong>: Konfiguriert <code>ForwardingSmtpAddress</code> — E-Mails werden an eine externe oder interne Adresse weitergeleitet (optional: Kopie im Postfach behalten)</li>
-        <li><strong>Abwesenheitsnachricht</strong>: Setzt die AutoReply-Konfiguration für intern und extern</li>
+        <li><strong><?= te('Weiterleitung einrichten') ?></strong>: <?= te('Konfiguriert <code>ForwardingSmtpAddress</code> — E-Mails werden an eine externe oder interne Adresse weitergeleitet (optional: Kopie im Postfach behalten)') ?></li>
+        <li><strong><?= te('Abwesenheitsnachricht') ?></strong>: <?= te('Setzt die AutoReply-Konfiguration für intern und extern') ?></li>
     </ul>
 
-    <h3>Externe Weiterleitungen</h3>
-    <p>Unter <strong>Postfächer → Externe Weiterleitungen</strong> werden alle Postfächer angezeigt, die E-Mails an externe Adressen weiterleiten. Dies ist ein wichtiger Sicherheitscheck gegen Mail-Exfiltration.</p>
-    <p>Von dieser Ansicht aus können Weiterleitungen direkt deaktiviert werden.</p>
+    <h3><?= te('Externe Weiterleitungen') ?></h3>
+    <p><?= te('Unter <strong>Postfächer → Externe Weiterleitungen</strong> werden alle Postfächer angezeigt, die E-Mails an externe Adressen weiterleiten. Dies ist ein wichtiger Sicherheitscheck gegen Mail-Exfiltration.') ?></p>
+    <p><?= te('Von dieser Ansicht aus können Weiterleitungen direkt deaktiviert werden.') ?></p>
 
     <h3>Shared Mailboxes</h3>
-    <p>Listet alle freigegebenen Postfächer mit Mitglieder-Übersicht. Neue Shared Mailboxes können direkt erstellt werden.</p>
-    <div class="tip-box"><i class="bi bi-lightbulb"></i>Shared Mailboxes bis 50 GB benötigen in der Regel keine separate Lizenz — sie werden automatisch mit Exchange Online-Postfach-Merkmalen versehen.</div>
+    <p><?= te('Listet alle freigegebenen Postfächer mit Mitglieder-Übersicht. Neue Shared Mailboxes können direkt erstellt werden.') ?></p>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Shared Mailboxes bis 50 GB benötigen in der Regel keine separate Lizenz — sie werden automatisch mit Exchange Online-Postfach-Merkmalen versehen.') ?></div>
     <p><span class="perm-tag">Mail.ReadBasic.All</span> <span class="perm-tag">MailboxSettings.ReadWrite</span></p>
 </div>
 
 <!-- Teams-Nutzung ────────────────────────────────────────── -->
 <div class="man-section" id="teamsusage">
-    <h2><i class="bi bi-camera-video text-primary"></i> Teams-Nutzung</h2>
-    <p>Zeigt die Teams-Aktivität aller Benutzer: Nachrichten gesendet, Anrufe, Meetings, Reaktionen — basierend auf den Microsoft 365-Nutzungsberichten der letzten 30 Tage.</p>
-    <p>Nützlich um zu erkennen, welche Benutzer Teams kaum nutzen (und ob eine Teams-Lizenz gerechtfertigt ist).</p>
+    <h2><i class="bi bi-camera-video text-primary"></i> <?= te('Teams-Nutzung') ?></h2>
+    <p><?= te('Zeigt die Teams-Aktivität aller Benutzer: Nachrichten gesendet, Anrufe, Meetings, Reaktionen — basierend auf den Microsoft 365-Nutzungsberichten der letzten 30 Tage.') ?></p>
+    <p><?= te('Nützlich um zu erkennen, welche Benutzer Teams kaum nutzen (und ob eine Teams-Lizenz gerechtfertigt ist).') ?></p>
     <p><span class="perm-tag">Reports.Read.All</span></p>
 </div>
 
 <!-- Adoptions-Report ─────────────────────────────────────── -->
 <div class="man-section" id="adoption">
-    <h2><i class="bi bi-graph-up-arrow text-primary"></i> Adoptions-Report</h2>
-    <p>Gibt einen aggregierten Überblick über die Nutzung der M365-Dienste im Tenant: aktive Benutzer je Dienst (Exchange, SharePoint, OneDrive, Teams, Yammer) über verschiedene Zeiträume (7, 30, 90, 180 Tage).</p>
-    <p>Enthält Diagramme zur zeitlichen Entwicklung der Nutzungszahlen.</p>
+    <h2><i class="bi bi-graph-up-arrow text-primary"></i> <?= te('Adoptions-Report') ?></h2>
+    <p><?= te('Gibt einen aggregierten Überblick über die Nutzung der M365-Dienste im Tenant: aktive Benutzer je Dienst (Exchange, SharePoint, OneDrive, Teams, Yammer) über verschiedene Zeiträume (7, 30, 90, 180 Tage).') ?></p>
+    <p><?= te('Enthält Diagramme zur zeitlichen Entwicklung der Nutzungszahlen.') ?></p>
     <p><span class="perm-tag">Reports.Read.All</span></p>
 </div>
 
 <!-- Message Center ───────────────────────────────────────── -->
 <div class="man-section" id="msgcenter">
     <h2><i class="bi bi-megaphone text-primary"></i> Message Center</h2>
-    <p>Zeigt die aktuellen Nachrichten aus dem Microsoft 365 Message Center — Ankündigungen zu geplanten Änderungen, neuen Features und Wartungsarbeiten.</p>
-    <p>Nachrichten sind nach Kategorie und Schweregrad gefiltert darstellbar. Wichtige Änderungen, die Administrative Maßnahmen erfordern, sind hervorgehoben.</p>
+    <p><?= te('Zeigt die aktuellen Nachrichten aus dem Microsoft 365 Message Center — Ankündigungen zu geplanten Änderungen, neuen Features und Wartungsarbeiten.') ?></p>
+    <p><?= te('Nachrichten sind nach Kategorie und Schweregrad gefiltert darstellbar. Wichtige Änderungen, die Administrative Maßnahmen erfordern, sind hervorgehoben.') ?></p>
     <p><span class="perm-tag">ServiceMessage.Read.All</span></p>
 </div>
 
 <!-- Mail Flow & Schutz ───────────────────────────────────── -->
 <div class="man-section" id="mailflow">
-    <h2><i class="bi bi-arrow-left-right text-primary"></i> Mail Flow & Schutz</h2>
-    <p>Fasst die wichtigsten Exchange Online Sicherheits- und Mail-Flow-Konfigurationen zusammen:</p>
+    <h2><i class="bi bi-arrow-left-right text-primary"></i> <?= te('Mail Flow & Schutz') ?></h2>
+    <p><?= te('Fasst die wichtigsten Exchange Online Sicherheits- und Mail-Flow-Konfigurationen zusammen:') ?></p>
     <ul>
-        <li><strong>Anti-Spam-Richtlinien</strong>: Konfiguration der Spam-Filter-Einstellungen</li>
-        <li><strong>Anti-Malware-Richtlinien</strong>: Malware-Erkennungseinstellungen</li>
-        <li><strong>Anti-Phishing-Richtlinien</strong>: Schutz vor Phishing und Spoofing</li>
-        <li><strong>Safe Attachments / Safe Links</strong>: Defender for Office 365-Richtlinien (wenn lizenziert)</li>
-        <li><strong>Connectors</strong>: Eingehende und ausgehende Mail-Flow-Konnektoren</li>
-        <li><strong>Transport-Regeln</strong>: Übersicht über aktive Mail-Flow-Regeln</li>
+        <li><strong><?= te('Anti-Spam-Richtlinien') ?></strong>: <?= te('Konfiguration der Spam-Filter-Einstellungen') ?></li>
+        <li><strong><?= te('Anti-Malware-Richtlinien') ?></strong>: <?= te('Malware-Erkennungseinstellungen') ?></li>
+        <li><strong><?= te('Anti-Phishing-Richtlinien') ?></strong>: <?= te('Schutz vor Phishing und Spoofing') ?></li>
+        <li><strong>Safe Attachments / Safe Links</strong>: <?= te('Defender for Office 365-Richtlinien (wenn lizenziert)') ?></li>
+        <li><strong>Connectors</strong>: <?= te('Eingehende und ausgehende Mail-Flow-Konnektoren') ?></li>
+        <li><strong><?= te('Transport-Regeln') ?></strong>: <?= te('Übersicht über aktive Mail-Flow-Regeln') ?></li>
     </ul>
     <p><span class="perm-tag">Mail.ReadBasic.All</span></p>
 </div>
 
 <!-- Dienststatus ─────────────────────────────────────────── -->
 <div class="man-section" id="servicehealth">
-    <h2><i class="bi bi-heart-pulse text-primary"></i> Dienststatus</h2>
-    <p>Zeigt den aktuellen Status aller Microsoft 365-Dienste (Exchange, SharePoint, Teams, Entra ID, Intune usw.).</p>
-    <p>Aktive Vorfälle und Wartungsfenster werden mit Details zum Fortschritt und der voraussichtlichen Behebungszeit angezeigt. Vergangene Vorfälle der letzten 7 Tage sind in einer separaten Liste sichtbar.</p>
+    <h2><i class="bi bi-heart-pulse text-primary"></i> <?= te('Dienststatus') ?></h2>
+    <p><?= te('Zeigt den aktuellen Status aller Microsoft 365-Dienste (Exchange, SharePoint, Teams, Entra ID, Intune usw.).') ?></p>
+    <p><?= te('Aktive Vorfälle und Wartungsfenster werden mit Details zum Fortschritt und der voraussichtlichen Behebungszeit angezeigt. Vergangene Vorfälle der letzten 7 Tage sind in einer separaten Liste sichtbar.') ?></p>
     <p><span class="perm-tag">ServiceMessage.Read.All</span></p>
 </div>
 
 <!-- Sicherheit (CA) ──────────────────────────────────────── -->
 <div class="man-section" id="security">
-    <h2><i class="bi bi-shield-check text-primary"></i> Sicherheit (Conditional Access)</h2>
-    <p>Listet alle Richtlinien für bedingten Zugriff (Conditional Access Policies) im Tenant mit Status (aktiviert, deaktiviert, Berichtsmodus), Bedingungen und Zugriffsteuerungen.</p>
+    <h2><i class="bi bi-shield-check text-primary"></i> <?= te('Sicherheit (Conditional Access)') ?></h2>
+    <p><?= te('Listet alle Richtlinien für bedingten Zugriff (Conditional Access Policies) im Tenant mit Status (aktiviert, deaktiviert, Berichtsmodus), Bedingungen und Zugriffsteuerungen.') ?></p>
 
-    <h3>Richtlinien ein-/ausschalten</h3>
-    <p>CA-Richtlinien können direkt im Tool aktiviert oder deaktiviert werden (Berichtsmodus ist ebenfalls möglich). Dies erfordert erhöhte Berechtigungen.</p>
-    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><strong>Vorsicht:</strong> Das Deaktivieren einer aktiven CA-Richtlinie kann die Sicherheit des Tenants erheblich reduzieren. Änderungen sollten sorgfältig geplant werden.</div>
+    <h3><?= te('Richtlinien ein-/ausschalten') ?></h3>
+    <p><?= te('CA-Richtlinien können direkt im Tool aktiviert oder deaktiviert werden (Berichtsmodus ist ebenfalls möglich). Dies erfordert erhöhte Berechtigungen.') ?></p>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><strong><?= te('Vorsicht:') ?></strong> <?= te('Das Deaktivieren einer aktiven CA-Richtlinie kann die Sicherheit des Tenants erheblich reduzieren. Änderungen sollten sorgfältig geplant werden.') ?></div>
     <p><span class="perm-tag">Policy.Read.All</span> <span class="perm-tag">Policy.ReadWrite.ConditionalAccess</span></p>
 </div>
 
 <!-- Security Posture ─────────────────────────────────────── -->
 <div class="man-section" id="securityposture">
     <h2><i class="bi bi-shield-fill-check text-primary"></i> Security Posture</h2>
-    <p>Gibt eine aggregierte Sicherheitsübersicht des Tenants: MFA-Abdeckung, Risiko-Benutzer, Geräte-Compliance, aktive CA-Richtlinien, externe Freigaben und weitere Sicherheitsindikatoren.</p>
-    <p>Jeder Indikator ist mit einer Ampel (grün/gelb/rot) bewertet und mit dem zugehörigen Modul verlinkt, um direkt handeln zu können.</p>
+    <p><?= te('Gibt eine aggregierte Sicherheitsübersicht des Tenants: MFA-Abdeckung, Risiko-Benutzer, Geräte-Compliance, aktive CA-Richtlinien, externe Freigaben und weitere Sicherheitsindikatoren.') ?></p>
+    <p><?= te('Jeder Indikator ist mit einer Ampel (grün/gelb/rot) bewertet und mit dem zugehörigen Modul verlinkt, um direkt handeln zu können.') ?></p>
     <p><span class="perm-tag">User.Read.All</span> <span class="perm-tag">Policy.Read.All</span> <span class="perm-tag">IdentityRiskyUser.Read.All</span></p>
 </div>
 
 <!-- Secure Score ─────────────────────────────────────────── -->
 <div class="man-section" id="securescore">
     <h2><i class="bi bi-bar-chart-line text-primary"></i> Secure Score</h2>
-    <p>Zeigt den Microsoft Secure Score des Tenants — eine Bewertung der Sicherheitskonfiguration auf einer Skala von 0–100 — sowie den Verlauf über die letzten 30 Tage.</p>
-    <p>Die einzelnen Verbesserungsmaßnahmen (Control Scores) werden mit ihrer Punktzahl und dem Implementierungsstatus aufgelistet. Direkt-Links ins Microsoft 365 Defender Portal ermöglichen die schnelle Umsetzung.</p>
+    <p><?= te('Zeigt den Microsoft Secure Score des Tenants — eine Bewertung der Sicherheitskonfiguration auf einer Skala von 0–100 — sowie den Verlauf über die letzten 30 Tage.') ?></p>
+    <p><?= te('Die einzelnen Verbesserungsmaßnahmen (Control Scores) werden mit ihrer Punktzahl und dem Implementierungsstatus aufgelistet. Direkt-Links ins Microsoft 365 Defender Portal ermöglichen die schnelle Umsetzung.') ?></p>
     <p><span class="perm-tag">SecurityEvents.Read.All</span></p>
 </div>
 
 <!-- Defender Alerts ──────────────────────────────────────── -->
 <div class="man-section" id="defender">
     <h2><i class="bi bi-bell text-primary"></i> Defender Alerts</h2>
-    <p>Zeigt offene Sicherheitswarnungen aus Microsoft Defender for Endpoint, Defender for Office 365 und Microsoft Sentinel.</p>
-    <p>Für jeden Alert sind sichtbar: Titel, Schweregrad (Hoch/Mittel/Niedrig/Informativ), betroffene Entität, Status und Erstellzeit.</p>
+    <p><?= te('Zeigt offene Sicherheitswarnungen aus Microsoft Defender for Endpoint, Defender for Office 365 und Microsoft Sentinel.') ?></p>
+    <p><?= te('Für jeden Alert sind sichtbar: Titel, Schweregrad (Hoch/Mittel/Niedrig/Informativ), betroffene Entität, Status und Erstellzeit.') ?></p>
 
-    <h3>Alert auflösen</h3>
-    <p>Alerts können direkt im Tool als „Gelöst" markiert werden. Dies schließt den Alert in Microsoft Defender.</p>
+    <h3><?= te('Alert auflösen') ?></h3>
+    <p><?= te('Alerts können direkt im Tool als „Gelöst" markiert werden. Dies schließt den Alert in Microsoft Defender.') ?></p>
     <p><span class="perm-tag">SecurityAlert.ReadWrite.All</span></p>
 </div>
 
 <!-- Risiko-Anmeldungen ───────────────────────────────────── -->
 <div class="man-section" id="riskysignins">
-    <h2><i class="bi bi-exclamation-triangle text-primary"></i> Risiko-Anmeldungen</h2>
-    <p>Zeigt Benutzer, denen Microsoft Entra ID Protection ein erhöhtes Anmelderisiko zugewiesen hat — z.B. durch ungewöhnliche Anmeldeorte, kompromittierte Zugangsdaten (Credential-Leak-Erkennung) oder anomales Verhalten.</p>
+    <h2><i class="bi bi-exclamation-triangle text-primary"></i> <?= te('Risiko-Anmeldungen') ?></h2>
+    <p><?= te('Zeigt Benutzer, denen Microsoft Entra ID Protection ein erhöhtes Anmelderisiko zugewiesen hat — z.B. durch ungewöhnliche Anmeldeorte, kompromittierte Zugangsdaten (Credential-Leak-Erkennung) oder anomales Verhalten.') ?></p>
 
-    <h3>Aktionen</h3>
+    <h3><?= te('Aktionen') ?></h3>
     <ul>
-        <li><strong>Als kompromittiert bestätigen</strong>: Markiert das Benutzerkonto als kompromittiert, erzwingt Passwort-Reset und blockiert laufende Sessions</li>
-        <li><strong>Risiko verwerfen</strong>: Verwirft den Risikohinweis (wenn es sich um ein False Positive handelt)</li>
+        <li><strong><?= te('Als kompromittiert bestätigen') ?></strong>: <?= te('Markiert das Benutzerkonto als kompromittiert, erzwingt Passwort-Reset und blockiert laufende Sessions') ?></li>
+        <li><strong><?= te('Risiko verwerfen') ?></strong>: <?= te('Verwirft den Risikohinweis (wenn es sich um ein False Positive handelt)') ?></li>
     </ul>
-    <div class="info-box"><i class="bi bi-info-circle"></i>Dieses Modul erfordert Microsoft Entra ID P2 (oder Microsoft 365 E5) im Tenant.</div>
+    <div class="info-box"><i class="bi bi-info-circle"></i><?= te('Dieses Modul erfordert Microsoft Entra ID P2 (oder Microsoft 365 E5) im Tenant.') ?></div>
     <p><span class="perm-tag">IdentityRiskyUser.Read.All</span> <span class="perm-tag">IdentityRiskyUser.ReadWrite.All</span></p>
 </div>
 
 <!-- App-Registrierungen ──────────────────────────────────── -->
 <div class="man-section" id="appregistrations">
-    <h2><i class="bi bi-grid-3x3-gap text-primary"></i> App-Registrierungen & Enterprise Apps</h2>
-    <p>Zeigt alle App-Registrierungen und Enterprise-Anwendungen im Tenant mit ihren API-Berechtigungen, Client-Secrets und Zertifikaten.</p>
+    <h2><i class="bi bi-grid-3x3-gap text-primary"></i> <?= te('App-Registrierungen & Enterprise Apps') ?></h2>
+    <p><?= te('Zeigt alle App-Registrierungen und Enterprise-Anwendungen im Tenant mit ihren API-Berechtigungen, Client-Secrets und Zertifikaten.') ?></p>
 
-    <h3>Client-Secrets verwalten</h3>
-    <p>Auf der Detailseite einer App-Registrierung können neue Client-Secrets erstellt und vorhandene gelöscht werden. Ablaufende Secrets sind farblich markiert.</p>
-    <div class="tip-box"><i class="bi bi-lightbulb"></i>Secrets, die in weniger als 30 Tagen ablaufen, werden orange markiert. Abgelaufene Secrets werden rot hervorgehoben. Prüfe regelmäßig, ob Produktivsysteme davon betroffen sind.</div>
+    <h3><?= te('Client-Secrets verwalten') ?></h3>
+    <p><?= te('Auf der Detailseite einer App-Registrierung können neue Client-Secrets erstellt und vorhandene gelöscht werden. Ablaufende Secrets sind farblich markiert.') ?></p>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Secrets, die in weniger als 30 Tagen ablaufen, werden orange markiert. Abgelaufene Secrets werden rot hervorgehoben. Prüfe regelmäßig, ob Produktivsysteme davon betroffen sind.') ?></div>
     <p><span class="perm-tag">Application.Read.All</span> <span class="perm-tag">Application.ReadWrite.All</span></p>
 </div>
 
 <!-- Admin-Rollen ─────────────────────────────────────────── -->
 <div class="man-section" id="adminroles">
-    <h2><i class="bi bi-person-lock text-primary"></i> Admin-Rollen</h2>
-    <p>Zeigt alle Microsoft Entra-Administratorrollen und die jeweils zugewiesenen Benutzer. Privilegierte Rollen (Globaler Administrator, Privilegierter Rollenverwaltungsadministrator usw.) sind besonders hervorgehoben.</p>
+    <h2><i class="bi bi-person-lock text-primary"></i> <?= te('Admin-Rollen') ?></h2>
+    <p><?= te('Zeigt alle Microsoft Entra-Administratorrollen und die jeweils zugewiesenen Benutzer. Privilegierte Rollen (Globaler Administrator, Privilegierter Rollenverwaltungsadministrator usw.) sind besonders hervorgehoben.') ?></p>
 
-    <h3>Rollen zuweisen / entfernen</h3>
-    <p>Benutzer können direkt einer Rolle zugewiesen oder aus einer Rolle entfernt werden. Die Zuweisung erfolgt als permanente direkte Zuweisung (kein PIM).</p>
-    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i>Administratorrollen-Änderungen sind sicherheitskritisch. Die Vergabe der Rolle „Globaler Administrator" sollte auf das absolute Minimum beschränkt werden.</div>
+    <h3><?= te('Rollen zuweisen / entfernen') ?></h3>
+    <p><?= te('Benutzer können direkt einer Rolle zugewiesen oder aus einer Rolle entfernt werden. Die Zuweisung erfolgt als permanente direkte Zuweisung (kein PIM).') ?></p>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><?= te('Administratorrollen-Änderungen sind sicherheitskritisch. Die Vergabe der Rolle „Globaler Administrator" sollte auf das absolute Minimum beschränkt werden.') ?></div>
     <p><span class="perm-tag">RoleManagement.Read.All</span> <span class="perm-tag">RoleManagement.ReadWrite.Directory</span></p>
 </div>
 
@@ -510,20 +510,20 @@
 
 <!-- DSGVO-Status ─────────────────────────────────────────── -->
 <div class="man-section" id="dsgvo">
-    <h2><i class="bi bi-file-earmark-lock text-primary"></i> DSGVO-Status</h2>
-    <p>Eigene Kategorie innerhalb der Security Posture mit acht spezifischen DSGVO-Checks. Pro Check stehen das geprüfte Tenant-Setting und die relevanten DSGVO-Artikel.</p>
-    <h3>Was geprüft wird</h3>
+    <h2><i class="bi bi-file-earmark-lock text-primary"></i> <?= te('DSGVO-Status') ?></h2>
+    <p><?= te('Eigene Kategorie innerhalb der Security Posture mit acht spezifischen DSGVO-Checks. Pro Check stehen das geprüfte Tenant-Setting und die relevanten DSGVO-Artikel.') ?></p>
+    <h3><?= te('Was geprüft wird') ?></h3>
     <ul>
-        <li><strong>Tenant-Region in EU/EWR</strong> — der Datacenter-Standort entscheidet, ob die Verarbeitung primär unter Art. 6 (Rechtmäßigkeit) oder Art. 44–49 (Drittlandtransfer) fällt.</li>
-        <li><strong>SharePoint External Sharing restriktiv</strong> — die Tenant-Sharing-Capability darf für DSGVO-konforme Defaults nicht „Anyone-Links" als Default-Wert haben (Art. 25 Privacy by Default).</li>
-        <li><strong>Anonyme Freigabe-Links laufen ab</strong> — Speicherbegrenzung Art. 5 Abs. 1e: ohne Ablaufdatum bleibt der Link unbegrenzt nutzbar.</li>
-        <li><strong>Standard-Freigabetyp ist intern</strong> — Default-Linktyp sollte nicht Anyone sein.</li>
-        <li><strong>Sensitivity Labels veröffentlicht</strong> — Voraussetzung für Information Protection (Art. 32 Maßnahmen zur Datenintegrität).</li>
-        <li><strong>Aufbewahrungs-/eDiscovery-Fälle aktiv</strong> — Voraussetzung für Speicherbegrenzung und Lösch­pflichten (Art. 17).</li>
-        <li><strong>Audit-Log aktiv & abrufbar</strong> — Rechenschafts­pflicht Art. 5 Abs. 2 und Art. 32.</li>
-        <li><strong>DLP-/Label-Schutz für personenbezogene Daten</strong> — mindestens eine aktive Information-Protection-Maßnahme.</li>
+        <li><strong><?= te('Tenant-Region in EU/EWR') ?></strong> — <?= te('der Datacenter-Standort entscheidet, ob die Verarbeitung primär unter Art. 6 (Rechtmäßigkeit) oder Art. 44–49 (Drittlandtransfer) fällt.') ?></li>
+        <li><strong><?= te('SharePoint External Sharing restriktiv') ?></strong> — <?= te('die Tenant-Sharing-Capability darf für DSGVO-konforme Defaults nicht „Anyone-Links" als Default-Wert haben (Art. 25 Privacy by Default).') ?></li>
+        <li><strong><?= te('Anonyme Freigabe-Links laufen ab') ?></strong> — <?= te('Speicherbegrenzung Art. 5 Abs. 1e: ohne Ablaufdatum bleibt der Link unbegrenzt nutzbar.') ?></li>
+        <li><strong><?= te('Standard-Freigabetyp ist intern') ?></strong> — <?= te('Default-Linktyp sollte nicht Anyone sein.') ?></li>
+        <li><strong><?= te('Sensitivity Labels veröffentlicht') ?></strong> — <?= te('Voraussetzung für Information Protection (Art. 32 Maßnahmen zur Datenintegrität).') ?></li>
+        <li><strong><?= te('Aufbewahrungs-/eDiscovery-Fälle aktiv') ?></strong> — <?= te('Voraussetzung für Speicherbegrenzung und Lösch­pflichten (Art. 17).') ?></li>
+        <li><strong><?= te('Audit-Log aktiv & abrufbar') ?></strong> — <?= te('Rechenschafts­pflicht Art. 5 Abs. 2 und Art. 32.') ?></li>
+        <li><strong><?= te('DLP-/Label-Schutz für personenbezogene Daten') ?></strong> — <?= te('mindestens eine aktive Information-Protection-Maßnahme.') ?></li>
     </ul>
-    <div class="tip-box"><i class="bi bi-info-circle"></i>Direkt-Link: <a href="/securityposture#cat-dsgvo-datenschutz">/securityposture#cat-dsgvo-datenschutz</a></div>
+    <div class="tip-box"><i class="bi bi-info-circle"></i><?= te('Direkt-Link:') ?> <a href="/securityposture#cat-dsgvo-datenschutz">/securityposture#cat-dsgvo-datenschutz</a></div>
     <p><span class="perm-tag">Policy.Read.All</span> <span class="perm-tag">Domain.Read.All</span> <span class="perm-tag">InformationProtectionPolicy.Read.All</span> <span class="perm-tag">eDiscovery.Read.All</span> <span class="perm-tag">AuditLog.Read.All</span></p>
 </div>
 

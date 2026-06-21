@@ -14,7 +14,7 @@
             <div class="small text-muted"><?= $e($diag['detail']) ?></div>
             <?php if (!empty($diag['fix_url'])): ?>
                 <a href="<?= $e($diag['fix_url']) ?>" class="btn btn-sm btn-outline-secondary mt-2">
-                    <i class="bi bi-arrow-right-circle me-1"></i>Zur Lösung
+                    <i class="bi bi-arrow-right-circle me-1"></i><?= te('Zur Lösung') ?>
                 </a>
             <?php endif; ?>
         </div>
@@ -24,25 +24,25 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Geräte gesamt</div>
+            <div class="metric-label"><?= te('Geräte gesamt') ?></div>
             <div class="metric-value"><?= number_format($stats['total']) ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Konform</div>
+            <div class="metric-label"><?= te('Konform') ?></div>
             <div class="metric-value" style="color:#16a34a;"><?= $stats['by_compliance']['compliant'] ?? 0 ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Nicht konform</div>
+            <div class="metric-label"><?= te('Nicht konform') ?></div>
             <div class="metric-value" style="color:#dc2626;"><?= $stats['by_compliance']['noncompliant'] ?? 0 ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Verschlüsselt</div>
+            <div class="metric-label"><?= te('Verschlüsselt') ?></div>
             <div class="metric-value"><?= $stats['encrypted'] ?></div>
         </div>
     </div>
@@ -52,7 +52,7 @@
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-pie-chart text-primary"></i>
-        <h6>Betriebssysteme</h6>
+        <h6><?= te('Betriebssysteme') ?></h6>
     </div>
     <div class="card-body-custom">
         <div class="row g-2">
@@ -72,18 +72,18 @@
 
 <div class="content-card">
     <div class="table-toolbar">
-        <input type="text" id="devSearch" class="search-box" placeholder="Gerät suchen…">
+        <input type="text" id="devSearch" class="search-box" placeholder="<?= te('Gerät suchen…') ?>">
         <select id="complianceFilter" class="form-select form-select-sm ms-2" style="max-width:160px;" onchange="filterDevices()">
-            <option value="">Alle Status</option>
-            <option value="compliant">Konform</option>
-            <option value="noncompliant">Nicht konform</option>
-            <option value="unknown">Unbekannt</option>
+            <option value=""><?= te('Alle Status') ?></option>
+            <option value="compliant"><?= te('Konform') ?></option>
+            <option value="noncompliant"><?= te('Nicht konform') ?></option>
+            <option value="unknown"><?= te('Unbekannt') ?></option>
         </select>
     </div>
     <div class="table-responsive">
         <table class="data-table" id="devTable">
             <thead>
-                <tr><th>Gerätename</th><th>OS</th><th>Version</th><th>Benutzer</th><th>Compliance</th><th>Verschlüsselt</th><th>Letzter Sync</th><th></th></tr>
+                <tr><th><?= te('Gerätename') ?></th><th>OS</th><th><?= te('Version') ?></th><th><?= te('Benutzer') ?></th><th>Compliance</th><th><?= te('Verschlüsselt') ?></th><th><?= te('Letzter Sync') ?></th><th></th></tr>
             </thead>
             <tbody>
                 <?php foreach ($devices as $d): ?>
@@ -100,9 +100,9 @@
                         <td style="font-size:12px;"><?= $e($d['userPrincipalName'] ?? '') ?></td>
                         <td>
                             <?php if ($compliance === 'compliant'): ?>
-                                <span class="badge-enabled">Konform</span>
+                                <span class="badge-enabled"><?= te('Konform') ?></span>
                             <?php elseif ($compliance === 'noncompliant'): ?>
-                                <span class="badge-disabled">Nicht konform</span>
+                                <span class="badge-disabled"><?= te('Nicht konform') ?></span>
                             <?php else: ?>
                                 <span class="badge-neutral"><?= $e($compliance) ?></span>
                             <?php endif; ?>
@@ -120,15 +120,15 @@
                         <td class="text-nowrap">
                             <form method="post" action="/devices/<?= $e($deviceId) ?>/sync" class="d-inline">
                                 <?= \App\Core\Csrf::field() ?>
-                                <button type="submit" class="btn btn-sm btn-outline-primary py-0 px-2" title="Synchronisieren" style="font-size:12px;">
+                                <button type="submit" class="btn btn-sm btn-outline-primary py-0 px-2" title="<?= te('Synchronisieren') ?>" style="font-size:12px;">
                                     <i class="bi bi-arrow-repeat"></i> Sync
                                 </button>
                             </form>
                             <?php if (LocalAuth::isAdmin()): ?>
                             <form method="post" action="/devices/<?= $e($deviceId) ?>/wipe" class="d-inline ms-1"
-                                  onsubmit="return confirm('ACHTUNG: Alle Daten auf dem Gerät werden unwiderruflich gelöscht. Wirklich fortfahren?')">
+                                  onsubmit="return confirm('<?= t('ACHTUNG: Alle Daten auf dem Gerät werden unwiderruflich gelöscht. Wirklich fortfahren?') ?>')">
                                 <?= \App\Core\Csrf::field() ?>
-                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Gerät löschen (Wipe)" style="font-size:12px;">
+                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="<?= te('Gerät löschen (Wipe)') ?>" style="font-size:12px;">
                                     <i class="bi bi-trash"></i> Wipe
                                 </button>
                             </form>
@@ -137,7 +137,7 @@
                     </tr>
                 <?php endforeach; ?>
                 <?php if (empty($devices)): ?>
-                    <tr><td colspan="8" class="text-center text-muted py-4">Keine Geräte gefunden (Intune-Berechtigungen prüfen)</td></tr>
+                    <tr><td colspan="8" class="text-center text-muted py-4"><?= te('Keine Geräte gefunden (Intune-Berechtigungen prüfen)') ?></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

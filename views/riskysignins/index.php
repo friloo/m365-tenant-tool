@@ -53,11 +53,11 @@
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Erkennungen (24h)</div>
+            <div class="metric-label"><?= te('Erkennungen (24h)') ?></div>
             <div class="metric-value" style="color:<?= ($stats['last24h'] ?? 0) > 0 ? '#d97706' : '#111827' ?>;">
                 <?= $stats['last24h'] ?? 0 ?>
             </div>
-            <div class="metric-sub">Neue Risikoereignisse</div>
+            <div class="metric-sub"><?= te('Neue Risikoereignisse') ?></div>
         </div>
     </div>
 </div>
@@ -68,7 +68,7 @@
         <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-panel"
                 type="button" role="tab">
             <i class="bi bi-person-exclamation me-1"></i>
-            Risikobenutzer
+            <?= te('Risikobenutzer') ?>
             <span class="badge bg-<?= count($riskyUsers) > 0 ? 'danger' : 'secondary' ?> ms-1"><?= count($riskyUsers) ?></span>
         </button>
     </li>
@@ -76,7 +76,7 @@
         <button class="nav-link" id="detect-tab" data-bs-toggle="tab" data-bs-target="#detect-panel"
                 type="button" role="tab">
             <i class="bi bi-radar me-1"></i>
-            Erkennungen
+            <?= te('Erkennungen') ?>
             <span class="badge bg-secondary ms-1"><?= count($detections) ?></span>
         </button>
     </li>
@@ -84,7 +84,7 @@
         <button class="nav-link" id="signins-tab" data-bs-toggle="tab" data-bs-target="#signins-panel"
                 type="button" role="tab">
             <i class="bi bi-box-arrow-in-right me-1"></i>
-            Risiko-Anmeldungen
+            <?= te('Risiko-Anmeldungen') ?>
             <span class="badge bg-secondary ms-1"><?= count($signIns) ?></span>
         </button>
     </li>
@@ -96,18 +96,18 @@
     <div class="tab-pane fade show active" id="users-panel" role="tabpanel">
         <div class="content-card">
             <div class="table-toolbar">
-                <input type="text" id="riskyUsersSearch" class="search-box" placeholder="Benutzer suchen…">
+                <input type="text" id="riskyUsersSearch" class="search-box" placeholder="<?= te('Benutzer suchen…') ?>">
             </div>
             <div class="table-responsive">
                 <table class="data-table" id="riskyUsersTable">
                     <thead>
                         <tr>
-                            <th>Benutzer</th>
-                            <th>Risikostufe</th>
-                            <th>Risikodetail</th>
-                            <th>Zuletzt aktualisiert</th>
+                            <th><?= te('Benutzer') ?></th>
+                            <th><?= te('Risikostufe') ?></th>
+                            <th><?= te('Risikodetail') ?></th>
+                            <th><?= te('Zuletzt aktualisiert') ?></th>
                             <?php if (LocalAuth::isAdmin()): ?>
-                                <th>Aktionen</th>
+                                <th><?= te('Aktionen') ?></th>
                             <?php endif; ?>
                         </tr>
                     </thead>
@@ -125,11 +125,11 @@
                             </td>
                             <td>
                                 <?php if ($level === 'high'): ?>
-                                    <span class="badge-danger">Hoch</span>
+                                    <span class="badge-danger"><?= te('Hoch') ?></span>
                                 <?php elseif ($level === 'medium'): ?>
-                                    <span class="badge-warning">Mittel</span>
+                                    <span class="badge-warning"><?= te('Mittel') ?></span>
                                 <?php elseif ($level === 'low'): ?>
-                                    <span class="badge-info">Niedrig</span>
+                                    <span class="badge-info"><?= te('Niedrig') ?></span>
                                 <?php else: ?>
                                     <span class="badge-neutral"><?= $e($level ?: '–') ?></span>
                                 <?php endif; ?>
@@ -144,17 +144,17 @@
                             <td>
                                 <div class="d-flex gap-1 flex-wrap">
                                     <form method="POST" action="/riskysignins/<?= $e($userId) ?>/confirm-compromised"
-                                          onsubmit="return confirm('Benutzer als kompromittiert markieren?');">
+                                          onsubmit="return confirm('<?= te('Benutzer als kompromittiert markieren?') ?>');">
                                         <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-danger" style="font-size:11px;padding:2px 8px;">
-                                            <i class="bi bi-exclamation-octagon me-1"></i>Kompromittiert
+                                            <i class="bi bi-exclamation-octagon me-1"></i><?= te('Kompromittiert') ?>
                                         </button>
                                     </form>
                                     <form method="POST" action="/riskysignins/<?= $e($userId) ?>/dismiss-risk"
-                                          onsubmit="return confirm('Risiko für diesen Benutzer zurücksetzen?');">
+                                          onsubmit="return confirm('<?= te('Risiko für diesen Benutzer zurücksetzen?') ?>');">
                                         <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-outline-secondary" style="font-size:11px;padding:2px 8px;">
-                                            <i class="bi bi-check2 me-1"></i>Zurücksetzen
+                                            <i class="bi bi-check2 me-1"></i><?= te('Zurücksetzen') ?>
                                         </button>
                                     </form>
                                 </div>
@@ -167,7 +167,7 @@
                                 <td colspan="<?= LocalAuth::isAdmin() ? 5 : 4 ?>">
                                     <div class="empty-state">
                                         <i class="bi bi-shield-check"></i>
-                                        <p>Keine Risikobenutzer gefunden — Berechtigungen prüfen (IdentityRiskyUser.Read.All)</p>
+                                        <p><?= te('Keine Risikobenutzer gefunden — Berechtigungen prüfen (IdentityRiskyUser.Read.All)') ?></p>
                                     </div>
                                 </td>
                             </tr>
@@ -182,18 +182,18 @@
     <div class="tab-pane fade" id="detect-panel" role="tabpanel">
         <div class="content-card">
             <div class="table-toolbar">
-                <input type="text" id="detectSearch" class="search-box" placeholder="Erkennung suchen…">
+                <input type="text" id="detectSearch" class="search-box" placeholder="<?= te('Erkennung suchen…') ?>">
             </div>
             <div class="table-responsive">
                 <table class="data-table" id="detectTable">
                     <thead>
                         <tr>
-                            <th>Zeitpunkt</th>
-                            <th>Benutzer</th>
-                            <th>Ereignistyp</th>
-                            <th>Risikostufe</th>
-                            <th>IP-Adresse</th>
-                            <th>Standort</th>
+                            <th><?= te('Zeitpunkt') ?></th>
+                            <th><?= te('Benutzer') ?></th>
+                            <th><?= te('Ereignistyp') ?></th>
+                            <th><?= te('Risikostufe') ?></th>
+                            <th><?= te('IP-Adresse') ?></th>
+                            <th><?= te('Standort') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -218,13 +218,13 @@
                             </td>
                             <td>
                                 <?php if ($level === 'high'): ?>
-                                    <span class="badge-danger">Hoch</span>
+                                    <span class="badge-danger"><?= te('Hoch') ?></span>
                                 <?php elseif ($level === 'medium'): ?>
-                                    <span class="badge-warning">Mittel</span>
+                                    <span class="badge-warning"><?= te('Mittel') ?></span>
                                 <?php elseif ($level === 'low'): ?>
-                                    <span class="badge-info">Niedrig</span>
+                                    <span class="badge-info"><?= te('Niedrig') ?></span>
                                 <?php elseif ($level === 'hidden'): ?>
-                                    <span class="badge-neutral">Versteckt</span>
+                                    <span class="badge-neutral"><?= te('Versteckt') ?></span>
                                 <?php else: ?>
                                     <span class="badge-neutral"><?= $e($level ?: '–') ?></span>
                                 <?php endif; ?>
@@ -242,7 +242,7 @@
                                 <td colspan="6">
                                     <div class="empty-state">
                                         <i class="bi bi-radar"></i>
-                                        <p>Keine Risikoerkennungen (IdentityRiskEvent.Read.All prüfen)</p>
+                                        <p><?= te('Keine Risikoerkennungen (IdentityRiskEvent.Read.All prüfen)') ?></p>
                                     </div>
                                 </td>
                             </tr>
@@ -260,24 +260,24 @@
                 <div class="card-body-custom">
                     <div class="empty-state">
                         <i class="bi bi-box-arrow-in-right"></i>
-                        <p>Keine risikobehafteten Anmeldungen gefunden<br>
-                        <span style="font-size:12px;color:#9ca3af;">AuditLog.Read.All und IdentityRiskEvent.Read.All Berechtigungen prüfen</span></p>
+                        <p><?= te('Keine risikobehafteten Anmeldungen gefunden') ?><br>
+                        <span style="font-size:12px;color:#9ca3af;"><?= te('AuditLog.Read.All und IdentityRiskEvent.Read.All Berechtigungen prüfen') ?></span></p>
                     </div>
                 </div>
             <?php else: ?>
                 <div class="table-toolbar">
-                    <input type="text" id="signinsSearch" class="search-box" placeholder="Anmeldung suchen…">
+                    <input type="text" id="signinsSearch" class="search-box" placeholder="<?= te('Anmeldung suchen…') ?>">
                 </div>
                 <div class="table-responsive">
                     <table class="data-table" id="signinsTable">
                         <thead>
                             <tr>
-                                <th>Zeitpunkt</th>
-                                <th>Benutzer</th>
-                                <th>IP-Adresse</th>
-                                <th>Standort</th>
-                                <th>Risikozustand</th>
-                                <th>Risikostufe</th>
+                                <th><?= te('Zeitpunkt') ?></th>
+                                <th><?= te('Benutzer') ?></th>
+                                <th><?= te('IP-Adresse') ?></th>
+                                <th><?= te('Standort') ?></th>
+                                <th><?= te('Risikozustand') ?></th>
+                                <th><?= te('Risikostufe') ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -299,20 +299,20 @@
                                 <td style="font-size:12px;color:#6b7280;"><?= $locStr ? $e($locStr) : '–' ?></td>
                                 <td>
                                     <?php if ($riskState === 'confirmedCompromised'): ?>
-                                        <span class="badge-danger">Kompromittiert</span>
+                                        <span class="badge-danger"><?= te('Kompromittiert') ?></span>
                                     <?php elseif ($riskState === 'atRisk'): ?>
-                                        <span class="badge-warning">Gefährdet</span>
+                                        <span class="badge-warning"><?= te('Gefährdet') ?></span>
                                     <?php else: ?>
                                         <span class="badge-neutral"><?= $e($riskState ?: '–') ?></span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php if ($riskLevel === 'high'): ?>
-                                        <span class="badge-danger">Hoch</span>
+                                        <span class="badge-danger"><?= te('Hoch') ?></span>
                                     <?php elseif ($riskLevel === 'medium'): ?>
-                                        <span class="badge-warning">Mittel</span>
+                                        <span class="badge-warning"><?= te('Mittel') ?></span>
                                     <?php elseif ($riskLevel === 'low'): ?>
-                                        <span class="badge-info">Niedrig</span>
+                                        <span class="badge-info"><?= te('Niedrig') ?></span>
                                     <?php else: ?>
                                         <span class="badge-neutral">–</span>
                                     <?php endif; ?>

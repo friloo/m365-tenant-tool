@@ -28,26 +28,26 @@ $progressColor = $pct >= 90 ? 'success' : ($pct >= 60 ? 'warning' : 'danger');
 
 <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
-        <div class="text-muted" style="font-size:13px;">Prüft welche Microsoft Graph Berechtigungen dem konfigurierten App-Konto erteilt wurden und welche Features dadurch eingeschränkt sind.</div>
+        <div class="text-muted" style="font-size:13px;"><?= te('Prüft welche Microsoft Graph Berechtigungen dem konfigurierten App-Konto erteilt wurden und welche Features dadurch eingeschränkt sind.') ?></div>
     </div>
     <div class="d-flex gap-2">
         <a href="?refresh=1" class="btn btn-sm btn-primary"
-           title="Löscht das gecachte Token — nach Berechtigungsänderungen in Azure erforderlich">
-            <i class="bi bi-arrow-clockwise me-1"></i>Token erneuern &amp; neu prüfen
+           title="<?= te('Löscht das gecachte Token — nach Berechtigungsänderungen in Azure erforderlich') ?>">
+            <i class="bi bi-arrow-clockwise me-1"></i><?= te('Token erneuern & neu prüfen') ?>
         </a>
-        <a href="/settings" class="btn btn-sm btn-outline-secondary"><i class="bi bi-gear me-1"></i>Einstellungen</a>
+        <a href="/settings" class="btn btn-sm btn-outline-secondary"><i class="bi bi-gear me-1"></i><?= te('Einstellungen') ?></a>
     </div>
 </div>
 
 <!-- Token Info ──────────────────────────────────────────────── -->
 <div class="content-card mb-4">
     <div class="card-header-custom">
-        <i class="bi bi-key me-2"></i>Aktives Access Token
+        <i class="bi bi-key me-2"></i><?= te('Aktives Access Token') ?>
     </div>
     <div class="card-body-custom">
         <div class="token-info-grid">
             <div class="token-info-item">
-                <div class="token-info-label">Mandant (Tenant)</div>
+                <div class="token-info-label"><?= te('Mandant (Tenant)') ?></div>
                 <div class="token-info-value"><?= $e($tenantName) ?></div>
             </div>
             <div class="token-info-item">
@@ -59,7 +59,7 @@ $progressColor = $pct >= 90 ? 'success' : ($pct >= 60 ? 'warning' : 'danger');
                 <div class="token-info-value" style="font-size:11px;"><?= $e($tokenInfo['app_id']) ?></div>
             </div>
             <div class="token-info-item">
-                <div class="token-info-label">Token gültig bis</div>
+                <div class="token-info-label"><?= te('Token gültig bis') ?></div>
                 <div class="token-info-value" style="font-family:inherit;">
                     <?php if ($tokenInfo['expires']): ?>
                         <?php
@@ -68,7 +68,7 @@ $progressColor = $pct >= 90 ? 'success' : ($pct >= 60 ? 'warning' : 'danger');
                         ?>
                         <span class="<?= $color ?>">
                             <?= $e($tokenInfo['expires']->format('H:i:s')) ?>
-                            (noch <?= max(0, (int)($secsLeft / 60)) ?> Min.)
+                            <?= te('(noch :min Min.)', ['min' => max(0, (int)($secsLeft / 60))]) ?>
                         </span>
                     <?php else: ?>
                         <span class="text-muted">–</span>
@@ -76,8 +76,8 @@ $progressColor = $pct >= 90 ? 'success' : ($pct >= 60 ? 'warning' : 'danger');
                 </div>
             </div>
             <div class="token-info-item">
-                <div class="token-info-label">Erteilte Berechtigungen im Token</div>
-                <div class="token-info-value" style="font-family:inherit;"><?= count($tokenInfo['roles']) ?> Rollen</div>
+                <div class="token-info-label"><?= te('Erteilte Berechtigungen im Token') ?></div>
+                <div class="token-info-value" style="font-family:inherit;"><?= count($tokenInfo['roles']) ?> <?= te('Rollen') ?></div>
             </div>
         </div>
     </div>
@@ -88,19 +88,19 @@ $progressColor = $pct >= 90 ? 'success' : ($pct >= 60 ? 'warning' : 'danger');
     <div class="col-sm-3">
         <div class="metric-card">
             <div class="metric-value"><?= $summary['total'] ?></div>
-            <div class="metric-label">Geprüfte Berechtigungen</div>
+            <div class="metric-label"><?= te('Geprüfte Berechtigungen') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
             <div class="metric-value text-success"><?= $summary['granted'] ?></div>
-            <div class="metric-label">Erteilt <i class="bi bi-check-circle-fill text-success ms-1"></i></div>
+            <div class="metric-label"><?= te('Erteilt') ?> <i class="bi bi-check-circle-fill text-success ms-1"></i></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
             <div class="metric-value <?= $summary['missing'] > 0 ? 'text-danger' : 'text-success' ?>"><?= $summary['missing'] ?></div>
-            <div class="metric-label">Fehlend</div>
+            <div class="metric-label"><?= te('Fehlend') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
@@ -118,10 +118,9 @@ $progressColor = $pct >= 90 ? 'success' : ($pct >= 60 ? 'warning' : 'danger');
 <div class="alert alert-info d-flex gap-2 align-items-start mb-4" style="font-size:13px;">
     <i class="bi bi-info-circle-fill flex-shrink-0 mt-1"></i>
     <div>
-        <strong>Berechtigung gerade erteilt aber wird noch als fehlend angezeigt?</strong>
-        Das Access-Token ist bis zu 1 Stunde gecacht. Nach Änderungen in Azure einfach
-        <a href="?refresh=1" class="alert-link">Token erneuern &amp; neu prüfen</a> klicken —
-        das löscht das alte Token und holt sofort ein neues mit den aktuellen Rechten.
+        <strong><?= te('Berechtigung gerade erteilt aber wird noch als fehlend angezeigt?') ?></strong>
+        <?= te('Das Access-Token ist bis zu 1 Stunde gecacht. Nach Änderungen in Azure einfach') ?>
+        <a href="?refresh=1" class="alert-link"><?= te('Token erneuern & neu prüfen') ?></a> <?= te('klicken — das löscht das alte Token und holt sofort ein neues mit den aktuellen Rechten.') ?>
     </div>
 </div>
 
@@ -130,12 +129,12 @@ $progressColor = $pct >= 90 ? 'success' : ($pct >= 60 ? 'warning' : 'danger');
 <div class="alert alert-warning d-flex gap-3 mb-4" role="alert">
     <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1" style="font-size:18px;"></i>
     <div>
-        <strong><?= $summary['missing'] ?> Berechtigung(en) fehlen</strong> —
-        <?= $summary['missing_write'] ?> davon sind Schreibrechte (Features zum Verwalten),
-        <?= $summary['missing_read'] ?> sind Leserechte (Features zum Anzeigen).<br>
+        <strong><?= te(':n Berechtigung(en) fehlen', ['n' => $summary['missing']]) ?></strong> —
+        <?= te(':n davon sind Schreibrechte (Features zum Verwalten),', ['n' => $summary['missing_write']]) ?>
+        <?= te(':n sind Leserechte (Features zum Anzeigen).', ['n' => $summary['missing_read']]) ?><br>
         <span class="text-muted" style="font-size:12px;">
-            Betroffene Features: <?= $e(implode(', ', array_slice($summary['affected_features'], 0, 8))) ?>
-            <?= count($summary['affected_features']) > 8 ? ' und ' . (count($summary['affected_features']) - 8) . ' weitere…' : '' ?>
+            <?= te('Betroffene Features:') ?> <?= $e(implode(', ', array_slice($summary['affected_features'], 0, 8))) ?>
+            <?= count($summary['affected_features']) > 8 ? ' ' . te('und :n weitere…', ['n' => count($summary['affected_features']) - 8]) : '' ?>
         </span>
     </div>
 </div>
@@ -143,7 +142,7 @@ $progressColor = $pct >= 90 ? 'success' : ($pct >= 60 ? 'warning' : 'danger');
 <!-- How to fix ──────────────────────────────────────────────── -->
 <div class="content-card mb-4">
     <div class="card-header-custom" style="cursor:pointer;" onclick="this.nextElementSibling.classList.toggle('d-none')">
-        <i class="bi bi-question-circle me-2"></i>Wie behebt man fehlende Berechtigungen?
+        <i class="bi bi-question-circle me-2"></i><?= te('Wie behebt man fehlende Berechtigungen?') ?>
         <i class="bi bi-chevron-down ms-auto"></i>
     </div>
     <div class="card-body-custom d-none">

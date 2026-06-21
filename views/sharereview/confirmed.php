@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Freigabe bestätigt — <?= htmlspecialchars($brandAppName) ?></title>
+    <title><?= te('Freigabe bestätigt') ?> — <?= htmlspecialchars($brandAppName) ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -117,15 +117,15 @@
     <div class="card-accent"></div>
     <div class="card-body">
         <div class="icon-circle"><i class="bi bi-check-lg"></i></div>
-        <h1 class="result-title">Freigabe bestätigt</h1>
+        <h1 class="result-title"><?= te('Freigabe bestätigt') ?></h1>
         <p class="result-lead">
-            Vielen Dank! Ihre Bestätigung wurde gespeichert und die Freigabe wurde verlängert.
-            Sie erhalten rechtzeitig eine erneute Erinnerung.
+            <?= te('Vielen Dank! Ihre Bestätigung wurde gespeichert und die Freigabe wurde verlängert. '
+            . 'Sie erhalten rechtzeitig eine erneute Erinnerung.') ?>
         </p>
         <div class="footer-note">
-            <i class="bi bi-x-circle me-1"></i>Sie können dieses Fenster jetzt schließen.
+            <i class="bi bi-x-circle me-1"></i><?= te('Sie können dieses Fenster jetzt schließen.') ?>
             <?php if ($brandSupportEmail): ?>
-                <br>Bei Fragen:
+                <br><?= te('Bei Fragen:') ?>
                 <a href="mailto:<?= htmlspecialchars($brandSupportEmail) ?>"><?= htmlspecialchars($brandSupportEmail) ?></a>
             <?php endif; ?>
         </div>

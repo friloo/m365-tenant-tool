@@ -65,6 +65,7 @@ return [
     'Prüfungen' => 'checks',
     'fehlgeschlagen' => 'failed',
     'Hinweis' => 'Note',
+    'Hinweis:' => 'Note:',
     'Prüfungen basieren auf Microsoft Graph API-Daten und Best Practices (CIS M365, Microsoft Security Baseline).
     Fehlende Berechtigungen werden als <strong>Unbekannt</strong> angezeigt.
     Einige Prüfungen nutzen gecachte Daten (5–30 Min). Für aktuelle Ergebnisse:'
@@ -171,6 +172,7 @@ return [
     'Backup-Setup hat Lücken.' => 'Backup setup has gaps.',
     'Backup-Setup hat kritische Lücken oder fehlt komplett.' => 'Backup setup has critical gaps or is missing entirely.',
     'Anbieter' => 'Provider',
+    'Findings' => 'Findings',
     'Backup-Konfiguration eintragen' => 'Enter backup configuration',
     'Anbieter-URL' => 'Provider URL',
     '(optional)' => '(optional)',
@@ -237,6 +239,10 @@ return [
     'Schlüssel kopieren' => 'Copy key',
     'Schlüsselwert nicht verfügbar' => 'Key value not available',
     'Gerade eben' => 'Just now',
+    'Vor :n Minuten' => ':n minutes ago',
+    'Vor :n Stunden' => ':n hours ago',
+    'Vor 1 Tag' => '1 day ago',
+    'Vor :n Tagen' => ':n days ago',
 
     // ── Access review (views/accessreview/index.php + show.php) ───────────
     'Offene Prüfungen' => 'Open reviews',

@@ -199,8 +199,7 @@ return [
         => 'the SharePoint tenant settings,',
     'erforderlich.'                    => 'is required.',
     'Für Site-Freigabe-Übersichten reicht'
-        => 'For site sharing overviews,',
-    'reicht'                           => 'is sufficient.',
+        => 'Site sharing overviews require only',
     'Einzelne Sites'                   => 'Individual sites',
     'Teams &amp; Extern'               => 'Teams &amp; External',
     'SharePoint-Einstellungen konnten nicht geladen werden.'
@@ -270,7 +269,7 @@ return [
     'B2B eingehend'                    => 'B2B inbound',
     'B2B ausgehend'                    => 'B2B outbound',
     'Zum Ändern der mandantenübergreifenden Richtlinien ist die Berechtigung'
-        => 'Changing cross-tenant policies requires the permission',
+        => 'To change the cross-tenant policies, the permission',
     'Änderungen können im'             => 'Changes can be made in the',
     'vorgenommen werden.'              => '.',
     'Admin-Portale'                    => 'Admin portals',

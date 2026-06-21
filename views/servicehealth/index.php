@@ -12,19 +12,19 @@
 $statusMeta = function (string $status): array {
     return match ($status) {
         'serviceOperational', 'serviceDegradationMitigated'
-            => ['color' => '#16a34a', 'label' => 'Normal',            'dot' => 'bg-success'],
+            => ['color' => '#16a34a', 'label' => t('Normal'),            'dot' => 'bg-success'],
         'serviceDegradation'
-            => ['color' => '#d97706', 'label' => 'Beeinträchtigt',    'dot' => 'bg-warning'],
+            => ['color' => '#d97706', 'label' => t('Beeinträchtigt'),    'dot' => 'bg-warning'],
         'serviceInterruption'
-            => ['color' => '#dc2626', 'label' => 'Unterbrochen',      'dot' => 'bg-danger'],
+            => ['color' => '#dc2626', 'label' => t('Unterbrochen'),      'dot' => 'bg-danger'],
         'restoringService'
-            => ['color' => '#2563eb', 'label' => 'Wird wiederhergestellt', 'dot' => 'bg-primary'],
+            => ['color' => '#2563eb', 'label' => t('Wird wiederhergestellt'), 'dot' => 'bg-primary'],
         'extendedRecovery'
-            => ['color' => '#7c3aed', 'label' => 'Erweitertes Recovery', 'dot' => 'bg-purple'],
+            => ['color' => '#7c3aed', 'label' => t('Erweitertes Recovery'), 'dot' => 'bg-purple'],
         'falsePositive'
-            => ['color' => '#6b7280', 'label' => 'Falsch positiv',    'dot' => 'bg-secondary'],
+            => ['color' => '#6b7280', 'label' => t('Falsch positiv'),    'dot' => 'bg-secondary'],
         'investigationSuspended'
-            => ['color' => '#9ca3af', 'label' => 'Untersucht',        'dot' => 'bg-secondary'],
+            => ['color' => '#9ca3af', 'label' => t('Untersucht'),        'dot' => 'bg-secondary'],
         default
             => ['color' => '#9ca3af', 'label' => $status,             'dot' => 'bg-secondary'],
     };
@@ -46,13 +46,13 @@ $classificationLabel = fn(string $c): string => match (strtolower($c)) {
         if (!empty($diag ?? null)) {
             $diagStyle = 'empty';
             $diagIcon  = 'cloud-slash';
-            $diagTitle = 'Keine Service-Health-Daten verfügbar';
+            $diagTitle = t('Keine Service-Health-Daten verfügbar');
             include BASE_PATH . '/views/partials/graph_diagnostic.php';
         } else { ?>
             <div class="empty-state">
                 <i class="bi bi-cloud-slash text-muted" style="font-size:2.5rem;"></i>
-                <p class="mt-3 mb-1 fw-medium">Keine Service-Health-Daten verfügbar</p>
-                <p class="text-muted small">Microsoft hat aktuell keine Status-Daten geliefert.</p>
+                <p class="mt-3 mb-1 fw-medium"><?= te('Keine Service-Health-Daten verfügbar') ?></p>
+                <p class="text-muted small"><?= te('Microsoft hat aktuell keine Status-Daten geliefert.') ?></p>
             </div>
         <?php } ?>
     </div>
@@ -66,8 +66,8 @@ $classificationLabel = fn(string $c): string => match (strtolower($c)) {
     <div class="card-body-custom d-flex align-items-center gap-3">
         <i class="bi bi-check-circle-fill text-success" style="font-size:2rem;"></i>
         <div>
-            <div class="fw-semibold" style="color:#16a34a;font-size:1.05rem;">Alle Dienste normal</div>
-            <div class="text-muted small">Keine bekannten Probleme bei Microsoft 365-Diensten.</div>
+            <div class="fw-semibold" style="color:#16a34a;font-size:1.05rem;"><?= te('Alle Dienste normal') ?></div>
+            <div class="text-muted small"><?= te('Keine bekannten Probleme bei Microsoft 365-Diensten.') ?></div>
         </div>
     </div>
 </div>
@@ -77,12 +77,16 @@ $classificationLabel = fn(string $c): string => match (strtolower($c)) {
         <i class="bi bi-exclamation-triangle-fill" style="font-size:2rem;color:<?= $issueCount > 0 ? '#dc2626' : '#d97706' ?>;"></i>
         <div>
             <div class="fw-semibold" style="color:<?= $issueCount > 0 ? '#dc2626' : '#d97706' ?>;font-size:1.05rem;">
-                <?= $issueCount > 0
-                    ? $issueCount . ' aktive' . ($issueCount === 1 ? 's' : '') . ' Problem' . ($issueCount === 1 ? '' : 'e')
-                    : 'Beeinträchtigte Dienste erkannt' ?>
+                <?php if ($issueCount > 0): ?>
+                    <?= $issueCount === 1
+                        ? te(':n aktives Problem', ['n' => $issueCount])
+                        : te(':n aktive Probleme', ['n' => $issueCount]) ?>
+                <?php else: ?>
+                    <?= te('Beeinträchtigte Dienste erkannt') ?>
+                <?php endif; ?>
             </div>
             <div class="text-muted small">
-                <?= $issueCount > 0 ? 'Mindestens ein Microsoft 365-Dienst meldet aktive Vorfälle.' : 'Ein oder mehrere Dienste laufen nicht im Normalbetrieb.' ?>
+                <?= $issueCount > 0 ? te('Mindestens ein Microsoft 365-Dienst meldet aktive Vorfälle.') : te('Ein oder mehrere Dienste laufen nicht im Normalbetrieb.') ?>
             </div>
         </div>
     </div>
@@ -93,7 +97,7 @@ $classificationLabel = fn(string $c): string => match (strtolower($c)) {
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-grid-3x3-gap text-primary"></i>
-        <h6>Dienste (<?= count($overview) ?>)</h6>
+        <h6><?= te('Dienste') ?> (<?= count($overview) ?>)</h6>
     </div>
     <div class="card-body-custom">
         <div class="row g-2">
@@ -125,17 +129,17 @@ $classificationLabel = fn(string $c): string => match (strtolower($c)) {
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-exclamation-octagon-fill text-danger"></i>
-        <h6>Aktive Vorfälle (<?= count($issues) ?>)</h6>
+        <h6><?= te('Aktive Vorfälle') ?> (<?= count($issues) ?>)</h6>
     </div>
     <div class="table-responsive">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Dienst</th>
-                    <th>Titel</th>
-                    <th>Beginn</th>
-                    <th>Status</th>
-                    <th>Klassifizierung</th>
+                    <th><?= te('Dienst') ?></th>
+                    <th><?= te('Titel') ?></th>
+                    <th><?= te('Beginn') ?></th>
+                    <th><?= te('Status') ?></th>
+                    <th><?= te('Klassifizierung') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -188,16 +192,16 @@ $classificationLabel = fn(string $c): string => match (strtolower($c)) {
 <div class="content-card">
     <div class="card-header-custom">
         <i class="bi bi-megaphone text-secondary"></i>
-        <h6>Neueste Nachrichten (<?= count($messages) ?>)</h6>
+        <h6><?= te('Neueste Nachrichten') ?> (<?= count($messages) ?>)</h6>
     </div>
     <div class="table-responsive">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Titel</th>
-                    <th>Dienste</th>
-                    <th>Geändert</th>
-                    <th>Typ</th>
+                    <th><?= te('Titel') ?></th>
+                    <th><?= te('Dienste') ?></th>
+                    <th><?= te('Geändert') ?></th>
+                    <th><?= te('Typ') ?></th>
                 </tr>
             </thead>
             <tbody>

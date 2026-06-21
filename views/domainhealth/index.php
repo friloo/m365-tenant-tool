@@ -3,9 +3,9 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Domains gesamt</div>
+            <div class="metric-label"><?= te('Domains gesamt') ?></div>
             <div class="metric-value"><?= $summary['total'] ?></div>
-            <div class="metric-sub">Verifizierte Domains</div>
+            <div class="metric-sub"><?= te('Verifizierte Domains') ?></div>
         </div>
     </div>
     <div class="col-sm-3">

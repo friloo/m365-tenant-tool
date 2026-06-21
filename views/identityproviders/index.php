@@ -5,16 +5,13 @@
 <div class="alert alert-info d-flex gap-3 mb-3">
     <i class="bi bi-person-bounding-box flex-shrink-0 mt-1" style="font-size:1.4rem;color:#0078d4;"></i>
     <div>
-        <strong>Identity Provider Trust</strong> — externe Authentifizierungs­quellen, die der Tenant
-        akzeptiert (Google, Facebook für B2C oder SAML/WS-Fed-Federation mit ADFS, Okta, Ping
-        Identity, …). Jeder zusätzliche IdP ist eine erweiterte Angriffsfläche und muss regelmäßig
-        auditiert werden.
+        <strong><?= te('Identity Provider Trust') ?></strong> <?= te('— externe Authentifizierungs­quellen, die der Tenant akzeptiert (Google, Facebook für B2C oder SAML/WS-Fed-Federation mit ADFS, Okta, Ping Identity, …). Jeder zusätzliche IdP ist eine erweiterte Angriffsfläche und muss regelmäßig auditiert werden.') ?>
     </div>
 </div>
 
 <!-- Social / B2C-IdPs ───────────────────────────────────── -->
 <div class="content-card mb-4">
-    <div class="card-header-custom"><i class="bi bi-globe2 text-primary"></i><h6>Konfigurierte Identity Providers</h6></div>
+    <div class="card-header-custom"><i class="bi bi-globe2 text-primary"></i><h6><?= te('Konfigurierte Identity Providers') ?></h6></div>
     <div class="card-body-custom p-0">
         <?php if (empty($idps)): ?>
             <div class="text-muted small p-4 text-center">

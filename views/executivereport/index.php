@@ -50,10 +50,10 @@
                 <i class="bi bi-eye me-1"></i><?= te('Vorschau im Browser öffnen') ?>
             </a>
             <form method="post" action="/executivereport/send-now" class="d-inline"
-                  onsubmit="return confirm('Den Report jetzt sofort an die konfigurierten Empfänger senden?')">
+                  onsubmit="return confirm(<?= htmlspecialchars(json_encode(t('Den Report jetzt sofort an die konfigurierten Empfänger senden?'), JSON_UNESCAPED_UNICODE), ENT_QUOTES) ?>)">
                 <?= \App\Core\Csrf::field() ?>
                 <button type="submit" class="btn btn-outline-success">
-                    <i class="bi bi-send me-1"></i>Jetzt versenden
+                    <i class="bi bi-send me-1"></i><?= te('Jetzt versenden') ?>
                 </button>
             </form>
         </div>

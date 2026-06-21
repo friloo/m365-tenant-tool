@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Link ungültig — <?= htmlspecialchars($brandAppName) ?></title>
+    <title><?= te('Link ungültig') ?> — <?= htmlspecialchars($brandAppName) ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -128,29 +128,29 @@
         </div>
 
         <?php if ($reason === 'used'): ?>
-            <h1 class="result-title">Link bereits verwendet</h1>
+            <h1 class="result-title"><?= te('Link bereits verwendet') ?></h1>
             <p class="result-lead">
-                Dieser Bestätigungslink wurde bereits einmal verwendet.
-                Falls Sie eine neuere E-Mail erhalten haben, nutzen Sie bitte den Link aus dieser E-Mail.
+                <?= te('Dieser Bestätigungslink wurde bereits einmal verwendet. '
+                . 'Falls Sie eine neuere E-Mail erhalten haben, nutzen Sie bitte den Link aus dieser E-Mail.') ?>
             </p>
         <?php elseif ($reason === 'not_found'): ?>
-            <h1 class="result-title">Link nicht gefunden</h1>
+            <h1 class="result-title"><?= te('Link nicht gefunden') ?></h1>
             <p class="result-lead">
-                Dieser Bestätigungslink ist ungültig oder existiert nicht.
-                Bitte prüfen Sie, ob Sie den vollständigen Link aus der E-Mail kopiert haben.
+                <?= te('Dieser Bestätigungslink ist ungültig oder existiert nicht. '
+                . 'Bitte prüfen Sie, ob Sie den vollständigen Link aus der E-Mail kopiert haben.') ?>
             </p>
         <?php else: ?>
-            <h1 class="result-title">Link abgelaufen</h1>
+            <h1 class="result-title"><?= te('Link abgelaufen') ?></h1>
             <p class="result-lead">
-                Dieser Bestätigungslink ist abgelaufen.
-                Wenn die Freigabe weiterhin benötigt wird, wenden Sie sich bitte an Ihren IT-Administrator.
+                <?= te('Dieser Bestätigungslink ist abgelaufen. '
+                . 'Wenn die Freigabe weiterhin benötigt wird, wenden Sie sich bitte an Ihren IT-Administrator.') ?>
             </p>
         <?php endif; ?>
 
         <div class="footer-note">
-            <i class="bi bi-info-circle me-1"></i>Sie können dieses Fenster schließen.
+            <i class="bi bi-info-circle me-1"></i><?= te('Sie können dieses Fenster schließen.') ?>
             <?php if ($brandSupportEmail): ?>
-                <br>Bei Fragen:
+                <br><?= te('Bei Fragen:') ?>
                 <a href="mailto:<?= htmlspecialchars($brandSupportEmail) ?>"><?= htmlspecialchars($brandSupportEmail) ?></a>
             <?php endif; ?>
         </div>

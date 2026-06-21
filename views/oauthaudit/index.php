@@ -122,17 +122,17 @@
                             </td>
                             <td>
                                 <?php if (!$a['enabled']): ?>
-                                    <span class="badge bg-secondary">Deaktiviert</span>
+                                    <span class="badge bg-secondary"><?= te('Deaktiviert') ?></span>
                                 <?php elseif ($a['unused'] && !$a['is_microsoft']): ?>
-                                    <span class="badge bg-warning text-dark">Ungenutzt</span>
+                                    <span class="badge bg-warning text-dark"><?= te('Ungenutzt') ?></span>
                                 <?php else: ?>
-                                    <span class="badge bg-success">Aktiv</span>
+                                    <span class="badge bg-success"><?= te('Aktiv') ?></span>
                                 <?php endif; ?>
                             </td>
                             <td>
                                 <a href="https://entra.microsoft.com/#view/Microsoft_AAD_IAM/ManagedAppMenuBlade/~/Overview/objectId/<?= $e($a['id']) ?>/appId/<?= $e($a['appId']) ?>"
                                    target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"
-                                   title="In Entra ID öffnen">
+                                   title="<?= te('In Entra ID öffnen') ?>">
                                     <i class="bi bi-box-arrow-up-right"></i>
                                 </a>
                             </td>
@@ -141,12 +141,12 @@
                         <tr class="text-muted small" style="background:#fef2f2;">
                             <td colspan="6" style="padding:4px 16px;">
                                 <i class="bi bi-shield-fill-exclamation text-danger me-1"></i>
-                                High-Privilege Scopes:
+                                <?= te('High-Privilege Scopes:') ?>
                                 <?php foreach (array_slice($a['high_privilege_perms'], 0, 10) as $perm): ?>
                                     <code style="font-size:11px;"><?= $e($perm) ?></code>
                                 <?php endforeach; ?>
                                 <?php if (count($a['high_privilege_perms']) > 10): ?>
-                                    <span class="text-muted">… und <?= count($a['high_privilege_perms']) - 10 ?> weitere</span>
+                                    <span class="text-muted"><?= te('… und :n weitere', ['n' => count($a['high_privilege_perms']) - 10]) ?></span>
                                 <?php endif; ?>
                             </td>
                         </tr>

@@ -173,7 +173,7 @@ $nowTs           = time();
                         <td>
                             <form method="post"
                                   action="/appregistrations/<?= $e($appObjectId) ?>/delete-secret"
-                                  onsubmit="return confirm(<?= json_encode(t('Secret wirklich löschen? Apps die dieses Secret verwenden können sich nicht mehr anmelden.'), JSON_UNESCAPED_UNICODE) ?>)"
+                                  onsubmit="return confirm('<?= te('Secret wirklich löschen? Apps die dieses Secret verwenden können sich nicht mehr anmelden.') ?>')"
                                   class="mb-0">
                                 <?= \App\Core\Csrf::field() ?>
                                 <input type="hidden" name="key_id" value="<?= $e($keyId) ?>">

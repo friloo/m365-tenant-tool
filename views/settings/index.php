@@ -821,12 +821,12 @@ updateAiDefaults();
         <div class="content-card mb-3">
             <div class="card-header-custom">
                 <i class="bi bi-people-fill text-primary"></i>
-                <h6>Benutzer-Zugang</h6>
+                <h6><?= te('Benutzer-Zugang') ?></h6>
             </div>
             <div class="card-body-custom">
-                <p class="small text-muted mb-3">M365-Benutzer berechtigen, sich mit ihrem Microsoft-Konto anzumelden (z.B. IT-Mitarbeiter als Operator).</p>
+                <p class="small text-muted mb-3"><?= te('M365-Benutzer berechtigen, sich mit ihrem Microsoft-Konto anzumelden (z.B. IT-Mitarbeiter als Operator).') ?></p>
                 <a href="/settings/users" class="btn btn-primary btn-sm w-100">
-                    <i class="bi bi-person-plus me-1"></i> Benutzer verwalten
+                    <i class="bi bi-person-plus me-1"></i> <?= te('Benutzer verwalten') ?>
                 </a>
             </div>
         </div>
@@ -834,12 +834,12 @@ updateAiDefaults();
         <div class="content-card mb-3">
             <div class="card-header-custom">
                 <i class="bi bi-book text-primary"></i>
-                <h6>Handbuch</h6>
+                <h6><?= te('Handbuch') ?></h6>
             </div>
             <div class="card-body-custom">
-                <p class="small text-muted mb-3">Vollständige Dokumentation aller Module, Funktionen und erforderlichen Graph-Berechtigungen.</p>
+                <p class="small text-muted mb-3"><?= te('Vollständige Dokumentation aller Module, Funktionen und erforderlichen Graph-Berechtigungen.') ?></p>
                 <a href="/manual" class="btn btn-primary btn-sm w-100">
-                    <i class="bi bi-book me-1"></i> Handbuch öffnen
+                    <i class="bi bi-book me-1"></i> <?= te('Handbuch öffnen') ?>
                 </a>
             </div>
         </div>
@@ -847,12 +847,12 @@ updateAiDefaults();
         <div class="content-card mb-3">
             <div class="card-header-custom">
                 <i class="bi bi-eye-slash text-primary"></i>
-                <h6>Freigaben-Review — Vorschau</h6>
+                <h6><?= te('Freigaben-Review — Vorschau') ?></h6>
             </div>
             <div class="card-body-custom">
-                <p class="small text-muted mb-3">So sieht die Bestätigungsseite für Benutzer aus, nachdem sie eine Review-E-Mail erhalten haben.</p>
+                <p class="small text-muted mb-3"><?= te('So sieht die Bestätigungsseite für Benutzer aus, nachdem sie eine Review-E-Mail erhalten haben.') ?></p>
                 <a href="/review/demo" target="_blank" class="btn btn-outline-secondary btn-sm w-100">
-                    <i class="bi bi-box-arrow-up-right me-1"></i> Vorschau öffnen
+                    <i class="bi bi-box-arrow-up-right me-1"></i> <?= te('Vorschau öffnen') ?>
                 </a>
             </div>
         </div>
@@ -860,12 +860,12 @@ updateAiDefaults();
         <div class="content-card mb-3">
             <div class="card-header-custom">
                 <i class="bi bi-shield-check text-primary"></i>
-                <h6>Graph API Berechtigungen</h6>
+                <h6><?= te('Graph API Berechtigungen') ?></h6>
             </div>
             <div class="card-body-custom">
-                <p class="small text-muted mb-3">Prüft welche Berechtigungen dem App-Konto erteilt sind und welche Features dadurch eingeschränkt sind.</p>
+                <p class="small text-muted mb-3"><?= te('Prüft welche Berechtigungen dem App-Konto erteilt sind und welche Features dadurch eingeschränkt sind.') ?></p>
                 <a href="/settings/permissions" class="btn btn-outline-primary btn-sm w-100">
-                    <i class="bi bi-card-checklist me-1"></i> Berechtigungen prüfen
+                    <i class="bi bi-card-checklist me-1"></i> <?= te('Berechtigungen prüfen') ?>
                 </a>
             </div>
         </div>
@@ -876,10 +876,10 @@ updateAiDefaults();
                 <h6>Cache</h6>
             </div>
             <div class="card-body-custom">
-                <p class="small text-muted mb-3">Graph-API-Daten werden lokal gecacht. Hier komplett leeren für frische Daten.</p>
+                <p class="small text-muted mb-3"><?= te('Graph-API-Daten werden lokal gecacht. Hier komplett leeren für frische Daten.') ?></p>
                 <a href="/settings/clear-cache" class="btn btn-outline-secondary btn-sm w-100"
-                   onclick="return confirm('Cache wirklich leeren?')">
-                    <i class="bi bi-trash me-1"></i> Cache leeren
+                   onclick="return confirm('<?= t('Cache wirklich leeren?') ?>')">
+                    <i class="bi bi-trash me-1"></i> <?= te('Cache leeren') ?>
                 </a>
             </div>
         </div>
@@ -887,12 +887,12 @@ updateAiDefaults();
         <div class="content-card mb-3">
             <div class="card-header-custom">
                 <i class="bi bi-envelope text-secondary"></i>
-                <h6>E-Mail testen</h6>
+                <h6><?= te('E-Mail testen') ?></h6>
             </div>
             <div class="card-body-custom">
-                <p class="small text-muted mb-3">Sendet eine Test-E-Mail an den konfigurierten Alert-Empfänger.</p>
+                <p class="small text-muted mb-3"><?= te('Sendet eine Test-E-Mail an den konfigurierten Alert-Empfänger.') ?></p>
                 <a href="/settings/test-mail" class="btn btn-outline-primary btn-sm w-100">
-                    <i class="bi bi-send me-1"></i> Test-E-Mail senden
+                    <i class="bi bi-send me-1"></i> <?= te('Test-E-Mail senden') ?>
                 </a>
             </div>
         </div>
@@ -900,12 +900,12 @@ updateAiDefaults();
         <div class="content-card mb-3">
             <div class="card-header-custom">
                 <i class="bi bi-journal-check text-primary"></i>
-                <h6>App Audit-Log</h6>
+                <h6><?= te('App Audit-Log') ?></h6>
             </div>
             <div class="card-body-custom">
-                <p class="small text-muted mb-3">Protokoll aller sicherheitsrelevanten Aktionen (Anmeldungen, Einstellungsänderungen, Benutzeraktionen).</p>
+                <p class="small text-muted mb-3"><?= te('Protokoll aller sicherheitsrelevanten Aktionen (Anmeldungen, Einstellungsänderungen, Benutzeraktionen).') ?></p>
                 <a href="/settings/app-audit" class="btn btn-outline-primary btn-sm w-100">
-                    <i class="bi bi-journal-check me-1"></i> Audit-Log anzeigen
+                    <i class="bi bi-journal-check me-1"></i> <?= te('Audit-Log anzeigen') ?>
                 </a>
             </div>
         </div>
@@ -913,19 +913,19 @@ updateAiDefaults();
         <div class="content-card">
             <div class="card-header-custom">
                 <i class="bi bi-info-circle text-secondary"></i>
-                <h6>Rollen-Übersicht</h6>
+                <h6><?= te('Rollen-Übersicht') ?></h6>
             </div>
             <div class="card-body-custom">
                 <table class="table table-sm mb-0" style="font-size:12px;">
-                    <thead><tr><th>Aktion</th><th>Admin</th><th>Operator</th></tr></thead>
+                    <thead><tr><th><?= te('Aktion') ?></th><th>Admin</th><th>Operator</th></tr></thead>
                     <tbody>
-                        <tr><td>Einsehen</td><td>✓</td><td>✓</td></tr>
-                        <tr><td>CSV-Export</td><td>✓</td><td>✓</td></tr>
-                        <tr><td>Benutzer de/aktivieren</td><td>✓</td><td>✓</td></tr>
-                        <tr><td>Lizenzen zuweisen</td><td>✓</td><td>✓</td></tr>
-                        <tr><td>Gruppen verwalten</td><td>✓</td><td>✓</td></tr>
-                        <tr><td>Freigaben widerrufen</td><td>✓</td><td>✓</td></tr>
-                        <tr><td>Einstellungen</td><td>✓</td><td>–</td></tr>
+                        <tr><td><?= te('Einsehen') ?></td><td>✓</td><td>✓</td></tr>
+                        <tr><td><?= te('CSV-Export') ?></td><td>✓</td><td>✓</td></tr>
+                        <tr><td><?= te('Benutzer de/aktivieren') ?></td><td>✓</td><td>✓</td></tr>
+                        <tr><td><?= te('Lizenzen zuweisen') ?></td><td>✓</td><td>✓</td></tr>
+                        <tr><td><?= te('Gruppen verwalten') ?></td><td>✓</td><td>✓</td></tr>
+                        <tr><td><?= te('Freigaben widerrufen') ?></td><td>✓</td><td>✓</td></tr>
+                        <tr><td><?= te('Einstellungen') ?></td><td>✓</td><td>–</td></tr>
                     </tbody>
                 </table>
             </div>

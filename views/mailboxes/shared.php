@@ -20,12 +20,11 @@
 <!-- Permissions info alert -->
 <div class="alert alert-info mb-4">
     <i class="bi bi-info-circle me-2"></i>
-    Postfachberechtigungen (<strong>Full Access</strong>, <strong>Send As</strong>) werden über Exchange Online
-    verwaltet und sind über die Graph API nicht direkt abrufbar.
-    Verwalten Sie Berechtigungen im Exchange Admin Center.
+    <?= te('Postfachberechtigungen') ?> (<strong>Full Access</strong>, <strong>Send As</strong>) <?= te('werden über Exchange Online verwaltet und sind über die Graph API nicht direkt abrufbar.') ?>
+    <?= te('Verwalten Sie Berechtigungen im Exchange Admin Center.') ?>
     <a href="https://admin.exchange.microsoft.com/#/sharedmailboxes" target="_blank"
        class="btn btn-sm btn-outline-primary ms-3">
-        <i class="bi bi-box-arrow-up-right me-1"></i>Exchange Admin Center öffnen
+        <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Exchange Admin Center öffnen') ?>
     </a>
 </div>
 
@@ -39,25 +38,25 @@ $fwdCount       = count(array_filter($mailboxes, fn($m) => $m['forwardingAddress
 <div class="row g-3 mb-4">
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Gesamt</div>
+            <div class="metric-label"><?= te('Gesamt') ?></div>
             <div class="metric-value"><?= $totalCount ?></div>
             <div class="metric-sub">Shared Mailboxes</div>
         </div>
     </div>
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Mit Auto-Antwort aktiv</div>
+            <div class="metric-label"><?= te('Mit Auto-Antwort aktiv') ?></div>
             <div class="metric-value"><?= $autoReplyCount ?></div>
-            <div class="metric-sub">Auto-Reply eingeschaltet</div>
+            <div class="metric-sub"><?= te('Auto-Reply eingeschaltet') ?></div>
         </div>
     </div>
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Mit externer Weiterleitung</div>
+            <div class="metric-label"><?= te('Mit externer Weiterleitung') ?></div>
             <div class="metric-value" style="color:<?= $fwdCount > 0 ? '#d97706' : '#111827' ?>;">
                 <?= $fwdCount ?>
             </div>
-            <div class="metric-sub">Weiterleitung konfiguriert</div>
+            <div class="metric-sub"><?= te('Weiterleitung konfiguriert') ?></div>
         </div>
     </div>
 </div>
@@ -68,13 +67,12 @@ $fwdCount       = count(array_filter($mailboxes, fn($m) => $m['forwardingAddress
     <div class="card-body-custom">
         <div class="empty-state">
             <i class="bi bi-envelope text-muted" style="font-size:2.5rem;"></i>
-            <p class="mt-3 mb-1 fw-medium">Keine freigegebenen Postfächer gefunden</p>
+            <p class="mt-3 mb-1 fw-medium"><?= te('Keine freigegebenen Postfächer gefunden') ?></p>
             <p class="text-muted small">
-                Es wurden keine deaktivierten, lizenzierten Benutzerkonten gefunden,
-                die als Shared Mailboxes fungieren.
+                <?= te('Es wurden keine deaktivierten, lizenzierten Benutzerkonten gefunden, die als Shared Mailboxes fungieren.') ?>
             </p>
             <a href="/mailboxes" class="btn btn-sm btn-primary mt-2">
-                <i class="bi bi-plus-circle me-1"></i>Shared Mailbox anlegen
+                <i class="bi bi-plus-circle me-1"></i><?= te('Shared Mailbox anlegen') ?>
             </a>
         </div>
     </div>
@@ -84,14 +82,14 @@ $fwdCount       = count(array_filter($mailboxes, fn($m) => $m['forwardingAddress
 <!-- Table card -->
 <div class="content-card">
     <div class="table-toolbar">
-        <input type="text" id="sharedSearch" class="search-box" placeholder="Postfach suchen…">
+        <input type="text" id="sharedSearch" class="search-box" placeholder="<?= te('Postfach suchen…') ?>">
         <a href="/mailboxes" class="btn btn-sm btn-primary ms-2">
-            <i class="bi bi-plus-circle me-1"></i>Shared Mailbox anlegen
+            <i class="bi bi-plus-circle me-1"></i><?= te('Shared Mailbox anlegen') ?>
         </a>
         <span class="ms-auto" style="font-size:12px;color:#6b7280;">
             <i class="bi bi-clock me-1"></i>
-            Alle 30 Min. aktualisiert &mdash;
-            <a href="/mailboxes/shared?refresh=1">Jetzt aktualisieren</a>
+            <?= te('Alle 30 Min. aktualisiert') ?> &mdash;
+            <a href="/mailboxes/shared?refresh=1"><?= te('Jetzt aktualisieren') ?></a>
         </span>
     </div>
 
@@ -99,12 +97,12 @@ $fwdCount       = count(array_filter($mailboxes, fn($m) => $m['forwardingAddress
         <table class="data-table" id="sharedTable">
             <thead>
                 <tr>
-                    <th>Anzeigename</th>
-                    <th>E-Mail-Adresse</th>
-                    <th>Erstellt am</th>
-                    <th>Auto-Antwort</th>
-                    <th>Weiterleitung</th>
-                    <th class="text-end">Aktionen</th>
+                    <th><?= te('Anzeigename') ?></th>
+                    <th><?= te('E-Mail-Adresse') ?></th>
+                    <th><?= te('Erstellt am') ?></th>
+                    <th><?= te('Auto-Antwort') ?></th>
+                    <th><?= te('Weiterleitung') ?></th>
+                    <th class="text-end"><?= te('Aktionen') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -127,9 +125,9 @@ $fwdCount       = count(array_filter($mailboxes, fn($m) => $m['forwardingAddress
                         </td>
                         <td>
                             <?php if ($autoActive): ?>
-                                <span class="badge-warning badge-pill">Aktiv</span>
+                                <span class="badge-warning badge-pill"><?= te('Aktiv') ?></span>
                             <?php else: ?>
-                                <span class="badge-secondary badge-pill">Inaktiv</span>
+                                <span class="badge-secondary badge-pill"><?= te('Inaktiv') ?></span>
                             <?php endif; ?>
                         </td>
                         <td style="font-size:12px;">
@@ -144,7 +142,7 @@ $fwdCount       = count(array_filter($mailboxes, fn($m) => $m['forwardingAddress
                         <td class="text-end">
                             <a href="/mailboxes/<?= $e($mb['id']) ?>"
                                class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-envelope-open me-1"></i>Postfach öffnen
+                                <i class="bi bi-envelope-open me-1"></i><?= te('Postfach öffnen') ?>
                             </a>
                         </td>
                     </tr>

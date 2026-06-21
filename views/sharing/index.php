@@ -90,12 +90,12 @@ $hasScanned = $summary['hasScanned'] ?? false;
         <table class="data-table" id="sharingTable">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Standort</th>
-                    <th>Freigabe-Typ</th>
-                    <th>Besitzer</th>
-                    <th>Erstmals erkannt</th>
-                    <th>Status</th>
+                    <th><?= te('Name') ?></th>
+                    <th><?= te('Standort') ?></th>
+                    <th><?= te('Freigabe-Typ') ?></th>
+                    <th><?= te('Besitzer') ?></th>
+                    <th><?= te('Erstmals erkannt') ?></th>
+                    <th><?= te('Status') ?></th>
                     <th></th>
                 </tr>
             </thead>
@@ -115,11 +115,11 @@ $hasScanned = $summary['hasScanned'] ?? false;
                         <td>
                             <?php $scope = $item['scope'] ?? 'unknown'; ?>
                             <?php if ($scope === 'anonymous'): ?>
-                                <span class="badge-disabled">Anonym</span>
+                                <span class="badge-disabled"><?= te('Anonym') ?></span>
                             <?php elseif ($scope === 'users'): ?>
-                                <span class="badge-warning">Externe User</span>
+                                <span class="badge-warning"><?= te('Externe User') ?></span>
                             <?php elseif ($scope === 'organization'): ?>
-                                <span class="badge-info">Organisation</span>
+                                <span class="badge-info"><?= te('Organisation') ?></span>
                             <?php else: ?>
                                 <span class="badge-neutral"><?= $e($scope) ?></span>
                             <?php endif; ?>
@@ -136,13 +136,13 @@ $hasScanned = $summary['hasScanned'] ?? false;
                         <td>
                             <?php $status = $item['status'] ?? 'active'; ?>
                             <?php if ($status === 'active'): ?>
-                                <span class="badge-info">Aktiv</span>
+                                <span class="badge-info"><?= te('Aktiv') ?></span>
                             <?php elseif ($status === 'confirmed'): ?>
-                                <span class="badge-ok">Bestätigt</span>
+                                <span class="badge-ok"><?= te('Bestätigt') ?></span>
                             <?php elseif ($status === 'pending_review'): ?>
-                                <span class="badge-warning">Ausstehend</span>
+                                <span class="badge-warning"><?= te('Ausstehend') ?></span>
                             <?php elseif ($status === 'revoked'): ?>
-                                <span class="badge-disabled">Widerrufen</span>
+                                <span class="badge-disabled"><?= te('Widerrufen') ?></span>
                             <?php else: ?>
                                 <span class="badge-neutral"><?= $e($status) ?></span>
                             <?php endif; ?>
@@ -155,7 +155,7 @@ $hasScanned = $summary['hasScanned'] ?? false;
                                     data-item="<?= $e($item['item_id']) ?>"
                                     data-perm="<?= $e($item['permission_id']) ?>"
                                     data-name="<?= $e($item['name']) ?>"
-                                    title="Freigabe widerrufen">
+                                    title="<?= te('Freigabe widerrufen') ?>">
                                 <i class="bi bi-x-circle"></i>
                             </button>
                             <?php endif; ?>
@@ -165,7 +165,7 @@ $hasScanned = $summary['hasScanned'] ?? false;
                 <?php if (empty($items)): ?>
                     <tr>
                         <td colspan="7" class="text-center text-muted py-4">
-                            <?= $hasScanned ? 'Keine Freigaben gefunden' : 'Noch kein Scan durchgeführt — siehe Hinweis oben.' ?>
+                            <?= $hasScanned ? te('Keine Freigaben gefunden') : te('Noch kein Scan durchgeführt — siehe Hinweis oben.') ?>
                         </td>
                     </tr>
                 <?php endif; ?>
@@ -179,21 +179,21 @@ $hasScanned = $summary['hasScanned'] ?? false;
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-x-circle text-danger me-2"></i>Freigabe widerrufen</h5>
+                <h5 class="modal-title"><i class="bi bi-x-circle text-danger me-2"></i><?= te('Freigabe widerrufen') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Soll die Freigabe für <strong id="revokeName"></strong> widerrufen werden?</p>
-                <p class="text-muted" style="font-size:13px;">Diese Aktion entfernt die Berechtigung dauerhaft in SharePoint und kann nicht rückgängig gemacht werden.</p>
+                <p><?= te('Soll die Freigabe für') ?> <strong id="revokeName"></strong> <?= te('widerrufen werden?') ?></p>
+                <p class="text-muted" style="font-size:13px;"><?= te('Diese Aktion entfernt die Berechtigung dauerhaft in SharePoint und kann nicht rückgängig gemacht werden.') ?></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= te('Abbrechen') ?></button>
                 <form id="revokeForm" method="post" action="/sharing/revoke">
                     <?= \App\Core\Csrf::field() ?>
                     <input type="hidden" name="drive_id"      id="rDriveId">
                     <input type="hidden" name="item_id"       id="rItemId">
                     <input type="hidden" name="permission_id" id="rPermId">
-                    <button type="submit" class="btn btn-danger"><i class="bi bi-x-circle me-1"></i>Widerrufen</button>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-x-circle me-1"></i><?= te('Widerrufen') ?></button>
                 </form>
             </div>
         </div>
@@ -204,9 +204,9 @@ $hasScanned = $summary['hasScanned'] ?? false;
 initTableSearch('sharingSearch', 'sharingTable');
 
 function scanStart(btn) {
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Scan läuft…';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> ' + <?= json_encode(t('Scan läuft…'), JSON_UNESCAPED_UNICODE) ?>;
     btn.classList.add('disabled');
-    document.querySelectorAll('#scanBtn').forEach(b => { b.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Scan läuft…'; b.classList.add('disabled'); });
+    document.querySelectorAll('#scanBtn').forEach(b => { b.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> ' + <?= json_encode(t('Scan läuft…'), JSON_UNESCAPED_UNICODE) ?>; b.classList.add('disabled'); });
 }
 
 function filterSharing() {
