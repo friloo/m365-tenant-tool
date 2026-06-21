@@ -9,9 +9,9 @@ $domains = $report['domains'];
 $score   = $report['score'];
 
 $statusConfig = [
-    'ok'      => ['class' => 'success',  'icon' => 'check-circle-fill',  'badge' => 'Bereit'],
-    'warning' => ['class' => 'warning',  'icon' => 'exclamation-triangle-fill', 'badge' => 'Achtung'],
-    'missing' => ['class' => 'danger',   'icon' => 'x-circle-fill',      'badge' => 'Fehlt'],
+    'ok'      => ['class' => 'success',  'icon' => 'check-circle-fill',  'badge' => t('Bereit')],
+    'warning' => ['class' => 'warning',  'icon' => 'exclamation-triangle-fill', 'badge' => t('Achtung')],
+    'missing' => ['class' => 'danger',   'icon' => 'x-circle-fill',      'badge' => t('Fehlt')],
 ];
 
 $statusIcon = function(string $status) use ($statusConfig): string {
@@ -54,12 +54,12 @@ $readinessIcon = match($score['readiness']) {
             <div class="progress-bar bg-<?= $readinessClass ?>" style="width:<?= $score['percent'] ?>%"></div>
           </div>
           <?php if ($org['displayName']): ?>
-          <div class="text-muted small mt-2">Tenant: <strong><?= $e($org['displayName']) ?></strong></div>
+          <div class="text-muted small mt-2"><?= te('Tenant:') ?> <strong><?= $e($org['displayName']) ?></strong></div>
           <?php endif ?>
         </div>
         <div class="text-end">
           <a href="?refresh=1" class="btn btn-outline-secondary btn-sm">
-            <i class="bi bi-arrow-clockwise"></i> Neu prüfen
+            <i class="bi bi-arrow-clockwise"></i> <?= te('Neu prüfen') ?>
           </a>
         </div>
       </div>

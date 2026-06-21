@@ -11,16 +11,16 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-md-3 col-lg">
         <div class="metric-card">
-            <div class="metric-label">Gesamt</div>
+            <div class="metric-label"><?= te('Gesamt') ?></div>
             <div class="metric-value"><?= $stats['total'] ?></div>
-            <div class="metric-sub">Anmeldungen</div>
+            <div class="metric-sub"><?= te('Anmeldungen') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3 col-lg">
         <div class="metric-card">
-            <div class="metric-label">Erfolgreich</div>
+            <div class="metric-label"><?= te('Erfolgreich') ?></div>
             <div class="metric-value" style="color:#16a34a;"><?= $stats['success'] ?></div>
-            <div class="metric-sub">Anmeldungen OK</div>
+            <div class="metric-sub"><?= te('Anmeldungen OK') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3 col-lg">

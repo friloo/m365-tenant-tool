@@ -590,53 +590,53 @@
 
 <!-- Auto-Forward-Audit ──────────────────────────────────── -->
 <div class="man-section" id="mailboxrules">
-    <h2><i class="bi bi-arrow-right-square text-primary"></i> Auto-Forward-Audit</h2>
-    <p>Scannt alle aktiven Mailboxen im Tenant nach Inbox-Regeln, die eingehende E-Mails automatisch an eine externe Adresse weiterleiten. <strong>Auto-Forward an externe Domains ist statistisch der häufigste Exfiltrations­vektor</strong> bei kompromittierten Konten: der Angreifer richtet eine versteckte Inbox-Regel ein, die alle eingehenden Mails an seine Adresse weiterleitet, oft Tage bevor der Account-Inhaber es bemerkt.</p>
-    <h3>Was die Seite zeigt</h3>
+    <h2><i class="bi bi-arrow-right-square text-primary"></i> <?= te('Auto-Forward-Audit') ?></h2>
+    <p><?= te('Scannt alle aktiven Mailboxen im Tenant nach Inbox-Regeln, die eingehende E-Mails automatisch an eine externe Adresse weiterleiten. <strong>Auto-Forward an externe Domains ist statistisch der häufigste Exfiltrations­vektor</strong> bei kompromittierten Konten: der Angreifer richtet eine versteckte Inbox-Regel ein, die alle eingehenden Mails an seine Adresse weiterleitet, oft Tage bevor der Account-Inhaber es bemerkt.') ?></p>
+    <h3><?= te('Was die Seite zeigt') ?></h3>
     <ul>
-        <li><strong>Externe Auto-Forwards</strong> — rot markiert. Pro Treffer: Benutzer, Regel-Name, Ziel-Adresse, Active/Inactive.</li>
-        <li><strong>Interne Auto-Forwards</strong> — informativ (innerhalb der eigenen Domains).</li>
-        <li><strong>Lösch-Regeln</strong> — verdächtig in Kombination mit Phishing-Hijacks: ein Angreifer löscht automatisch alle Antworten und Sicherheits-Benachrichtigungen, damit der echte User nichts merkt.</li>
+        <li><strong><?= te('Externe Auto-Forwards') ?></strong> — <?= te('rot markiert. Pro Treffer: Benutzer, Regel-Name, Ziel-Adresse, Active/Inactive.') ?></li>
+        <li><strong><?= te('Interne Auto-Forwards') ?></strong> — <?= te('informativ (innerhalb der eigenen Domains).') ?></li>
+        <li><strong><?= te('Lösch-Regeln') ?></strong> — <?= te('verdächtig in Kombination mit Phishing-Hijacks: ein Angreifer löscht automatisch alle Antworten und Sicherheits-Benachrichtigungen, damit der echte User nichts merkt.') ?></li>
     </ul>
-    <h3>Wie reagieren</h3>
+    <h3><?= te('Wie reagieren') ?></h3>
     <ul>
-        <li>Bei verdächtiger externer Weiterleitung: User-Konto sperren, Sessions revoken, Passwort-Reset erzwingen, Defender-Investigation öffnen.</li>
-        <li>Tenant-weit blockieren: Mail-Flow-Regel oder Exchange-Anti-Spam-Outbound-Policy mit <code>AutoForwardingMode = Off</code>.</li>
+        <li><?= te('Bei verdächtiger externer Weiterleitung: User-Konto sperren, Sessions revoken, Passwort-Reset erzwingen, Defender-Investigation öffnen.') ?></li>
+        <li><?= te('Tenant-weit blockieren: Mail-Flow-Regel oder Exchange-Anti-Spam-Outbound-Policy mit <code>AutoForwardingMode = Off</code>.') ?></li>
     </ul>
-    <div class="tip-box"><i class="bi bi-info-circle"></i>Performance-Hinweis: der Scan dauert je nach Tenant-Größe 30 Sekunden bis 5 Minuten. Ergebnisse werden 30 Min. gecached; per <code>?refresh=1</code> erzwingbar.</div>
+    <div class="tip-box"><i class="bi bi-info-circle"></i><?= te('Performance-Hinweis: der Scan dauert je nach Tenant-Größe 30 Sekunden bis 5 Minuten. Ergebnisse werden 30 Min. gecached; per <code>?refresh=1</code> erzwingbar.') ?></div>
     <p><span class="perm-tag">User.Read.All</span> <span class="perm-tag">Mail.Read</span> <span class="perm-tag">Domain.Read.All</span></p>
 </div>
 
 <!-- OAuth-App-Audit ─────────────────────────────────────── -->
 <div class="man-section" id="oauthaudit">
-    <h2><i class="bi bi-app-indicator text-primary"></i> OAuth-App-Audit</h2>
-    <p>Inventur aller Enterprise Apps (Service Principals) im Tenant mit Risiko-Bewertung. OAuth-Apps mit hohen Berechtigungen sind seit 2023 einer der Top-Vektoren für Tenant-Übernahme — typischerweise nach Migrationen, gekündigten 3rd-Party-Tools oder Phishing-Angriffen mit Illicit-Consent-Grant.</p>
-    <h3>Risiko-Bewertung</h3>
-    <p>Pro App wird ein Score 0–100 berechnet:</p>
+    <h2><i class="bi bi-app-indicator text-primary"></i> <?= te('OAuth-App-Audit') ?></h2>
+    <p><?= te('Inventur aller Enterprise Apps (Service Principals) im Tenant mit Risiko-Bewertung. OAuth-Apps mit hohen Berechtigungen sind seit 2023 einer der Top-Vektoren für Tenant-Übernahme — typischerweise nach Migrationen, gekündigten 3rd-Party-Tools oder Phishing-Angriffen mit Illicit-Consent-Grant.') ?></p>
+    <h3><?= te('Risiko-Bewertung') ?></h3>
+    <p><?= te('Pro App wird ein Score 0–100 berechnet:') ?></p>
     <ul>
-        <li><strong>+20 pro High-Privilege-Permission</strong> — z. B. <code>Mail.ReadWrite.All</code>, <code>Files.ReadWrite.All</code>, <code>Sites.FullControl.All</code>, <code>User.ReadWrite.All</code>, <code>Directory.ReadWrite.All</code>, <code>full_access_as_app</code>.</li>
-        <li><strong>+25 wenn nie angemeldet</strong> — die App hat Permissions, nutzt sie aber nicht — typisch nach Migration.</li>
-        <li><strong>+30 wenn letzte Anmeldung > 365 Tage</strong>, +15 wenn > 180, +5 wenn > 90.</li>
-        <li>Microsoft-First-Party-Apps werden mit Score 0 markiert.</li>
+        <li><strong><?= te('+20 pro High-Privilege-Permission') ?></strong> — <?= te('z. B. <code>Mail.ReadWrite.All</code>, <code>Files.ReadWrite.All</code>, <code>Sites.FullControl.All</code>, <code>User.ReadWrite.All</code>, <code>Directory.ReadWrite.All</code>, <code>full_access_as_app</code>.') ?></li>
+        <li><strong><?= te('+25 wenn nie angemeldet') ?></strong> — <?= te('die App hat Permissions, nutzt sie aber nicht — typisch nach Migration.') ?></li>
+        <li><strong><?= te('+30 wenn letzte Anmeldung > 365 Tage') ?></strong><?= te(', +15 wenn > 180, +5 wenn > 90.') ?></li>
+        <li><?= te('Microsoft-First-Party-Apps werden mit Score 0 markiert.') ?></li>
     </ul>
     <h3>Filter</h3>
-    <p>Standardmäßig werden nur 3rd-Party-Apps gezeigt. Filter „Alle (inkl. Microsoft)" zeigt auch die etwa 100 Microsoft-eigenen Service Principals, die in jedem Tenant existieren.</p>
-    <h3>Was tun bei hohem Risiko</h3>
-    <p>Klick auf das Pfeil-Symbol öffnet die App direkt in Entra → Enterprise Applications. Dort: Berechtigungen prüfen, App ggf. deaktivieren oder löschen, alle bestehenden Token revoken.</p>
+    <p><?= te('Standardmäßig werden nur 3rd-Party-Apps gezeigt. Filter „Alle (inkl. Microsoft)" zeigt auch die etwa 100 Microsoft-eigenen Service Principals, die in jedem Tenant existieren.') ?></p>
+    <h3><?= te('Was tun bei hohem Risiko') ?></h3>
+    <p><?= te('Klick auf das Pfeil-Symbol öffnet die App direkt in Entra → Enterprise Applications. Dort: Berechtigungen prüfen, App ggf. deaktivieren oder löschen, alle bestehenden Token revoken.') ?></p>
     <p><span class="perm-tag">Application.Read.All</span> <span class="perm-tag">AuditLog.Read.All</span></p>
 </div>
 
 <!-- DLP-Vorfälle ────────────────────────────────────────── -->
 <div class="man-section" id="dlpincidents">
-    <h2><i class="bi bi-shield-shaded text-primary"></i> DLP-Vorfälle</h2>
-    <p>Während das DLP-Richtlinien-Modul anzeigt, <em>ob</em> DLP-Policies aktiv sind, zeigt diese Seite die <strong>tatsächlichen Treffer</strong> — also wer hat versucht, eine als „Vertraulich" gelabelte Datei nach außen zu teilen, wer hat versucht eine Kreditkarten-Nummer per Mail zu versenden, etc. Das ist der eigentliche Compliance-Audit-Wert (DSGVO Art. 5 + 32).</p>
-    <h3>Datenquelle</h3>
-    <p>Audit-Log Filter auf <code>category eq 'DataLossPrevention'</code> oder <code>activityDisplayName</code> mit DLP-/Sensitivity-Label-Prefix. Für detailliertere Daten (Inhalt der Auslöser, betroffene Felder) braucht es Microsoft Purview Premium.</p>
+    <h2><i class="bi bi-shield-shaded text-primary"></i> <?= te('DLP-Vorfälle') ?></h2>
+    <p><?= te('Während das DLP-Richtlinien-Modul anzeigt, <em>ob</em> DLP-Policies aktiv sind, zeigt diese Seite die <strong>tatsächlichen Treffer</strong> — also wer hat versucht, eine als „Vertraulich" gelabelte Datei nach außen zu teilen, wer hat versucht eine Kreditkarten-Nummer per Mail zu versenden, etc. Das ist der eigentliche Compliance-Audit-Wert (DSGVO Art. 5 + 32).') ?></p>
+    <h3><?= te('Datenquelle') ?></h3>
+    <p><?= te('Audit-Log Filter auf <code>category eq \'DataLossPrevention\'</code> oder <code>activityDisplayName</code> mit DLP-/Sensitivity-Label-Prefix. Für detailliertere Daten (Inhalt der Auslöser, betroffene Felder) braucht es Microsoft Purview Premium.') ?></p>
     <h3>Aggregate</h3>
     <ul>
-        <li><strong>Top User mit Treffern</strong> — wer wird wiederholt von DLP geblockt? Schulung nötig oder absichtlich?</li>
-        <li><strong>Top Aktivitäten</strong> — welche Regel-Typen lösen am häufigsten aus?</li>
-        <li><strong>Tages-Trend</strong> — Mini-Bar-Chart über den Zeitraum (7/30/90 Tage wählbar).</li>
+        <li><strong><?= te('Top User mit Treffern') ?></strong> — <?= te('wer wird wiederholt von DLP geblockt? Schulung nötig oder absichtlich?') ?></li>
+        <li><strong><?= te('Top Aktivitäten') ?></strong> — <?= te('welche Regel-Typen lösen am häufigsten aus?') ?></li>
+        <li><strong><?= te('Tages-Trend') ?></strong> — <?= te('Mini-Bar-Chart über den Zeitraum (7/30/90 Tage wählbar).') ?></li>
     </ul>
     <p><span class="perm-tag">AuditLog.Read.All</span></p>
 </div>

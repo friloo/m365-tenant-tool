@@ -40,10 +40,10 @@
     </div>
     <div class="col-sm-3">
         <div class="metric-card" style="background:#fff7ed;border-color:#fed7aa;">
-            <div class="metric-label" style="color:#9a3412;"><i class="bi bi-info-circle me-1"></i>Hinweis</div>
+            <div class="metric-label" style="color:#9a3412;"><i class="bi bi-info-circle me-1"></i><?= te('Hinweis') ?></div>
             <div style="font-size:12px;color:#7c2d12;line-height:1.5;margin-top:6px;">
-                Zu viele Global-Admins erhöhen das Angriffspotenzial.<br>
-                <strong>Empfehlung: max. 2–4 Accounts.</strong>
+                <?= te('Zu viele Global-Admins erhöhen das Angriffspotenzial.') ?><br>
+                <strong><?= te('Empfehlung: max. 2–4 Accounts.') ?></strong>
             </div>
         </div>
     </div>
@@ -57,13 +57,13 @@
             if (!empty($diag ?? null)) {
                 $diagStyle = 'empty';
                 $diagIcon  = 'shield-lock';
-                $diagTitle = 'Keine Daten verfügbar';
+                $diagTitle = t('Keine Daten verfügbar');
                 include BASE_PATH . '/views/partials/graph_diagnostic.php';
             } else { ?>
                 <div class="empty-state">
                     <i class="bi bi-shield-lock" style="font-size:2.5rem;color:#d1d5db;"></i>
-                    <div class="mt-3 fw-semibold">Keine Admin-Rollen zugewiesen</div>
-                    <div class="text-muted small mt-1">Der Tenant hat aktuell keine Direkt-Zuweisungen — eventuell wird PIM genutzt.</div>
+                    <div class="mt-3 fw-semibold"><?= te('Keine Admin-Rollen zugewiesen') ?></div>
+                    <div class="text-muted small mt-1"><?= te('Der Tenant hat aktuell keine Direkt-Zuweisungen — eventuell wird PIM genutzt.') ?></div>
                 </div>
             <?php } ?>
         </div>
@@ -75,23 +75,23 @@
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-person-plus-fill text-primary"></i>
-        <h6>Rolle zuweisen</h6>
+        <h6><?= te('Rolle zuweisen') ?></h6>
     </div>
     <div class="card-body-custom">
         <form method="post" action="/adminroles/assign" class="row g-2 align-items-end">
             <?= \App\Core\Csrf::field() ?>
             <div class="col-md-4">
-                <label class="form-label" style="font-size:12px;font-weight:600;color:#374151;">Benutzer-ID (UUID)</label>
+                <label class="form-label" style="font-size:12px;font-weight:600;color:#374151;"><?= te('Benutzer-ID (UUID)') ?></label>
                 <input type="text"
                        name="user_id"
                        class="form-control form-control-sm"
-                       placeholder="Benutzer-ID oder UPN eingeben"
+                       placeholder="<?= te('Benutzer-ID oder UPN eingeben') ?>"
                        required>
             </div>
             <div class="col-md-5">
-                <label class="form-label" style="font-size:12px;font-weight:600;color:#374151;">Rolle</label>
+                <label class="form-label" style="font-size:12px;font-weight:600;color:#374151;"><?= te('Rolle') ?></label>
                 <select name="role_definition_id" class="form-select form-select-sm" required>
-                    <option value="">— Rolle auswählen —</option>
+                    <option value=""><?= te('— Rolle auswählen —') ?></option>
                     <?php foreach ($definitions as $def): ?>
                         <option value="<?= $e($def['id']) ?>"><?= $e($def['displayName']) ?></option>
                     <?php endforeach; ?>
@@ -99,13 +99,13 @@
             </div>
             <div class="col-md-3">
                 <button type="submit" class="btn btn-sm btn-primary w-100">
-                    <i class="bi bi-person-plus me-1"></i> Rolle zuweisen
+                    <i class="bi bi-person-plus me-1"></i> <?= te('Rolle zuweisen') ?>
                 </button>
             </div>
         </form>
         <div class="mt-2" style="font-size:11px;color:#9ca3af;">
             <i class="bi bi-info-circle me-1"></i>
-            Benutzer-ID aus dem Benutzer-Modul kopieren (uuid-Format, z.B. <code>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</code>)
+            <?= te('Benutzer-ID aus dem Benutzer-Modul kopieren (uuid-Format, z.B.') ?> <code>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</code>)
         </div>
     </div>
 </div>
@@ -129,11 +129,11 @@
         <h6 class="mb-0">
             <strong><?= $e($roleName) ?></strong>
         </h6>
-        <span class="badge-pill badge-info ms-2"><?= $memberCount ?> Mitglied<?= $memberCount !== 1 ? 'er' : '' ?></span>
+        <span class="badge-pill badge-info ms-2"><?= $memberCount === 1 ? te(':n Mitglied', ['n' => $memberCount]) : te(':n Mitglieder', ['n' => $memberCount]) ?></span>
         <?php if ($isCritical): ?>
-            <span class="badge-pill badge-danger ms-1">Kritisch</span>
+            <span class="badge-pill badge-danger ms-1"><?= te('Kritisch') ?></span>
         <?php elseif ($isWarning): ?>
-            <span class="badge-pill badge-warning ms-1">Privilegiert</span>
+            <span class="badge-pill badge-warning ms-1"><?= te('Privilegiert') ?></span>
         <?php endif; ?>
     </div>
     <div class="card-body-custom" style="padding-bottom:0;">
@@ -146,7 +146,7 @@
             <input type="text"
                    id="<?= $e($searchId) ?>"
                    class="search-box"
-                   placeholder="Mitglied suchen…">
+                   placeholder="<?= te('Mitglied suchen…') ?>">
         </div>
         <?php endif; ?>
 
@@ -155,9 +155,9 @@
                 <thead>
                     <tr>
                         <th style="width:36px;"></th>
-                        <th>Name</th>
+                        <th><?= te('Name') ?></th>
                         <th>UPN</th>
-                        <th>Status</th>
+                        <th><?= te('Status') ?></th>
                         <?php if (LocalAuth::isAdmin()): ?>
                             <th style="width:100px;"></th>
                         <?php endif; ?>

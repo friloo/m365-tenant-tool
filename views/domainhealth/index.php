@@ -108,23 +108,23 @@ if (!empty($dmarcIssues)):
                         <?php elseif ($dmarc === 'report_only'): ?>
                             <span class="badge-warning">p=none</span>
                         <?php else: ?>
-                            <span class="badge-disabled">Fehlt</span>
+                            <span class="badge-disabled"><?= te('Fehlt') ?></span>
                         <?php endif; ?>
                     </td>
                     <td>
                         <?php if ($allOk): ?>
-                            <span class="badge-ok">Vollständig</span>
+                            <span class="badge-ok"><?= te('Vollständig') ?></span>
                         <?php elseif ($noneOk): ?>
-                            <span class="badge-disabled">Kritisch</span>
+                            <span class="badge-disabled"><?= te('Kritisch') ?></span>
                         <?php else: ?>
-                            <span class="badge-warning">Teilweise</span>
+                            <span class="badge-warning"><?= te('Teilweise') ?></span>
                         <?php endif; ?>
                     </td>
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($domains)): ?>
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">Keine verifizierten Domains gefunden</td>
+                        <td colspan="6" class="text-center text-muted py-4"><?= te('Keine verifizierten Domains gefunden') ?></td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -135,27 +135,27 @@ if (!empty($dmarcIssues)):
 <div class="content-card mt-3" style="padding:14px 16px;background:#f0f9ff;border:1px solid #bae6fd;">
     <p style="font-size:13px;color:#0369a1;margin:0;">
         <i class="bi bi-info-circle me-2"></i>
-        <strong>SPF</strong> (Sender Policy Framework) legt fest, welche Server E-Mails für eine Domain versenden dürfen, um Spoofing zu verhindern.
-        <strong>DKIM</strong> signiert ausgehende E-Mails kryptografisch, damit Empfänger die Echtheit prüfen können.
-        <strong>DMARC</strong> definiert, wie Empfänger mit nicht konformen E-Mails umgehen sollen, und ermöglicht Berichte an den Domain-Inhaber.
+        <strong>SPF</strong> <?= te('(Sender Policy Framework) legt fest, welche Server E-Mails für eine Domain versenden dürfen, um Spoofing zu verhindern.') ?>
+        <strong>DKIM</strong> <?= te('signiert ausgehende E-Mails kryptografisch, damit Empfänger die Echtheit prüfen können.') ?>
+        <strong>DMARC</strong> <?= te('definiert, wie Empfänger mit nicht konformen E-Mails umgehen sollen, und ermöglicht Berichte an den Domain-Inhaber.') ?>
     </p>
 </div>
 
 <?php
 // ── DKIM aktivieren (kein Graph-Write) → Defender-Portal oder Exchange-Online-PowerShell ──
 echo \App\Core\Ui::externalCard(
-    'DKIM aktivieren',
-    'DKIM-Signierung lässt sich <strong>nicht über die Microsoft Graph API</strong> aktivieren. '
+    t('DKIM aktivieren'),
+    t('DKIM-Signierung lässt sich <strong>nicht über die Microsoft Graph API</strong> aktivieren. '
     . 'Schritt 1: Befehl ausführen (legt die Signaturkonfiguration an). Schritt 2: die beiden von '
     . 'Microsoft angezeigten <code>CNAME</code>-Records (selector1/selector2) bei deinem DNS-Anbieter '
-    . 'veröffentlichen. Schritt 3: DKIM einschalten. SPF/DMARC sind reine DNS-Einträge.',
+    . 'veröffentlichen. Schritt 3: DKIM einschalten. SPF/DMARC sind reine DNS-Einträge.'),
     [
-        ['https://security.microsoft.com/dkimv2', 'DKIM im Defender-Portal'],
+        ['https://security.microsoft.com/dkimv2', t('DKIM im Defender-Portal')],
     ],
     [
-        ["Connect-ExchangeOnline -UserPrincipalName admin@deine-domain.de", 'Mit Exchange Online PowerShell verbinden'],
-        ["Get-DkimSigningConfig | Format-Table Domain,Enabled,Status", 'DKIM-Status je Domain prüfen'],
-        ["New-DkimSigningConfig -DomainName deine-domain.de -Enabled \$false\n# danach die angezeigten CNAMEs im DNS anlegen, dann:\nSet-DkimSigningConfig -Identity deine-domain.de -Enabled \$true", 'DKIM einrichten & aktivieren'],
+        ["Connect-ExchangeOnline -UserPrincipalName admin@deine-domain.de", t('Mit Exchange Online PowerShell verbinden')],
+        ["Get-DkimSigningConfig | Format-Table Domain,Enabled,Status", t('DKIM-Status je Domain prüfen')],
+        ["New-DkimSigningConfig -DomainName deine-domain.de -Enabled \$false\n# danach die angezeigten CNAMEs im DNS anlegen, dann:\nSet-DkimSigningConfig -Identity deine-domain.de -Enabled \$true", t('DKIM einrichten & aktivieren')],
     ],
     'shield-lock'
 );

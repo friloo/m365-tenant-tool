@@ -6,15 +6,14 @@
 
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
-        <h1 class="h3 mb-1">Lizenzpreise konfigurieren</h1>
+        <h1 class="h3 mb-1"><?= te('Lizenzpreise konfigurieren') ?></h1>
         <p class="text-muted mb-0">
-            Überschreibe die Katalog-Standardpreise mit deinen tatsächlichen Partner- oder CSP-Preisen.
-            Leer lassen = Katalog-Standard verwenden.
+            <?= te('Überschreibe die Katalog-Standardpreise mit deinen tatsächlichen Partner- oder CSP-Preisen. Leer lassen = Katalog-Standard verwenden.') ?>
         </p>
     </div>
     <a href="https://www.microsoft.com/de-de/microsoft-365/business/compare-all-microsoft-365-business-products"
        target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-box-arrow-up-right me-1"></i>Microsoft Preisseite (DE)
+        <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Microsoft Preisseite (DE)') ?>
     </a>
 </div>
 
@@ -35,9 +34,7 @@
 <div class="alert alert-info d-flex align-items-start gap-2 mb-4">
     <i class="bi bi-info-circle-fill mt-1 flex-shrink-0"></i>
     <div>
-        Alle Preise sind <strong>Netto pro Nutzer/Monat</strong> (Jahresabonnement).
-        Katalog-Standardwerte stammen aus der Microsoft Deutschland Preisseite (Stand Mai 2025).
-        Konfigurierte Preise überschreiben die Standardwerte in Lizenz-Berater und Lizenzkosten.
+        <?= t('Alle Preise sind <strong>Netto pro Nutzer/Monat</strong> (Jahresabonnement). Katalog-Standardwerte stammen aus der Microsoft Deutschland Preisseite (Stand Mai 2025). Konfigurierte Preise überschreiben die Standardwerte in Lizenz-Berater und Lizenzkosten.') ?>
     </div>
 </div>
 

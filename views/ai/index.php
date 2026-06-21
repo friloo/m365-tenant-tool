@@ -423,42 +423,41 @@ $sevOrder = ['critical', 'high', 'medium', 'low'];
 
                     <?php if (!empty($ctx['users'])): $u = $ctx['users']; ?>
                     <tr><td colspan="2" class="fw-semibold text-muted small" style="padding-top:10px;background:#f9fafb;">
-                        <i class="bi bi-people me-1 text-primary"></i>Benutzer
+                        <i class="bi bi-people me-1 text-primary"></i><?= te('Benutzer') ?>
                     </td></tr>
-                    <tr><td class="text-muted">Benutzer gesamt</td><td><?= (int)($u['total'] ?? 0) ?></td></tr>
-                    <tr><td class="text-muted">MFA-Quote</td><td><?= (int)($u['mfa_registered_pct'] ?? 0) ?> %</td></tr>
-                    <tr><td class="text-muted">Inaktive Konten (&gt;90 Tage)</td><td><?= (int)($u['stale_90d_count'] ?? 0) ?></td></tr>
-                    <tr><td class="text-muted">Aktiviert ohne Lizenz</td><td><?= (int)($u['enabled_no_license'] ?? 0) ?></td></tr>
+                    <tr><td class="text-muted"><?= te('Benutzer gesamt') ?></td><td><?= (int)($u['total'] ?? 0) ?></td></tr>
+                    <tr><td class="text-muted"><?= te('MFA-Quote') ?></td><td><?= (int)($u['mfa_registered_pct'] ?? 0) ?> %</td></tr>
+                    <tr><td class="text-muted"><?= te('Inaktive Konten (>90 Tage)') ?></td><td><?= (int)($u['stale_90d_count'] ?? 0) ?></td></tr>
+                    <tr><td class="text-muted"><?= te('Aktiviert ohne Lizenz') ?></td><td><?= (int)($u['enabled_no_license'] ?? 0) ?></td></tr>
                     <?php endif; ?>
 
                     <?php if (!empty($ctx['sharing'])): $sh = $ctx['sharing']; ?>
                     <tr><td colspan="2" class="fw-semibold text-muted small" style="padding-top:10px;background:#f9fafb;">
-                        <i class="bi bi-link-45deg me-1 text-primary"></i>Freigaben
+                        <i class="bi bi-link-45deg me-1 text-primary"></i><?= te('Freigaben') ?>
                     </td></tr>
-                    <tr><td class="text-muted">Externe Freigaben</td><td><?= (int)($sh['external_count'] ?? 0) ?></td></tr>
-                    <tr><td class="text-muted">Anonyme Freigaben</td><td><?= (int)($sh['anonymous_count'] ?? 0) ?></td></tr>
+                    <tr><td class="text-muted"><?= te('Externe Freigaben') ?></td><td><?= (int)($sh['external_count'] ?? 0) ?></td></tr>
+                    <tr><td class="text-muted"><?= te('Anonyme Freigaben') ?></td><td><?= (int)($sh['anonymous_count'] ?? 0) ?></td></tr>
                     <?php endif; ?>
 
                     <?php if (!empty($ctx['devices'])): $d = $ctx['devices']; ?>
                     <tr><td colspan="2" class="fw-semibold text-muted small" style="padding-top:10px;background:#f9fafb;">
-                        <i class="bi bi-phone me-1 text-primary"></i>Geräte
+                        <i class="bi bi-phone me-1 text-primary"></i><?= te('Geräte') ?>
                     </td></tr>
-                    <tr><td class="text-muted">Geräte konform</td><td><?= (int)($d['compliant_pct'] ?? 0) ?> % (<?= (int)($d['compliant'] ?? 0) ?> / <?= (int)($d['total'] ?? 0) ?>)</td></tr>
+                    <tr><td class="text-muted"><?= te('Geräte konform') ?></td><td><?= (int)($d['compliant_pct'] ?? 0) ?> % (<?= (int)($d['compliant'] ?? 0) ?> / <?= (int)($d['total'] ?? 0) ?>)</td></tr>
                     <?php endif; ?>
 
                     <?php if (!empty($ctx['licenses'])): $l = $ctx['licenses']; ?>
                     <tr><td colspan="2" class="fw-semibold text-muted small" style="padding-top:10px;background:#f9fafb;">
-                        <i class="bi bi-award me-1 text-primary"></i>Lizenzen
+                        <i class="bi bi-award me-1 text-primary"></i><?= te('Lizenzen') ?>
                     </td></tr>
-                    <tr><td class="text-muted">Lizenzen &gt;90 % ausgelastet</td><td><?= (int)($l['high_utilization_skus'] ?? 0) ?> SKUs</td></tr>
+                    <tr><td class="text-muted"><?= te('Lizenzen >90 % ausgelastet') ?></td><td><?= (int)($l['high_utilization_skus'] ?? 0) ?> SKUs</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>
 
             <div class="text-muted small mt-2">
                 <i class="bi bi-shield-lock me-1"></i>
-                Diese Daten wurden an <strong><?= $e($provider) ?></strong> übertragen.
-                Kein Bezug zu einzelnen Benutzern oder dem Tenant möglich.
+                <?= te('Diese Daten wurden an') ?> <strong><?= $e($provider) ?></strong> <?= te('übertragen. Kein Bezug zu einzelnen Benutzern oder dem Tenant möglich.') ?>
             </div>
         </div>
     </div>
@@ -468,9 +467,9 @@ $sevOrder = ['critical', 'high', 'medium', 'low'];
 <!-- ── Footer note ───────────────────────────────────────────────────────── -->
 <div style="padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;color:#64748b;">
     <i class="bi bi-info-circle me-1"></i>
-    Empfehlungen basieren auf Microsoft Best Practices, BSI IT-Grundschutz Kompendium 2023 und NIS-2-Richtlinie (EU 2022/2555).
-    KI-Zusammenfassung durch <strong><?= $e($provider) ?></strong>.
-    <a href="/settings#ai-advisor" class="ms-2">Einstellungen</a>
+    <?= te('Empfehlungen basieren auf Microsoft Best Practices, BSI IT-Grundschutz Kompendium 2023 und NIS-2-Richtlinie (EU 2022/2555).') ?>
+    <?= te('KI-Zusammenfassung durch') ?> <strong><?= $e($provider) ?></strong>.
+    <a href="/settings#ai-advisor" class="ms-2"><?= te('Einstellungen') ?></a>
 </div>
 
 <!-- ── Spinner overlay ───────────────────────────────────────────────────── -->

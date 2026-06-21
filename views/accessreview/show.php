@@ -117,10 +117,10 @@
         <?= te('Ausstehend') ?> <span class="badge bg-warning text-dark ms-1"><?= (int)$review['pending_count'] ?></span>
     </button>
     <button class="btn btn-sm btn-outline-success filter-btn" data-filter="approve">
-        Genehmigt <span class="badge bg-success ms-1"><?= (int)$review['approve_count'] ?></span>
+        <?= te('Genehmigt') ?> <span class="badge bg-success ms-1"><?= (int)$review['approve_count'] ?></span>
     </button>
     <button class="btn btn-sm btn-outline-danger filter-btn" data-filter="revoke">
-        Widerrufen <span class="badge bg-danger ms-1"><?= (int)$review['revoke_count'] ?></span>
+        <?= te('Widerrufen') ?> <span class="badge bg-danger ms-1"><?= (int)$review['revoke_count'] ?></span>
     </button>
 </div>
 
@@ -131,13 +131,13 @@
             <thead>
                 <tr>
                     <th style="width:40px;"></th>
-                    <th>Name</th>
+                    <th><?= te('Name') ?></th>
                     <th>UPN</th>
-                    <th>Letzter Login</th>
-                    <th>Entscheidung</th>
-                    <th>Entschieden von</th>
+                    <th><?= te('Letzter Login') ?></th>
+                    <th><?= te('Entscheidung') ?></th>
+                    <th><?= te('Entschieden von') ?></th>
                     <?php if (!$isClosed): ?>
-                    <th style="width:160px;">Aktion</th>
+                    <th style="width:160px;"><?= te('Aktion') ?></th>
                     <?php endif; ?>
                 </tr>
             </thead>
@@ -167,16 +167,16 @@
                                 <span class="badge-danger ms-1"><?= $daysAgo ?>d</span>
                             <?php endif; ?>
                         <?php else: ?>
-                            <span class="badge-warning">Nie</span>
+                            <span class="badge-warning"><?= te('Nie') ?></span>
                         <?php endif; ?>
                     </td>
                     <td>
                         <?php if ($decision === 'approve'): ?>
-                            <span class="badge-enabled">Genehmigt</span>
+                            <span class="badge-enabled"><?= te('Genehmigt') ?></span>
                         <?php elseif ($decision === 'revoke'): ?>
-                            <span class="badge-danger">Widerrufen</span>
+                            <span class="badge-danger"><?= te('Widerrufen') ?></span>
                         <?php else: ?>
-                            <span class="badge-warning">Ausstehend</span>
+                            <span class="badge-warning"><?= te('Ausstehend') ?></span>
                         <?php endif; ?>
                     </td>
                     <td style="font-size:12px;color:#6b7280;">
@@ -197,7 +197,7 @@
                                 <input type="hidden" name="decision" value="approve">
                                 <button type="submit"
                                         class="btn btn-xs <?= $decision === 'approve' ? 'btn-success' : 'btn-outline-success' ?> py-0 px-2"
-                                        style="font-size:11px;" title="Genehmigen">
+                                        style="font-size:11px;" title="<?= te('Genehmigen') ?>">
                                     <i class="bi bi-check"></i>
                                 </button>
                             </form>
@@ -206,7 +206,7 @@
                                 <input type="hidden" name="decision" value="revoke">
                                 <button type="submit"
                                         class="btn btn-xs <?= $decision === 'revoke' ? 'btn-danger' : 'btn-outline-danger' ?> py-0 px-2"
-                                        style="font-size:11px;" title="Widerrufen">
+                                        style="font-size:11px;" title="<?= te('Widerrufen') ?>">
                                     <i class="bi bi-x"></i>
                                 </button>
                             </form>
@@ -216,7 +216,7 @@
                                 <input type="hidden" name="decision" value="pending">
                                 <button type="submit"
                                         class="btn btn-xs btn-outline-secondary py-0 px-2"
-                                        style="font-size:11px;" title="Zurücksetzen">
+                                        style="font-size:11px;" title="<?= te('Zurücksetzen') ?>">
                                     <i class="bi bi-arrow-counterclockwise"></i>
                                 </button>
                             </form>
@@ -227,7 +227,7 @@
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($review['items'])): ?>
-                    <tr><td colspan="7" class="text-center text-muted py-4">Keine Einträge vorhanden</td></tr>
+                    <tr><td colspan="7" class="text-center text-muted py-4"><?= te('Keine Einträge vorhanden') ?></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

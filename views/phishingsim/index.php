@@ -5,39 +5,37 @@
 <div class="alert alert-info d-flex gap-3 mb-3">
     <i class="bi bi-bullseye flex-shrink-0 mt-1" style="font-size:1.4rem;color:#0078d4;"></i>
     <div>
-        <strong>Phishing-Simulationen aus Microsoft Defender Attack Simulation Training.</strong>
-        Voraussetzung: <code>Microsoft Defender for Office 365 Plan 2</code> (in E5 / M365 E5
-        enthalten). Im <a href="/manual#phishing-anleitung">Handbuch</a> findest du eine ausführliche
-        Anleitung zum Aufsetzen einer Simulation.
+        <strong><?= te('Phishing-Simulationen aus Microsoft Defender Attack Simulation Training.') ?></strong>
+        <?= te('Voraussetzung:') ?> <code>Microsoft Defender for Office 365 Plan 2</code> <?= te('(in E5 / M365 E5 enthalten). Im') ?> <a href="/manual#phishing-anleitung"><?= te('Handbuch') ?></a> <?= te('findest du eine ausführliche Anleitung zum Aufsetzen einer Simulation.') ?>
     </div>
 </div>
 
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-list-stars text-primary"></i>
-        <h6>Durchgeführte Simulationen</h6>
+        <h6><?= te('Durchgeführte Simulationen') ?></h6>
         <span class="ms-auto text-muted small"><?= count($sims) ?></span>
     </div>
     <div class="card-body-custom p-0">
         <?php if (empty($sims)): ?>
             <div class="text-muted small p-4 text-center">
-                Keine Phishing-Simulationen gefunden. Im
-                <a href="https://security.microsoft.com/attacksimulator" target="_blank" rel="noopener">Defender-Portal</a>
-                eine Simulation anlegen — Schritt-für-Schritt-Anleitung im Handbuch unter
-                <a href="/manual#phishing-anleitung">Phishing-Simulationen mit Microsoft</a>.
+                <?= te('Keine Phishing-Simulationen gefunden. Im') ?>
+                <a href="https://security.microsoft.com/attacksimulator" target="_blank" rel="noopener"><?= te('Defender-Portal') ?></a>
+                <?= te('eine Simulation anlegen — Schritt-für-Schritt-Anleitung im Handbuch unter') ?>
+                <a href="/manual#phishing-anleitung"><?= te('Phishing-Simulationen mit Microsoft') ?></a>.
             </div>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="data-table">
                     <thead><tr>
-                        <th>Name</th>
-                        <th>Status</th>
-                        <th>Empfänger</th>
-                        <th>Klicks</th>
-                        <th>Kompromittiert</th>
-                        <th>Gemeldet</th>
-                        <th>Training</th>
-                        <th>Gestartet</th>
+                        <th><?= te('Name') ?></th>
+                        <th><?= te('Status') ?></th>
+                        <th><?= te('Empfänger') ?></th>
+                        <th><?= te('Klicks') ?></th>
+                        <th><?= te('Kompromittiert') ?></th>
+                        <th><?= te('Gemeldet') ?></th>
+                        <th><?= te('Training') ?></th>
+                        <th><?= te('Gestartet') ?></th>
                     </tr></thead>
                     <tbody>
                     <?php foreach ($sims as $s):
@@ -102,9 +100,9 @@
 
 <div class="d-flex gap-2 flex-wrap">
     <a href="https://security.microsoft.com/attacksimulator" target="_blank" rel="noopener" class="btn btn-outline-primary">
-        <i class="bi bi-box-arrow-up-right me-1"></i>Defender Attack Simulator öffnen
+        <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Defender Attack Simulator öffnen') ?>
     </a>
     <a href="/manual#phishing-anleitung" class="btn btn-outline-secondary">
-        <i class="bi bi-book me-1"></i>Anleitung im Handbuch
+        <i class="bi bi-book me-1"></i><?= te('Anleitung im Handbuch') ?>
     </a>
 </div>
