@@ -652,6 +652,20 @@ class CronRunner
                 },
             ],
 
+            'local_data_retention' => [
+                'label'            => t('Lokale Daten-Aufbewahrung'),
+                'description'      => t('Löscht lokal gespeicherte PII/Verlaufsdaten (Audit, Sign-ins, Freigaben, Snapshots) älter als die konfigurierte Aufbewahrungsfrist. Deaktiviert, solange die Frist 0 ist.'),
+                'default_interval' => 1440, // daily
+                'handler'          => function (): string {
+                    $days = (int)\App\Core\Config::getInstance()->get('local_retention_days', 0);
+                    if ($days <= 0) {
+                        return t('Deaktiviert (Aufbewahrungsfrist = 0).');
+                    }
+                    $r = \App\Modules\Settings\DataRetentionService::purge($days);
+                    return t(':n Datensätze älter als :days Tage gelöscht.', ['n' => $r['deleted'], 'days' => $days]);
+                },
+            ],
+
             'workflow_runner' => [
                 'label'            => t('Workflow-Runner'),
                 'description'      => t('Geplante Workflow-Automatisierungen ausführen'),

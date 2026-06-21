@@ -66,6 +66,7 @@
             <button type="button" data-tab-target="allgemein"        class="active"><i class="bi bi-sliders"></i><?= te('Allgemein') ?></button>
             <button type="button" data-tab-target="benachrichtigungen"><i class="bi bi-bell"></i><?= te('Benachrichtigungen') ?></button>
             <button type="button" data-tab-target="governance"      ><i class="bi bi-shield-check"></i><?= te('Governance') ?></button>
+            <button type="button" data-tab-target="datenschutz"     ><i class="bi bi-shield-lock"></i><?= te('Datenschutz') ?></button>
             <button type="button" data-tab-target="ki"              ><i class="bi bi-robot"></i><?= te('KI & Lizenzen') ?></button>
         </nav>
 
@@ -768,6 +769,30 @@
             </div>
         </div>
 
+        <!-- Datenschutz: retention + four-eyes (saved with the main form) -->
+        <div class="content-card mb-4" data-tab="datenschutz" id="privacy">
+            <div class="card-header-custom">
+                <i class="bi bi-shield-lock text-primary"></i>
+                <h6><?= te('Datenschutz &amp; Aufbewahrung') ?></h6>
+            </div>
+            <div class="card-body-custom">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium"><?= te('Lokale Aufbewahrung (Tage)') ?></label>
+                        <input type="number" min="0" name="local_retention_days" class="form-control" value="<?= (int)($s['local_retention_days'] ?? 0) ?>">
+                        <div class="text-muted small mt-1"><?= te('Lokal gespeicherte Verlaufs-/PII-Daten (Audit, Sign-ins, Freigaben, Snapshots) älter als diese Frist werden täglich gelöscht. 0 = unbegrenzt aufbewahren.') ?></div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="four_eyes_enabled" id="fourEyes" value="1" <?= (string)($s['four_eyes_enabled'] ?? '0') === '1' ? 'checked' : '' ?>>
+                            <label class="form-check-label fw-semibold" for="fourEyes"><?= te('Vier-Augen-Prinzip für kritische Aktionen') ?></label>
+                        </div>
+                        <div class="text-muted small mt-1"><?= te('Wenn aktiv, müssen besonders kritische Aktionen (Konto deaktivieren, Gerät zurücksetzen/löschen, MFA zurücksetzen) von einem zweiten Administrator freigegeben werden, bevor sie ausgeführt werden.') ?></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="settings-savebar d-flex gap-2 align-items-center">
             <button type="submit" class="btn btn-primary px-4">
                 <i class="bi bi-check2 me-1"></i> <?= te('Einstellungen speichern') ?>
@@ -806,6 +831,34 @@
                         <i class="bi bi-upload me-1"></i> <?= te('Importieren') ?>
                     </button>
                     <div class="text-muted small mt-2"><?= te('Nur bekannte, nicht-sensible Einstellungen werden übernommen; alles andere wird ignoriert.') ?></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Datenschutz: erasure actions (separate forms, outside the main settings form) -->
+        <div class="content-card mb-4" data-tab="datenschutz" id="privacy-actions">
+            <div class="card-header-custom">
+                <i class="bi bi-trash3 text-danger"></i>
+                <h6><?= te('Lokale Daten löschen') ?></h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted small mb-3"><?= te('Diese Aktionen betreffen nur die lokal im Tool gespeicherten Daten — Konfiguration, Benutzerzugänge und API-Schlüssel bleiben erhalten.') ?></p>
+
+                <form method="post" action="/settings/purge-data" class="mb-4"
+                      onsubmit="return confirm(<?= $e(json_encode(t('Lokale Datensätze älter als die Aufbewahrungsfrist jetzt löschen?'), JSON_UNESCAPED_UNICODE)) ?>);">
+                    <?= \App\Core\Csrf::field() ?>
+                    <button type="submit" class="btn btn-outline-secondary btn-sm"><i class="bi bi-eraser me-1"></i> <?= te('Alte Daten jetzt bereinigen') ?></button>
+                    <span class="text-muted small ms-2"><?= te('Wendet die oben gesetzte Aufbewahrungsfrist sofort an.') ?></span>
+                </form>
+
+                <hr class="my-3">
+
+                <div class="alert alert-danger py-2 small mb-2"><i class="bi bi-exclamation-octagon me-1"></i> <?= te('Unwiderruflich: löscht alle lokal abgeleiteten Daten (Audit, Sign-ins, Freigaben, Snapshots, Cache, Benachrichtigungen).') ?></div>
+                <form method="post" action="/settings/delete-tenant-data" class="d-flex flex-wrap gap-2 align-items-center"
+                      onsubmit="return confirm(<?= $e(json_encode(t('Wirklich ALLE lokalen Tenant-Daten unwiderruflich löschen?'), JSON_UNESCAPED_UNICODE)) ?>);">
+                    <?= \App\Core\Csrf::field() ?>
+                    <input type="text" name="confirm" class="form-control form-control-sm" style="max-width:200px;" placeholder="<?= te('LÖSCHEN eintippen') ?>" autocomplete="off">
+                    <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash3 me-1"></i> <?= te('Alle lokalen Tenant-Daten löschen') ?></button>
                 </form>
             </div>
         </div>

@@ -672,6 +672,8 @@ $router->post('/settings/save',                   [\App\Modules\Settings\Setting
 $router->get('/settings/clear-cache',             [\App\Modules\Settings\SettingsController::class, 'clearCache']);
 $router->get('/settings/test-mail',               [\App\Modules\Settings\SettingsController::class, 'testMail']);
 $router->get('/settings/test-webhook',            [\App\Modules\Settings\SettingsController::class, 'testWebhook']);
+$router->post('/settings/purge-data',             [\App\Modules\Settings\SettingsController::class, 'purgeData']);
+$router->post('/settings/delete-tenant-data',     [\App\Modules\Settings\SettingsController::class, 'deleteTenantData']);
 $router->get('/settings/permissions',             [\App\Modules\Settings\SettingsController::class, 'permissions']);
 $router->get('/settings/refresh-token',           [\App\Modules\Settings\SettingsController::class, 'refreshToken']);
 $router->get('/settings/license-prices',          [\App\Modules\Settings\SettingsController::class, 'licensePrice']);

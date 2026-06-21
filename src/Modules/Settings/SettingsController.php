@@ -230,6 +230,38 @@ class SettingsController
         Redirect::to('/settings#benachrichtigungen');
     }
 
+    /** Run the age-based local-data purge on demand. */
+    public function purgeData(): void
+    {
+        LocalAuth::requireAdmin();
+        $days = (int)Config::getInstance()->get('local_retention_days', 0);
+        if ($days <= 0) {
+            Session::flash('error', t('Keine Aufbewahrungsfrist gesetzt (0 = unbegrenzt). Bitte zuerst eine Frist konfigurieren.'));
+            Redirect::to('/settings#datenschutz');
+        }
+        $r = DataRetentionService::purge($days);
+        AppAudit::log('data_purge', 'settings', $r['deleted'] . ' rows older than ' . $days . ' days');
+        Session::flash('success', t(':n lokale Datensätze älter als :days Tage gelöscht.', ['n' => $r['deleted'], 'days' => $days]));
+        Redirect::to('/settings#datenschutz');
+    }
+
+    /** Erase all locally derived/PII data ("forget tenant"). Keeps config/users. */
+    public function deleteTenantData(): void
+    {
+        LocalAuth::requireAdmin();
+        // Require an explicit typed confirmation to avoid accidental wipes.
+        // Accept the keyword in either UI language (LÖSCHEN / DELETE).
+        $confirm = mb_strtoupper(trim($_POST['confirm'] ?? ''));
+        if (!in_array($confirm, ['LÖSCHEN', 'DELETE'], true)) {
+            Session::flash('error', t('Bestätigung fehlt — bitte LÖSCHEN eintippen.'));
+            Redirect::to('/settings#datenschutz');
+        }
+        $r = DataRetentionService::purgeAll();
+        AppAudit::log('data_erase_all', 'settings', $r['deleted'] . ' rows erased');
+        Session::flash('success', t('Alle lokalen Tenant-Daten gelöscht (:n Datensätze). Konfiguration und Benutzerzugänge bleiben erhalten.', ['n' => $r['deleted']]));
+        Redirect::to('/settings#datenschutz');
+    }
+
     public function manual(): void
     {
         LocalAuth::require();
