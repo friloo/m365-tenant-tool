@@ -86,7 +86,7 @@ $fmtPrice = function ($val) {
     </div>
     <div class="card-body-custom">
         <p class="text-muted small mb-3">
-            <?= te('Aktiviere die Features, die <strong>alle</strong> Benutzer nach der Exchange-Online-Migration benötigen. Der Advisor zeigt dann, welche Lizenzpläne diese Kombination abdecken und welche Benutzer noch nicht abgedeckt sind.') ?>
+            <?= t('Aktiviere die Features, die <strong>alle</strong> Benutzer nach der Exchange-Online-Migration benötigen. Der Advisor zeigt dann, welche Lizenzpläne diese Kombination abdecken und welche Benutzer noch nicht abgedeckt sind.') ?>
         </p>
         <form method="post" action="/licenseadvisor/save-criteria">
             <?= \App\Core\Csrf::field() ?>
@@ -186,7 +186,7 @@ $fmtPrice = function ($val) {
                 </label>
             </div>
             <span class="ms-auto text-muted" style="font-size:11px;">
-                <?= te('Alle Preise <strong>netto</strong> (ohne 19 % MwSt.), pro Nutzer/Monat, Jahresabo, DE-Listenpreis. Stand Mai 2025 — bitte beim Microsoft-Partner verifizieren.') ?>
+                <?= t('Alle Preise <strong>netto</strong> (ohne 19 % MwSt.), pro Nutzer/Monat, Jahresabo, DE-Listenpreis. Stand Mai 2025 — bitte beim Microsoft-Partner verifizieren.') ?>
             </span>
         </form>
     </div>
@@ -200,7 +200,7 @@ $fmtPrice = function ($val) {
         <i class="bi bi-award text-primary"></i>
         <h6><?= te('Passende Lizenzen im Tenant') ?></h6>
         <span class="ms-auto text-muted" style="font-size:12px;">
-            <?= te('Pläne, die <strong>alle</strong> gewählten Kriterien erfüllen') ?>
+            <?= t('Pläne, die <strong>alle</strong> gewählten Kriterien erfüllen') ?>
         </span>
     </div>
     <div class="card-body-custom p-0">
@@ -476,7 +476,7 @@ $gapUsers = array_merge($uncovered, $noLicense);
             <div class="alert alert-warning d-flex align-items-center gap-2 mb-3">
                 <i class="bi bi-currency-euro fs-5"></i>
                 <div>
-                    <?= te('<strong>:n Benutzer</strong> haben eine passende Lizenz, aber haben sich seit mehr als 90 Tagen nicht angemeldet. Diese :n Lizenzeinheiten könnten freigegeben werden.', ['n' => $inactiveCount]) ?>
+                    <?= t('<strong>:n Benutzer</strong> haben eine passende Lizenz, aber haben sich seit mehr als 90 Tagen nicht angemeldet. Diese :n Lizenzeinheiten könnten freigegeben werden.', ['n' => $inactiveCount]) ?>
                 </div>
             </div>
             <div class="table-responsive">

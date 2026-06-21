@@ -10,7 +10,7 @@
 <div class="alert alert-info d-flex gap-3 mb-3">
     <i class="bi bi-envelope-paper-fill flex-shrink-0 mt-1" style="font-size:1.4rem;color:#0078d4;"></i>
     <div>
-        <?= te('<strong>Monatlicher Executive-Report</strong> per E-Mail an die Geschäftsführung mit den wichtigsten Tenant-KPIs: Security-Score, MFA-Quote, Risiko-Benutzer, Defender-Alerts, CA-Policies, Top-Findings aus der Posture-Analyse. Cron startet am 1. jedes Monats um 07:00 Uhr (lokale Zeitzone).') ?>
+        <?= t('<strong>Monatlicher Executive-Report</strong> per E-Mail an die Geschäftsführung mit den wichtigsten Tenant-KPIs: Security-Score, MFA-Quote, Risiko-Benutzer, Defender-Alerts, CA-Policies, Top-Findings aus der Posture-Analyse. Cron startet am 1. jedes Monats um 07:00 Uhr (lokale Zeitzone).') ?>
     </div>
 </div>
 

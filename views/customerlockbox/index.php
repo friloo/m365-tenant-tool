@@ -7,7 +7,7 @@
 <div class="alert alert-info d-flex gap-3 mb-3">
     <i class="bi bi-lock-fill flex-shrink-0 mt-1" style="font-size:1.4rem;color:#0078d4;"></i>
     <div>
-        <strong>Customer Lockbox</strong>: <?= te('ohne Customer Lockbox darf Microsoft Support im Notfall
+        <strong>Customer Lockbox</strong>: <?= t('ohne Customer Lockbox darf Microsoft Support im Notfall
         auf Ihre Daten zugreifen, ohne dass Sie es erfahren oder zustimmen können. Mit aktiviertem
         Lockbox muss ein Tenant-Admin jeden Microsoft-Support-Zugriff aktiv approven; ohne
         Approval gibt es <em>keinen</em> Zugriff.') ?>

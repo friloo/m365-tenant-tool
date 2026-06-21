@@ -4,7 +4,7 @@ use App\Core\Csrf;
 ?>
 <div class="content-card mb-3">
     <h1 class="mb-2"><i class="bi bi-shield-check"></i> <?= te('Compliance-Profile') ?> <?= \App\Core\Help::tip('compliance_profile') ?></h1>
-    <p class="text-muted mb-0"><?= te('Wähle ein Branchen-Profil und wende mit einem Klick die dazu passenden Hardening-Defaults an. Aktionen laufen einzeln im Browser mit Fortschritts-Anzeige; alle Schritte sind im Audit-Log nachvollziehbar und können im <a href="/hardening">Tenant-Härtungs-Modul</a> einzeln umgekehrt werden.') ?></p>
+    <p class="text-muted mb-0"><?= t('Wähle ein Branchen-Profil und wende mit einem Klick die dazu passenden Hardening-Defaults an. Aktionen laufen einzeln im Browser mit Fortschritts-Anzeige; alle Schritte sind im Audit-Log nachvollziehbar und können im <a href="/hardening">Tenant-Härtungs-Modul</a> einzeln umgekehrt werden.') ?></p>
 
     <?php $flash = \App\Core\Session::getFlash('success'); $err = \App\Core\Session::getFlash('error'); ?>
     <?php if ($flash): ?><div class="alert alert-success mt-3 mb-0"><?= View::escape($flash) ?></div><?php endif; ?>
@@ -12,7 +12,7 @@ use App\Core\Csrf;
 
     <?php if ($current !== ''): ?>
         <div class="alert alert-info mt-3 mb-0">
-            <i class="bi bi-info-circle"></i> <?= te('Aktuell aktives Profil:') ?> <strong><?= View::escape($profiles[$current]['name'] ?? $current) ?></strong> &mdash; <?= te('Du kannst es jederzeit überschreiben oder einzelne Items in <a href="/hardening">/hardening</a> umkehren.') ?>
+            <i class="bi bi-info-circle"></i> <?= te('Aktuell aktives Profil:') ?> <strong><?= View::escape($profiles[$current]['name'] ?? $current) ?></strong> &mdash; <?= t('Du kannst es jederzeit überschreiben oder einzelne Items in <a href="/hardening">/hardening</a> umkehren.') ?>
         </div>
     <?php endif; ?>
 </div>

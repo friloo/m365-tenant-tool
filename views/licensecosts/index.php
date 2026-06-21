@@ -109,11 +109,11 @@ $priceLabel = $priceMode === 'standard' ? t('Listenpreis (Netto)') : t('NPO-Prei
 <?php if ($wasteMonth > 5): ?>
 <div class="alert alert-warning small mb-4">
   <i class="bi bi-exclamation-triangle-fill me-2"></i>
-  <?= te('<strong>:m/Monat</strong> (:y/Jahr) werden für ungenutzte Lizenzen ausgegeben. Im <a href="/licenseadvisor">Lizenz-Berater</a> siehst du, welche Benutzer keine Lizenz benötigen oder inaktiv sind.', ['m' => $fmtEur($wasteMonth), 'y' => $fmtEur($wasteMonth * 12)]) ?>
+  <?= t('<strong>:m/Monat</strong> (:y/Jahr) werden für ungenutzte Lizenzen ausgegeben. Im <a href="/licenseadvisor">Lizenz-Berater</a> siehst du, welche Benutzer keine Lizenz benötigen oder inaktiv sind.', ['m' => $fmtEur($wasteMonth), 'y' => $fmtEur($wasteMonth * 12)]) ?>
 </div>
 <?php endif ?>
 
 <div class="alert alert-info small mb-0">
   <i class="bi bi-info-circle-fill me-1"></i>
-  <?= te('Alle Preise <strong>netto</strong> (ohne 19 % MwSt.), DE-Listenpreis, Stand Mai 2025. Nur SKUs mit hinterlegtem Preis werden berechnet. Tatsächliche CSP/EA-Preise können abweichen.') ?>
+  <?= t('Alle Preise <strong>netto</strong> (ohne 19 % MwSt.), DE-Listenpreis, Stand Mai 2025. Nur SKUs mit hinterlegtem Preis werden berechnet. Tatsächliche CSP/EA-Preise können abweichen.') ?>
 </div>

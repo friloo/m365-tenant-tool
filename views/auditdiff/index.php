@@ -11,7 +11,7 @@ $formatVal = function ($v) {
 ?>
 <div class="content-card mb-3">
     <h1 class="mb-2"><i class="bi bi-arrow-left-right"></i> Audit-Diff <?= \App\Core\Help::tip('audit_diff') ?></h1>
-    <p class="text-muted"><?= te('Vergleiche zwei Snapshots der Tenant-Einstellungen. Snapshots werden täglich automatisch erstellt (Cron-Job: <code>audit_diff_snapshot</code>) und können hier manuell ergänzt werden.') ?></p>
+    <p class="text-muted"><?= t('Vergleiche zwei Snapshots der Tenant-Einstellungen. Snapshots werden täglich automatisch erstellt (Cron-Job: <code>audit_diff_snapshot</code>) und können hier manuell ergänzt werden.') ?></p>
 
     <?php $flash = \App\Core\Session::getFlash('success'); $err = \App\Core\Session::getFlash('error'); ?>
     <?php if ($flash): ?><div class="alert alert-success"><?= View::escape($flash) ?></div><?php endif; ?>

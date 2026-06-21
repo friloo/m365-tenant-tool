@@ -127,7 +127,7 @@ $cardBorder = fn (string $status) => match ($status) {
 <div class="alert alert-warning d-flex gap-3 mt-4">
     <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1" style="font-size:1.4rem;color:#b45309;"></i>
     <div>
-        <strong><?= te('Wichtig:') ?></strong> <?= te('Tenant-weite Änderungen wirken sofort. Insbesondere die Conditional-Access-
+        <strong><?= te('Wichtig:') ?></strong> <?= t('Tenant-weite Änderungen wirken sofort. Insbesondere die Conditional-Access-
         Policy „Block Legacy Auth" wird im <em>Report-Only</em>-Modus angelegt — bitte einige Tage Reports
         prüfen, bevor du sie auf <em>Enabled</em> stellst, um keine produktiven Services zu blockieren.
         Microsoft Graph schreibt jede Änderung in das Tenant-Audit-Log; das Tool zusätzlich in <em>App

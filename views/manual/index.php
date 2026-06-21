@@ -127,8 +127,8 @@
 <!-- Einführung ───────────────────────────────────────────── -->
 <div class="man-section" id="intro">
     <h2><i class="bi bi-book text-primary"></i> <?= te('Einführung') ?></h2>
-    <p><?= te('Das <strong>M365 Tenant Tool</strong> ist ein webbasiertes Administrator-Dashboard für Microsoft 365. Es ermöglicht die zentrale Verwaltung und Überwachung eines M365-Tenants direkt über den Browser — ohne Microsoft Entra Admin Center oder PowerShell.') ?></p>
-    <p><?= te('Die Verbindung zu Microsoft Graph erfolgt über den <strong>OAuth 2.0 Client-Credentials-Flow</strong> (Anwendungs-Berechtigungen). Das Werkzeug benötigt keinen Benutzer-Login bei Microsoft — ein einmalig eingerichtetes App-Konto in Azure AD (Entra ID) reicht aus.') ?></p>
+    <p><?= t('Das <strong>M365 Tenant Tool</strong> ist ein webbasiertes Administrator-Dashboard für Microsoft 365. Es ermöglicht die zentrale Verwaltung und Überwachung eines M365-Tenants direkt über den Browser — ohne Microsoft Entra Admin Center oder PowerShell.') ?></p>
+    <p><?= t('Die Verbindung zu Microsoft Graph erfolgt über den <strong>OAuth 2.0 Client-Credentials-Flow</strong> (Anwendungs-Berechtigungen). Das Werkzeug benötigt keinen Benutzer-Login bei Microsoft — ein einmalig eingerichtetes App-Konto in Azure AD (Entra ID) reicht aus.') ?></p>
 
     <h3><?= te('Voraussetzungen') ?></h3>
     <ul>
@@ -153,10 +153,10 @@
     <p><?= te('Die linke Seitenleiste ist in thematische Bereiche unterteilt. Per Klick auf den') ?> <i class="bi bi-list"></i><?= te('-Button oben links kann sie ein- und ausgeklappt werden. Operator-Accounts sehen den Administrationsbereich nicht.') ?></p>
 
     <h3><?= te('Schnellsuche (Strg+K)') ?></h3>
-    <p><?= te('Mit <kbd>Strg</kbd>+<kbd>K</kbd> (oder dem Lupensymbol in der Topbar) öffnet sich die Kommandopalette. Dort können alle Seiten des Tools per Tastatur gesucht und direkt angesprungen werden.') ?></p>
+    <p><?= t('Mit <kbd>Strg</kbd>+<kbd>K</kbd> (oder dem Lupensymbol in der Topbar) öffnet sich die Kommandopalette. Dort können alle Seiten des Tools per Tastatur gesucht und direkt angesprungen werden.') ?></p>
 
     <h3><?= te('Daten aktualisieren') ?></h3>
-    <p><?= te('Alle Daten werden aus der Microsoft Graph API geladen und serverseitig gecacht (Standard: 15 Minuten). Mit dem') ?> <i class="bi bi-arrow-clockwise"></i><?= te('-Button in der Topbar (hängt <code>?refresh=1</code> an die URL) wird der Cache für die aktuelle Seite geleert und ein neuer Abruf gestartet.') ?></p>
+    <p><?= te('Alle Daten werden aus der Microsoft Graph API geladen und serverseitig gecacht (Standard: 15 Minuten). Mit dem') ?> <i class="bi bi-arrow-clockwise"></i><?= t('-Button in der Topbar (hängt <code>?refresh=1</code> an die URL) wird der Cache für die aktuelle Seite geleert und ein neuer Abruf gestartet.') ?></p>
 
     <h3><?= te('Suche in Tabellen') ?></h3>
     <p><?= te('Auf den meisten Listenansichten gibt es ein Suchfeld über der Tabelle. Die Suche filtert live alle sichtbaren Zeilen nach dem eingegebenen Begriff.') ?></p>
@@ -189,7 +189,7 @@
     <p><?= te('Per Klick auf einen Benutzernamen öffnet sich die Detailseite mit:') ?></p>
 
     <h4><?= te('Konto aktivieren / deaktivieren') ?></h4>
-    <p><?= te('Schaltet <code>accountEnabled</code> in Azure AD um. Deaktivierte Benutzer können sich nicht mehr anmelden, ihr Postfach und ihre Daten bleiben erhalten.') ?></p>
+    <p><?= t('Schaltet <code>accountEnabled</code> in Azure AD um. Deaktivierte Benutzer können sich nicht mehr anmelden, ihr Postfach und ihre Daten bleiben erhalten.') ?></p>
 
     <h4><?= te('MFA zurücksetzen') ?></h4>
     <p><?= te('Löscht alle registrierten Authentifizierungsmethoden des Benutzers (Authenticator-App, Telefonnummern, FIDO2-Schlüssel) — außer dem Passwort. Der Benutzer muss beim nächsten Login eine neue Methode registrieren.') ?></p>
@@ -227,12 +227,12 @@
 <!-- Gastbenutzer ─────────────────────────────────────────── -->
 <div class="man-section" id="guestusers">
     <h2><i class="bi bi-person-badge text-primary"></i> <?= te('Gastbenutzer') ?></h2>
-    <p><?= te('Listet alle Gastbenutzer (<code>userType = Guest</code>) im Tenant. Gastbenutzer werden typischerweise für externe Kollaborationen (SharePoint, Teams) eingeladen.') ?></p>
+    <p><?= t('Listet alle Gastbenutzer (<code>userType = Guest</code>) im Tenant. Gastbenutzer werden typischerweise für externe Kollaborationen (SharePoint, Teams) eingeladen.') ?></p>
     <p><?= te('In der Tabelle sind sichtbar: E-Mail, Einladungsstatus, letzte Anmeldung, Lizenzen, Erstelldatum.') ?></p>
 
     <h3><?= te('Aktionen') ?></h3>
     <ul>
-        <li><strong><?= te('Deaktivieren') ?></strong> — <?= te('setzt <code>accountEnabled = false</code>, der Gast kann sich nicht mehr anmelden') ?></li>
+        <li><strong><?= te('Deaktivieren') ?></strong> — <?= t('setzt <code>accountEnabled = false</code>, der Gast kann sich nicht mehr anmelden') ?></li>
         <li><strong><?= te('Entfernen') ?></strong> — <?= te('löscht das Gastkonto vollständig aus dem Tenant') ?></li>
     </ul>
     <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Regelmäßige Bereinigung alter Gastkonten ist eine wichtige Sicherheitsmaßnahme. Das Modul „Inaktive Konten" hilft dabei, Gäste zu identifizieren, die sich lange nicht mehr angemeldet haben.') ?></div>
@@ -257,7 +257,7 @@
     <p><?= te('Löscht die Gruppe dauerhaft. Bei Microsoft 365-Gruppen werden auch das zugehörige Team, das Postfach und die SharePoint-Site gelöscht (Soft-Delete, 30 Tage wiederherstellbar im Entra Portal).') ?></p>
 
     <h3><?= te('Inaktive Gruppen') ?></h3>
-    <p><?= te('Unter <strong>Gruppen → Inaktive Gruppen</strong> werden Microsoft 365-Gruppen angezeigt, die seit mehr als 90 Tagen keine Aktivität hatten. Grundlage ist die letzte Aktivität der zugehörigen SharePoint-Site.') ?></p>
+    <p><?= t('Unter <strong>Gruppen → Inaktive Gruppen</strong> werden Microsoft 365-Gruppen angezeigt, die seit mehr als 90 Tagen keine Aktivität hatten. Grundlage ist die letzte Aktivität der zugehörigen SharePoint-Site.') ?></p>
     <p><span class="perm-tag">Group.Read.All</span> <span class="perm-tag">Group.ReadWrite.All</span> <span class="perm-tag">GroupMember.ReadWrite.All</span></p>
 </div>
 
@@ -267,7 +267,7 @@
     <p><?= te('Zeigt alle abonnierten Lizenz-SKUs im Tenant mit verbrauchten und verfügbaren Plätzen sowie den enthaltenen Service-Plänen.') ?></p>
 
     <h3><?= te('Ablaufende Lizenzen') ?></h3>
-    <p><?= te('Unter <strong>Lizenzen → Ablauf</strong> werden alle Abonnements angezeigt, die in den nächsten 90 Tagen ablaufen. Dies ermöglicht eine frühzeitige Verlängerungsplanung.') ?></p>
+    <p><?= t('Unter <strong>Lizenzen → Ablauf</strong> werden alle Abonnements angezeigt, die in den nächsten 90 Tagen ablaufen. Dies ermöglicht eine frühzeitige Verlängerungsplanung.') ?></p>
 
     <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Der CSV-Export enthält alle Lizenzen mit Ablaufdatum, Verbrauch und Kosten-relevanten Infos — nützlich für Budgetplanung.') ?></div>
     <p><span class="perm-tag">Organization.Read.All</span></p>
@@ -304,7 +304,7 @@
 <div class="man-section" id="onedrive">
     <h2><i class="bi bi-cloud text-primary"></i> OneDrive</h2>
     <p><?= te('Zeigt die OneDrive-Nutzung aller Benutzer: verwendeter und verfügbarer Speicher, Anzahl der Dateien, letzte Aktivität.') ?></p>
-    <p><?= te('Der Bericht basiert auf dem Microsoft 365 Nutzungsbericht (<code>/reports/oneDriveUsageAccountDetail</code>) und wird täglich von Microsoft aktualisiert — die Daten können daher bis zu 48 Stunden alt sein.') ?></p>
+    <p><?= t('Der Bericht basiert auf dem Microsoft 365 Nutzungsbericht (<code>/reports/oneDriveUsageAccountDetail</code>) und wird täglich von Microsoft aktualisiert — die Daten können daher bis zu 48 Stunden alt sein.') ?></p>
     <p><span class="perm-tag">Reports.Read.All</span></p>
 </div>
 
@@ -342,7 +342,7 @@
     </ol>
 
     <h3><?= te('Konfiguration') ?></h3>
-    <p><?= te('Im Einstellungsbereich (<strong>Freigaben-Monitor</strong>): Review-Intervall (Standard: 30 Tage), Kulanzfrist (Standard: 7 Tage), nur anonyme Freigaben prüfen.') ?></p>
+    <p><?= t('Im Einstellungsbereich (<strong>Freigaben-Monitor</strong>): Review-Intervall (Standard: 30 Tage), Kulanzfrist (Standard: 7 Tage), nur anonyme Freigaben prüfen.') ?></p>
 
     <h3><?= te('Admin-Ansicht') ?></h3>
     <p><?= te('Die Admin-Ansicht zeigt alle aktiven Review-Anfragen mit Status. Von hier aus können Freigaben auch manuell widerrufen oder Erinnerungs-E-Mails versendet werden.') ?></p>
@@ -368,12 +368,12 @@
 
     <h3><?= te('Postfach-Detailseite') ?></h3>
     <ul>
-        <li><strong><?= te('Weiterleitung einrichten') ?></strong>: <?= te('Konfiguriert <code>ForwardingSmtpAddress</code> — E-Mails werden an eine externe oder interne Adresse weitergeleitet (optional: Kopie im Postfach behalten)') ?></li>
+        <li><strong><?= te('Weiterleitung einrichten') ?></strong>: <?= t('Konfiguriert <code>ForwardingSmtpAddress</code> — E-Mails werden an eine externe oder interne Adresse weitergeleitet (optional: Kopie im Postfach behalten)') ?></li>
         <li><strong><?= te('Abwesenheitsnachricht') ?></strong>: <?= te('Setzt die AutoReply-Konfiguration für intern und extern') ?></li>
     </ul>
 
     <h3><?= te('Externe Weiterleitungen') ?></h3>
-    <p><?= te('Unter <strong>Postfächer → Externe Weiterleitungen</strong> werden alle Postfächer angezeigt, die E-Mails an externe Adressen weiterleiten. Dies ist ein wichtiger Sicherheitscheck gegen Mail-Exfiltration.') ?></p>
+    <p><?= t('Unter <strong>Postfächer → Externe Weiterleitungen</strong> werden alle Postfächer angezeigt, die E-Mails an externe Adressen weiterleiten. Dies ist ein wichtiger Sicherheitscheck gegen Mail-Exfiltration.') ?></p>
     <p><?= te('Von dieser Ansicht aus können Weiterleitungen direkt deaktiviert werden.') ?></p>
 
     <h3>Shared Mailboxes</h3>
@@ -533,7 +533,7 @@
     <p><?= te('Eine kuratierte Seite mit den wichtigsten Sicherheits-Einstellungen, die mit einem Klick aktiviert werden können — entweder direkt über die Graph API oder per Deep-Link in das richtige Admin-Center, wenn Microsoft den Endpunkt nicht öffentlich gemacht hat.') ?></p>
     <h3><?= te('Direkt schaltbar (via Graph API)') ?></h3>
     <ul>
-        <li><strong>Security Defaults</strong> — <?= te('ein/aus (PATCH <code>/policies/identitySecurityDefaultsEnforcementPolicy</code>)') ?></li>
+        <li><strong>Security Defaults</strong> — <?= t('ein/aus (PATCH <code>/policies/identitySecurityDefaultsEnforcementPolicy</code>)') ?></li>
         <li><strong>SharePoint Tenant-Sharing</strong> — <?= te('Anyone-Links global blocken oder einschränken') ?></li>
         <li><strong><?= te('Anonyme Link-Ablauffrist') ?></strong> — <?= te('z. B. auf 30 Tage setzen') ?></li>
         <li><strong>Default-Sharing-Linktyp</strong> — <?= te('auf „intern" zwingen') ?></li>
@@ -573,7 +573,7 @@
 <!-- Break-Glass-Accounts ────────────────────────────────── -->
 <div class="man-section" id="breakglass">
     <h2><i class="bi bi-key-fill text-primary"></i> <?= te('Break-Glass-Accounts') ?></h2>
-    <p><?= te('Notfall-Administratorkonten sind die letzte Eskalationsstufe, wenn alle anderen Admin-Wege versagen — etwa wenn eine fehlerhafte Conditional-Access-Policy alle anderen Admins aussperrt, oder bei einem MFA-Ausfall. Microsoft empfiehlt mindestens <strong>zwei</strong> solcher Konten.') ?></p>
+    <p><?= t('Notfall-Administratorkonten sind die letzte Eskalationsstufe, wenn alle anderen Admin-Wege versagen — etwa wenn eine fehlerhafte Conditional-Access-Policy alle anderen Admins aussperrt, oder bei einem MFA-Ausfall. Microsoft empfiehlt mindestens <strong>zwei</strong> solcher Konten.') ?></p>
     <h3><?= te('Konfiguration') ?></h3>
     <p><?= te('Im Tool werden die UPNs der Break-Glass-Konten als Liste hinterlegt (kommagetrennt oder ein UPN pro Zeile). Für jeden Eintrag prüft das Tool automatisch:') ?></p>
     <ul>
@@ -584,14 +584,14 @@
         <li><strong><?= te('Aus welchen CA-Policies ist es ausgeschlossen?') ?></strong> <?= te('Wenn aus keiner — Sperre droht. Wenn aus allen — Risiko bei kompromittiertem Passwort.') ?></li>
         <li><strong><?= te('Wann war der letzte Login?') ?></strong> <?= te('Break-Glass-Konten sollten mindestens halbjährlich getestet werden, sonst weiß niemand, ob sie im Notfall funktionieren.') ?></li>
     </ul>
-    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><?= te('Microsoft empfiehlt für Break-Glass-Konten <strong>reine Cloud-Identitäten</strong> (nicht aus AD synchronisiert), <strong>komplexe Passwörter</strong> (mindestens 16 Zeichen, im Tresor verwahrt), und eine <strong>physische Ablage</strong> der Recovery-Methode (FIDO2-Key in zwei Standorten).') ?></div>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><?= t('Microsoft empfiehlt für Break-Glass-Konten <strong>reine Cloud-Identitäten</strong> (nicht aus AD synchronisiert), <strong>komplexe Passwörter</strong> (mindestens 16 Zeichen, im Tresor verwahrt), und eine <strong>physische Ablage</strong> der Recovery-Methode (FIDO2-Key in zwei Standorten).') ?></div>
     <p><span class="perm-tag">User.Read.All</span> <span class="perm-tag">Policy.Read.All</span> <span class="perm-tag">RoleManagement.Read.Directory</span></p>
 </div>
 
 <!-- Auto-Forward-Audit ──────────────────────────────────── -->
 <div class="man-section" id="mailboxrules">
     <h2><i class="bi bi-arrow-right-square text-primary"></i> <?= te('Auto-Forward-Audit') ?></h2>
-    <p><?= te('Scannt alle aktiven Mailboxen im Tenant nach Inbox-Regeln, die eingehende E-Mails automatisch an eine externe Adresse weiterleiten. <strong>Auto-Forward an externe Domains ist statistisch der häufigste Exfiltrations­vektor</strong> bei kompromittierten Konten: der Angreifer richtet eine versteckte Inbox-Regel ein, die alle eingehenden Mails an seine Adresse weiterleitet, oft Tage bevor der Account-Inhaber es bemerkt.') ?></p>
+    <p><?= t('Scannt alle aktiven Mailboxen im Tenant nach Inbox-Regeln, die eingehende E-Mails automatisch an eine externe Adresse weiterleiten. <strong>Auto-Forward an externe Domains ist statistisch der häufigste Exfiltrations­vektor</strong> bei kompromittierten Konten: der Angreifer richtet eine versteckte Inbox-Regel ein, die alle eingehenden Mails an seine Adresse weiterleitet, oft Tage bevor der Account-Inhaber es bemerkt.') ?></p>
     <h3><?= te('Was die Seite zeigt') ?></h3>
     <ul>
         <li><strong><?= te('Externe Auto-Forwards') ?></strong> — <?= te('rot markiert. Pro Treffer: Benutzer, Regel-Name, Ziel-Adresse, Active/Inactive.') ?></li>
@@ -601,9 +601,9 @@
     <h3><?= te('Wie reagieren') ?></h3>
     <ul>
         <li><?= te('Bei verdächtiger externer Weiterleitung: User-Konto sperren, Sessions revoken, Passwort-Reset erzwingen, Defender-Investigation öffnen.') ?></li>
-        <li><?= te('Tenant-weit blockieren: Mail-Flow-Regel oder Exchange-Anti-Spam-Outbound-Policy mit <code>AutoForwardingMode = Off</code>.') ?></li>
+        <li><?= t('Tenant-weit blockieren: Mail-Flow-Regel oder Exchange-Anti-Spam-Outbound-Policy mit <code>AutoForwardingMode = Off</code>.') ?></li>
     </ul>
-    <div class="tip-box"><i class="bi bi-info-circle"></i><?= te('Performance-Hinweis: der Scan dauert je nach Tenant-Größe 30 Sekunden bis 5 Minuten. Ergebnisse werden 30 Min. gecached; per <code>?refresh=1</code> erzwingbar.') ?></div>
+    <div class="tip-box"><i class="bi bi-info-circle"></i><?= t('Performance-Hinweis: der Scan dauert je nach Tenant-Größe 30 Sekunden bis 5 Minuten. Ergebnisse werden 30 Min. gecached; per <code>?refresh=1</code> erzwingbar.') ?></div>
     <p><span class="perm-tag">User.Read.All</span> <span class="perm-tag">Mail.Read</span> <span class="perm-tag">Domain.Read.All</span></p>
 </div>
 
@@ -614,7 +614,7 @@
     <h3><?= te('Risiko-Bewertung') ?></h3>
     <p><?= te('Pro App wird ein Score 0–100 berechnet:') ?></p>
     <ul>
-        <li><strong><?= te('+20 pro High-Privilege-Permission') ?></strong> — <?= te('z. B. <code>Mail.ReadWrite.All</code>, <code>Files.ReadWrite.All</code>, <code>Sites.FullControl.All</code>, <code>User.ReadWrite.All</code>, <code>Directory.ReadWrite.All</code>, <code>full_access_as_app</code>.') ?></li>
+        <li><strong><?= te('+20 pro High-Privilege-Permission') ?></strong> — <?= t('z. B. <code>Mail.ReadWrite.All</code>, <code>Files.ReadWrite.All</code>, <code>Sites.FullControl.All</code>, <code>User.ReadWrite.All</code>, <code>Directory.ReadWrite.All</code>, <code>full_access_as_app</code>.') ?></li>
         <li><strong><?= te('+25 wenn nie angemeldet') ?></strong> — <?= te('die App hat Permissions, nutzt sie aber nicht — typisch nach Migration.') ?></li>
         <li><strong><?= te('+30 wenn letzte Anmeldung > 365 Tage') ?></strong><?= te(', +15 wenn > 180, +5 wenn > 90.') ?></li>
         <li><?= te('Microsoft-First-Party-Apps werden mit Score 0 markiert.') ?></li>
@@ -629,9 +629,9 @@
 <!-- DLP-Vorfälle ────────────────────────────────────────── -->
 <div class="man-section" id="dlpincidents">
     <h2><i class="bi bi-shield-shaded text-primary"></i> <?= te('DLP-Vorfälle') ?></h2>
-    <p><?= te('Während das DLP-Richtlinien-Modul anzeigt, <em>ob</em> DLP-Policies aktiv sind, zeigt diese Seite die <strong>tatsächlichen Treffer</strong> — also wer hat versucht, eine als „Vertraulich" gelabelte Datei nach außen zu teilen, wer hat versucht eine Kreditkarten-Nummer per Mail zu versenden, etc. Das ist der eigentliche Compliance-Audit-Wert (DSGVO Art. 5 + 32).') ?></p>
+    <p><?= t('Während das DLP-Richtlinien-Modul anzeigt, <em>ob</em> DLP-Policies aktiv sind, zeigt diese Seite die <strong>tatsächlichen Treffer</strong> — also wer hat versucht, eine als „Vertraulich" gelabelte Datei nach außen zu teilen, wer hat versucht eine Kreditkarten-Nummer per Mail zu versenden, etc. Das ist der eigentliche Compliance-Audit-Wert (DSGVO Art. 5 + 32).') ?></p>
     <h3><?= te('Datenquelle') ?></h3>
-    <p><?= te('Audit-Log Filter auf <code>category eq \'DataLossPrevention\'</code> oder <code>activityDisplayName</code> mit DLP-/Sensitivity-Label-Prefix. Für detailliertere Daten (Inhalt der Auslöser, betroffene Felder) braucht es Microsoft Purview Premium.') ?></p>
+    <p><?= t('Audit-Log Filter auf <code>category eq \'DataLossPrevention\'</code> oder <code>activityDisplayName</code> mit DLP-/Sensitivity-Label-Prefix. Für detailliertere Daten (Inhalt der Auslöser, betroffene Felder) braucht es Microsoft Purview Premium.') ?></p>
     <h3>Aggregate</h3>
     <ul>
         <li><strong><?= te('Top User mit Treffern') ?></strong> — <?= te('wer wird wiederholt von DLP geblockt? Schulung nötig oder absichtlich?') ?></li>
@@ -644,7 +644,7 @@
 <!-- Authentication-Strength ─────────────────────────────── -->
 <div class="man-section" id="authstrength">
     <h2><i class="bi bi-fingerprint text-primary"></i> Authentication-Strength</h2>
-    <p><?= te('Microsoft empfiehlt seit 2024 ausschließlich <strong>phishing-resistente MFA-Methoden</strong>: FIDO2-Security-Keys, Windows Hello for Business, Certificate-Based Authentication oder Hardware-OATH-Token. Microsoft Authenticator mit Number-Matching ist <strong>nicht</strong> phishing-resistent — Adversary-in-the-Middle-Angriffe (Evilginx, EvilProxy) können den Push-Code abfangen. SMS-OTP und Voice-Call sind erst recht unsicher.') ?></p>
+    <p><?= t('Microsoft empfiehlt seit 2024 ausschließlich <strong>phishing-resistente MFA-Methoden</strong>: FIDO2-Security-Keys, Windows Hello for Business, Certificate-Based Authentication oder Hardware-OATH-Token. Microsoft Authenticator mit Number-Matching ist <strong>nicht</strong> phishing-resistent — Adversary-in-the-Middle-Angriffe (Evilginx, EvilProxy) können den Push-Code abfangen. SMS-OTP und Voice-Call sind erst recht unsicher.') ?></p>
     <h3><?= te('Klassifizierung der User') ?></h3>
     <ul>
         <li><strong><?= te('Phishing-resistent') ?></strong> — <?= te('mindestens eine starke Methode registriert.') ?></li>
@@ -690,7 +690,7 @@
   "secure_score": {"current": 130, "max": 200}
 }</pre>
     <h3><?= te('Empfehlungen') ?></h3>
-    <p><?= te('Die konkreten Empfehlungen (mit Step-by-Step-Anleitung, BSI-/NIS-2-/DSGVO-Artikel-Zitaten und Microsoft-Doku-Links) kommen aus einer hartcodierten <code>RecommendationLibrary</code> — nicht aus der KI. Dadurch sind die Empfehlungen reproduzierbar und nicht-halluzinierend. Die KI liefert nur den 2–3-sätzigen Executive-Summary-Text und einen Score 0–100.') ?></p>
+    <p><?= t('Die konkreten Empfehlungen (mit Step-by-Step-Anleitung, BSI-/NIS-2-/DSGVO-Artikel-Zitaten und Microsoft-Doku-Links) kommen aus einer hartcodierten <code>RecommendationLibrary</code> — nicht aus der KI. Dadurch sind die Empfehlungen reproduzierbar und nicht-halluzinierend. Die KI liefert nur den 2–3-sätzigen Executive-Summary-Text und einen Score 0–100.') ?></p>
     <h3><?= te('Anomalie-Erkennung') ?></h3>
     <p><?= te('Zwei deterministische Anomaly-Services laufen im Hintergrund und fließen in den Kontext ein:') ?></p>
     <ul>
@@ -698,7 +698,7 @@
         <li><strong><?= te('Sign-in-Anomalien') ?></strong> — <?= te('Credential-Stuffing-Signaturen (≥ 5 Failures + Success in 30 min), Impossible-Travel (Successful-Pair < 4 h, unterschiedliche Länder), Logins aus neuen Ländern, Off-Hours-Logins.') ?></li>
     </ul>
     <h3><?= te('Protokoll') ?></h3>
-    <p><?= te('Unter <em>Einstellungen → KI-Sicherheitsberater → Protokoll anzeigen</em> kann der Administrator nachsehen, welche exakten Daten beim letzten Aufruf an die KI gesendet wurden — als Audit-Trail für DSGVO-Compliance.') ?></p>
+    <p><?= t('Unter <em>Einstellungen → KI-Sicherheitsberater → Protokoll anzeigen</em> kann der Administrator nachsehen, welche exakten Daten beim letzten Aufruf an die KI gesendet wurden — als Audit-Trail für DSGVO-Compliance.') ?></p>
     <h3><?= te('Provider-Konfiguration') ?></h3>
     <ul>
         <li><strong>OpenAI</strong> — <?= te('gpt-4o-mini empfohlen, schnell und günstig') ?></li>
@@ -720,7 +720,7 @@
         <li><strong>Footer</strong> <?= te('mit Link auf den KI-Berater für vollständige Empfehlungen.') ?></li>
     </ul>
     <p><?= te('Empfänger ist standardmäßig die Alert-E-Mail-Adresse, kann aber pro Report-Typ überschrieben werden (mehrere durch Komma getrennt).') ?></p>
-    <p><?= te('Buttons <em>„Vorschau im Browser"</em> und <em>„Jetzt versenden"</em> erlauben Tests, ohne auf den 1. des Monats zu warten.') ?></p>
+    <p><?= t('Buttons <em>„Vorschau im Browser"</em> und <em>„Jetzt versenden"</em> erlauben Tests, ohne auf den 1. des Monats zu warten.') ?></p>
 </div>
 
 <!-- MFA-Fatigue ─────────────────────────────────────────── -->
@@ -735,15 +735,15 @@
     </ul>
     <h3><?= te('Sofortmaßnahmen bei einem erfolgreichen Angriff') ?></h3>
     <ol>
-        <li><?= te('Konto sperren (<code>/users</code> → Benutzer → Deaktivieren).') ?></li>
-        <li><?= te('Alle aktiven Sitzungen widerrufen (<code>revokeSignInSessions</code>).') ?></li>
+        <li><?= t('Konto sperren (<code>/users</code> → Benutzer → Deaktivieren).') ?></li>
+        <li><?= t('Alle aktiven Sitzungen widerrufen (<code>revokeSignInSessions</code>).') ?></li>
         <li><?= te('Passwort-Reset erzwingen.') ?></li>
         <li><?= te('Inbox-Regeln im') ?> <a href="/mailboxrules"><?= te('Auto-Forward-Audit') ?></a> <?= te('prüfen — typischerweise legt ein Angreifer als Erstes eine Weiterleitungs-Regel an.') ?></li>
         <li><?= te('Im') ?> <a href="/oauthaudit"><?= te('OAuth-Audit') ?></a> <?= te('nachsehen, ob die App neuen Consents gegeben wurden.') ?></li>
     </ol>
     <h3><?= te('Prävention') ?></h3>
     <ul>
-        <li><?= te('Auf <strong>Number-Matching</strong> umstellen (Microsoft hat das 2023 standardmäßig aktiviert).') ?></li>
+        <li><?= t('Auf <strong>Number-Matching</strong> umstellen (Microsoft hat das 2023 standardmäßig aktiviert).') ?></li>
         <li><?= te('Für privilegierte Konten: FIDO2 oder Windows Hello erzwingen (siehe') ?> <a href="/authstrength"><?= te('Auth-Strength') ?></a><?= te(').') ?></li>
         <li><?= te('Sign-in-Frequency in CA-Policies erhöhen, damit ein gekaperter Token nicht 90 Tage gültig bleibt (siehe') ?> <a href="/tokenlifetime"><?= te('Token-Lifetime') ?></a><?= te(').') ?></li>
     </ul>
@@ -783,7 +783,7 @@
 <!-- Token-Lifetime ──────────────────────────────────────── -->
 <div class="man-section" id="tokenlifetime">
     <h2><i class="bi bi-clock-history text-primary"></i> <?= te('Token-Lifetime &amp; Sign-in-Frequency') ?></h2>
-    <p><?= te('Microsoft hat 2021 die globalen Token-Lifetime-Policies deprecated. Heute steuert man die effektive Anmelde-Frequenz über das <code>signInFrequency</code>-Setting in Conditional-Access-Policies.') ?></p>
+    <p><?= t('Microsoft hat 2021 die globalen Token-Lifetime-Policies deprecated. Heute steuert man die effektive Anmelde-Frequenz über das <code>signInFrequency</code>-Setting in Conditional-Access-Policies.') ?></p>
     <h3><?= te('Empfohlene Werte') ?></h3>
     <table style="width:100%;border-collapse:collapse;font-size:13px;">
         <thead><tr style="background:#f3f4f6;"><th style="padding:6px;text-align:left;border:1px solid #e5e7eb;"><?= te('App-Klasse') ?></th><th style="padding:6px;text-align:left;border:1px solid #e5e7eb;">Sign-in-Frequency</th></tr></thead>
@@ -832,7 +832,7 @@
 
     <h3><?= te('1. Voraussetzungen') ?></h3>
     <ul>
-        <li><strong><?= te('Lizenz:') ?></strong> <?= te('Microsoft Defender for Office 365 <em>Plan 2</em> (in <code>Microsoft 365 E5</code> und <code>Microsoft 365 A5</code> enthalten) oder als Add-on buchbar.') ?></li>
+        <li><strong><?= te('Lizenz:') ?></strong> <?= t('Microsoft Defender for Office 365 <em>Plan 2</em> (in <code>Microsoft 365 E5</code> und <code>Microsoft 365 A5</code> enthalten) oder als Add-on buchbar.') ?></li>
         <li><strong><?= te('Rolle:') ?></strong> <?= te('Sie benötigen eine der folgenden Microsoft-Entra-Rollen:') ?>
             <ul>
                 <li><em><?= te('Globaler Administrator') ?></em></li>
@@ -841,7 +841,7 @@
             </ul>
         </li>
         <li><strong><?= te('Postfach-Verzeichnis:') ?></strong> <?= te('Defender Attack Simulator nutzt die normale Tenant-Verzeichnis-Liste, also sind alle aktiven Mailboxen automatisch verfügbar.') ?></li>
-        <li><strong><?= te('Vorgespräche:') ?></strong> <?= te('Betriebs­rat und Daten­schutz­beauftragten <strong>vor</strong> der ersten Simulation einbinden — in Deutschland ist eine Phishing-Simulation eine Mitarbeiter-Schulungs­maßnahme, die u. U. mitbestimmungs­pflichtig ist (§ 87 Abs. 1 Nr. 6 BetrVG).') ?></li>
+        <li><strong><?= te('Vorgespräche:') ?></strong> <?= t('Betriebs­rat und Daten­schutz­beauftragten <strong>vor</strong> der ersten Simulation einbinden — in Deutschland ist eine Phishing-Simulation eine Mitarbeiter-Schulungs­maßnahme, die u. U. mitbestimmungs­pflichtig ist (§ 87 Abs. 1 Nr. 6 BetrVG).') ?></li>
     </ul>
 
     <h3><?= te('2. Vorbereitung &amp; Kommunikation') ?></h3>
@@ -850,7 +850,7 @@
             <strong><?= te('Pilotphase planen.') ?></strong> <?= te('Niemals direkt den ganzen Tenant ins kalte Wasser werfen — beginnen Sie mit einer Pilotgruppe von 10–30 Personen aus IT, Marketing oder Verwaltung.') ?>
         </li>
         <li>
-            <strong><?= te('Vorab-Kommunikation:') ?></strong> <?= te('ankündigen, dass „in den nächsten Wochen Phishing-Simulationen stattfinden werden, ohne konkreten Termin". Das ist nicht der Verrat — Mitarbeiter sollen wissen, dass es passieren <em>kann</em>, aber nicht <em>wann</em>.') ?>
+            <strong><?= te('Vorab-Kommunikation:') ?></strong> <?= t('ankündigen, dass „in den nächsten Wochen Phishing-Simulationen stattfinden werden, ohne konkreten Termin". Das ist nicht der Verrat — Mitarbeiter sollen wissen, dass es passieren <em>kann</em>, aber nicht <em>wann</em>.') ?>
         </li>
         <li>
             <strong><?= te('Reporting-Plugin in Outlook aktivieren:') ?></strong> <?= te('stellen Sie sicher, dass der Button „Report Phishing" oder „Report Message" in Outlook für alle User sichtbar ist (Defender-Portal → Email &amp; collaboration → Policies → User reported settings).') ?>
@@ -864,10 +864,10 @@
     <ol>
         <li>
             <strong><?= te('Defender-Portal öffnen:') ?></strong>
-            <a href="https://security.microsoft.com/attacksimulator" target="_blank" rel="noopener">security.microsoft.com/attacksimulator</a> → <?= te('Reiter <em>Simulations</em> → <em>+ Launch a simulation</em>.') ?>
+            <a href="https://security.microsoft.com/attacksimulator" target="_blank" rel="noopener">security.microsoft.com/attacksimulator</a> → <?= t('Reiter <em>Simulations</em> → <em>+ Launch a simulation</em>.') ?>
         </li>
         <li>
-            <strong><?= te('Technik wählen.') ?></strong> <?= te('Microsoft bietet sechs Standard-Techniken — beginnen Sie mit <em>Credential Harvest</em> (gefälschte Login-Seite), das ist statistisch der häufigste reale Angriffstyp.') ?>
+            <strong><?= te('Technik wählen.') ?></strong> <?= t('Microsoft bietet sechs Standard-Techniken — beginnen Sie mit <em>Credential Harvest</em> (gefälschte Login-Seite), das ist statistisch der häufigste reale Angriffstyp.') ?>
             <ul style="margin-top:6px;">
                 <li><em>Credential Harvest</em> — <?= te('gefälschte Anmelde-Seite') ?></li>
                 <li><em>Malware Attachment</em> — <?= te('schädlicher Anhang') ?></li>
@@ -887,13 +887,13 @@
             <strong><?= te('Training konfigurieren.') ?></strong> <?= te('User, die auf den Link klicken / Daten eingeben / die Mail nicht melden, bekommen automatisch ein Training zugewiesen (Microsoft empfiehlt das „NIST"-Trainingspfad).') ?>
         </li>
         <li>
-            <strong><?= te('Phishing-Landing-Page wählen.') ?></strong> <?= te('Bei <em>Credential Harvest</em> sieht der User nach Eingabe seiner Daten eine kurze Erklärungs-Seite („Dies war eine Simulation — bitte verwenden Sie nie Ihr echtes Passwort auf solchen Seiten").') ?>
+            <strong><?= te('Phishing-Landing-Page wählen.') ?></strong> <?= t('Bei <em>Credential Harvest</em> sieht der User nach Eingabe seiner Daten eine kurze Erklärungs-Seite („Dies war eine Simulation — bitte verwenden Sie nie Ihr echtes Passwort auf solchen Seiten").') ?>
         </li>
         <li>
             <strong><?= te('Zeitfenster setzen.') ?></strong> <?= te('Empfohlen: 2-Wochen-Fenster, in denen die Mail zufällig verteilt wird. Microsoft hat ein „Region-Aware-Delivery"-Feature, das die Mail in den lokalen Bürozeiten ausliefert.') ?>
         </li>
         <li>
-            <strong><?= te('Starten.') ?></strong> <?= te('Vor dem finalen Klick auf <em>Submit</em> erhalten Sie eine Zusammenfassung — prüfen Sie sie sorgfältig.') ?>
+            <strong><?= te('Starten.') ?></strong> <?= t('Vor dem finalen Klick auf <em>Submit</em> erhalten Sie eine Zusammenfassung — prüfen Sie sie sorgfältig.') ?>
         </li>
     </ol>
 
@@ -921,20 +921,20 @@
     </ol>
 
     <h3><?= te('6. Kadenz') ?></h3>
-    <p><?= te('Empfehlung: <strong>alle 2–3 Monate</strong> eine Kampagne, je mit anderer Technik und anderem Payload. Studien zeigen, dass die Klick-Quote bei einer konstanten Kampagne nach ca. 18 Monaten von typisch 25 % auf unter 5 % sinkt.') ?></p>
+    <p><?= t('Empfehlung: <strong>alle 2–3 Monate</strong> eine Kampagne, je mit anderer Technik und anderem Payload. Studien zeigen, dass die Klick-Quote bei einer konstanten Kampagne nach ca. 18 Monaten von typisch 25 % auf unter 5 % sinkt.') ?></p>
 
     <h3><?= te('7. Häufige Fallstricke') ?></h3>
     <ul>
         <li><strong><?= te('Personalrat/Betriebsrat nicht eingebunden.') ?></strong> <?= te('Kann zu Beschwerden und im schlimmsten Fall zu Untersagung führen. Vorher klären.') ?></li>
         <li><strong><?= te('Beschämungs-Kommunikation.') ?></strong> <?= te('Wer dem Marketing einen Brief schickt „Sie sind unser bester Klicker", verliert die Belegschaft. Stattdessen anonyme Aggregate.') ?></li>
         <li><strong><?= te('Zu seltene Wiederholung.') ?></strong> <?= te('Eine Phishing-Simulation pro Jahr bringt fast nichts — Skills verblassen schnell.') ?></li>
-        <li><strong><?= te('Standard-Payloads ohne Anpassung.') ?></strong> <?= te('Microsoft-Standard-Templates sind oft zu generisch. Erstellen Sie für die zweite/dritte Kampagne <em>Custom Payloads</em>, die Ihren Branchen-Kontext aufnehmen.') ?></li>
+        <li><strong><?= te('Standard-Payloads ohne Anpassung.') ?></strong> <?= t('Microsoft-Standard-Templates sind oft zu generisch. Erstellen Sie für die zweite/dritte Kampagne <em>Custom Payloads</em>, die Ihren Branchen-Kontext aufnehmen.') ?></li>
         <li><strong><?= te('Verteilung über Mail-Allow-Listen umgehen.') ?></strong> <?= te('Defender Simulator ist standardmäßig auf der Allow-Liste — wenn Ihre Anti-Spam-Regeln zu aggressiv sind, kann die Simulations-Mail trotzdem gefiltert werden. Prüfen Sie im Vorhinein mit einer Test-Simulation an die IT-Abteilung.') ?></li>
     </ul>
 
     <div class="tip-box">
         <i class="bi bi-lightbulb"></i>
-        <strong><?= te('Pro-Tipp:') ?></strong> <?= te('Nach 2–3 erfolgreichen Kampagnen lassen sich die Simulationen mit der <em>Automation</em>-Funktion im Defender-Portal auch selbst-fahrend einrichten — Microsoft wählt dann pro Quartal eine neue Technik + Payload aus und versendet die Mail an User-Gruppen, die schon eine Weile keine Simulation mehr bekommen haben.') ?>
+        <strong><?= te('Pro-Tipp:') ?></strong> <?= t('Nach 2–3 erfolgreichen Kampagnen lassen sich die Simulationen mit der <em>Automation</em>-Funktion im Defender-Portal auch selbst-fahrend einrichten — Microsoft wählt dann pro Quartal eine neue Technik + Payload aus und versendet die Mail an User-Gruppen, die schon eine Weile keine Simulation mehr bekommen haben.') ?>
     </div>
 
     <h3><?= te('8. Weiterführende Links') ?></h3>
@@ -956,7 +956,7 @@
 <!-- Customer Lockbox ───────────────────────────────────── -->
 <div class="man-section" id="customerlockbox">
     <h2><i class="bi bi-lock-fill text-primary"></i> Customer Lockbox</h2>
-    <p><?= te('Ohne Customer Lockbox darf Microsoft Support im Notfall direkt auf Ihre Daten zugreifen — Sie erfahren es nicht. Mit aktiviertem Lockbox muss jeder Microsoft-Support-Zugriff aktiv von einem Tenant-Admin approvt werden, sonst gibt es <strong>keinen</strong> Zugriff.') ?></p>
+    <p><?= t('Ohne Customer Lockbox darf Microsoft Support im Notfall direkt auf Ihre Daten zugreifen — Sie erfahren es nicht. Mit aktiviertem Lockbox muss jeder Microsoft-Support-Zugriff aktiv von einem Tenant-Admin approvt werden, sonst gibt es <strong>keinen</strong> Zugriff.') ?></p>
     <p><strong><?= te('Voraussetzung:') ?></strong> <?= te('Microsoft 365 E5 oder als Add-on.') ?></p>
     <p><?= te('Microsoft Graph stellt für diese Einstellung keinen Schreib-Endpunkt zur Verfügung — Konfiguration daher im M365 Admin Center → Security &amp; Privacy. Das Tool tracked nur den manuell eingetragenen Aktivierungs-Status, die Approver-Liste, die SLA-Reaktionszeit und das Datum der letzten Review (halbjährlich empfohlen).') ?></p>
 </div>
@@ -970,7 +970,7 @@
     <ul>
         <li><strong><?= te('Synchronisieren') ?></strong>: <?= te('Sendet eine Sync-Anfrage ans Gerät — beim nächsten Check-In werden Richtlinien und Status aktualisiert') ?></li>
         <li><strong>Retire</strong> <?= te('(nur Admin)') ?>: <?= te('Entfernt Unternehmens-Apps und -Daten, das Gerät bleibt persönlich nutzbar (für BYOD geeignet)') ?></li>
-        <li><strong>Wipe</strong> <?= te('(nur Admin)') ?>: <?= te('Setzt das Gerät auf Werkseinstellungen zurück — <strong>alle Daten werden unwiderruflich gelöscht</strong>') ?></li>
+        <li><strong>Wipe</strong> <?= te('(nur Admin)') ?>: <?= t('Setzt das Gerät auf Werkseinstellungen zurück — <strong>alle Daten werden unwiderruflich gelöscht</strong>') ?></li>
     </ul>
 
     <h3><?= te('BitLocker-Schlüssel') ?></h3>
@@ -1064,30 +1064,30 @@
 <!-- Benutzer-Zugang ──────────────────────────────────────── -->
 <div class="man-section" id="useraccess">
     <h2><i class="bi bi-people-fill text-primary"></i> <?= te('Benutzer-Zugang') ?></h2>
-    <p><?= te('Neben dem lokalen Admin-Konto können beliebig viele <strong>Microsoft 365-Benutzer</strong> des Tenants berechtigt werden, sich mit ihrem Microsoft-Konto anzumelden — z.B. IT-Mitarbeiter als Operator.') ?></p>
+    <p><?= t('Neben dem lokalen Admin-Konto können beliebig viele <strong>Microsoft 365-Benutzer</strong> des Tenants berechtigt werden, sich mit ihrem Microsoft-Konto anzumelden — z.B. IT-Mitarbeiter als Operator.') ?></p>
 
     <h3><?= te('Voraussetzungen in Azure') ?></h3>
     <p><?= te('Die bestehende App-Registrierung muss um folgende Konfiguration ergänzt werden:') ?></p>
     <ol>
-        <li><?= te('In der App-Registrierung unter <strong>Authentifizierung → Redirect-URIs</strong> die angezeigte URI eintragen (wird auf der Seite <em>Einstellungen → Benutzer-Zugang</em> direkt angezeigt)') ?></li>
-        <li><?= te('Unter <strong>API-Berechtigungen</strong> die <strong>delegierte</strong> Berechtigung') ?> <span class="perm-tag">User.Read</span> <?= te('hinzufügen (nicht die Anwendungsberechtigung — die delegierte Version reicht für das Login)') ?></li>
-        <li><?= te('Kein zusätzlicher Admin-Consent nötig — <code>User.Read</code> delegiert wird von jedem Benutzer selbst beim ersten Login genehmigt') ?></li>
+        <li><?= t('In der App-Registrierung unter <strong>Authentifizierung → Redirect-URIs</strong> die angezeigte URI eintragen (wird auf der Seite <em>Einstellungen → Benutzer-Zugang</em> direkt angezeigt)') ?></li>
+        <li><?= t('Unter <strong>API-Berechtigungen</strong> die <strong>delegierte</strong> Berechtigung') ?> <span class="perm-tag">User.Read</span> <?= te('hinzufügen (nicht die Anwendungsberechtigung — die delegierte Version reicht für das Login)') ?></li>
+        <li><?= t('Kein zusätzlicher Admin-Consent nötig — <code>User.Read</code> delegiert wird von jedem Benutzer selbst beim ersten Login genehmigt') ?></li>
     </ol>
-    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Die Redirect-URI ist im Format <code>https://ihre-domain/auth/microsoft/callback</code>. Wenn <em>App-Basis-URL</em> in den Einstellungen konfiguriert ist, wird diese verwendet.') ?></div>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= t('Die Redirect-URI ist im Format <code>https://ihre-domain/auth/microsoft/callback</code>. Wenn <em>App-Basis-URL</em> in den Einstellungen konfiguriert ist, wird diese verwendet.') ?></div>
 
     <h3><?= te('Benutzer hinzufügen') ?></h3>
-    <p><?= te('Über <strong>Einstellungen → Benutzer-Zugang → Benutzer hinzufügen</strong> können vorhandene Tenant-Benutzer per Suchfunktion ausgewählt werden:') ?></p>
+    <p><?= t('Über <strong>Einstellungen → Benutzer-Zugang → Benutzer hinzufügen</strong> können vorhandene Tenant-Benutzer per Suchfunktion ausgewählt werden:') ?></p>
     <ol>
         <li><?= te('Im Suchfeld Name oder E-Mail-Adresse eingeben (mindestens 2 Zeichen)') ?></li>
         <li><?= te('Benutzer aus den Vorschlägen auswählen (durchsucht Anzeigenamen und UPN)') ?></li>
-        <li><?= te('Rolle festlegen: <strong>Operator</strong> (Standard) oder <strong>Administrator</strong>') ?></li>
+        <li><?= t('Rolle festlegen: <strong>Operator</strong> (Standard) oder <strong>Administrator</strong>') ?></li>
         <li><?= te('„Hinzufügen" klicken') ?></li>
     </ol>
     <p><?= te('Falls die Graph-Suche nicht verfügbar ist (z.B. fehlende Berechtigung), kann der UPN auch manuell eingegeben werden (Link „UPN manuell eingeben" im Dialog).') ?></p>
 
     <h3><?= te('Anmeldevorgang für Benutzer') ?></h3>
     <ol>
-        <li><?= te('Benutzer öffnet die Login-Seite und klickt <strong>„Mit Microsoft anmelden"</strong>') ?></li>
+        <li><?= t('Benutzer öffnet die Login-Seite und klickt <strong>„Mit Microsoft anmelden"</strong>') ?></li>
         <li><?= te('Weiterleitung zur Microsoft-Anmeldeseite (login.microsoftonline.com)') ?></li>
         <li><?= te('Nach erfolgreicher Authentifizierung prüft das Tool, ob der Benutzer in der Zugriffsliste steht') ?></li>
         <li><?= te('Ist er eingetragen und aktiv: automatische Anmeldung mit der zugewiesenen Rolle') ?></li>
@@ -1108,7 +1108,7 @@
     </table>
 
     <h3><?= te('Benutzer deaktivieren / entfernen') ?></h3>
-    <p><?= te('Über den Bearbeiten-Button kann ein Benutzer <strong>deaktiviert</strong> werden (Zugriff gesperrt, aber Eintrag bleibt erhalten) oder über den Löschen-Button vollständig entfernt werden. Eine aktive Session wird beim nächsten Seitenaufruf automatisch beendet.') ?></p>
+    <p><?= t('Über den Bearbeiten-Button kann ein Benutzer <strong>deaktiviert</strong> werden (Zugriff gesperrt, aber Eintrag bleibt erhalten) oder über den Löschen-Button vollständig entfernt werden. Eine aktive Session wird beim nächsten Seitenaufruf automatisch beendet.') ?></p>
     <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><?= te('Der letzte Administrator-Benutzer sollte nicht entfernt werden. Das lokale Admin-Konto (aus dem Setup) ist davon unabhängig und bleibt immer erhalten.') ?></div>
 </div>
 
@@ -1130,7 +1130,7 @@
         <li><?= te('Während des Updates wird ein Fortschrittsbalken angezeigt') ?></li>
         <li><?= te('Nach dem Update lädt die Seite automatisch neu') ?></li>
     </ol>
-    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Geschützte Verzeichnisse (<code>config/</code>, <code>storage/</code>, <code>vendor/</code>, <code>composer.lock</code>) werden beim Update nie überschrieben — Konfiguration und Daten bleiben erhalten.') ?></div>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= t('Geschützte Verzeichnisse (<code>config/</code>, <code>storage/</code>, <code>vendor/</code>, <code>composer.lock</code>) werden beim Update nie überschrieben — Konfiguration und Daten bleiben erhalten.') ?></div>
 
     <h3><?= te('Datenbank-Migrationen') ?></h3>
     <p><?= te('Nach einem Update können ausstehende SQL-Migrationen manuell oder automatisch ausgeführt werden. Das Tool zeigt an, welche Migrationen bereits angewendet wurden.') ?></p>
@@ -1139,7 +1139,7 @@
 <!-- Berechtigungen ───────────────────────────────────────── -->
 <div class="man-section" id="permissions">
     <h2><i class="bi bi-shield-check text-primary"></i> <?= te('Erforderliche Graph-Berechtigungen') ?></h2>
-    <p><?= te('Alle Berechtigungen sind <strong>Anwendungsberechtigungen</strong> (Application Permissions), keine delegierten Berechtigungen. Sie werden in der Azure App-Registrierung unter <em>API-Berechtigungen → Microsoft Graph → Anwendungsberechtigungen</em> erteilt und erfordern <strong>Administrator-Zustimmung</strong>.') ?></p>
+    <p><?= t('Alle Berechtigungen sind <strong>Anwendungsberechtigungen</strong> (Application Permissions), keine delegierten Berechtigungen. Sie werden in der Azure App-Registrierung unter <em>API-Berechtigungen → Microsoft Graph → Anwendungsberechtigungen</em> erteilt und erfordern <strong>Administrator-Zustimmung</strong>.') ?></p>
 
     <h3><?= te('Mindest-Berechtigungen (Lesen)') ?></h3>
     <ul>
@@ -1164,9 +1164,9 @@
     <h3><?= te('Für M365-Benutzer-Login (delegiert)') ?></h3>
     <p><?= te('Damit IT-Mitarbeiter sich mit ihrem Microsoft-Konto anmelden können, wird zusätzlich benötigt:') ?></p>
     <ul>
-        <li><span class="perm-tag">User.Read</span> — <?= te('<strong>delegierte</strong> Berechtigung (nicht Application), ermöglicht das Auslesen von Name und UPN des angemeldeten Benutzers nach dem Login') ?></li>
+        <li><span class="perm-tag">User.Read</span> — <?= t('<strong>delegierte</strong> Berechtigung (nicht Application), ermöglicht das Auslesen von Name und UPN des angemeldeten Benutzers nach dem Login') ?></li>
     </ul>
-    <p class="text-muted small"><?= te('Diese Berechtigung wird unter <em>API-Berechtigungen → Delegierte Berechtigungen → Microsoft Graph → User.Read</em> hinzugefügt. Kein Admin-Consent nötig.') ?></p>
+    <p class="text-muted small"><?= t('Diese Berechtigung wird unter <em>API-Berechtigungen → Delegierte Berechtigungen → Microsoft Graph → User.Read</em> hinzugefügt. Kein Admin-Consent nötig.') ?></p>
 
     <h3><?= te('Zusätzliche Schreib-Berechtigungen') ?></h3>
     <ul>
@@ -1183,34 +1183,34 @@
         <li><span class="perm-tag">Sites.ReadWrite.All</span> — <?= te('Freigaberichtlinien ändern') ?></li>
     </ul>
 
-    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Unter <strong>Einstellungen → Berechtigungen prüfen</strong> siehst du immer, welche Berechtigungen aktuell erteilt sind und welche Module dadurch eingeschränkt sind.') ?></div>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= t('Unter <strong>Einstellungen → Berechtigungen prüfen</strong> siehst du immer, welche Berechtigungen aktuell erteilt sind und welche Module dadurch eingeschränkt sind.') ?></div>
 </div>
 
 <div class="man-section" id="setupwizard">
     <h2><i class="bi bi-magic"></i> <?= te('Einrichtungs-Assistent') ?></h2>
-    <p><?= te('Beim ersten Login eines Admins erscheint automatisch der fünfstufige Einrichtungs-Assistent. Er prüft die Tenant-Verbindung, die App-Permissions, fragt Benachrichtigungs-Empfänger und Branding ab, und schlägt am Ende ein passendes Compliance-Profil vor. Der Assistent kann jederzeit erneut über <strong>Administration → Einrichtungs-Assistent</strong> aufgerufen werden.') ?></p>
+    <p><?= t('Beim ersten Login eines Admins erscheint automatisch der fünfstufige Einrichtungs-Assistent. Er prüft die Tenant-Verbindung, die App-Permissions, fragt Benachrichtigungs-Empfänger und Branding ab, und schlägt am Ende ein passendes Compliance-Profil vor. Der Assistent kann jederzeit erneut über <strong>Administration → Einrichtungs-Assistent</strong> aufgerufen werden.') ?></p>
 </div>
 
 <div class="man-section" id="complianceprofiles">
     <h2><i class="bi bi-patch-check"></i> <?= te('Compliance-Profile') ?></h2>
-    <p><?= te('Compliance-Profile bündeln branchen-typische Härtungs-Voreinstellungen zu Ein-Klick-Presets. Verfügbare Profile: <strong>Standard / DSGVO-Basis</strong>, <strong>Gesundheitswesen (KRITIS)</strong>, <strong>Finanzwesen (BaFin/DORA)</strong>, <strong>Öffentlicher Sektor / BSI</strong>, <strong>Bildung</strong>. Jedes Profil ruft beim Anwenden eine Sequenz von <code>HardeningService</code>-Aktionen auf — komplett im Audit-Log nachvollziehbar und über das Härtungs-Modul einzeln revidierbar.') ?></p>
-    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Profile sind <strong>nicht exklusiv</strong>. Du kannst z. B. mit dem Standard-Profil starten und einzelne Härtungs-Items im <code>/hardening</code>-Modul nachjustieren. Das aktuell aktive Profil wird in den Settings vermerkt.') ?></div>
+    <p><?= t('Compliance-Profile bündeln branchen-typische Härtungs-Voreinstellungen zu Ein-Klick-Presets. Verfügbare Profile: <strong>Standard / DSGVO-Basis</strong>, <strong>Gesundheitswesen (KRITIS)</strong>, <strong>Finanzwesen (BaFin/DORA)</strong>, <strong>Öffentlicher Sektor / BSI</strong>, <strong>Bildung</strong>. Jedes Profil ruft beim Anwenden eine Sequenz von <code>HardeningService</code>-Aktionen auf — komplett im Audit-Log nachvollziehbar und über das Härtungs-Modul einzeln revidierbar.') ?></p>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= t('Profile sind <strong>nicht exklusiv</strong>. Du kannst z. B. mit dem Standard-Profil starten und einzelne Härtungs-Items im <code>/hardening</code>-Modul nachjustieren. Das aktuell aktive Profil wird in den Settings vermerkt.') ?></div>
 </div>
 
 <div class="man-section" id="notifications">
     <h2><i class="bi bi-bell"></i> <?= te('In-App-Benachrichtigungen') ?></h2>
-    <p><?= te('Die Glocke oben rechts in der Topbar zeigt alle Tenant-Ereignisse seit deinem letzten Besuch. Module wie Defender-Alerts, Cross-Tenant-Access, MFA-Fatigue oder das Compliance-Profil drücken Events in das gemeinsame Feed — eine Klick-Adresse pro Eintrag führt direkt zur Detail-Seite. Benachrichtigungen werden 90 Tage aufbewahrt und automatisch vom Cron-Job <code>notification_trim</code> gepflegt.') ?></p>
+    <p><?= t('Die Glocke oben rechts in der Topbar zeigt alle Tenant-Ereignisse seit deinem letzten Besuch. Module wie Defender-Alerts, Cross-Tenant-Access, MFA-Fatigue oder das Compliance-Profil drücken Events in das gemeinsame Feed — eine Klick-Adresse pro Eintrag führt direkt zur Detail-Seite. Benachrichtigungen werden 90 Tage aufbewahrt und automatisch vom Cron-Job <code>notification_trim</code> gepflegt.') ?></p>
 </div>
 
 <div class="man-section" id="auditdiff">
     <h2><i class="bi bi-arrow-left-right"></i> <?= te('Audit-Diff') ?></h2>
-    <p><?= te('Täglich (Cron-Job <code>audit_diff_snapshot</code>) wird ein Snapshot aller sicherheitsrelevanten Tenant-Einstellungen erstellt — Authorization Policy, Security Defaults, Auth Methods, SharePoint, Conditional Access, Admin-Rollen, Gast-Konfiguration. In <strong>Compliance &amp; Audit → Audit-Diff</strong> kannst du beliebige zwei Snapshots auswählen und alle Veränderungen mit Rot-/Grün-/Gelb-Markierung darstellen.') ?></p>
+    <p><?= t('Täglich (Cron-Job <code>audit_diff_snapshot</code>) wird ein Snapshot aller sicherheitsrelevanten Tenant-Einstellungen erstellt — Authorization Policy, Security Defaults, Auth Methods, SharePoint, Conditional Access, Admin-Rollen, Gast-Konfiguration. In <strong>Compliance &amp; Audit → Audit-Diff</strong> kannst du beliebige zwei Snapshots auswählen und alle Veränderungen mit Rot-/Grün-/Gelb-Markierung darstellen.') ?></p>
     <p><?= te('Ideal für Übergaben (was hat der Vorgänger letzte Woche verändert?), für Audits (was hat sich seit der letzten Prüfung getan?) und für die Untersuchung von Vorfällen (wer hat wann diese Einstellung umgestellt? — Audit-Log liefert das &quot;wer&quot;, Audit-Diff das &quot;was&quot;).') ?></p>
 </div>
 
 <div class="man-section" id="auditreport">
     <h2><i class="bi bi-file-earmark-pdf"></i> <?= te('DSGVO/NIS-2 Audit-Report') ?></h2>
-    <p><?= te('Unter <strong>Compliance &amp; Audit → DSGVO/NIS-2 Report</strong> erzeugt das Tool einen kompletten Audit-Bericht. Die Struktur:') ?></p>
+    <p><?= t('Unter <strong>Compliance &amp; Audit → DSGVO/NIS-2 Report</strong> erzeugt das Tool einen kompletten Audit-Bericht. Die Struktur:') ?></p>
     <ol>
         <li><strong><?= te('Deckblatt') ?></strong> <?= te('mit Tenant-Stammdaten und aktivem Compliance-Profil') ?></li>
         <li><strong>Graph-API-Berechtigungen</strong> — <?= te('wieviele erteilt, wieviele fehlen') ?></li>
@@ -1222,42 +1222,42 @@
 
 <div class="man-section" id="restapi">
     <h2><i class="bi bi-code-slash"></i> REST-API &amp; Swagger</h2>
-    <p>Das Tool stellt unter <code>/api/v1/...</code> eine umfangreiche REST-API für externe Werkzeuge bereit: PowerBI, Grafana, n8n, eigene Skripte. Endpunkte u. a.:</p>
+    <p><?= t('Das Tool stellt unter <code>/api/v1/...</code> eine umfangreiche REST-API für externe Werkzeuge bereit: PowerBI, Grafana, n8n, eigene Skripte. Endpunkte u. a.:') ?></p>
     <ul>
-        <li><code>GET /api/v1/dashboard/metrics</code> — alle KPIs in einem JSON</li>
+        <li><code>GET /api/v1/dashboard/metrics</code> — <?= te('alle KPIs in einem JSON') ?></li>
         <li><code>GET /api/v1/dashboard/security</code> — MFA/CA/Risk-Status</li>
-        <li><code>GET /api/v1/dashboard/licenses</code> — Top-Lizenz-Nutzung</li>
-        <li><code>GET /api/v1/metrics/{name}/history?days=30</code> — Historie für Charts</li>
-        <li><code>GET /api/v1/hardening</code> — Liste der Härtungs-Items mit Status</li>
+        <li><code>GET /api/v1/dashboard/licenses</code> — <?= te('Top-Lizenz-Nutzung') ?></li>
+        <li><code>GET /api/v1/metrics/{name}/history?days=30</code> — <?= te('Historie für Charts') ?></li>
+        <li><code>GET /api/v1/hardening</code> — <?= te('Liste der Härtungs-Items mit Status') ?></li>
         <li><code>GET /api/v1/snapshots</code> &amp; <code>/api/v1/snapshots/diff?from=&amp;to=</code></li>
         <li><code>GET /api/v1/notifications</code> &amp; <code>POST /api/v1/notifications/push</code> (Webhook-Stil)</li>
         <li><code>GET /api/v1/audit-log</code></li>
     </ul>
-    <h3>Authentifizierung</h3>
-    <p>Per API-Key im Header: <code>X-Api-Key: m365_xxxxxxxx</code>. Keys erzeugst du unter <strong>Administration → API-Schlüssel</strong>; der Klartextwert wird genau einmal angezeigt und nur als SHA-256-Hash gespeichert. Scopes: <code>read</code> (Lesen), <code>write</code> (Notifications pushen), <code>admin</code> (reserviert).</p>
-    <h3>Dokumentation</h3>
-    <p>Die vollständige interaktive OpenAPI-3.0-Dokumentation findest du unter <code>/api/docs</code> — Swagger UI mit &quot;Try it out&quot;-Funktion. Die Roh-Spec gibt es unter <code>/api/openapi.json</code> für Import in z. B. Postman.</p>
+    <h3><?= te('Authentifizierung') ?></h3>
+    <p><?= t('Per API-Key im Header: <code>X-Api-Key: m365_xxxxxxxx</code>. Keys erzeugst du unter <strong>Administration → API-Schlüssel</strong>; der Klartextwert wird genau einmal angezeigt und nur als SHA-256-Hash gespeichert. Scopes: <code>read</code> (Lesen), <code>write</code> (Notifications pushen), <code>admin</code> (reserviert).') ?></p>
+    <h3><?= te('Dokumentation') ?></h3>
+    <p><?= t('Die vollständige interaktive OpenAPI-3.0-Dokumentation findest du unter <code>/api/docs</code> — Swagger UI mit &quot;Try it out&quot;-Funktion. Die Roh-Spec gibt es unter <code>/api/openapi.json</code> für Import in z. B. Postman.') ?></p>
 </div>
 
 <div class="man-section" id="workflows">
-    <h2><i class="bi bi-diagram-2"></i> Workflow-Automatisierung</h2>
-    <p>Unter <strong>Administration → Workflows</strong> kannst du leichtgewichtige Trigger-Aktion-Sequenzen anlegen — als Mini-Power-Automate für M365-Standardabläufe. Beispiele:</p>
+    <h2><i class="bi bi-diagram-2"></i> <?= te('Workflow-Automatisierung') ?></h2>
+    <p><?= t('Unter <strong>Administration → Workflows</strong> kannst du leichtgewichtige Trigger-Aktion-Sequenzen anlegen — als Mini-Power-Automate für M365-Standardabläufe. Beispiele:') ?></p>
     <ul>
-        <li>&quot;Neuer Gast-Benutzer&quot; → &quot;In Gruppe X aufnehmen&quot; + &quot;Mail an IT-Leitung&quot; + &quot;In-App-Benachrichtigung erzeugen&quot;</li>
-        <li>&quot;Alle 60 Minuten&quot; → &quot;Notification erzeugen, wenn Risk-Score hoch&quot;</li>
-        <li>&quot;Neuer Benutzer in Gruppe XY&quot; → &quot;Lizenz E3 zuweisen&quot; + &quot;Begrüßungsmail senden&quot;</li>
+        <li><?= te('&quot;Neuer Gast-Benutzer&quot; → &quot;In Gruppe X aufnehmen&quot; + &quot;Mail an IT-Leitung&quot; + &quot;In-App-Benachrichtigung erzeugen&quot;') ?></li>
+        <li><?= te('&quot;Alle 60 Minuten&quot; → &quot;Notification erzeugen, wenn Risk-Score hoch&quot;') ?></li>
+        <li><?= te('&quot;Neuer Benutzer in Gruppe XY&quot; → &quot;Lizenz E3 zuweisen&quot; + &quot;Begrüßungsmail senden&quot;') ?></li>
     </ul>
-    <p>Trigger werden alle 15 Minuten vom Cron-Job <code>workflow_runner</code> ausgewertet. Jede Aktion landet im Run-Log (Schwester-Tabelle <code>app_workflow_runs</code>) mit Status, Ziel und Detail. Template-Variablen für Mail-/Notification-Felder: <code>{{user.userPrincipalName}}</code>, <code>{{user.displayName}}</code>, <code>{{user.id}}</code>, <code>{{trigger}}</code>.</p>
+    <p><?= t('Trigger werden alle 15 Minuten vom Cron-Job <code>workflow_runner</code> ausgewertet. Jede Aktion landet im Run-Log (Schwester-Tabelle <code>app_workflow_runs</code>) mit Status, Ziel und Detail. Template-Variablen für Mail-/Notification-Felder: <code>{{user.userPrincipalName}}</code>, <code>{{user.displayName}}</code>, <code>{{user.id}}</code>, <code>{{trigger}}</code>.') ?></p>
 </div>
 
 <div class="man-section" id="kpisparklines">
     <h2><i class="bi bi-graph-up"></i> KPI-Sparklines</h2>
-    <p>Neben den wichtigsten Dashboard-Kennzahlen siehst du ein 7-Tage-Mini-Diagramm und einen Prozent-Pfeil (<code>↑ 3,2%</code>) — der Trend gegenüber der letzten Woche. Das funktioniert, sobald das Dashboard ein paar Tage in Folge aufgerufen wurde (Werte werden in <code>app_metric_history</code> persistiert). API-Endpunkt für externe Charts: <code>/api/v1/metrics/{name}/history</code>.</p>
+    <p><?= t('Neben den wichtigsten Dashboard-Kennzahlen siehst du ein 7-Tage-Mini-Diagramm und einen Prozent-Pfeil (<code>↑ 3,2%</code>) — der Trend gegenüber der letzten Woche. Das funktioniert, sobald das Dashboard ein paar Tage in Folge aufgerufen wurde (Werte werden in <code>app_metric_history</code> persistiert). API-Endpunkt für externe Charts: <code>/api/v1/metrics/{name}/history</code>.') ?></p>
 </div>
 
 <div class="man-section" id="onlinehelp">
-    <h2><i class="bi bi-question-circle"></i> Online-Hilfe (?-Bubbles)</h2>
-    <p>An vielen Stellen findest du kleine <code>?</code>-Symbole neben Labels und Überschriften. Beim Hovern erscheint eine deutschsprachige Erklärung — der gesamte Katalog (~35 Begriffe) wird zentral in <code>src/Core/Help.php</code> gepflegt und kann mit <code>\App\Core\Help::tip('key')</code> in jeder View aufgerufen werden.</p>
+    <h2><i class="bi bi-question-circle"></i> <?= te('Online-Hilfe (?-Bubbles)') ?></h2>
+    <p><?= t('An vielen Stellen findest du kleine <code>?</code>-Symbole neben Labels und Überschriften. Beim Hovern erscheint eine deutschsprachige Erklärung — der gesamte Katalog (~35 Begriffe) wird zentral in <code>src/Core/Help.php</code> gepflegt und kann mit <code>\App\Core\Help::tip(\'key\')</code> in jeder View aufgerufen werden.') ?></p>
 </div>
 
 </div><!-- /manual-body -->

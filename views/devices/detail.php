@@ -214,7 +214,7 @@ $enrolledDate    = !empty($detail['enrolledDateTime']) ? date('d.m.Y', strtotime
         <?php if (empty($bitlockerKeys)): ?>
             <div class="empty-state text-center py-3">
                 <i class="bi bi-key fs-2 text-muted mb-2 d-block"></i>
-                <p class="text-muted mb-0"><?= te('Keine BitLocker-Schlüssel gefunden. Entweder ist das Gerät nicht verschlüsselt, oder die Berechtigung <code>InformationProtection.Read.All</code> fehlt.') ?></p>
+                <p class="text-muted mb-0"><?= t('Keine BitLocker-Schlüssel gefunden. Entweder ist das Gerät nicht verschlüsselt, oder die Berechtigung <code>InformationProtection.Read.All</code> fehlt.') ?></p>
             </div>
         <?php else: ?>
             <div class="alert alert-warning small mb-3 py-2">

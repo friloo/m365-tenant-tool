@@ -262,9 +262,9 @@ foreach ($byCategory as $cat => $items) {
 <!-- Hinweis -->
 <div style="padding:12px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;color:#64748b;">
     <i class="bi bi-info-circle me-1"></i>
-    <?= te('Prüfungen basieren auf Microsoft Graph API-Daten und Best Practices (CIS M365, Microsoft Security Baseline).
+    <?= t('Prüfungen basieren auf Microsoft Graph API-Daten und Best Practices (CIS M365, Microsoft Security Baseline).
     Fehlende Berechtigungen werden als <strong>Unbekannt</strong> angezeigt.
     Einige Prüfungen nutzen gecachte Daten (5–30 Min). Für aktuelle Ergebnisse:') ?>
     <a href="?refresh=1" style="color:#0078d4;"><?= te('Aktualisieren') ?></a>.
-    <?= te('Risikobasierte CA-Richtlinien (Anmelderisiko, Benutzerrisiko) erfordern <strong>Entra ID P2</strong>.') ?>
+    <?= t('Risikobasierte CA-Richtlinien (Anmelderisiko, Benutzerrisiko) erfordern <strong>Entra ID P2</strong>.') ?>
 </div>
