@@ -106,8 +106,8 @@
                     <div class="mb-3">
                         <label for="reviewTitle" class="form-label fw-medium"><?= te('Titel der Prüfung') ?></label>
                         <input type="text" id="reviewTitle" name="title" class="form-control"
-                               value="Gastbenutzer-Review <?= date('d.m.Y') ?>"
-                               placeholder="Gastbenutzer-Review <?= date('d.m.Y') ?>" required>
+                               value="<?= te('Gastbenutzer-Review') ?> <?= date('d.m.Y') ?>"
+                               placeholder="<?= te('Gastbenutzer-Review') ?> <?= date('d.m.Y') ?>" required>
                         <div class="form-text"><?= te('Alle aktuellen Gastbenutzer werden als Prüfungseinträge geladen.') ?></div>
                     </div>
                     <div class="alert alert-info py-2 mb-0" style="font-size:13px;">

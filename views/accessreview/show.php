@@ -15,19 +15,19 @@
     <div>
         <h2 style="font-size:18px;font-weight:700;margin-bottom:4px;"><?= $e($review['title']) ?></h2>
         <div style="font-size:13px;color:#6b7280;">
-            <i class="bi bi-calendar3 me-1"></i>Erstellt: <?= date('d.m.Y H:i', strtotime($review['created_at'])) ?>
+            <i class="bi bi-calendar3 me-1"></i><?= te('Erstellt:') ?> <?= date('d.m.Y H:i', strtotime($review['created_at'])) ?>
             &nbsp;&bull;&nbsp;
             <i class="bi bi-person me-1"></i><?= $e($review['created_by']) ?>
             <?php if ($isClosed && $review['completed_at']): ?>
-                &nbsp;&bull;&nbsp;<i class="bi bi-check2-circle me-1"></i>Abgeschlossen: <?= date('d.m.Y H:i', strtotime($review['completed_at'])) ?>
+                &nbsp;&bull;&nbsp;<i class="bi bi-check2-circle me-1"></i><?= te('Abgeschlossen:') ?> <?= date('d.m.Y H:i', strtotime($review['completed_at'])) ?>
             <?php endif; ?>
         </div>
     </div>
     <div>
         <?php if ($isClosed): ?>
-            <span class="badge-enabled" style="font-size:13px;padding:5px 12px;">Abgeschlossen</span>
+            <span class="badge-enabled" style="font-size:13px;padding:5px 12px;"><?= te('Abgeschlossen') ?></span>
         <?php else: ?>
-            <span class="badge-warning" style="font-size:13px;padding:5px 12px;">Offen</span>
+            <span class="badge-warning" style="font-size:13px;padding:5px 12px;"><?= te('Offen') ?></span>
         <?php endif; ?>
     </div>
 </div>
@@ -36,13 +36,13 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Einträge gesamt</div>
+            <div class="metric-label"><?= te('Einträge gesamt') ?></div>
             <div class="metric-value"><?= (int)$review['item_count'] ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Ausstehend</div>
+            <div class="metric-label"><?= te('Ausstehend') ?></div>
             <div class="metric-value" style="color:<?= (int)$review['pending_count'] > 0 ? '#d97706' : '#16a34a' ?>">
                 <?= (int)$review['pending_count'] ?>
             </div>

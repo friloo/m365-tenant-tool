@@ -13,18 +13,18 @@
 <div class="d-flex justify-content-end mb-3 flex-wrap gap-2">
     <div class="btn-group btn-group-sm" role="group">
         <?php foreach ([7, 30, 90] as $d): ?>
-            <a href="?days=<?= $d ?>" class="btn <?= $days === $d ? 'btn-primary' : 'btn-outline-primary' ?>">Letzte <?= $d ?> Tage</a>
+            <a href="?days=<?= $d ?>" class="btn <?= $days === $d ? 'btn-primary' : 'btn-outline-primary' ?>"><?= te('Letzte :n Tage', ['n' => $d]) ?></a>
         <?php endforeach; ?>
     </div>
     <a href="?days=<?= $days ?>&refresh=1" class="btn btn-sm btn-outline-secondary">
-        <i class="bi bi-arrow-clockwise me-1"></i>Neu scannen
+        <i class="bi bi-arrow-clockwise me-1"></i><?= te('Neu scannen') ?>
     </a>
 </div>
 
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-lg-4">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-people me-1"></i>User analysiert</div>
+            <div class="metric-label"><i class="bi bi-people me-1"></i><?= te('User analysiert') ?></div>
             <div class="metric-value"><?= number_format($report['total_users_analyzed']) ?></div>
         </div>
     </div>

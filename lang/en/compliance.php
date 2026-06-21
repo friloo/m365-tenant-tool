@@ -259,6 +259,7 @@ return [
     'Öffnen' => 'Open',
     'Noch keine Prüfungen vorhanden' => 'No reviews yet',
     'Titel der Prüfung' => 'Review title',
+    'Gastbenutzer-Review' => 'Guest user review',
     'Alle aktuellen Gastbenutzer werden als Prüfungseinträge geladen.' => 'All current guest users will be loaded as review entries.',
     'Dieser Vorgang fragt alle Gastbenutzer live aus Microsoft 365 ab und kann einige Sekunden dauern.'
         => 'This operation queries all guest users live from Microsoft 365 and may take a few seconds.',

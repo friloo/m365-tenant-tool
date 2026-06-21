@@ -331,7 +331,7 @@ $sevOrder = ['critical', 'high', 'medium', 'low'];
                     <?php if (!empty($rec['internal_path'])): ?>
                     <a href="<?= $e($rec['internal_path']) ?>"
                        class="btn btn-sm btn-primary" style="font-size:12px;">
-                        <i class="bi bi-arrow-right me-1"></i>Zum Modul
+                        <i class="bi bi-arrow-right me-1"></i><?= te('Zum Modul') ?>
                     </a>
                     <?php endif; ?>
                     <?php if (!empty($rec['ms_doc_url'])): ?>
@@ -343,7 +343,7 @@ $sevOrder = ['critical', 'high', 'medium', 'low'];
                     <?php if (!empty($rec['ms_admin_url'])): ?>
                     <a href="<?= $e($rec['ms_admin_url']) ?>" target="_blank" rel="noopener noreferrer"
                        class="btn btn-sm btn-outline-dark" style="font-size:12px;">
-                        <i class="bi bi-box-arrow-up-right me-1"></i>Admin Center öffnen
+                        <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Admin Center öffnen') ?>
                     </a>
                     <?php endif; ?>
                 </div>
@@ -374,8 +374,8 @@ $sevOrder = ['critical', 'high', 'medium', 'low'];
 <div class="content-card mb-4">
     <div class="card-body-custom text-center py-5">
         <i class="bi bi-check-circle-fill text-success" style="font-size:40px;"></i>
-        <h5 class="mt-3 mb-1">Keine Empfehlungen</h5>
-        <p class="text-muted mb-0">Alle geprüften Sicherheitskontrollen sind bestanden. Gut gemacht!</p>
+        <h5 class="mt-3 mb-1"><?= te('Keine Empfehlungen') ?></h5>
+        <p class="text-muted mb-0"><?= te('Alle geprüften Sicherheitskontrollen sind bestanden. Gut gemacht!') ?></p>
     </div>
 </div>
 <?php endif; ?>
@@ -384,9 +384,9 @@ $sevOrder = ['critical', 'high', 'medium', 'low'];
 <?php if (!empty($ctx)): ?>
 <div class="content-card mb-4">
     <div class="card-header-custom" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#contextSection">
-        <span><i class="bi bi-database me-2 text-secondary"></i>Was wurde analysiert?</span>
+        <span><i class="bi bi-database me-2 text-secondary"></i><?= te('Was wurde analysiert?') ?></span>
         <span style="font-size:12px;color:#9ca3af;">
-            Anonymisierte Metriken anzeigen
+            <?= te('Anonymisierte Metriken anzeigen') ?>
             <i class="bi bi-chevron-down ms-1"></i>
         </span>
     </div>
@@ -394,9 +394,8 @@ $sevOrder = ['critical', 'high', 'medium', 'low'];
         <div class="card-body-custom">
             <div class="alert alert-info mb-3" style="font-size:12px;">
                 <i class="bi bi-shield-check me-1"></i>
-                <strong>Datenschutz bestätigt:</strong>
-                Die folgende Tabelle zeigt exakt, welche Daten an <?= $e($provider) ?> übertragen wurden.
-                Es handelt sich ausschließlich um Zahlen und Prozentwerte — keine Benutzernamen, keine Tenant-ID, keine Domainnamen.
+                <strong><?= te('Datenschutz bestätigt:') ?></strong>
+                <?= te('Die folgende Tabelle zeigt exakt, welche Daten an :provider übertragen wurden. Es handelt sich ausschließlich um Zahlen und Prozentwerte — keine Benutzernamen, keine Tenant-ID, keine Domainnamen.', ['provider' => $e($provider)]) ?>
             </div>
             <div class="alert alert-success mb-3" style="font-size:12px;">
                 <i class="bi bi-lock me-1"></i>

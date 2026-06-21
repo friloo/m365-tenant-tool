@@ -367,12 +367,12 @@ $hasSpError = isset($sp['_error']);
                     <div class="card-body-custom">
                         <div class="row g-3">
                             <?php $portals = [
-                                ['icon' => 'microsoft',        'label' => 'M365 Admin Center',      'url' => 'https://admin.microsoft.com',                        'desc' => 'Benutzer, Lizenzen, Apps'],
-                                ['icon' => 'shield-check',     'label' => 'Entra ID (Azure AD)',     'url' => 'https://entra.microsoft.com',                        'desc' => 'Identitäten, Gäste, CA-Policies'],
-                                ['icon' => 'share',            'label' => 'SharePoint Admin',        'url' => 'https://admin.microsoft.com/sharepoint',             'desc' => 'Sites, Freigaben, Storage'],
-                                ['icon' => 'people',           'label' => 'Teams Admin',             'url' => 'https://admin.teams.microsoft.com',                  'desc' => 'Teams, Kanäle, Meetings'],
-                                ['icon' => 'phone',            'label' => 'Intune (Endpoint Mgr)',   'url' => 'https://intune.microsoft.com',                       'desc' => 'Geräte, Compliance, Apps'],
-                                ['icon' => 'graph-up-arrow',   'label' => 'Defender / Purview',      'url' => 'https://security.microsoft.com',                     'desc' => 'Sicherheit, DLP, Compliance'],
+                                ['icon' => 'microsoft',        'label' => 'M365 Admin Center',      'url' => 'https://admin.microsoft.com',                        'desc' => t('Benutzer, Lizenzen, Apps')],
+                                ['icon' => 'shield-check',     'label' => 'Entra ID (Azure AD)',     'url' => 'https://entra.microsoft.com',                        'desc' => t('Identitäten, Gäste, CA-Policies')],
+                                ['icon' => 'share',            'label' => 'SharePoint Admin',        'url' => 'https://admin.microsoft.com/sharepoint',             'desc' => t('Sites, Freigaben, Storage')],
+                                ['icon' => 'people',           'label' => 'Teams Admin',             'url' => 'https://admin.teams.microsoft.com',                  'desc' => t('Teams, Kanäle, Meetings')],
+                                ['icon' => 'phone',            'label' => 'Intune (Endpoint Mgr)',   'url' => 'https://intune.microsoft.com',                       'desc' => t('Geräte, Compliance, Apps')],
+                                ['icon' => 'graph-up-arrow',   'label' => 'Defender / Purview',      'url' => 'https://security.microsoft.com',                     'desc' => t('Sicherheit, DLP, Compliance')],
                             ]; ?>
                             <?php foreach ($portals as $p): ?>
                             <div class="col-md-4">

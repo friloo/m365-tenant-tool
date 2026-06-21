@@ -529,43 +529,43 @@
 
 <!-- Tenant-Härtung ───────────────────────────────────────── -->
 <div class="man-section" id="hardening">
-    <h2><i class="bi bi-shield-fill-check text-primary"></i> Tenant-Härtung (Quick-Actions)</h2>
-    <p>Eine kuratierte Seite mit den wichtigsten Sicherheits-Einstellungen, die mit einem Klick aktiviert werden können — entweder direkt über die Graph API oder per Deep-Link in das richtige Admin-Center, wenn Microsoft den Endpunkt nicht öffentlich gemacht hat.</p>
-    <h3>Direkt schaltbar (via Graph API)</h3>
+    <h2><i class="bi bi-shield-fill-check text-primary"></i> <?= te('Tenant-Härtung (Quick-Actions)') ?></h2>
+    <p><?= te('Eine kuratierte Seite mit den wichtigsten Sicherheits-Einstellungen, die mit einem Klick aktiviert werden können — entweder direkt über die Graph API oder per Deep-Link in das richtige Admin-Center, wenn Microsoft den Endpunkt nicht öffentlich gemacht hat.') ?></p>
+    <h3><?= te('Direkt schaltbar (via Graph API)') ?></h3>
     <ul>
-        <li><strong>Security Defaults</strong> — ein/aus (PATCH <code>/policies/identitySecurityDefaultsEnforcementPolicy</code>)</li>
-        <li><strong>SharePoint Tenant-Sharing</strong> — Anyone-Links global blocken oder einschränken</li>
-        <li><strong>Anonyme Link-Ablauffrist</strong> — z. B. auf 30 Tage setzen</li>
-        <li><strong>Default-Sharing-Linktyp</strong> — auf „intern" zwingen</li>
-        <li><strong>Block-Legacy-Authentication CA-Policy</strong> — mit einem Klick anlegen</li>
-        <li><strong>MFA-für-Alle CA-Policy</strong> — Template, das nach Bestätigung im Report-Only-Modus angelegt wird</li>
-        <li><strong>Block-Auto-Forwarding zu externen Empfängern</strong> — Authorization-Policy / Out­bound-Spam</li>
-        <li><strong>App-Consent einschränken</strong> — User-Consent auf „nur für verifizierte Publisher mit Low-Risk-Permissions"</li>
-        <li><strong>Guest-Invite-Restrictions</strong> — nur Admins dürfen einladen</li>
+        <li><strong>Security Defaults</strong> — <?= te('ein/aus (PATCH <code>/policies/identitySecurityDefaultsEnforcementPolicy</code>)') ?></li>
+        <li><strong>SharePoint Tenant-Sharing</strong> — <?= te('Anyone-Links global blocken oder einschränken') ?></li>
+        <li><strong><?= te('Anonyme Link-Ablauffrist') ?></strong> — <?= te('z. B. auf 30 Tage setzen') ?></li>
+        <li><strong>Default-Sharing-Linktyp</strong> — <?= te('auf „intern" zwingen') ?></li>
+        <li><strong>Block-Legacy-Authentication CA-Policy</strong> — <?= te('mit einem Klick anlegen') ?></li>
+        <li><strong>MFA-für-Alle CA-Policy</strong> — <?= te('Template, das nach Bestätigung im Report-Only-Modus angelegt wird') ?></li>
+        <li><strong>Block-Auto-Forwarding zu externen Empfängern</strong> — <?= te('Authorization-Policy / Out­bound-Spam') ?></li>
+        <li><strong><?= te('App-Consent einschränken') ?></strong> — <?= te('User-Consent auf „nur für verifizierte Publisher mit Low-Risk-Permissions"') ?></li>
+        <li><strong>Guest-Invite-Restrictions</strong> — <?= te('nur Admins dürfen einladen') ?></li>
     </ul>
-    <h3>Per Deep-Link ins Admin-Center</h3>
-    <p>Wo Graph keinen Schreib-Endpunkt anbietet (z. B. Audit-Log-Aktivierung, Defender-for-Office-Policies, Microsoft-Purview-DLP-Erstellung), öffnet der Button direkt die entsprechende Microsoft-Konsole.</p>
-    <p>Jede Aktion zeigt vor dem Ausführen den aktuellen Zustand, eine Erklärung des Effekts und eine BSI/NIS-2/DSGVO-Begründung.</p>
+    <h3><?= te('Per Deep-Link ins Admin-Center') ?></h3>
+    <p><?= te('Wo Graph keinen Schreib-Endpunkt anbietet (z. B. Audit-Log-Aktivierung, Defender-for-Office-Policies, Microsoft-Purview-DLP-Erstellung), öffnet der Button direkt die entsprechende Microsoft-Konsole.') ?></p>
+    <p><?= te('Jede Aktion zeigt vor dem Ausführen den aktuellen Zustand, eine Erklärung des Effekts und eine BSI/NIS-2/DSGVO-Begründung.') ?></p>
     <p><span class="perm-tag">Policy.ReadWrite.ConditionalAccess</span> <span class="perm-tag">SharePointTenantSettings.ReadWrite.All</span> <span class="perm-tag">Policy.ReadWrite.Authorization</span></p>
 </div>
 
 <!-- PIM (JIT-Admin) ──────────────────────────────────────── -->
 <div class="man-section" id="pim">
-    <h2><i class="bi bi-lightning-charge text-primary"></i> PIM — Just-in-Time-Admin</h2>
-    <p>Übersicht über das Microsoft Entra Privileged Identity Management. Statt dauerhafter Admin-Zuweisungen sollen Administratoren als „eligible" konfiguriert sein und ihre Rolle nur bei Bedarf für eine begrenzte Zeit aktivieren — mit MFA und Begründung. Das ist die Empfehlung aus BSI IT-Grundschutz ORP.4.A23 und NIS-2 Art. 21(j).</p>
-    <h3>Was die Seite zeigt</h3>
+    <h2><i class="bi bi-lightning-charge text-primary"></i> <?= te('PIM — Just-in-Time-Admin') ?></h2>
+    <p><?= te('Übersicht über das Microsoft Entra Privileged Identity Management. Statt dauerhafter Admin-Zuweisungen sollen Administratoren als „eligible" konfiguriert sein und ihre Rolle nur bei Bedarf für eine begrenzte Zeit aktivieren — mit MFA und Begründung. Das ist die Empfehlung aus BSI IT-Grundschutz ORP.4.A23 und NIS-2 Art. 21(j).') ?></p>
+    <h3><?= te('Was die Seite zeigt') ?></h3>
     <ul>
-        <li><strong>Aktiv erhöht</strong> — wer gerade eine Privileged-Role hat (entweder JIT-aktiviert oder dauerhaft zugewiesen).</li>
-        <li><strong>Eligible</strong> — wer eine Rolle aktivieren kann, sie aber gerade nicht nutzt.</li>
-        <li><strong>Dauerhafte Admins</strong> — als Zahl mit Schwellwert ≤ 2 (rot, wenn überschritten — solche Konten sollten zu Eligible umgestellt werden).</li>
-        <li><strong>Aktivierungen der letzten 30 Tage</strong> — Audit-Trail: wer hat wann welche Rolle aktiviert, mit Erfolg/Misserfolg.</li>
+        <li><strong><?= te('Aktiv erhöht') ?></strong> — <?= te('wer gerade eine Privileged-Role hat (entweder JIT-aktiviert oder dauerhaft zugewiesen).') ?></li>
+        <li><strong>Eligible</strong> — <?= te('wer eine Rolle aktivieren kann, sie aber gerade nicht nutzt.') ?></li>
+        <li><strong><?= te('Dauerhafte Admins') ?></strong> — <?= te('als Zahl mit Schwellwert ≤ 2 (rot, wenn überschritten — solche Konten sollten zu Eligible umgestellt werden).') ?></li>
+        <li><strong><?= te('Aktivierungen der letzten 30 Tage') ?></strong> — <?= te('Audit-Trail: wer hat wann welche Rolle aktiviert, mit Erfolg/Misserfolg.') ?></li>
     </ul>
     <h3>Best Practice</h3>
     <ul>
-        <li>Keine dauerhaften Global-Administrator-Zuweisungen.</li>
-        <li>Maximale Aktivierungs­dauer 8 Stunden, mit MFA-Pflicht.</li>
-        <li>Approval-Workflow für besonders kritische Rollen (z. B. „Privileged Role Administrator").</li>
-        <li>Audit-Trail mindestens 90 Tage aufbewahren.</li>
+        <li><?= te('Keine dauerhaften Global-Administrator-Zuweisungen.') ?></li>
+        <li><?= te('Maximale Aktivierungs­dauer 8 Stunden, mit MFA-Pflicht.') ?></li>
+        <li><?= te('Approval-Workflow für besonders kritische Rollen (z. B. „Privileged Role Administrator").') ?></li>
+        <li><?= te('Audit-Trail mindestens 90 Tage aufbewahren.') ?></li>
     </ul>
     <p><span class="perm-tag">RoleManagement.Read.Directory</span> <span class="perm-tag">AuditLog.Read.All</span></p>
 </div>

@@ -15,13 +15,12 @@
     <div class="card-body-custom p-0">
         <?php if (empty($idps)): ?>
             <div class="text-muted small p-4 text-center">
-                Keine externen Identity Providers konfiguriert. (Standard, wenn der Tenant nur
-                Microsoft-Accounts akzeptiert.)
+                <?= te('Keine externen Identity Providers konfiguriert. (Standard, wenn der Tenant nur Microsoft-Accounts akzeptiert.)') ?>
             </div>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="data-table">
-                    <thead><tr><th>Name</th><th>Typ</th><th>Client-ID</th></tr></thead>
+                    <thead><tr><th><?= te('Name') ?></th><th><?= te('Typ') ?></th><th>Client-ID</th></tr></thead>
                     <tbody>
                     <?php foreach ($idps as $idp): ?>
                         <tr>
@@ -39,24 +38,24 @@
 
 <!-- Federated Domains ─────────────────────────────────── -->
 <div class="content-card mb-4">
-    <div class="card-header-custom"><i class="bi bi-shield-shaded text-primary"></i><h6>Federierte Domains (SAML / WS-Fed)</h6></div>
+    <div class="card-header-custom"><i class="bi bi-shield-shaded text-primary"></i><h6><?= te('Federierte Domains (SAML / WS-Fed)') ?></h6></div>
     <div class="card-body-custom p-0">
         <?php if (empty($feds)): ?>
             <div class="text-muted small p-4 text-center">
-                Keine federierten Domains. Alle Domains nutzen Cloud-only oder Pass-Through-Authentication.
+                <?= te('Keine federierten Domains. Alle Domains nutzen Cloud-only oder Pass-Through-Authentication.') ?>
             </div>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="data-table">
-                    <thead><tr><th>Domain</th><th>Verifiziert</th><th>Default</th></tr></thead>
+                    <thead><tr><th>Domain</th><th><?= te('Verifiziert') ?></th><th>Default</th></tr></thead>
                     <tbody>
                     <?php foreach ($feds as $f): ?>
                         <tr>
                             <td class="font-monospace"><?= $e($f['name']) ?></td>
                             <td><?php if ($f['isVerified']): ?>
-                                <span class="badge bg-success">Ja</span>
+                                <span class="badge bg-success"><?= te('Ja') ?></span>
                             <?php else: ?>
-                                <span class="badge bg-warning text-dark">Nein</span>
+                                <span class="badge bg-warning text-dark"><?= te('Nein') ?></span>
                             <?php endif; ?></td>
                             <td><?= $f['isDefault'] ? '<span class="badge bg-primary">Standard</span>' : '–' ?></td>
                         </tr>

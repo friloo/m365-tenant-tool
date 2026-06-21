@@ -10,7 +10,7 @@
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Vollständig geschützt</div>
+            <div class="metric-label"><?= te('Vollständig geschützt') ?></div>
             <div class="metric-value" style="color:<?= $summary['fullyProtected'] === $summary['total'] && $summary['total'] > 0 ? '#16a34a' : '#111827' ?>;">
                 <?= $summary['fullyProtected'] ?>
             </div>
@@ -19,11 +19,11 @@
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Mit Problemen</div>
+            <div class="metric-label"><?= te('Mit Problemen') ?></div>
             <div class="metric-value" style="color:<?= $summary['withIssues'] > 0 ? '#dc2626' : '#16a34a' ?>;">
                 <?= $summary['withIssues'] ?>
             </div>
-            <div class="metric-sub">Handlungsbedarf</div>
+            <div class="metric-sub"><?= te('Handlungsbedarf') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
@@ -32,7 +32,7 @@
             <div class="metric-value" style="color:<?= ($summary['byStatus']['dmarc_reject'] ?? 0) === $summary['total'] && $summary['total'] > 0 ? '#16a34a' : '#111827' ?>;">
                 <?= $summary['byStatus']['dmarc_reject'] ?? 0 ?>
             </div>
-            <div class="metric-sub">Strikte Richtlinie</div>
+            <div class="metric-sub"><?= te('Strikte Richtlinie') ?></div>
         </div>
     </div>
 </div>
@@ -43,8 +43,8 @@ if (!empty($dmarcIssues)):
 ?>
 <div class="alert alert-warning mb-4">
     <i class="bi bi-exclamation-triangle me-2"></i>
-    <strong><?= count($dmarcIssues) ?> Domain(s) ohne DMARC-Schutz oder mit p=none</strong> —
-    E-Mail-Spoofing auf diesen Domains ist möglich. Richten Sie DMARC mit mindestens p=quarantine ein.
+    <strong><?= te(':n Domain(s) ohne DMARC-Schutz oder mit p=none', ['n' => count($dmarcIssues)]) ?></strong> —
+    <?= te('E-Mail-Spoofing auf diesen Domains ist möglich. Richten Sie DMARC mit mindestens p=quarantine ein.') ?>
 </div>
 <?php endif; ?>
 
