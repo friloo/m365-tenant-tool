@@ -637,6 +637,36 @@ class CronRunner
                     return t('Ausgeführt: :ran Workflows · :actions Aktionen', ['ran' => $r['ran'], 'actions' => $r['actions']]);
                 },
             ],
+
+            'app_secret_expiry' => [
+                'label'            => t('App-Secret-Ablauf prüfen'),
+                'description'      => t('Warnt, bevor das Client-Secret/Zertifikat der eigenen App-Registrierung abläuft (sonst verliert das Tool den Zugriff).'),
+                'default_interval' => 1440, // daily
+                'handler'          => function () use ($graph): string {
+                    $info = (new \App\Modules\Settings\AppCredentialService($graph))->check();
+                    if (!$info['found'] || $info['days_left'] === null) {
+                        return t('Kein Ablaufdatum ermittelbar.');
+                    }
+                    $days = (int)$info['days_left'];
+                    if ($days > 30) {
+                        return t('OK — läuft in :n Tagen ab.', ['n' => $days]);
+                    }
+                    $sev = $days <= 7 ? 'critical' : 'warn';
+                    $type = $info['type'] === 'certificate' ? t('Zertifikat') : t('Client-Secret');
+                    \App\Modules\Notifications\NotificationService::push(
+                        $days < 0
+                            ? t(':type der App-Registrierung ist ABGELAUFEN', ['type' => $type])
+                            : t(':type der App-Registrierung läuft in :n Tagen ab', ['type' => $type, 'n' => $days]),
+                        t('Erneuere das :type im Microsoft Entra Admin Center, sonst verliert das Tool den Graph-Zugriff.', ['type' => $type]),
+                        $sev,
+                        'https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade',
+                        'system',
+                        // dedupe per day so we warn once daily, not every run
+                        'app_secret_expiry_' . date('Y-m-d')
+                    );
+                    return t('Warnung gesendet — :type läuft in :n Tagen ab.', ['type' => $type, 'n' => $days]);
+                },
+            ],
         ];
     }
 
