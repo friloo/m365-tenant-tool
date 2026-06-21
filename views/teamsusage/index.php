@@ -42,18 +42,18 @@
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Inaktiv</div>
+            <div class="metric-label"><?= te('Inaktiv') ?></div>
             <div class="metric-value" style="color:<?= $stats['inactive'] > 0 ? '#d97706' : '#111827' ?>;">
                 <?= number_format($stats['inactive']) ?>
             </div>
-            <div class="metric-sub">keine Aktivität in 30 Tagen</div>
+            <div class="metric-sub"><?= te('keine Aktivität in 30 Tagen') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Ø Nachrichten/Nutzer</div>
+            <div class="metric-label"><?= te('Ø Nachrichten/Nutzer') ?></div>
             <div class="metric-value"><?= number_format($stats['avg_messages']) ?></div>
-            <div class="metric-sub">bei aktiven Nutzern</div>
+            <div class="metric-sub"><?= te('bei aktiven Nutzern') ?></div>
         </div>
     </div>
 </div>
@@ -82,16 +82,16 @@ foreach ($stats['top_meetings'] as $r) {
         <div class="content-card h-100">
             <div class="card-header-custom">
                 <i class="bi bi-chat-dots text-primary"></i>
-                <h6>Top 10 Chat</h6>
+                <h6><?= te('Top 10 Chat') ?></h6>
             </div>
             <div class="card-body-custom p-0">
                 <?php if (empty($stats['top_chatters'])): ?>
-                    <div class="empty-state py-4"><span class="text-muted small">Keine Daten</span></div>
+                    <div class="empty-state py-4"><span class="text-muted small"><?= te('Keine Daten') ?></span></div>
                 <?php else: ?>
                 <table class="data-table" style="margin-bottom:0;">
                     <thead>
                         <tr>
-                            <th>Nutzer</th>
+                            <th><?= te('Nutzer') ?></th>
                             <th class="text-end" style="width:60px;">Msgs</th>
                             <th style="width:80px;"></th>
                         </tr>
@@ -126,17 +126,17 @@ foreach ($stats['top_meetings'] as $r) {
         <div class="content-card h-100">
             <div class="card-header-custom">
                 <i class="bi bi-telephone text-success"></i>
-                <h6>Top 10 Anrufe</h6>
+                <h6><?= te('Top 10 Anrufe') ?></h6>
             </div>
             <div class="card-body-custom p-0">
                 <?php if (empty($stats['top_callers'])): ?>
-                    <div class="empty-state py-4"><span class="text-muted small">Keine Daten</span></div>
+                    <div class="empty-state py-4"><span class="text-muted small"><?= te('Keine Daten') ?></span></div>
                 <?php else: ?>
                 <table class="data-table" style="margin-bottom:0;">
                     <thead>
                         <tr>
-                            <th>Nutzer</th>
-                            <th class="text-end" style="width:60px;">Anrufe</th>
+                            <th><?= te('Nutzer') ?></th>
+                            <th class="text-end" style="width:60px;"><?= te('Anrufe') ?></th>
                             <th style="width:80px;"></th>
                         </tr>
                     </thead>
@@ -167,16 +167,16 @@ foreach ($stats['top_meetings'] as $r) {
         <div class="content-card h-100">
             <div class="card-header-custom">
                 <i class="bi bi-camera-video text-warning"></i>
-                <h6>Top 10 Meetings</h6>
+                <h6><?= te('Top 10 Meetings') ?></h6>
             </div>
             <div class="card-body-custom p-0">
                 <?php if (empty($stats['top_meetings'])): ?>
-                    <div class="empty-state py-4"><span class="text-muted small">Keine Daten</span></div>
+                    <div class="empty-state py-4"><span class="text-muted small"><?= te('Keine Daten') ?></span></div>
                 <?php else: ?>
                 <table class="data-table" style="margin-bottom:0;">
                     <thead>
                         <tr>
-                            <th>Nutzer</th>
+                            <th><?= te('Nutzer') ?></th>
                             <th class="text-end" style="width:70px;">Meetings</th>
                             <th style="width:80px;"></th>
                         </tr>
@@ -208,12 +208,12 @@ foreach ($stats['top_meetings'] as $r) {
 <!-- Full User Table -->
 <div class="content-card">
     <div class="table-toolbar">
-        <input type="text" id="tuSearch" class="search-box" placeholder="Nutzer suchen…">
+        <input type="text" id="tuSearch" class="search-box" placeholder="<?= te('Nutzer suchen…') ?>">
         <div class="ms-3 d-flex gap-2 align-items-center">
-            <label class="text-muted small mb-0">Filter:</label>
-            <button class="btn btn-sm btn-outline-secondary active" data-filter="all" onclick="tuFilter(this,'all')">Alle</button>
-            <button class="btn btn-sm btn-outline-success" data-filter="active" onclick="tuFilter(this,'active')">Aktiv</button>
-            <button class="btn btn-sm btn-outline-warning" data-filter="inactive" onclick="tuFilter(this,'inactive')">Inaktiv</button>
+            <label class="text-muted small mb-0"><?= te('Filter:') ?></label>
+            <button class="btn btn-sm btn-outline-secondary active" data-filter="all" onclick="tuFilter(this,'all')"><?= te('Alle') ?></button>
+            <button class="btn btn-sm btn-outline-success" data-filter="active" onclick="tuFilter(this,'active')"><?= te('Aktiv') ?></button>
+            <button class="btn btn-sm btn-outline-warning" data-filter="inactive" onclick="tuFilter(this,'inactive')"><?= te('Inaktiv') ?></button>
         </div>
     </div>
 
@@ -222,11 +222,11 @@ foreach ($stats['top_meetings'] as $r) {
             <thead>
                 <tr>
                     <th>UPN</th>
-                    <th class="text-end">Team-Chats</th>
-                    <th class="text-end">Privat-Chats</th>
-                    <th class="text-end">Anrufe</th>
+                    <th class="text-end"><?= te('Team-Chats') ?></th>
+                    <th class="text-end"><?= te('Privat-Chats') ?></th>
+                    <th class="text-end"><?= te('Anrufe') ?></th>
                     <th class="text-end">Meetings</th>
-                    <th>Letzte Aktivität</th>
+                    <th><?= te('Letzte Aktivität') ?></th>
                 </tr>
             </thead>
             <tbody>

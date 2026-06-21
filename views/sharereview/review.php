@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Freigabe bestätigen — <?= htmlspecialchars($brandAppName) ?></title>
+    <title><?= te('Freigabe bestätigen') ?> — <?= htmlspecialchars($brandAppName) ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -290,8 +290,8 @@
 
 <?php if (!empty($isDemo)): ?>
 <div class="demo-bar">
-    <i class="bi bi-eye me-2"></i>VORSCHAU — So sehen Benutzer diese Seite nach Erhalt der Review-E-Mail
-    <a href="/settings">← Einstellungen</a>
+    <i class="bi bi-eye me-2"></i><?= te('VORSCHAU — So sehen Benutzer diese Seite nach Erhalt der Review-E-Mail') ?>
+    <a href="/settings">← <?= te('Einstellungen') ?></a>
 </div>
 <?php endif; ?>
 

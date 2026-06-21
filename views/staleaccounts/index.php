@@ -145,7 +145,7 @@
                             <td style="font-size:12px;color:#6b7280;"><?= $e($u['department'] ?? '–') ?></td>
                             <td>
                                 <?php if ($neverIn): ?>
-                                    <span class="badge-warning">Nie</span>
+                                    <span class="badge-warning"><?= te('Nie') ?></span>
                                 <?php elseif ($daysVal !== null): ?>
                                     <span class="badge-<?= $daysVal >= 180 ? 'danger' : ($daysVal >= 90 ? 'warning' : 'neutral') ?>">
                                         <?= $daysVal ?>d
@@ -156,9 +156,11 @@
                             </td>
                             <td>
                                 <?php if ($hasLicense): ?>
-                                    <span class="badge-warning"><?= $licCount ?> Lizenz<?= $licCount !== 1 ? 'en' : '' ?></span>
+                                    <span class="badge-warning"><?= $licCount !== 1
+                                        ? te(':n Lizenzen', ['n' => $licCount])
+                                        : te(':n Lizenz', ['n' => $licCount]) ?></span>
                                 <?php else: ?>
-                                    <span class="badge-neutral">Keine</span>
+                                    <span class="badge-neutral"><?= te('Keine') ?></span>
                                 <?php endif; ?>
                             </td>
                             <td style="font-size:12px;color:#6b7280;white-space:nowrap;">
@@ -168,10 +170,10 @@
                             <td>
                                 <?php if ($hasLicense): ?>
                                     <form method="POST" action="/staleaccounts/<?= $e($userId) ?>/remove-license"
-                                          onsubmit="return confirm('Alle Lizenzen für diesen Benutzer entfernen?');">
+                                          onsubmit="return confirm(<?= htmlspecialchars(json_encode(t('Alle Lizenzen für diesen Benutzer entfernen?'), JSON_UNESCAPED_UNICODE), ENT_QUOTES) ?>);">
                                         <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-warning" style="font-size:11px;padding:2px 8px;">
-                                            <i class="bi bi-x-circle me-1"></i>Lizenzen entfernen
+                                            <i class="bi bi-x-circle me-1"></i><?= te('Lizenzen entfernen') ?>
                                         </button>
                                     </form>
                                 <?php else: ?>
@@ -186,7 +188,7 @@
                                 <td colspan="<?= LocalAuth::isAdmin() ? 8 : 7 ?>">
                                     <div class="empty-state">
                                         <i class="bi bi-person-check"></i>
-                                        <p>Keine inaktiven Konten für den gewählten Zeitraum gefunden</p>
+                                        <p><?= te('Keine inaktiven Konten für den gewählten Zeitraum gefunden') ?></p>
                                     </div>
                                 </td>
                             </tr>
@@ -199,8 +201,7 @@
         <div class="content-card mt-3" style="padding:12px 16px;background:#f8fafc;border:1px dashed #cbd5e1;">
             <p style="font-size:12px;color:#64748b;margin:0;">
                 <i class="bi bi-gear me-1"></i>
-                <strong>Hinweis:</strong> Auto-Freigabe von Lizenzen für inaktive Konten kann in den
-                <a href="/settings">Einstellungen</a> konfiguriert werden (Schlüssel: <code>stale_account_days</code>).
+                <strong><?= te('Hinweis:') ?></strong> <?= t('Auto-Freigabe von Lizenzen für inaktive Konten kann in den <a href="/settings">Einstellungen</a> konfiguriert werden (Schlüssel: <code>stale_account_days</code>).') ?>
             </p>
         </div>
     </div>
@@ -212,7 +213,7 @@
                 <div class="card-body-custom">
                     <div class="empty-state">
                         <i class="bi bi-journal-text"></i>
-                        <p>Noch keine Aktionen protokolliert</p>
+                        <p><?= te('Noch keine Aktionen protokolliert') ?></p>
                     </div>
                 </div>
             <?php else: ?>
@@ -220,10 +221,10 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Zeitpunkt</th>
-                                <th>Benutzer (UPN)</th>
-                                <th>Aktion</th>
-                                <th>Details</th>
+                                <th><?= te('Zeitpunkt') ?></th>
+                                <th><?= te('Benutzer (UPN)') ?></th>
+                                <th><?= te('Aktion') ?></th>
+                                <th><?= te('Details') ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -238,11 +239,11 @@
                                 <td style="font-size:12px;"><?= $e($entry['user_upn'] ?? $entry['user_id'] ?? '') ?></td>
                                 <td>
                                     <?php if ($action === 'license_removed'): ?>
-                                        <span class="badge-warning">Lizenz entfernt</span>
+                                        <span class="badge-warning"><?= te('Lizenz entfernt') ?></span>
                                     <?php elseif ($action === 'account_disabled'): ?>
-                                        <span class="badge-disabled">Konto deaktiviert</span>
+                                        <span class="badge-disabled"><?= te('Konto deaktiviert') ?></span>
                                     <?php elseif ($action === 'skipped'): ?>
-                                        <span class="badge-neutral">Übersprungen</span>
+                                        <span class="badge-neutral"><?= te('Übersprungen') ?></span>
                                     <?php else: ?>
                                         <span class="badge-secondary"><?= $e($action) ?></span>
                                     <?php endif; ?>

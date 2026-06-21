@@ -29,95 +29,95 @@
 <!-- ── Table of Contents ─────────────────────────────────── -->
 <aside class="manual-toc">
     <div class="manual-toc-inner">
-        <h6>Einstieg</h6>
-        <a href="#intro">Einführung</a>
-        <a href="#navigation">Navigation</a>
+        <h6><?= te('Einstieg') ?></h6>
+        <a href="#intro"><?= te('Einführung') ?></a>
+        <a href="#navigation"><?= te('Navigation') ?></a>
         <a href="#dashboard">Dashboard</a>
 
-        <h6>Verzeichnis</h6>
-        <a href="#users">Benutzer</a>
-        <a class="sub" href="#users-actions">Aktionen</a>
+        <h6><?= te('Verzeichnis') ?></h6>
+        <a href="#users"><?= te('Benutzer') ?></a>
+        <a class="sub" href="#users-actions"><?= te('Aktionen') ?></a>
         <a class="sub" href="#users-offboarding">Offboarding</a>
-        <a href="#guestusers">Gastbenutzer</a>
-        <a href="#groups">Gruppen & Teams</a>
-        <a href="#licenses">Lizenzen</a>
-        <a href="#licenseadvisor">Lizenz-Berater</a>
-        <a href="#mfa">MFA-Methoden</a>
-        <a href="#passwordexpiry">Passwort-Ablauf</a>
+        <a href="#guestusers"><?= te('Gastbenutzer') ?></a>
+        <a href="#groups"><?= te('Gruppen & Teams') ?></a>
+        <a href="#licenses"><?= te('Lizenzen') ?></a>
+        <a href="#licenseadvisor"><?= te('Lizenz-Berater') ?></a>
+        <a href="#mfa"><?= te('MFA-Methoden') ?></a>
+        <a href="#passwordexpiry"><?= te('Passwort-Ablauf') ?></a>
 
-        <h6>Speicher & Freigaben</h6>
+        <h6><?= te('Speicher & Freigaben') ?></h6>
         <a href="#onedrive">OneDrive</a>
         <a href="#sharepoint">SharePoint</a>
-        <a href="#sharing">Freigaben</a>
-        <a href="#sharing-monitor">Freigaben-Monitor</a>
-        <a href="#sharing-policies">Freigaberichtlinien</a>
+        <a href="#sharing"><?= te('Freigaben') ?></a>
+        <a href="#sharing-monitor"><?= te('Freigaben-Monitor') ?></a>
+        <a href="#sharing-policies"><?= te('Freigaberichtlinien') ?></a>
 
-        <h6>Exchange & Komm.</h6>
-        <a href="#mailboxes">Postfächer</a>
-        <a href="#teamsusage">Teams-Nutzung</a>
-        <a href="#adoption">Adoptions-Report</a>
+        <h6><?= te('Exchange & Komm.') ?></h6>
+        <a href="#mailboxes"><?= te('Postfächer') ?></a>
+        <a href="#teamsusage"><?= te('Teams-Nutzung') ?></a>
+        <a href="#adoption"><?= te('Adoptions-Report') ?></a>
         <a href="#msgcenter">Message Center</a>
-        <a href="#mailflow">Mail Flow & Schutz</a>
-        <a href="#servicehealth">Dienststatus</a>
+        <a href="#mailflow"><?= te('Mail Flow & Schutz') ?></a>
+        <a href="#servicehealth"><?= te('Dienststatus') ?></a>
 
-        <h6>Sicherheit</h6>
-        <a href="#security">Sicherheit (CA)</a>
+        <h6><?= te('Sicherheit') ?></h6>
+        <a href="#security"><?= te('Sicherheit (CA)') ?></a>
         <a href="#securityposture">Security Posture</a>
-        <a href="#dsgvo">DSGVO-Status</a>
-        <a href="#hardening">Tenant-Härtung</a>
+        <a href="#dsgvo"><?= te('DSGVO-Status') ?></a>
+        <a href="#hardening"><?= te('Tenant-Härtung') ?></a>
         <a href="#securescore">Secure Score</a>
         <a href="#defender">Defender Alerts</a>
-        <a href="#riskysignins">Risiko-Anmeldungen</a>
-        <a href="#appregistrations">App-Registrierungen</a>
-        <a href="#adminroles">Admin-Rollen</a>
+        <a href="#riskysignins"><?= te('Risiko-Anmeldungen') ?></a>
+        <a href="#appregistrations"><?= te('App-Registrierungen') ?></a>
+        <a href="#adminroles"><?= te('Admin-Rollen') ?></a>
 
-        <h6>Erweitertes Hardening</h6>
-        <a href="#pim">PIM (JIT-Admin)</a>
-        <a href="#breakglass">Break-Glass-Accounts</a>
-        <a href="#mailboxrules">Auto-Forward-Audit</a>
-        <a href="#oauthaudit">OAuth-App-Audit</a>
-        <a href="#dlpincidents">DLP-Vorfälle</a>
-        <a href="#authstrength">Auth-Strength</a>
-        <a href="#backup">Backup-Status</a>
-        <a href="#executivereport">Executive-Report</a>
-        <a href="#mfafatigue">MFA-Fatigue-Erkennung</a>
-        <a href="#insiderthreat">Insider-Threat-Detection</a>
-        <a href="#crosstenantaccess">Cross-Tenant-Access</a>
-        <a href="#tokenlifetime">Token-Lifetime</a>
-        <a href="#lifecycle">Lifecycle Workflows</a>
-        <a href="#phishingsim">Phishing-Simulationen</a>
-        <a class="sub" href="#phishing-anleitung">→ Anleitung Phishing-Sim</a>
-        <a href="#identityproviders">Identity Provider Trust</a>
+        <h6><?= te('Erweitertes Hardening') ?></h6>
+        <a href="#pim"><?= te('PIM (JIT-Admin)') ?></a>
+        <a href="#breakglass"><?= te('Break-Glass-Accounts') ?></a>
+        <a href="#mailboxrules"><?= te('Auto-Forward-Audit') ?></a>
+        <a href="#oauthaudit"><?= te('OAuth-App-Audit') ?></a>
+        <a href="#dlpincidents"><?= te('DLP-Vorfälle') ?></a>
+        <a href="#authstrength"><?= te('Auth-Strength') ?></a>
+        <a href="#backup"><?= te('Backup-Status') ?></a>
+        <a href="#executivereport"><?= te('Executive-Report') ?></a>
+        <a href="#mfafatigue"><?= te('MFA-Fatigue-Erkennung') ?></a>
+        <a href="#insiderthreat"><?= te('Insider-Threat-Detection') ?></a>
+        <a href="#crosstenantaccess"><?= te('Cross-Tenant-Access') ?></a>
+        <a href="#tokenlifetime"><?= te('Token-Lifetime') ?></a>
+        <a href="#lifecycle"><?= te('Lifecycle Workflows') ?></a>
+        <a href="#phishingsim"><?= te('Phishing-Simulationen') ?></a>
+        <a class="sub" href="#phishing-anleitung"><?= te('→ Anleitung Phishing-Sim') ?></a>
+        <a href="#identityproviders"><?= te('Identity Provider Trust') ?></a>
         <a href="#customerlockbox">Customer Lockbox</a>
 
-        <h6>KI & Reports</h6>
-        <a href="#ai">KI-Sicherheitsberater</a>
+        <h6><?= te('KI & Reports') ?></h6>
+        <a href="#ai"><?= te('KI-Sicherheitsberater') ?></a>
 
-        <h6>Compliance & Audit</h6>
-        <a href="#devices">Geräte</a>
-        <a href="#staleaccounts">Inaktive Konten</a>
-        <a href="#auditlog">Audit-Log</a>
-        <a href="#signinlog">Sign-in-Log</a>
+        <h6><?= te('Compliance & Audit') ?></h6>
+        <a href="#devices"><?= te('Geräte') ?></a>
+        <a href="#staleaccounts"><?= te('Inaktive Konten') ?></a>
+        <a href="#auditlog"><?= te('Audit-Log') ?></a>
+        <a href="#signinlog"><?= te('Sign-in-Log') ?></a>
 
-        <h6>Compliance & Audit (erweitert)</h6>
-        <a href="#auditdiff">Audit-Diff</a>
-        <a href="#auditreport">DSGVO/NIS-2 Report</a>
-        <a href="#complianceprofiles">Compliance-Profile</a>
+        <h6><?= te('Compliance & Audit (erweitert)') ?></h6>
+        <a href="#auditdiff"><?= te('Audit-Diff') ?></a>
+        <a href="#auditreport"><?= te('DSGVO/NIS-2 Report') ?></a>
+        <a href="#complianceprofiles"><?= te('Compliance-Profile') ?></a>
 
-        <h6>Erweiterungen</h6>
-        <a href="#setupwizard">Einrichtungs-Assistent</a>
-        <a href="#workflows">Workflow-Automatisierung</a>
-        <a href="#notifications">In-App-Benachrichtigungen</a>
-        <a href="#kpisparklines">KPI-Sparklines</a>
-        <a href="#onlinehelp">Online-Hilfe</a>
-        <a href="#restapi">REST-API & Swagger</a>
+        <h6><?= te('Erweiterungen') ?></h6>
+        <a href="#setupwizard"><?= te('Einrichtungs-Assistent') ?></a>
+        <a href="#workflows"><?= te('Workflow-Automatisierung') ?></a>
+        <a href="#notifications"><?= te('In-App-Benachrichtigungen') ?></a>
+        <a href="#kpisparklines"><?= te('KPI-Sparklines') ?></a>
+        <a href="#onlinehelp"><?= te('Online-Hilfe') ?></a>
+        <a href="#restapi"><?= te('REST-API & Swagger') ?></a>
 
-        <h6>Administration</h6>
-        <a href="#cron">Cron & Automatisierung</a>
-        <a href="#settings">Einstellungen</a>
-        <a href="#useraccess">Benutzer-Zugang</a>
+        <h6><?= te('Administration') ?></h6>
+        <a href="#cron"><?= te('Cron & Automatisierung') ?></a>
+        <a href="#settings"><?= te('Einstellungen') ?></a>
+        <a href="#useraccess"><?= te('Benutzer-Zugang') ?></a>
         <a href="#updates">Updates</a>
-        <a href="#permissions">Berechtigungen</a>
+        <a href="#permissions"><?= te('Berechtigungen') ?></a>
     </div>
 </aside>
 
@@ -126,150 +126,150 @@
 
 <!-- Einführung ───────────────────────────────────────────── -->
 <div class="man-section" id="intro">
-    <h2><i class="bi bi-book text-primary"></i> Einführung</h2>
-    <p>Das <strong>M365 Tenant Tool</strong> ist ein webbasiertes Administrator-Dashboard für Microsoft 365. Es ermöglicht die zentrale Verwaltung und Überwachung eines M365-Tenants direkt über den Browser — ohne Microsoft Entra Admin Center oder PowerShell.</p>
-    <p>Die Verbindung zu Microsoft Graph erfolgt über den <strong>OAuth 2.0 Client-Credentials-Flow</strong> (Anwendungs-Berechtigungen). Das Werkzeug benötigt keinen Benutzer-Login bei Microsoft — ein einmalig eingerichtetes App-Konto in Azure AD (Entra ID) reicht aus.</p>
+    <h2><i class="bi bi-book text-primary"></i> <?= te('Einführung') ?></h2>
+    <p><?= te('Das <strong>M365 Tenant Tool</strong> ist ein webbasiertes Administrator-Dashboard für Microsoft 365. Es ermöglicht die zentrale Verwaltung und Überwachung eines M365-Tenants direkt über den Browser — ohne Microsoft Entra Admin Center oder PowerShell.') ?></p>
+    <p><?= te('Die Verbindung zu Microsoft Graph erfolgt über den <strong>OAuth 2.0 Client-Credentials-Flow</strong> (Anwendungs-Berechtigungen). Das Werkzeug benötigt keinen Benutzer-Login bei Microsoft — ein einmalig eingerichtetes App-Konto in Azure AD (Entra ID) reicht aus.') ?></p>
 
-    <h3>Voraussetzungen</h3>
+    <h3><?= te('Voraussetzungen') ?></h3>
     <ul>
         <li>PHP 8.2+, Apache/Nginx, MySQL/MariaDB</li>
-        <li>Eine App-Registrierung in Microsoft Entra ID mit den erforderlichen Anwendungsberechtigungen</li>
-        <li>Administrator-Zustimmung (Admin Consent) für alle API-Berechtigungen</li>
-        <li>Die App muss über einen Browser erreichbar sein (lokales Netzwerk oder Internet)</li>
+        <li><?= te('Eine App-Registrierung in Microsoft Entra ID mit den erforderlichen Anwendungsberechtigungen') ?></li>
+        <li><?= te('Administrator-Zustimmung (Admin Consent) für alle API-Berechtigungen') ?></li>
+        <li><?= te('Die App muss über einen Browser erreichbar sein (lokales Netzwerk oder Internet)') ?></li>
     </ul>
 
-    <h3>Rollen im Tool</h3>
+    <h3><?= te('Rollen im Tool') ?></h3>
     <ul>
-        <li><strong>Administrator</strong> — vollständiger Zugriff inkl. Einstellungen, Updates, Offboarding, Wipe</li>
-        <li><strong>Operator</strong> — alle Monitoring-Module lesen, Scans starten, Erinnerungen senden, Freigaben widerrufen; kein Zugriff auf Einstellungen/Updates</li>
+        <li><strong>Administrator</strong> — <?= te('vollständiger Zugriff inkl. Einstellungen, Updates, Offboarding, Wipe') ?></li>
+        <li><strong>Operator</strong> — <?= te('alle Monitoring-Module lesen, Scans starten, Erinnerungen senden, Freigaben widerrufen; kein Zugriff auf Einstellungen/Updates') ?></li>
     </ul>
 </div>
 
 <!-- Navigation ───────────────────────────────────────────── -->
 <div class="man-section" id="navigation">
-    <h2><i class="bi bi-layout-sidebar text-primary"></i> Navigation & Bedienung</h2>
+    <h2><i class="bi bi-layout-sidebar text-primary"></i> <?= te('Navigation & Bedienung') ?></h2>
 
     <h3>Sidebar</h3>
-    <p>Die linke Seitenleiste ist in thematische Bereiche unterteilt. Per Klick auf den <i class="bi bi-list"></i>-Button oben links kann sie ein- und ausgeklappt werden. Operator-Accounts sehen den Administrationsbereich nicht.</p>
+    <p><?= te('Die linke Seitenleiste ist in thematische Bereiche unterteilt. Per Klick auf den') ?> <i class="bi bi-list"></i><?= te('-Button oben links kann sie ein- und ausgeklappt werden. Operator-Accounts sehen den Administrationsbereich nicht.') ?></p>
 
-    <h3>Schnellsuche (Strg+K)</h3>
-    <p>Mit <kbd>Strg</kbd>+<kbd>K</kbd> (oder dem Lupensymbol in der Topbar) öffnet sich die Kommandopalette. Dort können alle Seiten des Tools per Tastatur gesucht und direkt angesprungen werden.</p>
+    <h3><?= te('Schnellsuche (Strg+K)') ?></h3>
+    <p><?= te('Mit <kbd>Strg</kbd>+<kbd>K</kbd> (oder dem Lupensymbol in der Topbar) öffnet sich die Kommandopalette. Dort können alle Seiten des Tools per Tastatur gesucht und direkt angesprungen werden.') ?></p>
 
-    <h3>Daten aktualisieren</h3>
-    <p>Alle Daten werden aus der Microsoft Graph API geladen und serverseitig gecacht (Standard: 15 Minuten). Mit dem <i class="bi bi-arrow-clockwise"></i>-Button in der Topbar (hängt <code>?refresh=1</code> an die URL) wird der Cache für die aktuelle Seite geleert und ein neuer Abruf gestartet.</p>
+    <h3><?= te('Daten aktualisieren') ?></h3>
+    <p><?= te('Alle Daten werden aus der Microsoft Graph API geladen und serverseitig gecacht (Standard: 15 Minuten). Mit dem') ?> <i class="bi bi-arrow-clockwise"></i><?= te('-Button in der Topbar (hängt <code>?refresh=1</code> an die URL) wird der Cache für die aktuelle Seite geleert und ein neuer Abruf gestartet.') ?></p>
 
-    <h3>Suche in Tabellen</h3>
-    <p>Auf den meisten Listenansichten gibt es ein Suchfeld über der Tabelle. Die Suche filtert live alle sichtbaren Zeilen nach dem eingegebenen Begriff.</p>
+    <h3><?= te('Suche in Tabellen') ?></h3>
+    <p><?= te('Auf den meisten Listenansichten gibt es ein Suchfeld über der Tabelle. Die Suche filtert live alle sichtbaren Zeilen nach dem eingegebenen Begriff.') ?></p>
 
     <h3>CSV-Export</h3>
-    <p>Viele Module bieten eine Export-Schaltfläche, die die aktuell geladenen Daten als CSV-Datei herunterlädt.</p>
+    <p><?= te('Viele Module bieten eine Export-Schaltfläche, die die aktuell geladenen Daten als CSV-Datei herunterlädt.') ?></p>
 </div>
 
 <!-- Dashboard ────────────────────────────────────────────── -->
 <div class="man-section" id="dashboard">
     <h2><i class="bi bi-speedometer2 text-primary"></i> Dashboard</h2>
-    <p>Das Dashboard gibt auf einen Blick einen Überblick über den M365-Tenant:</p>
+    <p><?= te('Das Dashboard gibt auf einen Blick einen Überblick über den M365-Tenant:') ?></p>
     <ul>
-        <li>Anzahl Benutzer, aktive/inaktive Konten, Gastbenutzer</li>
-        <li>Lizenzübersicht: verbrauchte vs. verfügbare Plätze</li>
-        <li>Sicherheitsampel: MFA-Abdeckung, Risiko-Anmeldungen, Defender-Alerts</li>
-        <li>Dienststatus: aktuelle Vorfälle in Microsoft 365-Diensten</li>
-        <li>Schnellzugriff zu den wichtigsten Modulen</li>
+        <li><?= te('Anzahl Benutzer, aktive/inaktive Konten, Gastbenutzer') ?></li>
+        <li><?= te('Lizenzübersicht: verbrauchte vs. verfügbare Plätze') ?></li>
+        <li><?= te('Sicherheitsampel: MFA-Abdeckung, Risiko-Anmeldungen, Defender-Alerts') ?></li>
+        <li><?= te('Dienststatus: aktuelle Vorfälle in Microsoft 365-Diensten') ?></li>
+        <li><?= te('Schnellzugriff zu den wichtigsten Modulen') ?></li>
     </ul>
-    <div class="tip-box"><i class="bi bi-lightbulb"></i>Beim ersten Aufruf werden alle Daten frisch aus der API geholt und gecacht. Je nach Tenant-Größe kann dies einige Sekunden dauern.</div>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Beim ersten Aufruf werden alle Daten frisch aus der API geholt und gecacht. Je nach Tenant-Größe kann dies einige Sekunden dauern.') ?></div>
     <p><span class="perm-tag">User.Read.All</span> <span class="perm-tag">Organization.Read.All</span> <span class="perm-tag">Reports.Read.All</span></p>
 </div>
 
 <!-- Benutzer ─────────────────────────────────────────────── -->
 <div class="man-section" id="users">
-    <h2><i class="bi bi-people text-primary"></i> Benutzer</h2>
-    <p>Zeigt alle Benutzer des Tenants in einer durchsuchbaren und sortierbaren Tabelle. Spalten: Anzeigename, E-Mail, Status (aktiv/deaktiviert), Abteilung, Stelle, Lizenzen.</p>
+    <h2><i class="bi bi-people text-primary"></i> <?= te('Benutzer') ?></h2>
+    <p><?= te('Zeigt alle Benutzer des Tenants in einer durchsuchbaren und sortierbaren Tabelle. Spalten: Anzeigename, E-Mail, Status (aktiv/deaktiviert), Abteilung, Stelle, Lizenzen.') ?></p>
 
-    <h3 id="users-actions">Aktionen auf der Detailseite</h3>
-    <p>Per Klick auf einen Benutzernamen öffnet sich die Detailseite mit:</p>
+    <h3 id="users-actions"><?= te('Aktionen auf der Detailseite') ?></h3>
+    <p><?= te('Per Klick auf einen Benutzernamen öffnet sich die Detailseite mit:') ?></p>
 
-    <h4>Konto aktivieren / deaktivieren</h4>
-    <p>Schaltet <code>accountEnabled</code> in Azure AD um. Deaktivierte Benutzer können sich nicht mehr anmelden, ihr Postfach und ihre Daten bleiben erhalten.</p>
+    <h4><?= te('Konto aktivieren / deaktivieren') ?></h4>
+    <p><?= te('Schaltet <code>accountEnabled</code> in Azure AD um. Deaktivierte Benutzer können sich nicht mehr anmelden, ihr Postfach und ihre Daten bleiben erhalten.') ?></p>
 
-    <h4>MFA zurücksetzen</h4>
-    <p>Löscht alle registrierten Authentifizierungsmethoden des Benutzers (Authenticator-App, Telefonnummern, FIDO2-Schlüssel) — außer dem Passwort. Der Benutzer muss beim nächsten Login eine neue Methode registrieren.</p>
-    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><strong>Achtung:</strong> Diese Aktion kann nicht rückgängig gemacht werden. Der Benutzer muss anschließend den MFA-Registrierungsprozess erneut durchlaufen.</div>
+    <h4><?= te('MFA zurücksetzen') ?></h4>
+    <p><?= te('Löscht alle registrierten Authentifizierungsmethoden des Benutzers (Authenticator-App, Telefonnummern, FIDO2-Schlüssel) — außer dem Passwort. Der Benutzer muss beim nächsten Login eine neue Methode registrieren.') ?></p>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><strong><?= te('Achtung:') ?></strong> <?= te('Diese Aktion kann nicht rückgängig gemacht werden. Der Benutzer muss anschließend den MFA-Registrierungsprozess erneut durchlaufen.') ?></div>
 
-    <h4>Sign-in-Sessions widerrufen</h4>
-    <p>Invalidiert alle aktiven Anmeldesitzungen des Benutzers (Refresh-Token-Revocation). Alle Geräte werden beim nächsten Aufruf zur Neuanmeldung aufgefordert.</p>
+    <h4><?= te('Sign-in-Sessions widerrufen') ?></h4>
+    <p><?= te('Invalidiert alle aktiven Anmeldesitzungen des Benutzers (Refresh-Token-Revocation). Alle Geräte werden beim nächsten Aufruf zur Neuanmeldung aufgefordert.') ?></p>
 
-    <h4>Lizenz zuweisen / entfernen</h4>
-    <p>Weist dem Benutzer eine SKU direkt zu oder entfernt sie. Die Lizenz muss im Tenant verfügbar sein (freie Plätze vorhanden).</p>
+    <h4><?= te('Lizenz zuweisen / entfernen') ?></h4>
+    <p><?= te('Weist dem Benutzer eine SKU direkt zu oder entfernt sie. Die Lizenz muss im Tenant verfügbar sein (freie Plätze vorhanden).') ?></p>
 
-    <h4>Benutzer bearbeiten</h4>
-    <p>Ändert Profilfelder wie Anzeigename, Stellenbezeichnung, Abteilung, Telefon und Nutzungsstandort direkt über die Graph API.</p>
+    <h4><?= te('Benutzer bearbeiten') ?></h4>
+    <p><?= te('Ändert Profilfelder wie Anzeigename, Stellenbezeichnung, Abteilung, Telefon und Nutzungsstandort direkt über die Graph API.') ?></p>
 
-    <h4>Anmeldeverlauf</h4>
-    <p>Zeigt die letzten 25 Anmeldeereignisse des Benutzers mit App, IP-Adresse, Standort, Status und Risikoinformationen.</p>
-    <div class="info-box"><i class="bi bi-info-circle"></i>Für den Anmeldeverlauf wird <span class="perm-tag">AuditLog.Read.All</span> benötigt.</div>
+    <h4><?= te('Anmeldeverlauf') ?></h4>
+    <p><?= te('Zeigt die letzten 25 Anmeldeereignisse des Benutzers mit App, IP-Adresse, Standort, Status und Risikoinformationen.') ?></p>
+    <div class="info-box"><i class="bi bi-info-circle"></i><?= te('Für den Anmeldeverlauf wird') ?> <span class="perm-tag">AuditLog.Read.All</span> <?= te('benötigt.') ?></div>
 
-    <h4>Gruppenmitgliedschaften</h4>
-    <p>Listet alle Gruppen, in denen der Benutzer Mitglied ist.</p>
+    <h4><?= te('Gruppenmitgliedschaften') ?></h4>
+    <p><?= te('Listet alle Gruppen, in denen der Benutzer Mitglied ist.') ?></p>
 
-    <h3 id="users-offboarding">Offboarding-Assistent</h3>
-    <p>Der Offboarding-Assistent führt in einem Schritt mehrere Aktionen gleichzeitig durch:</p>
+    <h3 id="users-offboarding"><?= te('Offboarding-Assistent') ?></h3>
+    <p><?= te('Der Offboarding-Assistent führt in einem Schritt mehrere Aktionen gleichzeitig durch:') ?></p>
     <ul>
-        <li>Konto deaktivieren</li>
-        <li>Sign-in-Sessions widerrufen</li>
-        <li>MFA-Methoden zurücksetzen</li>
-        <li>Alle Lizenzen entfernen</li>
-        <li>Aus allen Gruppen entfernen (außer On-Premises-synchronisierte Gruppen)</li>
+        <li><?= te('Konto deaktivieren') ?></li>
+        <li><?= te('Sign-in-Sessions widerrufen') ?></li>
+        <li><?= te('MFA-Methoden zurücksetzen') ?></li>
+        <li><?= te('Alle Lizenzen entfernen') ?></li>
+        <li><?= te('Aus allen Gruppen entfernen (außer On-Premises-synchronisierte Gruppen)') ?></li>
     </ul>
-    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i>Beim Offboarding werden die Gruppen-Mitgliedschaften dauerhaft entfernt. Diese müssen bei Bedarf manuell wiederhergestellt werden.</div>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><?= te('Beim Offboarding werden die Gruppen-Mitgliedschaften dauerhaft entfernt. Diese müssen bei Bedarf manuell wiederhergestellt werden.') ?></div>
     <p><span class="perm-tag">User.Read.All</span> <span class="perm-tag">User.ReadWrite.All</span> <span class="perm-tag">UserAuthenticationMethod.ReadWrite.All</span> <span class="perm-tag">AuditLog.Read.All</span></p>
 </div>
 
 <!-- Gastbenutzer ─────────────────────────────────────────── -->
 <div class="man-section" id="guestusers">
-    <h2><i class="bi bi-person-badge text-primary"></i> Gastbenutzer</h2>
-    <p>Listet alle Gastbenutzer (<code>userType = Guest</code>) im Tenant. Gastbenutzer werden typischerweise für externe Kollaborationen (SharePoint, Teams) eingeladen.</p>
-    <p>In der Tabelle sind sichtbar: E-Mail, Einladungsstatus, letzte Anmeldung, Lizenzen, Erstelldatum.</p>
+    <h2><i class="bi bi-person-badge text-primary"></i> <?= te('Gastbenutzer') ?></h2>
+    <p><?= te('Listet alle Gastbenutzer (<code>userType = Guest</code>) im Tenant. Gastbenutzer werden typischerweise für externe Kollaborationen (SharePoint, Teams) eingeladen.') ?></p>
+    <p><?= te('In der Tabelle sind sichtbar: E-Mail, Einladungsstatus, letzte Anmeldung, Lizenzen, Erstelldatum.') ?></p>
 
-    <h3>Aktionen</h3>
+    <h3><?= te('Aktionen') ?></h3>
     <ul>
-        <li><strong>Deaktivieren</strong> — setzt <code>accountEnabled = false</code>, der Gast kann sich nicht mehr anmelden</li>
-        <li><strong>Entfernen</strong> — löscht das Gastkonto vollständig aus dem Tenant</li>
+        <li><strong><?= te('Deaktivieren') ?></strong> — <?= te('setzt <code>accountEnabled = false</code>, der Gast kann sich nicht mehr anmelden') ?></li>
+        <li><strong><?= te('Entfernen') ?></strong> — <?= te('löscht das Gastkonto vollständig aus dem Tenant') ?></li>
     </ul>
-    <div class="tip-box"><i class="bi bi-lightbulb"></i>Regelmäßige Bereinigung alter Gastkonten ist eine wichtige Sicherheitsmaßnahme. Das Modul „Inaktive Konten" hilft dabei, Gäste zu identifizieren, die sich lange nicht mehr angemeldet haben.</div>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Regelmäßige Bereinigung alter Gastkonten ist eine wichtige Sicherheitsmaßnahme. Das Modul „Inaktive Konten" hilft dabei, Gäste zu identifizieren, die sich lange nicht mehr angemeldet haben.') ?></div>
     <p><span class="perm-tag">User.Read.All</span> <span class="perm-tag">User.ReadWrite.All</span> <span class="perm-tag">AuditLog.Read.All</span></p>
 </div>
 
 <!-- Gruppen ──────────────────────────────────────────────── -->
 <div class="man-section" id="groups">
-    <h2><i class="bi bi-diagram-3 text-primary"></i> Gruppen & Teams</h2>
-    <p>Zeigt alle Gruppen im Tenant: Microsoft 365-Gruppen, Sicherheitsgruppen und E-Mail-aktivierte Gruppen. Teams-aktivierte Gruppen sind entsprechend markiert.</p>
+    <h2><i class="bi bi-diagram-3 text-primary"></i> <?= te('Gruppen & Teams') ?></h2>
+    <p><?= te('Zeigt alle Gruppen im Tenant: Microsoft 365-Gruppen, Sicherheitsgruppen und E-Mail-aktivierte Gruppen. Teams-aktivierte Gruppen sind entsprechend markiert.') ?></p>
 
-    <h3>Gruppendetails</h3>
-    <p>Per Klick auf eine Gruppe öffnet sich die Detailansicht mit Mitgliedern, Eigentümern und Gruppentyp.</p>
+    <h3><?= te('Gruppendetails') ?></h3>
+    <p><?= te('Per Klick auf eine Gruppe öffnet sich die Detailansicht mit Mitgliedern, Eigentümern und Gruppentyp.') ?></p>
 
-    <h3>Mitglieder & Eigentümer</h3>
-    <p>Mitglieder und Eigentümer können direkt hinzugefügt oder entfernt werden. Bei On-Premises-synchronisierten Gruppen ist dies nicht möglich (Änderungen müssen im lokalen Active Directory erfolgen).</p>
+    <h3><?= te('Mitglieder & Eigentümer') ?></h3>
+    <p><?= te('Mitglieder und Eigentümer können direkt hinzugefügt oder entfernt werden. Bei On-Premises-synchronisierten Gruppen ist dies nicht möglich (Änderungen müssen im lokalen Active Directory erfolgen).') ?></p>
 
-    <h3>Gruppe erstellen</h3>
-    <p>Erstellt eine neue Microsoft 365-Gruppe oder Sicherheitsgruppe direkt im Tenant.</p>
+    <h3><?= te('Gruppe erstellen') ?></h3>
+    <p><?= te('Erstellt eine neue Microsoft 365-Gruppe oder Sicherheitsgruppe direkt im Tenant.') ?></p>
 
-    <h3>Gruppe löschen</h3>
-    <p>Löscht die Gruppe dauerhaft. Bei Microsoft 365-Gruppen werden auch das zugehörige Team, das Postfach und die SharePoint-Site gelöscht (Soft-Delete, 30 Tage wiederherstellbar im Entra Portal).</p>
+    <h3><?= te('Gruppe löschen') ?></h3>
+    <p><?= te('Löscht die Gruppe dauerhaft. Bei Microsoft 365-Gruppen werden auch das zugehörige Team, das Postfach und die SharePoint-Site gelöscht (Soft-Delete, 30 Tage wiederherstellbar im Entra Portal).') ?></p>
 
-    <h3>Inaktive Gruppen</h3>
-    <p>Unter <strong>Gruppen → Inaktive Gruppen</strong> werden Microsoft 365-Gruppen angezeigt, die seit mehr als 90 Tagen keine Aktivität hatten. Grundlage ist die letzte Aktivität der zugehörigen SharePoint-Site.</p>
+    <h3><?= te('Inaktive Gruppen') ?></h3>
+    <p><?= te('Unter <strong>Gruppen → Inaktive Gruppen</strong> werden Microsoft 365-Gruppen angezeigt, die seit mehr als 90 Tagen keine Aktivität hatten. Grundlage ist die letzte Aktivität der zugehörigen SharePoint-Site.') ?></p>
     <p><span class="perm-tag">Group.Read.All</span> <span class="perm-tag">Group.ReadWrite.All</span> <span class="perm-tag">GroupMember.ReadWrite.All</span></p>
 </div>
 
 <!-- Lizenzen ─────────────────────────────────────────────── -->
 <div class="man-section" id="licenses">
-    <h2><i class="bi bi-award text-primary"></i> Lizenzen</h2>
-    <p>Zeigt alle abonnierten Lizenz-SKUs im Tenant mit verbrauchten und verfügbaren Plätzen sowie den enthaltenen Service-Plänen.</p>
+    <h2><i class="bi bi-award text-primary"></i> <?= te('Lizenzen') ?></h2>
+    <p><?= te('Zeigt alle abonnierten Lizenz-SKUs im Tenant mit verbrauchten und verfügbaren Plätzen sowie den enthaltenen Service-Plänen.') ?></p>
 
-    <h3>Ablaufende Lizenzen</h3>
-    <p>Unter <strong>Lizenzen → Ablauf</strong> werden alle Abonnements angezeigt, die in den nächsten 90 Tagen ablaufen. Dies ermöglicht eine frühzeitige Verlängerungsplanung.</p>
+    <h3><?= te('Ablaufende Lizenzen') ?></h3>
+    <p><?= te('Unter <strong>Lizenzen → Ablauf</strong> werden alle Abonnements angezeigt, die in den nächsten 90 Tagen ablaufen. Dies ermöglicht eine frühzeitige Verlängerungsplanung.') ?></p>
 
-    <div class="tip-box"><i class="bi bi-lightbulb"></i>Der CSV-Export enthält alle Lizenzen mit Ablaufdatum, Verbrauch und Kosten-relevanten Infos — nützlich für Budgetplanung.</div>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Der CSV-Export enthält alle Lizenzen mit Ablaufdatum, Verbrauch und Kosten-relevanten Infos — nützlich für Budgetplanung.') ?></div>
     <p><span class="perm-tag">Organization.Read.All</span></p>
 </div>
 

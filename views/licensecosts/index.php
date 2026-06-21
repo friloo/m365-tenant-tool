@@ -2,16 +2,16 @@
 $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 $fmtEur = fn($v) => $v !== null ? number_format((float)$v, 2, ',', '.') . ' €' : '–';
 $priceMode = $priceMode ?? 'npo';
-$priceLabel = $priceMode === 'standard' ? 'Listenpreis (Netto)' : 'NPO-Preis (Netto)';
+$priceLabel = $priceMode === 'standard' ? t('Listenpreis (Netto)') : t('NPO-Preis (Netto)');
 ?>
 
 <!-- Price mode toggle -->
 <div class="d-flex align-items-center gap-3 mb-4">
   <form method="get" class="d-flex align-items-center gap-2">
-    <label class="small text-muted fw-semibold">Preismode:</label>
+    <label class="small text-muted fw-semibold"><?= te('Preismode:') ?></label>
     <select name="price_mode" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
-      <option value="npo"      <?= $priceMode === 'npo'      ? 'selected' : '' ?>>NPO-Preise (Netto)</option>
-      <option value="standard" <?= $priceMode === 'standard' ? 'selected' : '' ?>>Listenpreise (Netto)</option>
+      <option value="npo"      <?= $priceMode === 'npo'      ? 'selected' : '' ?>><?= te('NPO-Preise (Netto)') ?></option>
+      <option value="standard" <?= $priceMode === 'standard' ? 'selected' : '' ?>><?= te('Listenpreise (Netto)') ?></option>
     </select>
   </form>
 </div>
@@ -22,7 +22,7 @@ $priceLabel = $priceMode === 'standard' ? 'Listenpreis (Netto)' : 'NPO-Preis (Ne
     <div class="card shadow-sm border-primary text-center">
       <div class="card-body">
         <div class="fs-2 fw-bold text-primary"><?= $fmtEur($totalMonth) ?></div>
-        <div class="small text-muted">Ges. Kosten / Monat</div>
+        <div class="small text-muted"><?= te('Ges. Kosten / Monat') ?></div>
       </div>
     </div>
   </div>
@@ -30,7 +30,7 @@ $priceLabel = $priceMode === 'standard' ? 'Listenpreis (Netto)' : 'NPO-Preis (Ne
     <div class="card shadow-sm border-secondary text-center">
       <div class="card-body">
         <div class="fs-2 fw-bold"><?= $fmtEur($totalAnnual) ?></div>
-        <div class="small text-muted">Ges. Kosten / Jahr</div>
+        <div class="small text-muted"><?= te('Ges. Kosten / Jahr') ?></div>
       </div>
     </div>
   </div>
@@ -38,8 +38,8 @@ $priceLabel = $priceMode === 'standard' ? 'Listenpreis (Netto)' : 'NPO-Preis (Ne
     <div class="card shadow-sm border-warning text-center">
       <div class="card-body">
         <div class="fs-2 fw-bold text-warning"><?= $fmtEur($wasteMonth) ?></div>
-        <div class="small text-muted">Ungenutzte Lizenzen / Monat</div>
-        <div class="text-muted" style="font-size:11px"><?= $fmtEur($wasteMonth * 12) ?> / Jahr</div>
+        <div class="small text-muted"><?= te('Ungenutzte Lizenzen / Monat') ?></div>
+        <div class="text-muted" style="font-size:11px"><?= $fmtEur($wasteMonth * 12) ?> / <?= te('Jahr') ?></div>
       </div>
     </div>
   </div>
@@ -48,21 +48,21 @@ $priceLabel = $priceMode === 'standard' ? 'Listenpreis (Netto)' : 'NPO-Preis (Ne
 <!-- Cost table -->
 <div class="card shadow-sm mb-4">
   <div class="card-header fw-semibold">
-    <i class="bi bi-currency-euro me-2"></i>Lizenzkosten nach SKU
+    <i class="bi bi-currency-euro me-2"></i><?= te('Lizenzkosten nach SKU') ?>
   </div>
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0" id="tblCosts">
       <thead class="table-light">
         <tr>
-          <th>Produkt</th>
+          <th><?= te('Produkt') ?></th>
           <th>SKU</th>
-          <th class="text-end">Belegt</th>
-          <th class="text-end">Verfügbar</th>
-          <th class="text-end">Auslastung</th>
+          <th class="text-end"><?= te('Belegt') ?></th>
+          <th class="text-end"><?= te('Verfügbar') ?></th>
+          <th class="text-end"><?= te('Auslastung') ?></th>
           <th class="text-end"><?= $e($priceLabel) ?> / User</th>
-          <th class="text-end">Kosten / Monat</th>
-          <th class="text-end">Ungenutzt / Mon.</th>
-          <th class="text-end">Kosten / Jahr</th>
+          <th class="text-end"><?= te('Kosten / Monat') ?></th>
+          <th class="text-end"><?= te('Ungenutzt / Mon.') ?></th>
+          <th class="text-end"><?= te('Kosten / Jahr') ?></th>
         </tr>
       </thead>
       <tbody>
@@ -96,7 +96,7 @@ $priceLabel = $priceMode === 'standard' ? 'Listenpreis (Netto)' : 'NPO-Preis (Ne
       </tbody>
       <tfoot class="table-light fw-semibold">
         <tr>
-          <td colspan="6">Gesamt</td>
+          <td colspan="6"><?= te('Gesamt') ?></td>
           <td class="text-end"><?= $fmtEur($totalMonth) ?></td>
           <td class="text-end text-warning"><?= $fmtEur($wasteMonth) ?></td>
           <td class="text-end"><?= $fmtEur($totalAnnual) ?></td>
@@ -109,13 +109,11 @@ $priceLabel = $priceMode === 'standard' ? 'Listenpreis (Netto)' : 'NPO-Preis (Ne
 <?php if ($wasteMonth > 5): ?>
 <div class="alert alert-warning small mb-4">
   <i class="bi bi-exclamation-triangle-fill me-2"></i>
-  <strong><?= $fmtEur($wasteMonth) ?>/Monat</strong> (<?= $fmtEur($wasteMonth * 12) ?>/Jahr) werden für ungenutzte Lizenzen ausgegeben.
-  Im <a href="/licenseadvisor">Lizenz-Berater</a> siehst du, welche Benutzer keine Lizenz benötigen oder inaktiv sind.
+  <?= te('<strong>:m/Monat</strong> (:y/Jahr) werden für ungenutzte Lizenzen ausgegeben. Im <a href="/licenseadvisor">Lizenz-Berater</a> siehst du, welche Benutzer keine Lizenz benötigen oder inaktiv sind.', ['m' => $fmtEur($wasteMonth), 'y' => $fmtEur($wasteMonth * 12)]) ?>
 </div>
 <?php endif ?>
 
 <div class="alert alert-info small mb-0">
   <i class="bi bi-info-circle-fill me-1"></i>
-  Alle Preise <strong>netto</strong> (ohne 19 % MwSt.), DE-Listenpreis, Stand Mai 2025. Nur SKUs mit hinterlegtem Preis werden berechnet.
-  Tatsächliche CSP/EA-Preise können abweichen.
+  <?= te('Alle Preise <strong>netto</strong> (ohne 19 % MwSt.), DE-Listenpreis, Stand Mai 2025. Nur SKUs mit hinterlegtem Preis werden berechnet. Tatsächliche CSP/EA-Preise können abweichen.') ?>
 </div>

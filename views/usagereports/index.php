@@ -2,11 +2,11 @@
 
 <div class="d-flex align-items-center gap-2 mb-4 flex-wrap">
     <form method="get" action="/usagereports" class="d-flex align-items-center gap-2 mb-0">
-        <label class="text-muted small me-1 mb-0">Zeitraum:</label>
+        <label class="text-muted small me-1 mb-0"><?= te('Zeitraum:') ?></label>
         <?php foreach ([7, 30, 90] as $p): ?>
             <button type="submit" name="period" value="<?= $p ?>"
                     class="btn btn-sm <?= $period === $p ? 'btn-primary' : 'btn-outline-secondary' ?>">
-                <?= $p ?> Tage
+                <?= te(':n Tage', ['n' => $p]) ?>
             </button>
         <?php endforeach; ?>
     </form>
@@ -22,17 +22,17 @@ $hasActivity = ($summary['emailsSent'] + $summary['emailsReceived'] + $summary['
 ?>
 
 <h6 class="fw-semibold mb-3 text-muted">
-    <i class="bi bi-people me-1"></i>Aktive Nutzer (Letzte <?= $e($period) ?> Tage)
+    <i class="bi bi-people me-1"></i><?= te('Aktive Nutzer (Letzte :n Tage)', ['n' => $e($period)]) ?>
 </h6>
 
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-envelope me-1"></i>Exchange / E-Mail</div>
+            <div class="metric-label"><i class="bi bi-envelope me-1"></i><?= te('Exchange / E-Mail') ?></div>
             <div class="metric-value" <?= !$hasData ? 'style="color:#9ca3af;"' : '' ?>>
                 <?= $hasData ? number_format($summary['exchange']) : '–' ?>
             </div>
-            <div class="metric-sub">aktive Nutzer</div>
+            <div class="metric-sub"><?= te('aktive Nutzer') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
@@ -41,7 +41,7 @@ $hasActivity = ($summary['emailsSent'] + $summary['emailsReceived'] + $summary['
             <div class="metric-value" <?= !$hasData ? 'style="color:#9ca3af;"' : '' ?>>
                 <?= $hasData ? number_format($summary['oneDrive']) : '–' ?>
             </div>
-            <div class="metric-sub">aktive Nutzer</div>
+            <div class="metric-sub"><?= te('aktive Nutzer') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
@@ -50,7 +50,7 @@ $hasActivity = ($summary['emailsSent'] + $summary['emailsReceived'] + $summary['
             <div class="metric-value" <?= !$hasData ? 'style="color:#9ca3af;"' : '' ?>>
                 <?= $hasData ? number_format($summary['sharePoint']) : '–' ?>
             </div>
-            <div class="metric-sub">aktive Nutzer</div>
+            <div class="metric-sub"><?= te('aktive Nutzer') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
@@ -59,7 +59,7 @@ $hasActivity = ($summary['emailsSent'] + $summary['emailsReceived'] + $summary['
             <div class="metric-value" <?= !$hasData ? 'style="color:#9ca3af;"' : '' ?>>
                 <?= $hasData ? number_format($summary['teams']) : '–' ?>
             </div>
-            <div class="metric-sub">aktive Nutzer</div>
+            <div class="metric-sub"><?= te('aktive Nutzer') ?></div>
         </div>
     </div>
 </div>
@@ -72,7 +72,7 @@ $hasActivity = ($summary['emailsSent'] + $summary['emailsReceived'] + $summary['
             <div class="small text-muted"><?= $e($diag['detail']) ?></div>
             <?php if (!empty($diag['fix_url'])): ?>
                 <a href="<?= $e($diag['fix_url']) ?>" class="btn btn-sm btn-outline-secondary mt-2">
-                    <i class="bi bi-arrow-right-circle me-1"></i>Zur Lösung
+                    <i class="bi bi-arrow-right-circle me-1"></i><?= te('Zur Lösung') ?>
                 </a>
             <?php endif; ?>
         </div>
@@ -80,18 +80,18 @@ $hasActivity = ($summary['emailsSent'] + $summary['emailsReceived'] + $summary['
 <?php elseif (!$hasData): ?>
     <div class="alert alert-info mb-4">
         <i class="bi bi-info-circle me-2"></i>
-        Keine Daten verfügbar. Microsoft braucht ca. 48 Stunden nach Tenant-Erstellung, bis Aktivitätsberichte aggregiert werden.
+        <?= te('Keine Daten verfügbar. Microsoft braucht ca. 48 Stunden nach Tenant-Erstellung, bis Aktivitätsberichte aggregiert werden.') ?>
     </div>
 <?php endif; ?>
 
 <h6 class="fw-semibold mb-3 text-muted">
-    <i class="bi bi-bar-chart-line me-1"></i>Aktivität (Letzte <?= $e($period) ?> Tage, kumuliert)
+    <i class="bi bi-bar-chart-line me-1"></i><?= te('Aktivität (Letzte :n Tage, kumuliert)', ['n' => $e($period)]) ?>
 </h6>
 
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-lg-2">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-send me-1"></i>E-Mails gesendet</div>
+            <div class="metric-label"><i class="bi bi-send me-1"></i><?= te('E-Mails gesendet') ?></div>
             <div class="metric-value" <?= !$hasActivity ? 'style="color:#9ca3af;"' : '' ?>>
                 <?= $hasActivity ? number_format($summary['emailsSent']) : '–' ?>
             </div>
@@ -99,7 +99,7 @@ $hasActivity = ($summary['emailsSent'] + $summary['emailsReceived'] + $summary['
     </div>
     <div class="col-sm-6 col-lg-2">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-inbox me-1"></i>E-Mails empfangen</div>
+            <div class="metric-label"><i class="bi bi-inbox me-1"></i><?= te('E-Mails empfangen') ?></div>
             <div class="metric-value" <?= !$hasActivity ? 'style="color:#9ca3af;"' : '' ?>>
                 <?= $hasActivity ? number_format($summary['emailsReceived']) : '–' ?>
             </div>
@@ -107,7 +107,7 @@ $hasActivity = ($summary['emailsSent'] + $summary['emailsReceived'] + $summary['
     </div>
     <div class="col-sm-6 col-lg-2">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-chat-dots me-1"></i>Teams-Nachrichten</div>
+            <div class="metric-label"><i class="bi bi-chat-dots me-1"></i><?= te('Teams-Nachrichten') ?></div>
             <div class="metric-value" <?= !$hasActivity ? 'style="color:#9ca3af;"' : '' ?>>
                 <?= $hasActivity ? number_format($summary['teamsMessages']) : '–' ?>
             </div>
@@ -115,7 +115,7 @@ $hasActivity = ($summary['emailsSent'] + $summary['emailsReceived'] + $summary['
     </div>
     <div class="col-sm-6 col-lg-2">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-camera-video me-1"></i>Teams-Meetings</div>
+            <div class="metric-label"><i class="bi bi-camera-video me-1"></i><?= te('Teams-Meetings') ?></div>
             <div class="metric-value" <?= !$hasActivity ? 'style="color:#9ca3af;"' : '' ?>>
                 <?= $hasActivity ? number_format($summary['teamsMeetings']) : '–' ?>
             </div>
@@ -123,7 +123,7 @@ $hasActivity = ($summary['emailsSent'] + $summary['emailsReceived'] + $summary['
     </div>
     <div class="col-sm-6 col-lg-2">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-telephone me-1"></i>Teams-Anrufe</div>
+            <div class="metric-label"><i class="bi bi-telephone me-1"></i><?= te('Teams-Anrufe') ?></div>
             <div class="metric-value" <?= !$hasActivity ? 'style="color:#9ca3af;"' : '' ?>>
                 <?= $hasActivity ? number_format($summary['teamsCalls']) : '–' ?>
             </div>
@@ -134,16 +134,16 @@ $hasActivity = ($summary['emailsSent'] + $summary['emailsReceived'] + $summary['
 <?php if (!$hasActivity && empty($diag)): ?>
     <div class="alert alert-info mb-4">
         <i class="bi bi-info-circle me-2"></i>
-        Keine Aktivitätsdaten in diesem Zeitraum.
+        <?= te('Keine Aktivitätsdaten in diesem Zeitraum.') ?>
     </div>
 <?php endif; ?>
 
 <div class="alert alert-info d-flex align-items-start gap-2 mb-0">
     <i class="bi bi-info-circle-fill flex-shrink-0 mt-1"></i>
     <div>
-        Daten basieren auf aggregierten Microsoft-Berichten. Für detaillierte Nutzerauswertungen steht das
+        <?= te('Daten basieren auf aggregierten Microsoft-Berichten. Für detaillierte Nutzerauswertungen steht das') ?>
         <a href="https://admin.microsoft.com/Adminportal/Home#/reportsUsage" target="_blank" class="alert-link">
             Microsoft 365 Admin Center <i class="bi bi-box-arrow-up-right ms-1" style="font-size:11px;"></i>
-        </a> zur Verfügung.
+        </a> <?= te('zur Verfügung.') ?>
     </div>
 </div>

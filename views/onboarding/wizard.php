@@ -293,16 +293,16 @@
         <div class="form-check mb-4">
             <input class="form-check-input" type="checkbox" id="confirmCreate" required>
             <label class="form-check-label fw-semibold" for="confirmCreate">
-                Ich bestätige die Erstellung dieses Benutzerkontos
+                <?= te('Ich bestätige die Erstellung dieses Benutzerkontos') ?>
             </label>
         </div>
 
         <div class="d-flex justify-content-between">
             <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">
-                <i class="bi bi-arrow-left me-1"></i> Zurück
+                <i class="bi bi-arrow-left me-1"></i> <?= te('Zurück') ?>
             </button>
             <button type="submit" id="btnSubmit" class="btn btn-success" disabled>
-                <i class="bi bi-person-check me-1"></i> Benutzer erstellen
+                <i class="bi bi-person-check me-1"></i> <?= te('Benutzer erstellen') ?>
             </button>
         </div>
     </div>
@@ -398,7 +398,8 @@ function updateSummary() {
     document.getElementById('sum-usageLocation').textContent = locSel.options[locSel.selectedIndex]?.text || '–';
 
     const licRadio = document.querySelector('[name="skuId"]:checked');
-    const licLabel = licRadio ? (document.querySelector('label[for="' + licRadio.id + '"]')?.innerText?.trim() || 'Keine Lizenz') : 'Keine Lizenz';
+    const noLicense = <?= json_encode(t('Keine Lizenz'), JSON_UNESCAPED_UNICODE) ?>;
+    const licLabel = licRadio ? (document.querySelector('label[for="' + licRadio.id + '"]')?.innerText?.trim() || noLicense) : noLicense;
     document.getElementById('sum-license').textContent = licLabel;
 
     const checkedGroups = [...document.querySelectorAll('[name="groupIds[]"]:checked')];
@@ -406,7 +407,7 @@ function updateSummary() {
         const lbl = document.querySelector('label[for="' + cb.id + '"]');
         return lbl ? lbl.firstChild.textContent.trim() : cb.value;
     });
-    document.getElementById('sum-groups').textContent = groupNames.length ? groupNames.join(', ') : 'Keine';
+    document.getElementById('sum-groups').textContent = groupNames.length ? groupNames.join(', ') : <?= json_encode(t('Keine'), JSON_UNESCAPED_UNICODE) ?>;
 }
 
 function filterGroups(query) {
@@ -430,10 +431,10 @@ document.getElementById('inp-password').addEventListener('input', function () {
     if (/[0-9]/.test(val)) strength++;
     if (/[^A-Za-z0-9]/.test(val)) strength++;
     const colors = ['#ef4444', '#f59e0b', '#22c55e', '#16a34a'];
-    const labels = ['Schwach', 'Mittel', 'Gut', 'Stark'];
+    const labels = [<?= json_encode(t('Schwach'), JSON_UNESCAPED_UNICODE) ?>, <?= json_encode(t('Mittel'), JSON_UNESCAPED_UNICODE) ?>, <?= json_encode(t('Gut'), JSON_UNESCAPED_UNICODE) ?>, <?= json_encode(t('Stark'), JSON_UNESCAPED_UNICODE) ?>];
     bar.style.width = (strength * 25) + '%';
     bar.style.background = colors[strength - 1] || '#e5e7eb';
-    txt.textContent = strength > 0 ? 'Passwortstärke: ' + (labels[strength - 1] || '') : 'Mind. 8 Zeichen, Groß-/Kleinbuchstaben, Zahlen empfohlen';
+    txt.textContent = strength > 0 ? <?= json_encode(t('Passwortstärke:'), JSON_UNESCAPED_UNICODE) ?> + ' ' + (labels[strength - 1] || '') : <?= json_encode(t('Mind. 8 Zeichen, Groß-/Kleinbuchstaben, Zahlen empfohlen'), JSON_UNESCAPED_UNICODE) ?>;
 });
 
 showStep(1);

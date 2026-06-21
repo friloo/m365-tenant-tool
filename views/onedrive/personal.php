@@ -11,10 +11,10 @@ $total = count($list);
 <!-- Sub-nav tabs -->
 <div class="module-tabs mb-4">
     <a href="/onedrive" class="module-tab">
-        <i class="bi bi-cloud me-1"></i> Speicher-Übersicht
+        <i class="bi bi-cloud me-1"></i> <?= te('Speicher-Übersicht') ?>
     </a>
     <a href="/onedrive/personal" class="module-tab active">
-        <i class="bi bi-person-circle me-1"></i> Persönliche Laufwerke
+        <i class="bi bi-person-circle me-1"></i> <?= te('Persönliche Laufwerke') ?>
     </a>
 </div>
 
@@ -28,11 +28,10 @@ $total = count($list);
 <?php if (!($reportMode ?? true)): ?>
 <div class="alert mb-3" style="background:#fefce8;border:1px solid #fde047;border-radius:8px;padding:12px 16px;font-size:13px;">
     <i class="bi bi-exclamation-triangle me-2" style="color:#ca8a04;"></i>
-    <strong>Eingeschränkte Ansicht:</strong> Der OneDrive-Nutzungsbericht (<code>Reports.Read.All</code>) ist
-    nicht verfügbar. Die Daten werden per Einzelabfrage ermittelt (erste 150 Benutzer).
-    Mögliche Ursachen: Berechtigung fehlt, Berichtsverschleierung aktiv (M365 Admin Center →
-    Einstellungen → Dienste → Berichte → „Anonymisierte Benutzerberichte" deaktivieren),
-    oder <a href="?refresh=1">Cache aktualisieren</a>.
+    <strong><?= te('Eingeschränkte Ansicht:') ?></strong> <?= te('Der OneDrive-Nutzungsbericht (') ?><code>Reports.Read.All</code><?= te(') ist nicht verfügbar. Die Daten werden per Einzelabfrage ermittelt (erste 150 Benutzer).') ?>
+    <?= te('Mögliche Ursachen: Berechtigung fehlt, Berichtsverschleierung aktiv (M365 Admin Center →') ?>
+    <?= te('Einstellungen → Dienste → Berichte → „Anonymisierte Benutzerberichte" deaktivieren),') ?>
+    <?= te('oder') ?> <a href="?refresh=1"><?= te('Cache aktualisieren') ?></a>.
 </div>
 <?php endif; ?>
 
@@ -40,22 +39,22 @@ $total = count($list);
 <div class="row g-3 mb-4">
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Gesamt Benutzer</div>
+            <div class="metric-label"><?= te('Gesamt Benutzer') ?></div>
             <div class="metric-value"><?= number_format($total) ?></div>
         </div>
     </div>
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Mit persönlichem OneDrive</div>
+            <div class="metric-label"><?= te('Mit persönlichem OneDrive') ?></div>
             <div class="metric-value" style="color:#16a34a;"><?= number_format($provisioned) ?></div>
-            <div class="metric-sub"><?= $total > 0 ? round(($provisioned/$total)*100) : 0 ?>% der Benutzer</div>
+            <div class="metric-sub"><?= $total > 0 ? round(($provisioned/$total)*100) : 0 ?><?= te('% der Benutzer') ?></div>
         </div>
     </div>
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Ohne OneDrive</div>
+            <div class="metric-label"><?= te('Ohne OneDrive') ?></div>
             <div class="metric-value" style="color:#6b7280;"><?= number_format($notProvisioned) ?></div>
-            <div class="metric-sub">kein Laufwerk provisioniert</div>
+            <div class="metric-sub"><?= te('kein Laufwerk provisioniert') ?></div>
         </div>
     </div>
 </div>
@@ -64,24 +63,24 @@ $total = count($list);
 <div class="alert mb-3" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 16px;display:flex;align-items:flex-start;gap:10px;">
     <i class="bi bi-info-circle" style="color:#3b82f6;font-size:16px;margin-top:2px;flex-shrink:0;"></i>
     <div style="font-size:13px;color:#1e40af;">
-        <strong>Welche Gruppen dürfen OneDrives provisionieren?</strong> Diese Einstellung wird im
+        <strong><?= te('Welche Gruppen dürfen OneDrives provisionieren?') ?></strong> <?= te('Diese Einstellung wird im') ?>
         <a href="https://admin.microsoft.com/Adminportal/Home#/SharePoint" target="_blank" rel="noopener" style="color:#2563eb;">SharePoint Admin Center</a>
-        unter <em>Einstellungen → OneDrive</em> verwaltet.
-        Das Tool kann die Provisionierung einzelner Benutzer direkt über die Microsoft Graph API auslösen.
+        <?= te('unter') ?> <em><?= te('Einstellungen → OneDrive') ?></em> <?= te('verwaltet.') ?>
+        <?= te('Das Tool kann die Provisionierung einzelner Benutzer direkt über die Microsoft Graph API auslösen.') ?>
     </div>
 </div>
 
 <div class="content-card">
     <div class="table-toolbar">
-        <input type="text" id="odpSearch" class="search-box" placeholder="Benutzer suchen…">
+        <input type="text" id="odpSearch" class="search-box" placeholder="<?= te('Benutzer suchen…') ?>">
         <select id="odFilter" class="form-select form-select-sm ms-2" style="max-width:200px;" onchange="filterOdp()">
-            <option value="">Alle Benutzer</option>
-            <option value="provisioned">Mit OneDrive</option>
-            <option value="none">Ohne OneDrive</option>
-            <option value="active">Nur aktive Konten</option>
+            <option value=""><?= te('Alle Benutzer') ?></option>
+            <option value="provisioned"><?= te('Mit OneDrive') ?></option>
+            <option value="none"><?= te('Ohne OneDrive') ?></option>
+            <option value="active"><?= te('Nur aktive Konten') ?></option>
         </select>
         <a href="?refresh=1" class="btn btn-sm btn-outline-secondary ms-2">
-            <i class="bi bi-arrow-clockwise"></i> Aktualisieren
+            <i class="bi bi-arrow-clockwise"></i> <?= te('Aktualisieren') ?>
         </a>
     </div>
 
@@ -89,13 +88,13 @@ $total = count($list);
         <table class="data-table" id="odpTable">
             <thead>
                 <tr>
-                    <th>Benutzer</th>
+                    <th><?= te('Benutzer') ?></th>
                     <th>UPN</th>
                     <th>OneDrive</th>
-                    <th>Belegt</th>
-                    <th>Dateien</th>
-                    <th>Letzte Aktivität</th>
-                    <th style="width:160px;">Aktionen</th>
+                    <th><?= te('Belegt') ?></th>
+                    <th><?= te('Dateien') ?></th>
+                    <th><?= te('Letzte Aktivität') ?></th>
+                    <th style="width:160px;"><?= te('Aktionen') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -116,10 +115,10 @@ $total = count($list);
                                 <?php if ($u['siteUrl']): ?>
                                     <a href="<?= $e($u['siteUrl']) ?>" target="_blank" rel="noopener"
                                        class="badge-enabled text-decoration-none" style="display:inline-flex;align-items:center;gap:4px;">
-                                        <i class="bi bi-check-circle"></i> Aktiv
+                                        <i class="bi bi-check-circle"></i> <?= te('Aktiv') ?>
                                     </a>
                                 <?php else: ?>
-                                    <span class="badge-enabled"><i class="bi bi-check-circle"></i> Aktiv</span>
+                                    <span class="badge-enabled"><i class="bi bi-check-circle"></i> <?= te('Aktiv') ?></span>
                                 <?php endif; ?>
                             <?php else: ?>
                                 <span class="badge-neutral">–</span>
@@ -143,23 +142,23 @@ $total = count($list);
                                 <form method="post" action="/onedrive/provision/<?= $e($u['id']) ?>" style="display:inline;">
                                     <?= \App\Core\Csrf::field() ?>
                                     <button type="submit" class="btn btn-sm btn-outline-primary"
-                                            title="OneDrive provisionieren"
-                                            onclick="return confirm('OneDrive für <?= $e(addslashes($u['displayName'])) ?> provisionieren?')">
-                                        <i class="bi bi-cloud-plus me-1"></i> Provisionieren
+                                            title="<?= te('OneDrive provisionieren') ?>"
+                                            onclick="return confirm(<?= htmlspecialchars(json_encode(te('OneDrive für :name provisionieren?', ['name' => $u['displayName']]), JSON_UNESCAPED_UNICODE), ENT_QUOTES) ?>)">
+                                        <i class="bi bi-cloud-plus me-1"></i> <?= te('Provisionieren') ?>
                                     </button>
                                 </form>
                             <?php else: ?>
                                 <?php if (!empty($u['siteUrl'])): ?>
                                     <button type="button" class="btn btn-sm btn-outline-danger"
-                                            title="Kopiert die OneDrive-URL und öffnet das SharePoint Admin Center. Dort unter „Aktive Sites" die URL in die Suche einfügen — OneDrives sind sonst ausgeblendet — und die Site löschen."
+                                            title="<?= te('Kopiert die OneDrive-URL und öffnet das SharePoint Admin Center. Dort unter „Aktive Sites" die URL in die Suche einfügen — OneDrives sind sonst ausgeblendet — und die Site löschen.') ?>"
                                             onclick='odRemove(<?= htmlspecialchars(json_encode($u["siteUrl"]), ENT_QUOTES) ?>)'>
-                                        <i class="bi bi-cloud-minus me-1"></i> OneDrive löschen…
+                                        <i class="bi bi-cloud-minus me-1"></i> <?= te('OneDrive löschen…') ?>
                                     </button>
                                 <?php else: ?>
                                     <a href="https://admin.microsoft.com/sharepoint?page=siteManagement&modern=true"
                                        target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"
-                                       title="OneDrive-Sites können nur im SharePoint Admin Center gelöscht werden (unter „Aktive Sites" nach der OneDrive-URL suchen).">
-                                        <i class="bi bi-box-arrow-up-right me-1"></i> Im SP-Admin entfernen
+                                       title="<?= te('OneDrive-Sites können nur im SharePoint Admin Center gelöscht werden (unter „Aktive Sites" nach der OneDrive-URL suchen).') ?>">
+                                        <i class="bi bi-box-arrow-up-right me-1"></i> <?= te('Im SP-Admin entfernen') ?>
                                     </a>
                                 <?php endif; ?>
                             <?php endif; ?>
@@ -167,7 +166,7 @@ $total = count($list);
                     </tr>
                 <?php endforeach; ?>
                 <?php if (empty($list)): ?>
-                    <tr><td colspan="7" class="text-center text-muted py-4">Keine Benutzer gefunden</td></tr>
+                    <tr><td colspan="7" class="text-center text-muted py-4"><?= te('Keine Benutzer gefunden') ?></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -198,9 +197,8 @@ function filterOdp() {
 function odRemove(siteUrl) {
     const adminUrl = 'https://admin.microsoft.com/sharepoint?page=siteManagement&modern=true';
     const go = () => {
-        alert('OneDrive-URL wurde in die Zwischenablage kopiert:\n\n' + siteUrl +
-              '\n\nIm gleich geöffneten SharePoint Admin Center unter „Aktive Sites" die URL ' +
-              'in das Suchfeld einfügen, die Site auswählen und löschen.');
+        alert(<?= json_encode(t('OneDrive-URL wurde in die Zwischenablage kopiert:'), JSON_UNESCAPED_UNICODE) ?> + '\n\n' + siteUrl +
+              '\n\n' + <?= json_encode(t('Im gleich geöffneten SharePoint Admin Center unter „Aktive Sites" die URL in das Suchfeld einfügen, die Site auswählen und löschen.'), JSON_UNESCAPED_UNICODE) ?>);
         window.open(adminUrl, '_blank', 'noopener');
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {

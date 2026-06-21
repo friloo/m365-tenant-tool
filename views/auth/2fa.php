@@ -15,8 +15,8 @@
             <div style="display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;background:#0078d4;border-radius:14px;margin-bottom:16px;">
                 <i class="bi bi-shield-lock-fill" style="font-size:24px;color:#fff;"></i>
             </div>
-            <h5 class="mb-1 fw-bold">Zwei-Faktor-Authentifizierung</h5>
-            <p class="text-muted small">Gib den Code aus deiner Authenticator-App ein.</p>
+            <h5 class="mb-1 fw-bold"><?= te('Zwei-Faktor-Authentifizierung') ?></h5>
+            <p class="text-muted small"><?= te('Gib den Code aus deiner Authenticator-App ein.') ?></p>
         </div>
 
         <?php if (!empty($error)): ?>
@@ -26,21 +26,21 @@
         <form method="post" action="/login/2fa" id="twofaForm">
             <?= \App\Core\Csrf::field() ?>
             <div class="mb-3">
-                <label class="form-label fw-medium">6-stelliger Code</label>
+                <label class="form-label fw-medium"><?= te('6-stelliger Code') ?></label>
                 <input type="text" name="code" class="form-control text-center fw-bold"
                        style="font-size:22px;letter-spacing:8px;"
                        maxlength="6" inputmode="numeric" pattern="[0-9]{6}"
                        autofocus autocomplete="one-time-code" placeholder="000000" required>
             </div>
             <button type="submit" class="btn btn-primary w-100 py-2 fw-medium">
-                <i class="bi bi-check-lg me-1"></i> Verifizieren
+                <i class="bi bi-check-lg me-1"></i> <?= te('Verifizieren') ?>
             </button>
         </form>
 
         <div class="mt-3">
             <button class="btn btn-link btn-sm text-muted p-0 w-100" type="button"
                     data-bs-toggle="collapse" data-bs-target="#recoverySection">
-                Wiederherstellungscode verwenden
+                <?= te('Wiederherstellungscode verwenden') ?>
             </button>
             <div class="collapse mt-2" id="recoverySection">
                 <form method="post" action="/login/2fa">
@@ -49,14 +49,14 @@
                         <input type="text" name="code" class="form-control form-control-sm"
                                placeholder="XXXX-XXXX-XXXX" autocomplete="off"
                                style="letter-spacing:2px;">
-                        <button type="submit" class="btn btn-sm btn-outline-secondary">Verwenden</button>
+                        <button type="submit" class="btn btn-sm btn-outline-secondary"><?= te('Verwenden') ?></button>
                     </div>
                 </form>
             </div>
         </div>
 
         <a href="/login" class="d-block text-center text-muted small mt-3">
-            <i class="bi bi-arrow-left me-1"></i> Zurück zur Anmeldung
+            <i class="bi bi-arrow-left me-1"></i> <?= te('Zurück zur Anmeldung') ?>
         </a>
     </div>
 </div>

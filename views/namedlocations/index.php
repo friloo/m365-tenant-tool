@@ -39,7 +39,7 @@ $countryCatalog = [
     <div class="card text-center shadow-sm">
       <div class="card-body">
         <div class="fs-2 fw-bold text-primary"><?= count($ipLocations) ?></div>
-        <div class="small text-muted">IP-Standorte</div>
+        <div class="small text-muted"><?= te('IP-Standorte') ?></div>
       </div>
     </div>
   </div>
@@ -47,7 +47,7 @@ $countryCatalog = [
     <div class="card text-center shadow-sm">
       <div class="card-body">
         <div class="fs-2 fw-bold text-info"><?= count($countryLocations) ?></div>
-        <div class="small text-muted">Länder-Standorte</div>
+        <div class="small text-muted"><?= te('Länder-Standorte') ?></div>
       </div>
     </div>
   </div>
@@ -56,7 +56,7 @@ $countryCatalog = [
     <div class="card text-center shadow-sm">
       <div class="card-body">
         <div class="fs-2 fw-bold text-success"><?= $trustedCount ?></div>
-        <div class="small text-muted">Als vertrauenswürdig markiert</div>
+        <div class="small text-muted"><?= te('Als vertrauenswürdig markiert') ?></div>
       </div>
     </div>
   </div>
@@ -65,7 +65,7 @@ $countryCatalog = [
     <div class="card text-center shadow-sm">
       <div class="card-body">
         <div class="fs-2 fw-bold"><?= $totalRanges ?></div>
-        <div class="small text-muted">IP-Bereiche total</div>
+        <div class="small text-muted"><?= te('IP-Bereiche total') ?></div>
       </div>
     </div>
   </div>
@@ -73,36 +73,36 @@ $countryCatalog = [
 
 <div class="d-flex gap-2 justify-content-end mb-3">
   <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCountry">
-    <i class="bi bi-globe2 me-1"></i>Länder-Standort anlegen
+    <i class="bi bi-globe2 me-1"></i><?= te('Länder-Standort anlegen') ?>
   </button>
   <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalIp">
-    <i class="bi bi-hdd-network me-1"></i>IP-Standort anlegen
+    <i class="bi bi-hdd-network me-1"></i><?= te('IP-Standort anlegen') ?>
   </button>
   <a href="?refresh=1" class="btn btn-outline-secondary btn-sm ms-2">
-    <i class="bi bi-arrow-clockwise"></i> Neu laden
+    <i class="bi bi-arrow-clockwise"></i> <?= te('Neu laden') ?>
   </a>
 </div>
 
 <!-- ── Country Locations ──────────────────────────────────────── -->
 <div class="card shadow-sm mb-4">
   <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
-    <span><i class="bi bi-globe2 me-2"></i>Länder-Standorte</span>
+    <span><i class="bi bi-globe2 me-2"></i><?= te('Länder-Standorte') ?></span>
     <span class="badge bg-secondary"><?= count($countryLocations) ?></span>
   </div>
   <?php if (empty($countryLocations)): ?>
   <div class="card-body text-muted">
-    Keine Länder-Standorte konfiguriert.
-    <a href="#" data-bs-toggle="modal" data-bs-target="#modalCountry">Jetzt anlegen →</a>
+    <?= te('Keine Länder-Standorte konfiguriert.') ?>
+    <a href="#" data-bs-toggle="modal" data-bs-target="#modalCountry"><?= te('Jetzt anlegen →') ?></a>
   </div>
   <?php else: ?>
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
       <thead class="table-light">
         <tr>
-          <th>Name</th>
-          <th>Länder</th>
-          <th>Unbekannte Länder</th>
-          <th>Erstellt</th>
+          <th><?= te('Name') ?></th>
+          <th><?= te('Länder') ?></th>
+          <th><?= te('Unbekannte Länder') ?></th>
+          <th><?= te('Erstellt') ?></th>
           <th></th>
         </tr>
       </thead>
@@ -118,13 +118,13 @@ $countryCatalog = [
           </td>
           <td>
             <?= ($loc['includeUnknownCountriesAndRegions'] ?? false)
-                ? '<span class="badge bg-warning text-dark">Ja</span>'
-                : '<span class="badge bg-secondary">Nein</span>' ?>
+                ? '<span class="badge bg-warning text-dark">' . te('Ja') . '</span>'
+                : '<span class="badge bg-secondary">' . te('Nein') . '</span>' ?>
           </td>
           <td class="text-muted small"><?= $loc['createdDateTime'] ? date('d.m.Y', strtotime($loc['createdDateTime'])) : '–' ?></td>
           <td class="text-end">
             <form method="POST" action="/namedlocations/<?= $e($loc['id']) ?>/delete"
-                  onsubmit="return confirm('Standort «<?= $e(addslashes($loc['displayName'])) ?>» wirklich löschen?\nAlle CA-Richtlinien, die ihn referenzieren, müssen angepasst werden.')">
+                  onsubmit="return confirm('<?= $e(t('Standort «')) ?><?= $e(addslashes($loc['displayName'])) ?><?= $e(t('» wirklich löschen?\nAlle CA-Richtlinien, die ihn referenzieren, müssen angepasst werden.')) ?>')">
                 <?= \App\Core\Csrf::field() ?>
               <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash3"></i></button>
             </form>
@@ -140,20 +140,20 @@ $countryCatalog = [
 <!-- ── IP Locations ───────────────────────────────────────────── -->
 <div class="card shadow-sm mb-4">
   <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
-    <span><i class="bi bi-hdd-network me-2"></i>IP-Standorte</span>
+    <span><i class="bi bi-hdd-network me-2"></i><?= te('IP-Standorte') ?></span>
     <span class="badge bg-secondary"><?= count($ipLocations) ?></span>
   </div>
   <?php if (empty($ipLocations)): ?>
-  <div class="card-body text-muted">Keine IP-Standorte konfiguriert.</div>
+  <div class="card-body text-muted"><?= te('Keine IP-Standorte konfiguriert.') ?></div>
   <?php else: ?>
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
       <thead class="table-light">
         <tr>
-          <th>Name</th>
-          <th>Vertrauenswürdig</th>
-          <th>IP-Bereiche</th>
-          <th>Erstellt</th>
+          <th><?= te('Name') ?></th>
+          <th><?= te('Vertrauenswürdig') ?></th>
+          <th><?= te('IP-Bereiche') ?></th>
+          <th><?= te('Erstellt') ?></th>
           <th></th>
         </tr>
       </thead>
@@ -163,9 +163,9 @@ $countryCatalog = [
           <td class="fw-semibold"><?= $e($loc['displayName']) ?></td>
           <td>
             <?php if ($loc['isTrusted'] ?? false): ?>
-              <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Ja</span>
+              <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i><?= te('Ja') ?></span>
             <?php else: ?>
-              <span class="badge bg-secondary">Nein</span>
+              <span class="badge bg-secondary"><?= te('Nein') ?></span>
             <?php endif ?>
           </td>
           <td>
@@ -176,7 +176,7 @@ $countryCatalog = [
           <td class="text-muted small"><?= $loc['createdDateTime'] ? date('d.m.Y', strtotime($loc['createdDateTime'])) : '–' ?></td>
           <td class="text-end">
             <form method="POST" action="/namedlocations/<?= $e($loc['id']) ?>/delete"
-                  onsubmit="return confirm('IP-Standort «<?= $e(addslashes($loc['displayName'])) ?>» wirklich löschen?')">
+                  onsubmit="return confirm('<?= $e(t('IP-Standort «')) ?><?= $e(addslashes($loc['displayName'])) ?><?= $e(t('» wirklich löschen?')) ?>')">
                 <?= \App\Core\Csrf::field() ?>
               <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash3"></i></button>
             </form>
@@ -191,9 +191,9 @@ $countryCatalog = [
 
 <div class="alert alert-info small mb-0">
   <i class="bi bi-info-circle-fill me-1"></i>
-  Named Locations werden in Conditional-Access-Richtlinien referenziert.
-  Tipp: Erst einen Länder-Standort anlegen, dann auf der
-  <a href="/conditionalaccess">Conditional Access Seite</a> eine Blockierungsrichtlinie erstellen.
+  <?= te('Named Locations werden in Conditional-Access-Richtlinien referenziert.') ?>
+  <?= te('Tipp: Erst einen Länder-Standort anlegen, dann auf der') ?>
+  <a href="/conditionalaccess"><?= te('Conditional Access Seite') ?></a> <?= te('eine Blockierungsrichtlinie erstellen.') ?>
 </div>
 
 <!-- ── Modal: Länder-Standort anlegen ────────────────────────── -->
@@ -203,18 +203,18 @@ $countryCatalog = [
       <form method="POST" action="/namedlocations/create-country">
           <?= \App\Core\Csrf::field() ?>
         <div class="modal-header">
-          <h5 class="modal-title"><i class="bi bi-globe2 me-2"></i>Länder-Standort anlegen</h5>
+          <h5 class="modal-title"><i class="bi bi-globe2 me-2"></i><?= te('Länder-Standort anlegen') ?></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
+            <label class="form-label fw-semibold"><?= te('Name') ?> <span class="text-danger">*</span></label>
             <input type="text" name="name" class="form-control" required
-                   placeholder="z.B. Erlaubte Länder (DACH)" maxlength="100">
+                   placeholder="<?= te('z.B. Erlaubte Länder (DACH)') ?>" maxlength="100">
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-semibold">Länder auswählen <span class="text-danger">*</span></label>
+            <label class="form-label fw-semibold"><?= te('Länder auswählen') ?> <span class="text-danger">*</span></label>
             <div class="row g-2">
               <?php foreach ($countryCatalog as $code => $label): ?>
               <div class="col-6 col-md-4 col-lg-3">
@@ -232,24 +232,24 @@ $countryCatalog = [
             </div>
             <div class="mt-2">
               <input type="hidden" name="countries" id="countriesHidden">
-              <small class="text-muted">Weitere Codes (kommagetrennt): </small>
+              <small class="text-muted"><?= te('Weitere Codes (kommagetrennt):') ?> </small>
               <input type="text" id="extraCodes" class="form-control form-control-sm mt-1"
-                     placeholder="z.B. JP, SG, US" style="width:220px">
+                     placeholder="<?= te('z.B. JP, SG, US') ?>" style="width:220px">
             </div>
           </div>
 
           <div class="form-check">
             <input class="form-check-input" type="checkbox" name="include_unknown" id="incUnknown">
             <label class="form-check-label" for="incUnknown">
-              Anmeldungen aus unbekannten Ländern einschließen
-              <span class="text-muted small">(empfohlen: deaktiviert)</span>
+              <?= te('Anmeldungen aus unbekannten Ländern einschließen') ?>
+              <span class="text-muted small"><?= te('(empfohlen: deaktiviert)') ?></span>
             </label>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= te('Abbrechen') ?></button>
           <button type="submit" class="btn btn-primary">
-            <i class="bi bi-plus-circle me-1"></i>Standort anlegen
+            <i class="bi bi-plus-circle me-1"></i><?= te('Standort anlegen') ?>
           </button>
         </div>
       </form>
@@ -264,33 +264,33 @@ $countryCatalog = [
       <form method="POST" action="/namedlocations/create-ip">
           <?= \App\Core\Csrf::field() ?>
         <div class="modal-header">
-          <h5 class="modal-title"><i class="bi bi-hdd-network me-2"></i>IP-Standort anlegen</h5>
+          <h5 class="modal-title"><i class="bi bi-hdd-network me-2"></i><?= te('IP-Standort anlegen') ?></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
+            <label class="form-label fw-semibold"><?= te('Name') ?> <span class="text-danger">*</span></label>
             <input type="text" name="name" class="form-control" required
-                   placeholder="z.B. Büro Frankfurt" maxlength="100">
+                   placeholder="<?= te('z.B. Büro Frankfurt') ?>" maxlength="100">
           </div>
           <div class="mb-3">
-            <label class="form-label fw-semibold">IP-Bereiche (CIDR, ein Eintrag pro Zeile) <span class="text-danger">*</span></label>
+            <label class="form-label fw-semibold"><?= te('IP-Bereiche (CIDR, ein Eintrag pro Zeile)') ?> <span class="text-danger">*</span></label>
             <textarea name="cidrs" class="form-control font-monospace" rows="5" required
                       placeholder="192.168.1.0/24&#10;10.0.0.0/8&#10;2001:db8::/32"></textarea>
-            <div class="form-text">IPv4 und IPv6 CIDR-Notation werden unterstützt.</div>
+            <div class="form-text"><?= te('IPv4 und IPv6 CIDR-Notation werden unterstützt.') ?></div>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="checkbox" name="trusted" id="ipTrusted" checked>
             <label class="form-check-label" for="ipTrusted">
-              Als vertrauenswürdig markieren
-              <span class="text-muted small">(ermöglicht MFA-Ausnahmen in CA-Richtlinien)</span>
+              <?= te('Als vertrauenswürdig markieren') ?>
+              <span class="text-muted small"><?= te('(ermöglicht MFA-Ausnahmen in CA-Richtlinien)') ?></span>
             </label>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= te('Abbrechen') ?></button>
           <button type="submit" class="btn btn-primary">
-            <i class="bi bi-plus-circle me-1"></i>Standort anlegen
+            <i class="bi bi-plus-circle me-1"></i><?= te('Standort anlegen') ?>
           </button>
         </div>
       </form>

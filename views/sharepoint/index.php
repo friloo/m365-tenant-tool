@@ -3,7 +3,7 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Sites gesamt</div>
+            <div class="metric-label"><?= te('Sites gesamt') ?></div>
             <div class="metric-value"><?= count($sites) ?></div>
         </div>
     </div>
@@ -11,12 +11,12 @@
 
 <div class="content-card">
     <div class="table-toolbar">
-        <input type="text" id="spSearch" class="search-box" placeholder="Site suchen…">
+        <input type="text" id="spSearch" class="search-box" placeholder="<?= te('Site suchen…') ?>">
     </div>
     <div class="table-responsive">
         <table class="data-table" id="spTable">
             <thead>
-                <tr><th>Site-Name</th><th>URL</th><th>Erstellt</th><th></th></tr>
+                <tr><th><?= te('Site-Name') ?></th><th>URL</th><th><?= te('Erstellt') ?></th><th></th></tr>
             </thead>
             <tbody>
                 <?php foreach ($sites as $site): ?>
@@ -38,7 +38,7 @@
                     </tr>
                 <?php endforeach; ?>
                 <?php if (empty($sites)): ?>
-                    <tr><td colspan="4" class="text-center text-muted py-4">Keine Sites gefunden</td></tr>
+                    <tr><td colspan="4" class="text-center text-muted py-4"><?= te('Keine Sites gefunden') ?></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

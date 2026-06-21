@@ -275,7 +275,7 @@ $gapClass = ['ok' => 'success',                    'warning' => 'warning',      
             </div>
             <?php else: ?>
             <select name="namedLocationId" class="form-select" id="selLocation">
-              <option value="">– Bitte wählen –</option>
+              <option value=""><?= te('– Bitte wählen –') ?></option>
               <?php foreach ($countryLocations as $loc): ?>
               <option value="<?= $e($loc['id']) ?>">
                 <?= $e($loc['displayName']) ?>
@@ -284,53 +284,52 @@ $gapClass = ['ok' => 'success',                    'warning' => 'warning',      
               <?php endforeach ?>
             </select>
             <div class="form-text">
-              Anmeldungen aus Ländern, die in dieser Liste stehen, werden erlaubt — alle anderen blockiert.
+              <?= te('Anmeldungen aus Ländern, die in dieser Liste stehen, werden erlaubt — alle anderen blockiert.') ?>
             </div>
             <?php endif ?>
           </div>
 
           <!-- Name -->
           <div class="mb-3">
-            <label class="form-label fw-semibold">Name der Richtlinie <span class="text-danger">*</span></label>
+            <label class="form-label fw-semibold"><?= te('Name der Richtlinie') ?> <span class="text-danger">*</span></label>
             <input type="text" name="displayName" id="inpName" class="form-control" required
-                   maxlength="256" placeholder="z.B. Block: Nicht-DACH-Länder">
+                   maxlength="256" placeholder="<?= te('z.B. Block: Nicht-DACH-Länder') ?>">
           </div>
 
           <!-- Break-glass exclusion -->
           <div class="mb-3">
-            <label class="form-label fw-semibold">Break-Glass-Konto ausschließen</label>
+            <label class="form-label fw-semibold"><?= te('Break-Glass-Konto ausschließen') ?></label>
             <input type="text" name="excludeUserId" class="form-control font-monospace" id="inpExclude"
-                   placeholder="Object-ID des Notfall-Admins (optional, empfohlen)">
+                   placeholder="<?= te('Object-ID des Notfall-Admins (optional, empfohlen)') ?>">
             <div class="form-text">
-              Die Object-ID findest du in
-              <a href="https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers" target="_blank" rel="noopener noreferrer">Entra ID → Benutzer</a>.
-              Mehrere IDs kommagetrennt.
+              <?= te('Die Object-ID findest du in') ?>
+              <a href="https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers" target="_blank" rel="noopener noreferrer"><?= te('Entra ID → Benutzer') ?></a>.
+              <?= te('Mehrere IDs kommagetrennt.') ?>
             </div>
           </div>
 
           <!-- Initial state -->
           <div class="mb-3">
-            <label class="form-label fw-semibold">Anfangsstatus</label>
+            <label class="form-label fw-semibold"><?= te('Anfangsstatus') ?></label>
             <select name="state" class="form-select">
               <option value="enabledForReportingButNotEnforced" selected>
-                Report-only (empfohlen — erst testen!)
+                <?= te('Report-only (empfohlen — erst testen!)') ?>
               </option>
-              <option value="disabled">Deaktiviert</option>
-              <option value="enabled">Sofort aktivieren (Vorsicht!)</option>
+              <option value="disabled"><?= te('Deaktiviert') ?></option>
+              <option value="enabled"><?= te('Sofort aktivieren (Vorsicht!)') ?></option>
             </select>
           </div>
 
           <div class="alert alert-warning small mb-0">
             <i class="bi bi-exclamation-triangle-fill me-1"></i>
-            Neue Richtlinien sollten immer im <strong>Report-only-Modus</strong> gestartet werden.
-            Im Report-Modus kannst du im Sign-in-Log prüfen, wen die Richtlinie betreffen würde,
-            bevor du sie aktivierst. Sorgfältig: Ein Break-Glass-Konto ausschließen ist Pflicht!
+            <?= te('Neue Richtlinien sollten immer im') ?> <strong><?= te('Report-only-Modus') ?></strong> <?= te('gestartet werden.') ?>
+            <?= te('Im Report-Modus kannst du im Sign-in-Log prüfen, wen die Richtlinie betreffen würde, bevor du sie aktivierst. Sorgfältig: Ein Break-Glass-Konto ausschließen ist Pflicht!') ?>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= te('Abbrechen') ?></button>
           <button type="submit" class="btn btn-primary">
-            <i class="bi bi-plus-circle me-1"></i>Richtlinie erstellen
+            <i class="bi bi-plus-circle me-1"></i><?= te('Richtlinie erstellen') ?>
           </button>
         </div>
       </form>
@@ -346,9 +345,9 @@ $gapClass = ['ok' => 'success',                    'warning' => 'warning',      
   const inpName = document.getElementById('inpName');
 
   const templates = {
-    country_block: 'Block: Nicht-DACH-Länder',
-    mfa_all:       'Require MFA – Alle Benutzer',
-    block_legacy:  'Block: Legacy-Authentifizierung',
+    country_block: <?= json_encode(t('Block: Nicht-DACH-Länder'), JSON_UNESCAPED_UNICODE) ?>,
+    mfa_all:       <?= json_encode(t('Require MFA – Alle Benutzer'), JSON_UNESCAPED_UNICODE) ?>,
+    block_legacy:  <?= json_encode(t('Block: Legacy-Authentifizierung'), JSON_UNESCAPED_UNICODE) ?>,
   };
 
   function onTemplateChange() {

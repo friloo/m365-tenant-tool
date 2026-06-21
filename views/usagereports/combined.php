@@ -6,12 +6,12 @@ $adoptionActive = (($_GET['tab'] ?? '') === 'adoption');
 <ul class="nav nav-tabs mb-3" role="tablist">
     <li class="nav-item" role="presentation">
         <button class="nav-link <?= $adoptionActive ? '' : 'active' ?>" data-bs-toggle="tab" data-bs-target="#tab-usage" type="button" role="tab">
-            <i class="bi bi-bar-chart-steps me-1"></i>Nutzungsberichte
+            <i class="bi bi-bar-chart-steps me-1"></i><?= te('Nutzungsberichte') ?>
         </button>
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link <?= $adoptionActive ? 'active' : '' ?>" data-bs-toggle="tab" data-bs-target="#tab-adoption" type="button" role="tab">
-            <i class="bi bi-graph-up-arrow me-1"></i>Adoption
+            <i class="bi bi-graph-up-arrow me-1"></i><?= te('Adoption') ?>
         </button>
     </li>
 </ul>

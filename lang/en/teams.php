@@ -102,9 +102,9 @@ return [
 
     // ── onedrive/personal.php ───────────────────────────────────────────────
     'Eingeschränkte Ansicht:'          => 'Restricted view:',
-    'ist'                              => 'is',
-    'nicht verfügbar. Die Daten werden per Einzelabfrage ermittelt (erste 150 Benutzer).'
-        => 'not available. Data is determined by individual queries (first 150 users).',
+    'Der OneDrive-Nutzungsbericht ('   => 'The OneDrive usage report (',
+    ') ist nicht verfügbar. Die Daten werden per Einzelabfrage ermittelt (erste 150 Benutzer).'
+        => ') is not available. Data is determined by individual queries (first 150 users).',
     'Mögliche Ursachen: Berechtigung fehlt, Berichtsverschleierung aktiv (M365 Admin Center →'
         => 'Possible causes: permission missing, report obfuscation active (M365 Admin Center →',
     'Einstellungen → Dienste → Berichte → „Anonymisierte Benutzerberichte" deaktivieren),'

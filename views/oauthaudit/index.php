@@ -5,10 +5,9 @@
 <div class="alert alert-warning d-flex gap-3 mb-3">
     <i class="bi bi-shield-exclamation flex-shrink-0 mt-1" style="font-size:1.4rem;color:#b45309;"></i>
     <div>
-        <strong>OAuth-Apps mit hohen Berechtigungen sind ein Top-Vektor für Tenant-Übernahme.</strong>
-        Apps mit <code>Mail.ReadWrite.All</code>, <code>Files.ReadWrite.All</code>, <code>Directory.ReadWrite.All</code>
-        können wie ein Admin agieren. Besonders kritisch: Apps die seit Monaten keine Anmeldung mehr hatten,
-        aber noch Berechtigungen halten — typisch nach Migrationen oder gekündigten 3rd-Party-Tools.
+        <strong><?= te('OAuth-Apps mit hohen Berechtigungen sind ein Top-Vektor für Tenant-Übernahme.') ?></strong>
+        <?= te('Apps mit') ?> <code>Mail.ReadWrite.All</code>, <code>Files.ReadWrite.All</code>, <code>Directory.ReadWrite.All</code>
+        <?= te('können wie ein Admin agieren. Besonders kritisch: Apps die seit Monaten keine Anmeldung mehr hatten, aber noch Berechtigungen halten — typisch nach Migrationen oder gekündigten 3rd-Party-Tools.') ?>
     </div>
 </div>
 
@@ -16,14 +15,14 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-app-indicator me-1"></i>Apps gesamt</div>
+            <div class="metric-label"><i class="bi bi-app-indicator me-1"></i><?= te('Apps gesamt') ?></div>
             <div class="metric-value"><?= number_format($summary['total']) ?></div>
             <div class="metric-sub"><?= number_format($summary['third_party']) ?> 3rd-Party</div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card" style="border-left:4px solid <?= $summary['high_priv'] > 0 ? '#dc2626' : '#16a34a' ?>;">
-            <div class="metric-label"><i class="bi bi-shield-fill-exclamation me-1"></i>Hohe Berechtigung</div>
+            <div class="metric-label"><i class="bi bi-shield-fill-exclamation me-1"></i><?= te('Hohe Berechtigung') ?></div>
             <div class="metric-value" style="color:<?= $summary['high_priv'] > 0 ? '#dc2626' : '#16a34a' ?>;">
                 <?= number_format($summary['high_priv']) ?>
             </div>
@@ -32,14 +31,14 @@
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card" style="border-left:4px solid <?= $summary['unused_90d'] > 0 ? '#d97706' : '#9ca3af' ?>;">
-            <div class="metric-label"><i class="bi bi-moon-stars me-1"></i>Inaktiv &gt; 90 Tage</div>
+            <div class="metric-label"><i class="bi bi-moon-stars me-1"></i><?= te('Inaktiv') ?> &gt; <?= te('90 Tage') ?></div>
             <div class="metric-value"><?= number_format($summary['unused_90d']) ?></div>
-            <div class="metric-sub">3rd-Party-Apps</div>
+            <div class="metric-sub"><?= te('3rd-Party-Apps') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-pause-circle me-1"></i>Deaktiviert</div>
+            <div class="metric-label"><i class="bi bi-pause-circle me-1"></i><?= te('Deaktiviert') ?></div>
             <div class="metric-value"><?= number_format($summary['disabled']) ?></div>
             <div class="metric-sub">accountEnabled = false</div>
         </div>
@@ -50,14 +49,14 @@
 <div class="d-flex flex-wrap gap-2 mb-3">
     <div class="btn-group btn-group-sm" role="group">
         <a href="?filter=third" class="btn <?= $showOnlyThirdParty ? 'btn-primary' : 'btn-outline-primary' ?>">
-            Nur 3rd-Party
+            <?= te('Nur 3rd-Party') ?>
         </a>
         <a href="?filter=all" class="btn <?= !$showOnlyThirdParty ? 'btn-primary' : 'btn-outline-primary' ?>">
-            Alle (inkl. Microsoft)
+            <?= te('Alle (inkl. Microsoft)') ?>
         </a>
     </div>
     <a href="?refresh=1<?= $showOnlyThirdParty ? '' : '&filter=all' ?>" class="btn btn-sm btn-outline-secondary ms-auto">
-        <i class="bi bi-arrow-clockwise me-1"></i>Aktualisieren
+        <i class="bi bi-arrow-clockwise me-1"></i><?= te('Aktualisieren') ?>
     </a>
 </div>
 

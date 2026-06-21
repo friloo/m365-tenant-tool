@@ -15,10 +15,10 @@ $renderDiag = function (string $icon, ?string $title, ?array $diag) use ($e): st
               . '<p class="text-muted small mb-0" style="max-width:520px;margin:0 auto;">' . $e($diag['detail']) . '</p>';
         if (!empty($diag['fix_url'])) {
             $out .= '<a href="' . $e($diag['fix_url']) . '" class="btn btn-sm btn-outline-secondary mt-3">'
-                  . '<i class="bi bi-arrow-right-circle me-1"></i>Zur Lösung</a>';
+                  . '<i class="bi bi-arrow-right-circle me-1"></i>' . te('Zur Lösung') . '</a>';
         }
     } else {
-        $out .= '<p class="mt-2 text-muted small mb-0">Keine Daten — möglicherweise sind die Berichte aktuell noch nicht generiert worden (Microsoft braucht ca. 48 h Verzögerung).</p>';
+        $out .= '<p class="mt-2 text-muted small mb-0">' . te('Keine Daten — möglicherweise sind die Berichte aktuell noch nicht generiert worden (Microsoft braucht ca. 48 h Verzögerung).') . '</p>';
     }
     $out .= '</div>';
     return $out;
@@ -55,7 +55,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
 <!-- Page subtitle -->
 <p class="text-muted small mb-4">
     <i class="bi bi-bar-chart-line me-1"></i>
-    Nutzungsstatistiken der letzten 30 Tage aus Microsoft 365 Reports
+    <?= te('Nutzungsstatistiken der letzten 30 Tage aus Microsoft 365 Reports') ?>
 </p>
 
 <!-- ── Section 1: Metric cards ──────────────────────────────────────────── -->
@@ -65,14 +65,14 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
     <div class="col-sm-6 col-lg-2">
         <div class="metric-card">
             <div class="metric-label">
-                <i class="bi bi-people me-1"></i>Lizenzierte Nutzer
+                <i class="bi bi-people me-1"></i><?= te('Lizenzierte Nutzer') ?>
             </div>
             <div class="metric-value"><?= number_format($totalUsers) ?></div>
             <div class="metric-sub">
                 <?php if ($skuTotals['total'] > 0): ?>
-                    von <?= number_format($skuTotals['total']) ?> verfügbar
+                    <?= te('von :n verfügbar', ['n' => number_format($skuTotals['total'])]) ?>
                 <?php else: ?>
-                    Lizenzen gesamt
+                    <?= te('Lizenzen gesamt') ?>
                 <?php endif; ?>
             </div>
         </div>
@@ -86,7 +86,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
     <div class="col-sm-6 col-lg-<?= empty($activeUsers) ? '6' : '2' ?>">
         <div class="metric-card">
             <div class="metric-label">
-                <i class="bi bi-envelope me-1"></i>Exchange aktiv
+                <i class="bi bi-envelope me-1"></i><?= te('Exchange aktiv') ?>
             </div>
             <div class="metric-value" style="color:<?= $exColor ?>;"><?= number_format($exActive) ?></div>
             <div class="metric-sub">
@@ -104,7 +104,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
     <div class="col-sm-6 col-lg-2">
         <div class="metric-card">
             <div class="metric-label">
-                <i class="bi bi-microsoft-teams me-1"></i>Teams aktiv
+                <i class="bi bi-microsoft-teams me-1"></i><?= te('Teams aktiv') ?>
             </div>
             <div class="metric-value" style="color:<?= $tmColor ?>;"><?= number_format($tmActive) ?></div>
             <div class="metric-sub">
@@ -122,7 +122,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
     <div class="col-sm-6 col-lg-2">
         <div class="metric-card">
             <div class="metric-label">
-                <i class="bi bi-share me-1"></i>SharePoint aktiv
+                <i class="bi bi-share me-1"></i><?= te('SharePoint aktiv') ?>
             </div>
             <div class="metric-value" style="color:<?= $spColor ?>;"><?= number_format($spActive) ?></div>
             <div class="metric-sub">
@@ -140,7 +140,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
     <div class="col-sm-6 col-lg-2">
         <div class="metric-card">
             <div class="metric-label">
-                <i class="bi bi-cloud me-1"></i>OneDrive aktiv
+                <i class="bi bi-cloud me-1"></i><?= te('OneDrive aktiv') ?>
             </div>
             <div class="metric-value" style="color:<?= $odColor ?>;"><?= number_format($odActive) ?></div>
             <div class="metric-sub">
@@ -159,9 +159,9 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-bar-chart-line text-primary"></i>
-        <h6>Service Adoption Übersicht</h6>
+        <h6><?= te('Service Adoption Übersicht') ?></h6>
         <?php if ($denominator > 0): ?>
-            <span class="text-muted small ms-auto">Basis: <?= number_format($denominator) ?> Nutzer</span>
+            <span class="text-muted small ms-auto"><?= te('Basis: :n Nutzer', ['n' => number_format($denominator)]) ?></span>
         <?php endif; ?>
     </div>
     <div class="card-body-custom">
@@ -170,7 +170,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                            + ($activeUsers['sharepoint'] ?? 0) + ($activeUsers['onedrive'] ?? 0) > 0;
         ?>
         <?php if (empty($activeUsers) || !$hasAnyServiceData): ?>
-            <?= $renderDiag('shield-exclamation', 'Keine Adoption-Daten verfügbar', $activeDiag ?? null) ?>
+            <?= $renderDiag('shield-exclamation', t('Keine Adoption-Daten verfügbar'), $activeDiag ?? null) ?>
         <?php else: ?>
             <div style="position:relative; height:250px;">
                 <canvas id="adoptionBarChart"></canvas>
@@ -187,7 +187,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
         <div class="content-card h-100">
             <div class="card-header-custom">
                 <i class="bi bi-envelope-open text-primary"></i>
-                <h6>E-Mail-Aktivität (letzte 30 Tage)</h6>
+                <h6><?= te('E-Mail-Aktivität (letzte 30 Tage)') ?></h6>
             </div>
             <div class="card-body-custom">
                 <?php if (empty($emailCounts)): ?>
@@ -206,7 +206,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
         <div class="content-card h-100">
             <div class="card-header-custom">
                 <i class="bi bi-chat-dots text-info"></i>
-                <h6>Teams-Aktivität (letzte 30 Tage)</h6>
+                <h6><?= te('Teams-Aktivität (letzte 30 Tage)') ?></h6>
             </div>
             <div class="card-body-custom">
                 <?php if (empty($teamsCounts)): ?>
@@ -227,7 +227,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-cloud-arrow-up text-success"></i>
-        <h6>OneDrive-Aktivität (letzte 30 Tage)</h6>
+        <h6><?= te('OneDrive-Aktivität (letzte 30 Tage)') ?></h6>
     </div>
     <div class="card-body-custom">
         <div style="position:relative; height:250px;">
@@ -285,7 +285,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
             data: {
                 labels: ['Exchange', 'Teams', 'SharePoint', 'OneDrive', 'Yammer'],
                 datasets: [{
-                    label: 'Aktive Nutzer',
+                    label: <?= json_encode(t('Aktive Nutzer'), JSON_UNESCAPED_UNICODE) ?>,
                     data: adoptionValues,
                     backgroundColor: [
                         'rgba(0, 120, 212, 0.8)',    // Exchange blue
@@ -316,7 +316,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                             label: function (ctx) {
                                 var val = ctx.parsed.x;
                                 var pct = totalDenom > 0 ? ((val / totalDenom) * 100).toFixed(1) : 0;
-                                return ' ' + val.toLocaleString('de-DE') + ' Nutzer (' + pct + '%)';
+                                return ' ' + val.toLocaleString('de-DE') + ' ' + <?= json_encode(t('Nutzer'), JSON_UNESCAPED_UNICODE) ?> + ' (' + pct + '%)';
                             },
                         },
                     },
@@ -347,7 +347,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                 labels: emailLabels,
                 datasets: [
                     {
-                        label: 'Gesendet',
+                        label: <?= json_encode(t('Gesendet'), JSON_UNESCAPED_UNICODE) ?>,
                         data: emailSend,
                         borderColor: '#3b82f6',
                         backgroundColor: 'rgba(59,130,246,0.08)',
@@ -357,7 +357,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                         fill: true,
                     },
                     {
-                        label: 'Empfangen',
+                        label: <?= json_encode(t('Empfangen'), JSON_UNESCAPED_UNICODE) ?>,
                         data: emailReceive,
                         borderColor: '#16a34a',
                         backgroundColor: 'rgba(22,163,74,0.06)',
@@ -367,7 +367,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                         fill: false,
                     },
                     {
-                        label: 'Gelesen',
+                        label: <?= json_encode(t('Gelesen'), JSON_UNESCAPED_UNICODE) ?>,
                         data: emailRead,
                         borderColor: '#d97706',
                         backgroundColor: 'rgba(217,119,6,0.06)',
@@ -398,7 +398,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                 labels: teamsLabels,
                 datasets: [
                     {
-                        label: 'Team-Chat',
+                        label: <?= json_encode(t('Team-Chat'), JSON_UNESCAPED_UNICODE) ?>,
                         data: teamsTeamChat,
                         borderColor: '#6441a4',
                         backgroundColor: 'rgba(100,65,164,0.08)',

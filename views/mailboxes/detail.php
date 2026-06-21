@@ -67,9 +67,9 @@ $tz          = $detail['timeZone'] ?? '';
                 <table class="table table-sm mb-0">
                     <?php
                     $props = [
-                        'Titel'      => $jobTitle,
-                        'Abteilung'  => $department,
-                        'Zeitzone'   => $tz,
+                        t('Titel')      => $jobTitle,
+                        t('Abteilung')  => $department,
+                        t('Zeitzone')   => $tz,
                     ];
                     foreach ($props as $label => $val):
                         if ($val === '' || $val === null) continue;
@@ -91,7 +91,7 @@ $tz          = $detail['timeZone'] ?? '';
         <div class="content-card mb-3">
             <div class="card-header-custom">
                 <i class="bi bi-forward text-warning"></i>
-                <h6>E-Mail-Weiterleitung</h6>
+                <h6><?= te('E-Mail-Weiterleitung') ?></h6>
             </div>
             <div class="card-body-custom">
 
@@ -99,17 +99,17 @@ $tz          = $detail['timeZone'] ?? '';
                 <div class="mb-3">
                     <?php if ($fwdAddr !== ''): ?>
                         <p class="mb-1 small">
-                            <strong>Status:</strong>
+                            <strong><?= te('Status:') ?></strong>
                             <span class="badge-warning badge-pill ms-1">
-                                <i class="bi bi-forward-fill me-1"></i>Aktiv
+                                <i class="bi bi-forward-fill me-1"></i><?= te('Aktiv') ?>
                             </span>
                         </p>
                         <p class="mb-0 small text-muted">
-                            Weitergeleitet an: <strong><?= $e($fwdAddr) ?></strong>
+                            <?= te('Weitergeleitet an:') ?> <strong><?= $e($fwdAddr) ?></strong>
                         </p>
                     <?php else: ?>
                         <p class="mb-0 small text-muted">
-                            <i class="bi bi-dash-circle me-1"></i>Keine Weiterleitung aktiv.
+                            <i class="bi bi-dash-circle me-1"></i><?= te('Keine Weiterleitung aktiv.') ?>
                         </p>
                     <?php endif; ?>
                 </div>
@@ -124,7 +124,7 @@ $tz          = $detail['timeZone'] ?? '';
                                style="max-width:320px;"
                                placeholder="ziel@beispiel.de">
                         <button type="submit" class="btn btn-sm btn-primary text-nowrap">
-                            <i class="bi bi-save me-1"></i>Speichern
+                            <i class="bi bi-save me-1"></i><?= te('Speichern') ?>
                         </button>
                     </div>
                 </form>
@@ -132,18 +132,18 @@ $tz          = $detail['timeZone'] ?? '';
                 <?php if ($fwdAddr !== ''): ?>
                 <!-- Remove forwarding -->
                 <form method="post" action="/mailboxes/<?= $e($userId) ?>/forwarding"
-                      onsubmit="return confirm('Weiterleitung wirklich entfernen?')">
+                      onsubmit="return confirm('<?= $e(t('Weiterleitung wirklich entfernen?')) ?>')">
                     <?= \App\Core\Csrf::field() ?>
                     <input type="hidden" name="forward_to" value="">
                     <button type="submit" class="btn btn-sm btn-outline-danger">
-                        <i class="bi bi-x-circle me-1"></i>Weiterleitung entfernen
+                        <i class="bi bi-x-circle me-1"></i><?= te('Weiterleitung entfernen') ?>
                     </button>
                 </form>
                 <?php endif; ?>
 
                 <p class="mt-2 mb-0 text-muted" style="font-size:11px;">
                     <i class="bi bi-info-circle me-1"></i>
-                    Erfordert <code>MailboxSettings.ReadWrite</code>-Berechtigung in der Azure App.
+                    <?= te('Erfordert') ?> <code>MailboxSettings.ReadWrite</code><?= te('-Berechtigung in der Azure App.') ?>
                 </p>
             </div>
         </div>
@@ -152,27 +152,27 @@ $tz          = $detail['timeZone'] ?? '';
         <div class="content-card mb-3">
             <div class="card-header-custom">
                 <i class="bi bi-reply-all text-info"></i>
-                <h6>Abwesenheitsnotiz (Auto-Reply)</h6>
+                <h6><?= te('Abwesenheitsnotiz (Auto-Reply)') ?></h6>
             </div>
             <div class="card-body-custom">
 
                 <!-- Current auto-reply status -->
                 <div class="mb-3">
-                    <span class="small me-2"><strong>Status:</strong></span>
+                    <span class="small me-2"><strong><?= te('Status:') ?></strong></span>
                     <?php if ($autoActive): ?>
                         <span class="badge-success badge-pill">
-                            <i class="bi bi-check-circle me-1"></i>Aktiv
+                            <i class="bi bi-check-circle me-1"></i><?= te('Aktiv') ?>
                         </span>
                         <?php if ($autoMsg !== ''): ?>
                             <div class="mt-2">
-                                <label class="form-label small text-muted">Aktuelle Nachricht:</label>
+                                <label class="form-label small text-muted"><?= te('Aktuelle Nachricht:') ?></label>
                                 <textarea class="form-control form-control-sm" rows="3" readonly
                                           style="font-size:12px;background:#f9fafb;"><?= $e($autoMsg) ?></textarea>
                             </div>
                         <?php endif; ?>
                     <?php else: ?>
                         <span class="badge-neutral badge-pill">
-                            <i class="bi bi-dash-circle me-1"></i>Inaktiv
+                            <i class="bi bi-dash-circle me-1"></i><?= te('Inaktiv') ?>
                         </span>
                     <?php endif; ?>
                 </div>
@@ -184,13 +184,13 @@ $tz          = $detail['timeZone'] ?? '';
                         <input class="form-check-input" type="checkbox" name="auto_reply_enabled"
                                id="autoReplyEnabled" <?= $autoActive ? 'checked' : '' ?>>
                         <label class="form-check-label small" for="autoReplyEnabled">
-                            Abwesenheitsnotiz aktivieren
+                            <?= te('Abwesenheitsnotiz aktivieren') ?>
                         </label>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small text-muted">Nachricht (intern &amp; extern):</label>
+                        <label class="form-label small text-muted"><?= te('Nachricht (intern &amp; extern):') ?></label>
                         <textarea class="form-control form-control-sm" name="auto_reply_message"
-                                  rows="4" placeholder="Ich bin derzeit nicht erreichbar…"
+                                  rows="4" placeholder="<?= te('Ich bin derzeit nicht erreichbar…') ?>"
                                   style="font-size:13px;"><?= $e($autoMsg) ?></textarea>
                     </div>
                     <button type="submit" class="btn btn-sm btn-primary">
@@ -200,7 +200,7 @@ $tz          = $detail['timeZone'] ?? '';
 
                 <p class="mt-2 mb-0 text-muted" style="font-size:11px;">
                     <i class="bi bi-info-circle me-1"></i>
-                    Erfordert <code>MailboxSettings.ReadWrite</code>-Berechtigung in der Azure App.
+                    <?= te('Erfordert') ?> <code>MailboxSettings.ReadWrite</code><?= te('-Berechtigung in der Azure App.') ?>
                 </p>
             </div>
         </div>
@@ -210,7 +210,7 @@ $tz          = $detail['timeZone'] ?? '';
             <div class="card-header-custom" style="cursor:pointer;" data-bs-toggle="collapse"
                  data-bs-target="#foldersCollapse" aria-expanded="false" aria-controls="foldersCollapse">
                 <i class="bi bi-folder2 text-secondary"></i>
-                <h6 class="mb-0">Postfachordner</h6>
+                <h6 class="mb-0"><?= te('Postfachordner') ?></h6>
                 <i class="bi bi-chevron-down ms-auto" id="foldersChevron"
                    style="transition:transform 0.2s;"></i>
             </div>
@@ -220,7 +220,7 @@ $tz          = $detail['timeZone'] ?? '';
                         <div class="empty-state py-3">
                             <i class="bi bi-folder-x text-muted" style="font-size:2rem;"></i>
                             <p class="mt-2 mb-0 text-muted small">
-                                Keine Ordner verfügbar oder fehlende Berechtigung (<code>Mail.Read</code>).
+                                <?= te('Keine Ordner verfügbar oder fehlende Berechtigung') ?> (<code>Mail.Read</code>).
                             </p>
                         </div>
                     </div>
@@ -229,9 +229,9 @@ $tz          = $detail['timeZone'] ?? '';
                         <table class="data-table" style="font-size:13px;">
                             <thead>
                                 <tr>
-                                    <th>Ordner</th>
-                                    <th class="text-end">Gesamt</th>
-                                    <th class="text-end">Ungelesen</th>
+                                    <th><?= te('Ordner') ?></th>
+                                    <th class="text-end"><?= te('Gesamt') ?></th>
+                                    <th class="text-end"><?= te('Ungelesen') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -263,26 +263,24 @@ $tz          = $detail['timeZone'] ?? '';
         <div class="content-card mt-3">
             <div class="card-header-custom">
                 <i class="bi bi-calendar-check text-primary"></i>
-                <h6>Kalender-Berechtigungen</h6>
+                <h6><?= te('Kalender-Berechtigungen') ?></h6>
             </div>
             <div class="card-body-custom">
                 <?php if (empty($calendarPermissions)): ?>
                     <div class="alert alert-info py-2 px-3 mb-0" style="font-size:13px;">
                         <i class="bi bi-info-circle me-1"></i>
-                        Kalenderberechtigungen konnten nicht abgerufen werden. Dies erfordert entweder
-                        delegierte Berechtigungen (<code>Calendars.Read</code>) oder den Exchange
-                        Admin-Zugriff.
+                        <?= te('Kalenderberechtigungen konnten nicht abgerufen werden. Dies erfordert entweder delegierte Berechtigungen') ?> (<code>Calendars.Read</code>) <?= te('oder den Exchange Admin-Zugriff.') ?>
                         <a href="https://admin.exchange.microsoft.com" target="_blank" rel="noopener"
-                           class="ms-1">&rarr; Exchange Admin Center öffnen</a>
+                           class="ms-1"><?= te('&rarr; Exchange Admin Center öffnen') ?></a>
                     </div>
                 <?php else: ?>
                     <div class="table-responsive">
                         <table class="data-table" style="font-size:13px;">
                             <thead>
                                 <tr>
-                                    <th>Benutzer</th>
-                                    <th>Rolle</th>
-                                    <th>Intern</th>
+                                    <th><?= te('Benutzer') ?></th>
+                                    <th><?= te('Rolle') ?></th>
+                                    <th><?= te('Intern') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -314,9 +312,9 @@ $tz          = $detail['timeZone'] ?? '';
                                     </td>
                                     <td>
                                         <?php if ($isInside): ?>
-                                            <span class="badge-enabled badge-pill">Ja</span>
+                                            <span class="badge-enabled badge-pill"><?= te('Ja') ?></span>
                                         <?php else: ?>
-                                            <span class="badge-neutral badge-pill">Nein</span>
+                                            <span class="badge-neutral badge-pill"><?= te('Nein') ?></span>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
@@ -326,9 +324,9 @@ $tz          = $detail['timeZone'] ?? '';
                     </div>
                     <p class="mt-2 mb-0 text-muted" style="font-size:11px;">
                         <i class="bi bi-info-circle me-1"></i>
-                        Vollzugriff (Full Access) und &bdquo;Senden als&ldquo;-Berechtigungen werden über das
+                        <?= te('Vollzugriff (Full Access) und &bdquo;Senden als&ldquo;-Berechtigungen werden über das') ?>
                         <a href="https://admin.exchange.microsoft.com" target="_blank" rel="noopener">Exchange Admin Center</a>
-                        verwaltet.
+                        <?= te('verwaltet.') ?>
                     </p>
                 <?php endif; ?>
             </div>

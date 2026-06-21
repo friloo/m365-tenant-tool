@@ -3,16 +3,16 @@ $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 
 $stateBadge = function (string $state): string {
     return match ($state) {
-        'enabled'  => '<span class="badge bg-success">aktiviert</span>',
-        'disabled' => '<span class="badge bg-secondary">deaktiviert</span>',
-        default    => '<span class="badge bg-light text-dark border">Standard</span>',
+        'enabled'  => '<span class="badge bg-success">' . te('aktiviert') . '</span>',
+        'disabled' => '<span class="badge bg-secondary">' . te('deaktiviert') . '</span>',
+        default    => '<span class="badge bg-light text-dark border">' . te('Standard') . '</span>',
     };
 };
 $recBadge = function (string $rec): string {
     return match ($rec) {
-        'enabled'  => '<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">empfohlen: an</span>',
-        'disabled' => '<span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">empfohlen: aus</span>',
-        default    => '<span class="badge bg-light text-dark border">situativ</span>',
+        'enabled'  => '<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">' . te('empfohlen: an') . '</span>',
+        'disabled' => '<span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">' . te('empfohlen: aus') . '</span>',
+        default    => '<span class="badge bg-light text-dark border">' . te('situativ') . '</span>',
     };
 };
 ?>
@@ -35,10 +35,8 @@ $recBadge = function (string $rec): string {
 <div class="alert alert-info d-flex align-items-start gap-2">
   <i class="bi bi-info-circle-fill mt-1"></i>
   <div>
-    Steuert tenant-weit, welche Authentifizierungsmethoden Nutzer registrieren/verwenden dürfen
-    (<code>/policies/authenticationMethodsPolicy</code>). Empfehlung nach CIS M365 / Microsoft:
-    phishing-resistente Methoden (FIDO2, Authenticator) aktivieren, schwache (SMS, Sprachanruf,
-    E-Mail-OTP) als MFA deaktivieren. Änderungen wirken <strong>sofort tenant-weit</strong>.
+    <?= te('Steuert tenant-weit, welche Authentifizierungsmethoden Nutzer registrieren/verwenden dürfen') ?>
+    (<code>/policies/authenticationMethodsPolicy</code>). <?= te('Empfehlung nach CIS M365 / Microsoft: phishing-resistente Methoden (FIDO2, Authenticator) aktivieren, schwache (SMS, Sprachanruf, E-Mail-OTP) als MFA deaktivieren. Änderungen wirken') ?> <strong><?= te('sofort tenant-weit') ?></strong>.
   </div>
 </div>
 

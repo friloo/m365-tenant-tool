@@ -325,21 +325,21 @@ $ext = $extended ?? [];
         <div class="content-card h-100">
             <div class="card-header-custom">
                 <i class="bi bi-hdd-network text-info"></i>
-                <h6>Dienste &amp; Kommunikation</h6>
+                <h6><?= te('Dienste & Kommunikation') ?></h6>
             </div>
             <div class="card-body-custom p-0">
                 <?php
                 $incidentColor = $ext['service_incidents'] > 0 ? '#dc2626' : ($ext['service_incidents'] === 0 ? '#16a34a' : null);
                 $svcItems = [
-                    ['label' => 'Dienst-Vorfälle',     'href' => '/servicehealth','val' => $ext['service_incidents'],  'color' => $incidentColor,
+                    ['label' => t('Dienst-Vorfälle'),     'href' => '/servicehealth','val' => $ext['service_incidents'],  'color' => $incidentColor,
                      'sub'   => !empty($ext['incident_services']) ? implode(', ', $ext['incident_services']) : null],
-                    ['label' => 'Message Center',       'href' => '/msgcenter',    'val' => $ext['msg_center_count'],   'color' => null, 'sub' => 'Aktive Nachrichten'],
-                    ['label' => 'Postfächer',           'href' => '/mailboxes',    'val' => null,                       'color' => null, 'sub' => '→ Modul öffnen'],
-                    ['label' => 'Secure Score',         'href' => '/securescore',
+                    ['label' => t('Message Center'),       'href' => '/msgcenter',    'val' => $ext['msg_center_count'],   'color' => null, 'sub' => t('Aktive Nachrichten')],
+                    ['label' => t('Postfächer'),           'href' => '/mailboxes',    'val' => null,                       'color' => null, 'sub' => '→ ' . t('Modul öffnen')],
+                    ['label' => t('Secure Score'),         'href' => '/securescore',
                      'val'   => $ext['secure_score'] !== null ? ($ext['secure_score'] . ' / ' . $ext['secure_score_max']) : null,
                      'color' => $secureScorePct !== null ? ($secureScorePct >= 60 ? '#16a34a' : ($secureScorePct >= 40 ? '#ca8a04' : '#dc2626')) : null,
                      'sub'   => $secureScorePct !== null ? $secureScorePct . '%' : null],
-                    ['label' => 'EXO Migration',        'href' => '/exchangemigration','val' => null, 'color' => null, 'sub' => '→ Readiness prüfen'],
+                    ['label' => t('EXO Migration'),        'href' => '/exchangemigration','val' => null, 'color' => null, 'sub' => '→ ' . t('Readiness prüfen')],
                 ];
                 foreach ($svcItems as $item):
                     $display = $item['val'] !== null ? (is_int($item['val']) ? number_format($item['val']) : $item['val']) : '–';
@@ -356,9 +356,9 @@ $ext = $extended ?? [];
                 </a>
                 <?php endforeach ?>
                 <div class="px-3 py-2 d-flex gap-2 flex-wrap">
-                    <a href="/servicehealth" class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;">Dienststatus</a>
-                    <a href="/msgcenter"     class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;">Message Center</a>
-                    <a href="/mailflow"      class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;">Mail Flow</a>
+                    <a href="/servicehealth" class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;"><?= te('Dienststatus') ?></a>
+                    <a href="/msgcenter"     class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;"><?= te('Message Center') ?></a>
+                    <a href="/mailflow"      class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;"><?= te('Mail Flow') ?></a>
                 </div>
             </div>
         </div>
@@ -369,7 +369,7 @@ $ext = $extended ?? [];
         <div class="content-card h-100">
             <div class="card-header-custom">
                 <i class="bi bi-graph-up-arrow text-success"></i>
-                <h6>Nutzungsaktivität <span class="text-muted fw-normal small">(30 Tage)</span></h6>
+                <h6><?= te('Nutzungsaktivität') ?> <span class="text-muted fw-normal small">(<?= te('30 Tage') ?>)</span></h6>
             </div>
             <div class="card-body-custom p-0">
                 <?php
@@ -401,8 +401,8 @@ $ext = $extended ?? [];
                 </a>
                 <?php endforeach ?>
                 <div class="px-3 py-2 d-flex gap-2 flex-wrap">
-                    <a href="/adoption"   class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;">Adoptions-Report</a>
-                    <a href="/teamsusage" class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;">Teams-Nutzung</a>
+                    <a href="/adoption"   class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;"><?= te('Adoptions-Report') ?></a>
+                    <a href="/teamsusage" class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;"><?= te('Teams-Nutzung') ?></a>
                     <a href="/onedrive"   class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;">OneDrive</a>
                 </div>
             </div>
@@ -414,20 +414,20 @@ $ext = $extended ?? [];
 <div id="dash-w-quicklinks" class="content-card mb-2">
     <div class="card-header-custom">
         <i class="bi bi-grid text-secondary"></i>
-        <h6>Schnellzugriff</h6>
+        <h6><?= te('Schnellzugriff') ?></h6>
     </div>
     <div class="card-body-custom">
         <div class="d-flex flex-wrap gap-2">
-            <a href="/users"             class="btn btn-sm btn-outline-primary"><i class="bi bi-people me-1"></i>Benutzer</a>
-            <a href="/licenses"          class="btn btn-sm btn-outline-success"><i class="bi bi-award me-1"></i>Lizenzen</a>
-            <a href="/licenseadvisor"    class="btn btn-sm btn-outline-success"><i class="bi bi-lightbulb me-1"></i>Lizenz-Berater</a>
-            <a href="/conditionalaccess" class="btn btn-sm btn-outline-warning"><i class="bi bi-shield-shaded me-1"></i>Conditional Access</a>
+            <a href="/users"             class="btn btn-sm btn-outline-primary"><i class="bi bi-people me-1"></i><?= te('Benutzer') ?></a>
+            <a href="/licenses"          class="btn btn-sm btn-outline-success"><i class="bi bi-award me-1"></i><?= te('Lizenzen') ?></a>
+            <a href="/licenseadvisor"    class="btn btn-sm btn-outline-success"><i class="bi bi-lightbulb me-1"></i><?= te('Lizenz-Berater') ?></a>
+            <a href="/conditionalaccess" class="btn btn-sm btn-outline-warning"><i class="bi bi-shield-shaded me-1"></i><?= te('Conditional Access') ?></a>
             <a href="/namedlocations"    class="btn btn-sm btn-outline-warning"><i class="bi bi-geo-alt me-1"></i>Named Locations</a>
-            <a href="/devices"           class="btn btn-sm btn-outline-secondary"><i class="bi bi-phone me-1"></i>Geräte</a>
+            <a href="/devices"           class="btn btn-sm btn-outline-secondary"><i class="bi bi-phone me-1"></i><?= te('Geräte') ?></a>
             <a href="/offboarding"       class="btn btn-sm btn-outline-secondary"><i class="bi bi-person-dash me-1"></i>Offboarding</a>
-            <a href="/signinlog"         class="btn btn-sm btn-outline-secondary"><i class="bi bi-clock-history me-1"></i>Sign-in-Log</a>
-            <a href="/sharing"           class="btn btn-sm btn-outline-secondary"><i class="bi bi-link-45deg me-1"></i>Freigaben</a>
-            <a href="/securescore"       class="btn btn-sm btn-outline-secondary"><i class="bi bi-bar-chart me-1"></i>Secure Score</a>
+            <a href="/signinlog"         class="btn btn-sm btn-outline-secondary"><i class="bi bi-clock-history me-1"></i><?= te('Sign-in-Log') ?></a>
+            <a href="/sharing"           class="btn btn-sm btn-outline-secondary"><i class="bi bi-link-45deg me-1"></i><?= te('Freigaben') ?></a>
+            <a href="/securescore"       class="btn btn-sm btn-outline-secondary"><i class="bi bi-bar-chart me-1"></i><?= te('Secure Score') ?></a>
         </div>
     </div>
 </div>

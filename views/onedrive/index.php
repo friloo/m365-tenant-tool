@@ -11,10 +11,10 @@ $totalUsed = array_sum(array_column($drives, 'used'));
 <!-- Sub-nav tabs -->
 <div class="module-tabs mb-4">
     <a href="/onedrive" class="module-tab active">
-        <i class="bi bi-cloud me-1"></i> Speicher-Übersicht
+        <i class="bi bi-cloud me-1"></i> <?= te('Speicher-Übersicht') ?>
     </a>
     <a href="/onedrive/personal" class="module-tab">
-        <i class="bi bi-person-circle me-1"></i> Persönliche Laufwerke
+        <i class="bi bi-person-circle me-1"></i> <?= te('Persönliche Laufwerke') ?>
     </a>
 </div>
 
@@ -23,18 +23,18 @@ $totalUsed = array_sum(array_column($drives, 'used'));
         <div class="metric-card">
             <div class="metric-label">OneDrives</div>
             <div class="metric-value"><?= count($drives) ?></div>
-            <div class="metric-sub">provisionierte Laufwerke</div>
+            <div class="metric-sub"><?= te('provisionierte Laufwerke') ?></div>
         </div>
     </div>
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Gesamt belegt</div>
+            <div class="metric-label"><?= te('Gesamt belegt') ?></div>
             <div class="metric-value"><?= fmtBytes($totalUsed) ?></div>
         </div>
     </div>
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Top-Verbraucher</div>
+            <div class="metric-label"><?= te('Top-Verbraucher') ?></div>
             <div class="metric-value" style="font-size:1.2rem;">
                 <?= $e($drives[0]['user'] ?? '–') ?>
             </div>
@@ -45,21 +45,21 @@ $totalUsed = array_sum(array_column($drives, 'used'));
 
 <div class="content-card">
     <div class="table-toolbar">
-        <input type="text" id="odSearch" class="search-box" placeholder="Benutzer suchen…">
+        <input type="text" id="odSearch" class="search-box" placeholder="<?= te('Benutzer suchen…') ?>">
         <a href="/onedrive/personal" class="btn btn-sm btn-outline-primary ms-auto">
-            <i class="bi bi-person-circle me-1"></i> Alle persönlichen Laufwerke
+            <i class="bi bi-person-circle me-1"></i> <?= te('Alle persönlichen Laufwerke') ?>
         </a>
     </div>
     <div class="table-responsive">
         <table class="data-table" id="odTable">
             <thead>
                 <tr>
-                    <th>Benutzer</th>
+                    <th><?= te('Benutzer') ?></th>
                     <th>UPN</th>
-                    <th>Belegt</th>
-                    <th>Gesamt</th>
-                    <th>Nutzung</th>
-                    <th>Status</th>
+                    <th><?= te('Belegt') ?></th>
+                    <th><?= te('Gesamt') ?></th>
+                    <th><?= te('Nutzung') ?></th>
+                    <th><?= te('Status') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -83,9 +83,9 @@ $totalUsed = array_sum(array_column($drives, 'used'));
                         </td>
                         <td>
                             <?php if ($d['state'] === 'normal'): ?>
-                                <span class="badge-enabled">Normal</span>
+                                <span class="badge-enabled"><?= te('Normal') ?></span>
                             <?php elseif ($d['state'] === 'warning'): ?>
-                                <span class="badge-warning">Warnung</span>
+                                <span class="badge-warning"><?= te('Warnung') ?></span>
                             <?php else: ?>
                                 <span class="badge-disabled"><?= $e($d['state']) ?></span>
                             <?php endif; ?>
@@ -93,7 +93,7 @@ $totalUsed = array_sum(array_column($drives, 'used'));
                     </tr>
                 <?php endforeach; ?>
                 <?php if (empty($drives)): ?>
-                    <tr><td colspan="6" class="text-center text-muted py-4">Keine Daten verfügbar</td></tr>
+                    <tr><td colspan="6" class="text-center text-muted py-4"><?= te('Keine Daten verfügbar') ?></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

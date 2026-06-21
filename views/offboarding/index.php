@@ -17,10 +17,10 @@ $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 
 <!-- User search -->
 <div class="card shadow-sm mb-4">
-  <div class="card-header fw-semibold"><i class="bi bi-search me-2"></i>Benutzer suchen</div>
+  <div class="card-header fw-semibold"><i class="bi bi-search me-2"></i><?= te('Benutzer suchen') ?></div>
   <div class="card-body">
     <div class="position-relative" style="max-width:500px">
-      <input type="text" id="userSearch" class="form-control" placeholder="Name oder E-Mail-Adresse eingeben..."
+      <input type="text" id="userSearch" class="form-control" placeholder="<?= te('Name oder E-Mail-Adresse eingeben...') ?>"
              autocomplete="off" value="<?= $user ? $e($user['displayName'] ?? '') : '' ?>">
       <div id="userSearchResults" class="list-group position-absolute w-100 shadow-sm z-3" style="top:100%;left:0;display:none;max-height:300px;overflow-y:auto"></div>
     </div>
@@ -52,17 +52,17 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
     </div>
     <div class="text-end">
       <?php if (!$enabled): ?>
-        <span class="badge bg-secondary fs-6">Deaktiviert</span>
+        <span class="badge bg-secondary fs-6"><?= te('Deaktiviert') ?></span>
       <?php else: ?>
-        <span class="badge bg-success fs-6">Aktiv</span>
+        <span class="badge bg-success fs-6"><?= te('Aktiv') ?></span>
       <?php endif ?>
       <?php if ($lastSignIn): ?>
       <div class="text-muted small mt-1">
-        Letzter Login: <?= date('d.m.Y', strtotime($lastSignIn)) ?>
+        <?= te('Letzter Login') ?>: <?= date('d.m.Y', strtotime($lastSignIn)) ?>
       </div>
       <?php endif ?>
       <?php if ($state['synced'] ?? false): ?>
-      <div class="badge bg-info mt-1">On-Prem-synchronisiert</div>
+      <div class="badge bg-info mt-1"><?= te('On-Prem-synchronisiert') ?></div>
       <?php endif ?>
     </div>
   </div>
@@ -72,7 +72,7 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
 <div class="row g-4">
   <div class="col-lg-8">
     <div class="card shadow-sm">
-      <div class="card-header fw-semibold"><i class="bi bi-clipboard2-check me-2"></i>Offboarding-Schritte</div>
+      <div class="card-header fw-semibold"><i class="bi bi-clipboard2-check me-2"></i><?= te('Offboarding-Schritte') ?></div>
       <ul class="list-group list-group-flush">
 
         <!-- Step 1: Disable account -->
@@ -86,25 +86,25 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
               <?php endif ?>
             </div>
             <div class="flex-grow-1">
-              <div class="fw-semibold">1. Konto deaktivieren</div>
-              <div class="text-muted small">Verhindert sofort jede weitere Anmeldung.</div>
+              <div class="fw-semibold"><?= te('1. Konto deaktivieren') ?></div>
+              <div class="text-muted small"><?= te('Verhindert sofort jede weitere Anmeldung.') ?></div>
               <?php if ($state['synced'] ?? false): ?>
               <div class="alert alert-warning small mt-2 mb-0 py-1">
                 <i class="bi bi-info-circle me-1"></i>
-                Konto ist on-prem synchronisiert — Deaktivierung am besten im lokalen Active Directory durchführen.
+                <?= te('Konto ist on-prem synchronisiert — Deaktivierung am besten im lokalen Active Directory durchführen.') ?>
               </div>
               <?php endif ?>
             </div>
             <div>
               <?php if ($enabled): ?>
               <form method="post" action="/offboarding/disable-account"
-                    onsubmit="return confirm('Konto von <?= $e($displayName) ?> wirklich deaktivieren?')">
+                    onsubmit="return confirm(<?= $e(json_encode(t('Konto von :name wirklich deaktivieren?', ['name' => $displayName]), JSON_UNESCAPED_UNICODE)) ?>)">
                 <?= \App\Core\Csrf::field() ?>
                 <input type="hidden" name="user_id" value="<?= $e($userId) ?>">
-                <button class="btn btn-danger btn-sm"><i class="bi bi-person-slash me-1"></i>Deaktivieren</button>
+                <button class="btn btn-danger btn-sm"><i class="bi bi-person-slash me-1"></i><?= te('Deaktivieren') ?></button>
               </form>
               <?php else: ?>
-              <span class="badge bg-success">Erledigt</span>
+              <span class="badge bg-success"><?= te('Erledigt') ?></span>
               <?php endif ?>
             </div>
           </div>
@@ -115,14 +115,14 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
           <div class="d-flex align-items-start gap-3">
             <div class="mt-1"><i class="bi bi-circle text-muted fs-5"></i></div>
             <div class="flex-grow-1">
-              <div class="fw-semibold">2. Alle Sitzungen widerrufen</div>
-              <div class="text-muted small">Macht alle bestehenden Refresh-Tokens ungültig (Outlook, Teams, Browser etc.).</div>
+              <div class="fw-semibold"><?= te('2. Alle Sitzungen widerrufen') ?></div>
+              <div class="text-muted small"><?= te('Macht alle bestehenden Refresh-Tokens ungültig (Outlook, Teams, Browser etc.).') ?></div>
             </div>
             <div>
               <form method="post" action="/offboarding/revoke-sessions">
                 <?= \App\Core\Csrf::field() ?>
                 <input type="hidden" name="user_id" value="<?= $e($userId) ?>">
-                <button class="btn btn-warning btn-sm"><i class="bi bi-shield-x me-1"></i>Widerrufen</button>
+                <button class="btn btn-warning btn-sm"><i class="bi bi-shield-x me-1"></i><?= te('Widerrufen') ?></button>
               </form>
             </div>
           </div>
@@ -139,29 +139,29 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
               <?php endif ?>
             </div>
             <div class="flex-grow-1">
-              <div class="fw-semibold">3. Lizenzen entfernen</div>
+              <div class="fw-semibold"><?= te('3. Lizenzen entfernen') ?></div>
               <div class="text-muted small">
-                <?= $state['licenseCount'] ?> Lizenz(en) zugewiesen. Entfernen gibt die Lizenzen für andere Benutzer frei.
+                <?= te(':n Lizenz(en) zugewiesen. Entfernen gibt die Lizenzen für andere Benutzer frei.', ['n' => $state['licenseCount']]) ?>
               </div>
               <?php if ($state['hasLicenses'] ?? false): ?>
               <div class="alert alert-info small mt-2 mb-0 py-1">
                 <i class="bi bi-info-circle me-1"></i>
-                Soll das Postfach als Shared Mailbox erhalten bleiben?
-                Dann zuerst im <a href="https://admin.exchange.microsoft.com/#/mailboxes" target="_blank" rel="noopener noreferrer">Exchange Admin Center</a>
-                in Shared Mailbox umwandeln — dann benötigt es keine Lizenz mehr.
+                <?= te('Soll das Postfach als Shared Mailbox erhalten bleiben?') ?>
+                <?= te('Dann zuerst im') ?> <a href="https://admin.exchange.microsoft.com/#/mailboxes" target="_blank" rel="noopener noreferrer">Exchange Admin Center</a>
+                <?= te('in Shared Mailbox umwandeln — dann benötigt es keine Lizenz mehr.') ?>
               </div>
               <?php endif ?>
             </div>
             <div>
               <?php if ($state['hasLicenses'] ?? false): ?>
               <form method="post" action="/offboarding/remove-licenses"
-                    onsubmit="return confirm('Alle <?= $state['licenseCount'] ?> Lizenz(en) von <?= $e($displayName) ?> entfernen?')">
+                    onsubmit="return confirm(<?= $e(json_encode(t('Alle :n Lizenz(en) von :name entfernen?', ['n' => $state['licenseCount'], 'name' => $displayName]), JSON_UNESCAPED_UNICODE)) ?>)">
                 <?= \App\Core\Csrf::field() ?>
                 <input type="hidden" name="user_id" value="<?= $e($userId) ?>">
-                <button class="btn btn-outline-danger btn-sm"><i class="bi bi-award me-1"></i>Entfernen (<?= $state['licenseCount'] ?>)</button>
+                <button class="btn btn-outline-danger btn-sm"><i class="bi bi-award me-1"></i><?= te('Entfernen') ?> (<?= $state['licenseCount'] ?>)</button>
               </form>
               <?php else: ?>
-              <span class="badge bg-success">Keine Lizenzen</span>
+              <span class="badge bg-success"><?= te('Keine Lizenzen') ?></span>
               <?php endif ?>
             </div>
           </div>
@@ -178,15 +178,15 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
               <?php endif ?>
             </div>
             <div class="flex-grow-1">
-              <div class="fw-semibold">4. Aus Gruppen entfernen</div>
-              <div class="text-muted small"><?= $state['groupCount'] ?> Gruppe(n) — dynamische Gruppen werden automatisch aktualisiert.</div>
+              <div class="fw-semibold"><?= te('4. Aus Gruppen entfernen') ?></div>
+              <div class="text-muted small"><?= te(':n Gruppe(n) — dynamische Gruppen werden automatisch aktualisiert.', ['n' => $state['groupCount']]) ?></div>
               <?php if (!empty($state['groups'])): ?>
               <div class="mt-2 d-flex flex-wrap gap-1">
                 <?php foreach (array_slice($state['groups'], 0, 10) as $g): ?>
                 <span class="badge bg-light text-dark border small"><?= $e($g['displayName'] ?? '–') ?></span>
                 <?php endforeach ?>
                 <?php if (count($state['groups']) > 10): ?>
-                <span class="badge bg-light text-muted border small">+<?= count($state['groups']) - 10 ?> weitere</span>
+                <span class="badge bg-light text-muted border small"><?= te('+:n weitere', ['n' => count($state['groups']) - 10]) ?></span>
                 <?php endif ?>
               </div>
               <?php endif ?>
@@ -194,13 +194,13 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
             <div>
               <?php if (($state['groupCount'] ?? 0) > 0): ?>
               <form method="post" action="/offboarding/remove-groups"
-                    onsubmit="return confirm('<?= $e($displayName) ?> aus <?= $state['groupCount'] ?> Gruppe(n) entfernen?')">
+                    onsubmit="return confirm(<?= $e(json_encode(t(':name aus :n Gruppe(n) entfernen?', ['name' => $displayName, 'n' => $state['groupCount']]), JSON_UNESCAPED_UNICODE)) ?>)">
                 <?= \App\Core\Csrf::field() ?>
                 <input type="hidden" name="user_id" value="<?= $e($userId) ?>">
-                <button class="btn btn-outline-warning btn-sm"><i class="bi bi-diagram-3 me-1"></i>Entfernen</button>
+                <button class="btn btn-outline-warning btn-sm"><i class="bi bi-diagram-3 me-1"></i><?= te('Entfernen') ?></button>
               </form>
               <?php else: ?>
-              <span class="badge bg-success">Keine Gruppen</span>
+              <span class="badge bg-success"><?= te('Keine Gruppen') ?></span>
               <?php endif ?>
             </div>
           </div>
@@ -211,16 +211,16 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
           <div class="d-flex align-items-start gap-3">
             <div class="mt-1"><i class="bi bi-circle text-muted fs-5"></i></div>
             <div class="flex-grow-1">
-              <div class="fw-semibold">5. Postfach als Shared Mailbox umwandeln (optional)</div>
+              <div class="fw-semibold"><?= te('5. Postfach als Shared Mailbox umwandeln (optional)') ?></div>
               <div class="text-muted small">
-                Wenn E-Mails weiterhin zugänglich sein sollen (z. B. für Vertretungen).
-                Erst nach Lizenzentfernung — ein Shared Mailbox benötigt keine eigene Lizenz.
+                <?= te('Wenn E-Mails weiterhin zugänglich sein sollen (z. B. für Vertretungen).') ?>
+                <?= te('Erst nach Lizenzentfernung — ein Shared Mailbox benötigt keine eigene Lizenz.') ?>
               </div>
             </div>
             <div>
               <a href="https://admin.exchange.microsoft.com/#/mailboxes" target="_blank" rel="noopener noreferrer"
                  class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-box-arrow-up-right me-1"></i>Exchange Admin
+                <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Exchange Admin') ?>
               </a>
             </div>
           </div>
@@ -231,15 +231,15 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
           <div class="d-flex align-items-start gap-3">
             <div class="mt-1"><i class="bi bi-circle text-muted fs-5"></i></div>
             <div class="flex-grow-1">
-              <div class="fw-semibold">6. OneDrive-Daten sichern / Zugriff gewähren</div>
+              <div class="fw-semibold"><?= te('6. OneDrive-Daten sichern / Zugriff gewähren') ?></div>
               <div class="text-muted small">
-                Einem Manager Zugriff auf das OneDrive gewähren, bevor das Konto dauerhaft gelöscht wird.
-                Gelöschte Konten behalten OneDrive-Daten 30 Tage lang.
+                <?= te('Einem Manager Zugriff auf das OneDrive gewähren, bevor das Konto dauerhaft gelöscht wird.') ?>
+                <?= te('Gelöschte Konten behalten OneDrive-Daten 30 Tage lang.') ?>
               </div>
             </div>
             <div>
               <a href="/users/<?= $e($userId) ?>" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-cloud me-1"></i>Benutzerprofil
+                <i class="bi bi-cloud me-1"></i><?= te('Benutzerprofil') ?>
               </a>
             </div>
           </div>
@@ -250,16 +250,16 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
           <div class="d-flex align-items-start gap-3">
             <div class="mt-1"><i class="bi bi-circle text-muted fs-5"></i></div>
             <div class="flex-grow-1">
-              <div class="fw-semibold">7. Konto löschen (optional, unwiderruflich!)</div>
+              <div class="fw-semibold"><?= te('7. Konto löschen (optional, unwiderruflich!)') ?></div>
               <div class="text-muted small">
-                Nur löschen, wenn Daten gesichert und alle vorherigen Schritte abgeschlossen sind.
-                Das Konto ist 30 Tage wiederherstellbar.
+                <?= te('Nur löschen, wenn Daten gesichert und alle vorherigen Schritte abgeschlossen sind.') ?>
+                <?= te('Das Konto ist 30 Tage wiederherstellbar.') ?>
               </div>
             </div>
             <div>
               <a href="https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserProfileMenuBlade/~/overview/userId/<?= $e($userId) ?>"
                  target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm">
-                <i class="bi bi-box-arrow-up-right me-1"></i>In Entra öffnen
+                <i class="bi bi-box-arrow-up-right me-1"></i><?= te('In Entra öffnen') ?>
               </a>
             </div>
           </div>
@@ -272,44 +272,44 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
   <!-- Right: Info panel -->
   <div class="col-lg-4">
     <div class="card shadow-sm mb-3">
-      <div class="card-header fw-semibold"><i class="bi bi-info-circle me-2"></i>Informationen</div>
+      <div class="card-header fw-semibold"><i class="bi bi-info-circle me-2"></i><?= te('Informationen') ?></div>
       <ul class="list-group list-group-flush small">
         <li class="list-group-item d-flex justify-content-between">
-          <span>Manager</span>
+          <span><?= te('Manager') ?></span>
           <span class="text-muted"><?= $e($state['manager'] ?? '–') ?></span>
         </li>
         <li class="list-group-item d-flex justify-content-between">
-          <span>Abteilung</span>
+          <span><?= te('Abteilung') ?></span>
           <span class="text-muted"><?= $e($dept) ?></span>
         </li>
         <li class="list-group-item d-flex justify-content-between">
-          <span>Erstellt</span>
+          <span><?= te('Erstellt') ?></span>
           <span class="text-muted"><?= $user['createdDateTime'] ? date('d.m.Y', strtotime($user['createdDateTime'])) : '–' ?></span>
         </li>
         <li class="list-group-item d-flex justify-content-between">
-          <span>On-Prem-Sync</span>
-          <span><?= ($state['synced'] ?? false) ? '<span class="badge bg-info">Ja</span>' : '<span class="badge bg-secondary">Nein</span>' ?></span>
+          <span><?= te('On-Prem-Sync') ?></span>
+          <span><?= ($state['synced'] ?? false) ? '<span class="badge bg-info">' . te('Ja') . '</span>' : '<span class="badge bg-secondary">' . te('Nein') . '</span>' ?></span>
         </li>
       </ul>
     </div>
 
     <div class="card shadow-sm">
-      <div class="card-header fw-semibold"><i class="bi bi-link-45deg me-2"></i>Admin-Links</div>
+      <div class="card-header fw-semibold"><i class="bi bi-link-45deg me-2"></i><?= te('Admin-Links') ?></div>
       <ul class="list-group list-group-flush small">
         <li class="list-group-item">
           <a href="https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserProfileMenuBlade/~/overview/userId/<?= $e($userId) ?>"
              target="_blank" rel="noopener noreferrer">
-            <i class="bi bi-person me-1"></i>Entra ID Profil
+            <i class="bi bi-person me-1"></i><?= te('Entra ID Profil') ?>
           </a>
         </li>
         <li class="list-group-item">
           <a href="https://admin.exchange.microsoft.com/#/mailboxes" target="_blank" rel="noopener noreferrer">
-            <i class="bi bi-envelope me-1"></i>Exchange Postfach
+            <i class="bi bi-envelope me-1"></i><?= te('Exchange Postfach') ?>
           </a>
         </li>
         <li class="list-group-item">
           <a href="/users/<?= $e($userId) ?>" >
-            <i class="bi bi-person-badge me-1"></i>Benutzerprofil (lokal)
+            <i class="bi bi-person-badge me-1"></i><?= te('Benutzerprofil (lokal)') ?>
           </a>
         </li>
       </ul>
@@ -320,7 +320,7 @@ $lastSignIn = $user['signInActivity']['lastSignInDateTime'] ?? null;
 <?php else: ?>
 <div class="alert alert-info">
   <i class="bi bi-search me-2"></i>
-  Suche nach einem Benutzer, um den Offboarding-Prozess zu starten.
+  <?= te('Suche nach einem Benutzer, um den Offboarding-Prozess zu starten.') ?>
 </div>
 <?php endif ?>
 
@@ -340,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(users => {
                     box.innerHTML = '';
                     if (!users.length) {
-                        box.innerHTML = '<div class="list-group-item text-muted">Keine Ergebnisse</div>';
+                        box.innerHTML = '<div class="list-group-item text-muted">' + <?= json_encode(t('Keine Ergebnisse'), JSON_UNESCAPED_UNICODE) ?> + '</div>';
                     }
                     users.forEach(u => {
                         const a = document.createElement('a');
@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <div class="fw-semibold small">${u.displayName || ''}</div>
                                 <div class="text-muted" style="font-size:12px">${u.userPrincipalName || ''}</div>
                             </div>
-                            ${u.accountEnabled === false ? '<span class="badge bg-secondary ms-auto">Deaktiviert</span>' : ''}`;
+                            ${u.accountEnabled === false ? '<span class="badge bg-secondary ms-auto">' + <?= json_encode(t('Deaktiviert'), JSON_UNESCAPED_UNICODE) ?> + '</span>' : ''}`;
                         box.appendChild(a);
                     });
                     box.style.display = 'block';

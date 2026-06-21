@@ -17,13 +17,13 @@ if ($pct >= 70) {
         if (!empty($diag ?? null)) {
             $diagStyle = 'empty';
             $diagIcon  = 'shield-exclamation';
-            $diagTitle = 'Keine Secure-Score-Daten verfügbar';
+            $diagTitle = t('Keine Secure-Score-Daten verfügbar');
             include BASE_PATH . '/views/partials/graph_diagnostic.php';
         } else { ?>
             <div class="empty-state">
                 <i class="bi bi-shield-exclamation text-muted" style="font-size:2.5rem;"></i>
-                <p class="mt-3 mb-1 fw-medium">Keine Secure-Score-Daten verfügbar</p>
-                <p class="text-muted small">Microsoft hat noch keinen Secure-Score-Snapshot für diesen Tenant erzeugt.</p>
+                <p class="mt-3 mb-1 fw-medium"><?= te('Keine Secure-Score-Daten verfügbar') ?></p>
+                <p class="text-muted small"><?= te('Microsoft hat noch keinen Secure-Score-Snapshot für diesen Tenant erzeugt.') ?></p>
             </div>
         <?php } ?>
     </div>
@@ -34,11 +34,11 @@ if ($pct >= 70) {
 <div class="row g-3 mb-4 align-items-stretch">
     <div class="col-md-4">
         <div class="metric-card text-center" style="padding: 2rem 1rem;">
-            <div class="metric-label mb-2">Microsoft Secure Score</div>
+            <div class="metric-label mb-2"><?= te('Microsoft Secure Score') ?></div>
             <div style="font-size: 3.5rem; font-weight: 700; line-height:1; color: <?= $scoreColor ?>;">
                 <?= number_format($currentScore, 0) ?>
             </div>
-            <div class="metric-sub mt-1">von <?= number_format($maxScore, 0) ?> Punkten</div>
+            <div class="metric-sub mt-1"><?= te('von :n Punkten', ['n' => number_format($maxScore, 0)]) ?></div>
             <div class="mt-3">
                 <div class="progress-custom">
                     <div class="bar" style="width: <?= min(100, $pct) ?>%; background: <?= $scoreColor ?>;"></div>
@@ -46,17 +46,17 @@ if ($pct >= 70) {
                 <div class="mt-1" style="font-size: 13px; color: <?= $scoreColor ?>; font-weight: 600;">
                     <?= $pct ?>%
                     <?php if ($pct >= 70): ?>
-                        <span class="badge-success ms-1">Gut</span>
+                        <span class="badge-success ms-1"><?= te('Gut') ?></span>
                     <?php elseif ($pct >= 40): ?>
-                        <span class="badge-warning ms-1">Mittel</span>
+                        <span class="badge-warning ms-1"><?= te('Mittel') ?></span>
                     <?php else: ?>
-                        <span class="badge-disabled ms-1">Niedrig</span>
+                        <span class="badge-disabled ms-1"><?= te('Niedrig') ?></span>
                     <?php endif; ?>
                 </div>
             </div>
             <?php if (!empty($latest['createdDateTime'])): ?>
                 <div class="text-muted small mt-2">
-                    Stand: <?= date('d.m.Y', strtotime($latest['createdDateTime'])) ?>
+                    <?= te('Stand:') ?> <?= date('d.m.Y', strtotime($latest['createdDateTime'])) ?>
                 </div>
             <?php endif; ?>
         </div>
@@ -66,14 +66,14 @@ if ($pct >= 70) {
         <div class="content-card h-100">
             <div class="card-header-custom">
                 <i class="bi bi-graph-up text-primary"></i>
-                <h6>Score-Verlauf (30 Tage)</h6>
+                <h6><?= te('Score-Verlauf (30 Tage)') ?></h6>
             </div>
             <div class="card-body-custom" style="position:relative; height: 200px;">
                 <?php if (!empty($history)): ?>
                     <canvas id="scoreChart"></canvas>
                 <?php else: ?>
                     <div class="empty-state" style="height:100%;">
-                        <span class="text-muted small">Keine Verlaufsdaten vorhanden</span>
+                        <span class="text-muted small"><?= te('Keine Verlaufsdaten vorhanden') ?></span>
                     </div>
                 <?php endif; ?>
             </div>
@@ -88,7 +88,7 @@ if ($pct >= 70) {
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-list-check text-success"></i>
-        <h6>Kontrollpunkte nach Kategorie</h6>
+        <h6><?= te('Kontrollpunkte nach Kategorie') ?></h6>
     </div>
 
     <?php
@@ -127,11 +127,11 @@ if ($pct >= 70) {
             <table class="data-table" style="margin-bottom: 0;">
                 <thead>
                     <tr>
-                        <th>Kontrollpunkt</th>
-                        <th style="width:80px;">Punkte</th>
-                        <th style="width:80px;">Max</th>
+                        <th><?= te('Kontrollpunkt') ?></th>
+                        <th style="width:80px;"><?= te('Punkte') ?></th>
+                        <th style="width:80px;"><?= te('Max') ?></th>
                         <th style="width:60px;">%</th>
-                        <th style="width:160px;">Fortschritt</th>
+                        <th style="width:160px;"><?= te('Fortschritt') ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -170,8 +170,8 @@ if ($pct >= 70) {
     <div class="card-body-custom">
         <div class="empty-state">
             <i class="bi bi-info-circle text-muted" style="font-size:2rem;"></i>
-            <p class="mt-2 text-muted small">Keine Kontrollpunkte verfügbar. Berechtigung
-               <code>IdentityRiskyUser.Read.All</code> oder erweiterte Security-Rollen prüfen.</p>
+            <p class="mt-2 text-muted small"><?= te('Keine Kontrollpunkte verfügbar. Berechtigung') ?>
+               <code>IdentityRiskyUser.Read.All</code> <?= te('oder erweiterte Security-Rollen prüfen.') ?></p>
         </div>
     </div>
 </div>
@@ -193,7 +193,7 @@ if ($pct >= 70) {
             labels,
             datasets: [
                 {
-                    label: 'Aktueller Score',
+                    label: <?= json_encode(t('Aktueller Score'), JSON_UNESCAPED_UNICODE) ?>,
                     data: scores,
                     borderColor: '#3b82f6',
                     backgroundColor: 'rgba(59,130,246,0.1)',
@@ -203,7 +203,7 @@ if ($pct >= 70) {
                     fill: true,
                 },
                 {
-                    label: 'Max. Score',
+                    label: <?= json_encode(t('Max. Score'), JSON_UNESCAPED_UNICODE) ?>,
                     data: maxScores,
                     borderColor: '#d1d5db',
                     borderWidth: 1.5,

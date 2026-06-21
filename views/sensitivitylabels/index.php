@@ -47,7 +47,7 @@ $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
     <i class="bi bi-tag text-muted" style="font-size:3rem"></i>
     <p class="mt-3 text-muted">
       <?= te('Keine Vertraulichkeitsbezeichnungen gefunden.') ?><br>
-      <span class="small"><?= te('Entweder sind keine konfiguriert, oder die Berechtigung :perm fehlt.', ['perm' => '__PERM__']) ?></span>
+      <span class="small"><?= t('Entweder sind keine konfiguriert, oder die Berechtigung :perm fehlt.', ['perm' => '<code>InformationProtectionPolicy.Read.All</code>']) ?></span>
     </p>
     <a href="https://compliance.microsoft.com/informationprotection" target="_blank" rel="noopener noreferrer"
        class="btn btn-outline-primary btn-sm mt-2">
@@ -58,19 +58,19 @@ $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 <?php else: ?>
 <div class="card shadow-sm mb-4">
   <div class="card-header fw-semibold d-flex justify-content-between">
-    <span><i class="bi bi-tag me-2"></i>Vertraulichkeitsbezeichnungen</span>
+    <span><i class="bi bi-tag me-2"></i><?= te('Vertraulichkeitsbezeichnungen') ?></span>
     <span class="badge bg-secondary"><?= count($labels) ?></span>
   </div>
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0" id="tblLabels">
       <thead class="table-light">
         <tr>
-          <th>Name</th>
-          <th>Beschreibung</th>
-          <th>Verschlüsselung</th>
-          <th>Markierung</th>
-          <th>Priorität</th>
-          <th>Aktiv</th>
+          <th><?= te('Name') ?></th>
+          <th><?= te('Beschreibung') ?></th>
+          <th><?= te('Verschlüsselung') ?></th>
+          <th><?= te('Markierung') ?></th>
+          <th><?= te('Priorität') ?></th>
+          <th><?= te('Aktiv') ?></th>
         </tr>
       </thead>
       <tbody>
@@ -89,22 +89,22 @@ $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
           <td>
             <?php $enc = $label['encryptionEnabled'] ?? !empty($label['protectionSettings']); ?>
             <span class="badge bg-<?= $enc ? 'warning text-dark' : 'secondary' ?>">
-              <?= $enc ? 'Ja' : 'Nein' ?>
+              <?= $enc ? te('Ja') : te('Nein') ?>
             </span>
           </td>
           <td>
             <?php
             $marking = [];
-            if (!empty($label['headerEnabled'] ?? $label['applyToDocumentBody']['isEnabled'] ?? false)) $marking[] = 'Kopfzeile';
-            if (!empty($label['footerEnabled'] ?? false)) $marking[] = 'Fußzeile';
-            if (!empty($label['watermarkEnabled'] ?? false)) $marking[] = 'Wasserzeichen';
+            if (!empty($label['headerEnabled'] ?? $label['applyToDocumentBody']['isEnabled'] ?? false)) $marking[] = t('Kopfzeile');
+            if (!empty($label['footerEnabled'] ?? false)) $marking[] = t('Fußzeile');
+            if (!empty($label['watermarkEnabled'] ?? false)) $marking[] = t('Wasserzeichen');
             echo $marking ? $e(implode(', ', $marking)) : '<span class="text-muted">–</span>';
             ?>
           </td>
           <td class="text-muted small"><?= $label['priority'] ?? $label['rank'] ?? '–' ?></td>
           <td>
             <?php $active = $label['isActive'] ?? true; ?>
-            <span class="badge bg-<?= $active ? 'success' : 'secondary' ?>"><?= $active ? 'Ja' : 'Nein' ?></span>
+            <span class="badge bg-<?= $active ? 'success' : 'secondary' ?>"><?= $active ? te('Ja') : te('Nein') ?></span>
           </td>
         </tr>
         <?php endforeach ?>
@@ -118,18 +118,18 @@ $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 // Anzeige der Labels erfolgt oben (Graph, read-only). Anlegen/Veröffentlichen hat keine
 // Graph-Write-API → Purview-Portal oder Security-&-Compliance-PowerShell.
 echo \App\Core\Ui::externalCard(
-    'Labels anlegen &amp; veröffentlichen',
-    'Sensitivity Labels lassen sich über Graph nur <strong>lesen</strong> (oben). Anlegen, '
+    t('Labels anlegen &amp; veröffentlichen'),
+    t('Sensitivity Labels lassen sich über Graph nur <strong>lesen</strong> (oben). Anlegen, '
     . 'Verschlüsselung/Markierung konfigurieren und per Label-Policy veröffentlichen erfolgt im '
     . '<strong>Microsoft-Purview-Portal</strong> oder per <strong>PowerShell</strong>. '
-    . 'Erfordert Microsoft 365 E3/E5 bzw. Azure Information Protection.',
+    . 'Erfordert Microsoft 365 E3/E5 bzw. Azure Information Protection.'),
     [
-        ['https://purview.microsoft.com/informationprotection/labels', 'Labels im Purview-Portal'],
+        ['https://purview.microsoft.com/informationprotection/labels', t('Labels im Purview-Portal')],
     ],
     [
-        ["Connect-IPPSSession -UserPrincipalName admin@deine-domain.de", 'Mit Security & Compliance PowerShell verbinden'],
-        ["Get-Label | Format-Table Name,DisplayName,IsEnabled", 'Vorhandene Labels auflisten'],
-        ["New-Label -Name \"Vertraulich\" -DisplayName \"Vertraulich\" `\n  -Tooltip \"Nur intern, vertraulich\" -EncryptionEnabled \$true\n\nNew-LabelPolicy -Name \"Standard\" -Labels \"Vertraulich\" `\n  -ExchangeLocation All", 'Label anlegen & veröffentlichen'],
+        ["Connect-IPPSSession -UserPrincipalName admin@deine-domain.de", t('Mit Security & Compliance PowerShell verbinden')],
+        ["Get-Label | Format-Table Name,DisplayName,IsEnabled", t('Vorhandene Labels auflisten')],
+        ["New-Label -Name \"Vertraulich\" -DisplayName \"Vertraulich\" `\n  -Tooltip \"Nur intern, vertraulich\" -EncryptionEnabled \$true\n\nNew-LabelPolicy -Name \"Standard\" -Labels \"Vertraulich\" `\n  -ExchangeLocation All", t('Label anlegen & veröffentlichen')],
     ],
     'tags'
 );

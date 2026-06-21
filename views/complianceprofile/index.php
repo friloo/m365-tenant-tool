@@ -3,8 +3,8 @@ use App\Core\View;
 use App\Core\Csrf;
 ?>
 <div class="content-card mb-3">
-    <h1 class="mb-2"><i class="bi bi-shield-check"></i> Compliance-Profile <?= \App\Core\Help::tip('compliance_profile') ?></h1>
-    <p class="text-muted mb-0">Wähle ein Branchen-Profil und wende mit einem Klick die dazu passenden Hardening-Defaults an. Aktionen laufen einzeln im Browser mit Fortschritts-Anzeige; alle Schritte sind im Audit-Log nachvollziehbar und können im <a href="/hardening">Tenant-Härtungs-Modul</a> einzeln umgekehrt werden.</p>
+    <h1 class="mb-2"><i class="bi bi-shield-check"></i> <?= te('Compliance-Profile') ?> <?= \App\Core\Help::tip('compliance_profile') ?></h1>
+    <p class="text-muted mb-0"><?= te('Wähle ein Branchen-Profil und wende mit einem Klick die dazu passenden Hardening-Defaults an. Aktionen laufen einzeln im Browser mit Fortschritts-Anzeige; alle Schritte sind im Audit-Log nachvollziehbar und können im <a href="/hardening">Tenant-Härtungs-Modul</a> einzeln umgekehrt werden.') ?></p>
 
     <?php $flash = \App\Core\Session::getFlash('success'); $err = \App\Core\Session::getFlash('error'); ?>
     <?php if ($flash): ?><div class="alert alert-success mt-3 mb-0"><?= View::escape($flash) ?></div><?php endif; ?>
@@ -12,7 +12,7 @@ use App\Core\Csrf;
 
     <?php if ($current !== ''): ?>
         <div class="alert alert-info mt-3 mb-0">
-            <i class="bi bi-info-circle"></i> Aktuell aktives Profil: <strong><?= View::escape($profiles[$current]['name'] ?? $current) ?></strong> &mdash; Du kannst es jederzeit überschreiben oder einzelne Items in <a href="/hardening">/hardening</a> umkehren.
+            <i class="bi bi-info-circle"></i> <?= te('Aktuell aktives Profil:') ?> <strong><?= View::escape($profiles[$current]['name'] ?? $current) ?></strong> &mdash; <?= te('Du kannst es jederzeit überschreiben oder einzelne Items in <a href="/hardening">/hardening</a> umkehren.') ?>
         </div>
     <?php endif; ?>
 </div>
@@ -29,7 +29,7 @@ use App\Core\Csrf;
                 <?php endforeach; ?>
             </ul>
             <details class="mt-3">
-                <summary class="small text-muted" style="cursor:pointer;">Aktionen anzeigen (<?= count($p['actions']) ?>)</summary>
+                <summary class="small text-muted" style="cursor:pointer;"><?= te('Aktionen anzeigen') ?> (<?= count($p['actions']) ?>)</summary>
                 <ul class="small text-muted mt-2 mb-0">
                     <?php foreach ($p['actions'] as $a): ?>
                         <li><code><?= View::escape($a) ?></code></li>
@@ -41,7 +41,7 @@ use App\Core\Csrf;
                     data-apply-profile="<?= View::escape($p['key']) ?>"
                     data-apply-name="<?= View::escape($p['name']) ?>"
                     data-apply-actions='<?= htmlspecialchars(json_encode($p['actions']), ENT_QUOTES) ?>'>
-                <i class="bi bi-magic"></i> Profil anwenden
+                <i class="bi bi-magic"></i> <?= te('Profil anwenden') ?>
             </button>
         </div>
     <?php endforeach; ?>
@@ -52,11 +52,11 @@ use App\Core\Csrf;
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-magic"></i> Profil anwenden: <span id="apModalProfileName">—</span></h5>
+                <h5 class="modal-title"><i class="bi bi-magic"></i> <?= te('Profil anwenden:') ?> <span id="apModalProfileName">—</span></h5>
             </div>
             <div class="modal-body">
                 <div class="d-flex justify-content-between small text-muted mb-1">
-                    <span>Fortschritt</span>
+                    <span><?= te('Fortschritt') ?></span>
                     <span><span id="apProgressCount">0</span> / <span id="apTotal">0</span></span>
                 </div>
                 <div class="progress mb-3" style="height: 12px;">
@@ -65,12 +65,12 @@ use App\Core\Csrf;
                 </div>
                 <div id="apLog" style="max-height: 280px; overflow-y: auto; font-size: 13px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:6px; padding: 8px 12px;"></div>
                 <div id="apSummary" class="alert alert-success mt-3 d-none">
-                    <strong>Fertig!</strong> <span id="apSummaryText"></span>
+                    <strong><?= te('Fertig!') ?></strong> <span id="apSummaryText"></span>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-link text-muted d-none" id="apCloseBtn" data-bs-dismiss="modal">Schließen</button>
-                <a href="/complianceprofile" class="btn btn-primary d-none" id="apReloadBtn">Seite neu laden</a>
+                <button type="button" class="btn btn-link text-muted d-none" id="apCloseBtn" data-bs-dismiss="modal"><?= te('Schließen') ?></button>
+                <a href="/complianceprofile" class="btn btn-primary d-none" id="apReloadBtn"><?= te('Seite neu laden') ?></a>
             </div>
         </div>
     </div>
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     lastEntry.innerHTML = '<i class="bi bi-check-circle-fill text-success"></i> <code>' + aid + '</code> &mdash; ' + escapeHtml(r.msg || 'OK');
                 } else {
                     failCount++;
-                    lastEntry.innerHTML = '<i class="bi bi-x-circle-fill text-danger"></i> <code>' + aid + '</code> &mdash; ' + escapeHtml(r.msg || 'Fehler');
+                    lastEntry.innerHTML = '<i class="bi bi-x-circle-fill text-danger"></i> <code>' + aid + '</code> &mdash; ' + escapeHtml(r.msg || <?= json_encode(t('Fehler'), JSON_UNESCAPED_UNICODE) ?>);
                 }
             } catch (e) {
                 failCount++;
@@ -174,17 +174,17 @@ document.addEventListener('DOMContentLoaded', function () {
             bar.classList.add('bg-success');
             sumBox.classList.remove('d-none', 'alert-warning', 'alert-danger');
             sumBox.classList.add('alert-success');
-            sumText.textContent = okCount + ' Aktionen erfolgreich angewendet.';
+            sumText.textContent = okCount + ' ' + <?= json_encode(t('Aktionen erfolgreich angewendet.'), JSON_UNESCAPED_UNICODE) ?>;
         } else if (okCount > 0) {
             bar.classList.add('bg-warning');
             sumBox.classList.remove('d-none', 'alert-success', 'alert-danger');
             sumBox.classList.add('alert-warning');
-            sumText.textContent = okCount + ' OK, ' + failCount + ' fehlgeschlagen. Details siehe Protokoll oben.';
+            sumText.textContent = okCount + ' OK, ' + failCount + ' ' + <?= json_encode(t('fehlgeschlagen. Details siehe Protokoll oben.'), JSON_UNESCAPED_UNICODE) ?>;
         } else {
             bar.classList.add('bg-danger');
             sumBox.classList.remove('d-none', 'alert-success', 'alert-warning');
             sumBox.classList.add('alert-danger');
-            sumText.textContent = 'Alle ' + failCount + ' Aktionen fehlgeschlagen. Bitte Berechtigungen prüfen.';
+            sumText.textContent = <?= json_encode(t('Alle'), JSON_UNESCAPED_UNICODE) ?> + ' ' + failCount + ' ' + <?= json_encode(t('Aktionen fehlgeschlagen. Bitte Berechtigungen prüfen.'), JSON_UNESCAPED_UNICODE) ?>;
         }
         closeBt.classList.remove('d-none');
         reloadBt.classList.remove('d-none');
@@ -199,9 +199,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const profile = btn.dataset.applyProfile;
             const name    = btn.dataset.applyName;
             const actions = JSON.parse(btn.dataset.applyActions);
-            if (!confirm('Profil "' + name + '" jetzt anwenden? Es werden ' + actions.length + ' Hardening-Aktionen ausgeführt — bestehende Werte werden überschrieben.')) return;
+            if (!confirm(<?= json_encode(t('Profil "'), JSON_UNESCAPED_UNICODE) ?> + name + <?= json_encode(t('" jetzt anwenden? Es werden '), JSON_UNESCAPED_UNICODE) ?> + actions.length + <?= json_encode(t(' Hardening-Aktionen ausgeführt — bestehende Werte werden überschrieben.'), JSON_UNESCAPED_UNICODE) ?>)) return;
             applyProfile(profile, name, actions).catch(e => {
-                appendLog('<i class="bi bi-exclamation-triangle text-danger"></i> Abgebrochen: ' + escapeHtml(e.message), 'text-danger');
+                appendLog('<i class="bi bi-exclamation-triangle text-danger"></i> ' + <?= json_encode(t('Abgebrochen:'), JSON_UNESCAPED_UNICODE) ?> + ' ' + escapeHtml(e.message), 'text-danger');
             });
         });
     });
