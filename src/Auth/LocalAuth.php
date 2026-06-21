@@ -55,7 +55,10 @@ class LocalAuth
 
     public static function role(): string
     {
-        return Session::get('role', 'admin');
+        // Fail closed: if a session somehow has no role, treat it as the
+        // least-privileged role (operator), never admin. All real auth paths
+        // (setSession / MicrosoftAuth::loginUser) set the role explicitly.
+        return Session::get('role', 'operator');
     }
 
     public static function isAdmin(): bool

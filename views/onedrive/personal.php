@@ -103,7 +103,7 @@ $total = count($list);
                         <td>
                             <div class="d-flex align-items-center gap-2">
                                 <div style="width:32px;height:32px;border-radius:50%;background:#e3f0fb;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#0078d4;flex-shrink:0;">
-                                    <?= strtoupper(substr($u['displayName'], 0, 1)) ?>
+                                    <?= $e(strtoupper(substr($u['displayName'] ?? '?', 0, 1))) ?>
                                 </div>
                                 <span style="font-weight:500;"><?= $e($u['displayName']) ?></span>
                             </div>
