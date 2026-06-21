@@ -27,7 +27,7 @@ if ($tabs && count($tabs['items']) >= 2):
                 }
             }
             ?>
-            <a href="/<?= htmlspecialchars($route, ENT_QUOTES) ?>" class="hub-tab <?= $isActive ? 'active' : '' ?>" data-order="<?= $i ?>">
+            <a href="/<?= htmlspecialchars($route, ENT_QUOTES) ?>" class="hub-tab <?= $isActive ? 'active' : '' ?>" data-order="<?= $i ?>"<?= !empty($item['advanced']) ? ' data-advanced="1"' : '' ?>>
                 <i class="bi bi-<?= htmlspecialchars($item['icon'], ENT_QUOTES) ?>"></i>
                 <span><?= htmlspecialchars($item['label'], ENT_QUOTES) ?></span>
             </a>

@@ -574,9 +574,21 @@ document.addEventListener('DOMContentLoaded', function () {
         menu.classList.remove('open');
         if (btn) btn.classList.remove('has-active');
 
+        // Advanced (niche / beta) modules are demoted into the "Mehr" menu by
+        // default — regardless of width — to keep the primary tab row focused.
+        // The currently active tab is never hidden.
+        const advanced = tabs.filter(function (t) {
+            return t.dataset.advanced === '1' && !t.classList.contains('active');
+        });
+        if (advanced.length) {
+            moreWrap.style.display = '';
+            advanced.forEach(function (t) { menu.appendChild(t); });
+            tabs = tabs.filter(function (t) { return advanced.indexOf(t) === -1; });
+        }
+
         let total = 0;
         tabs.forEach(function (t) { total += t.offsetWidth; });
-        if (total <= nav.clientWidth + 1) return; // everything fits
+        if (total <= nav.clientWidth + 1) return; // remaining tabs all fit
 
         moreWrap.style.display = '';
         const budget = nav.clientWidth - moreWrap.offsetWidth;
