@@ -75,4 +75,8 @@ return [
     'Empfehlungen nicht verfügbar — bitte zuerst die Microsoft-365-Verbindung in den Einstellungen konfigurieren.'
         => 'Recommendations unavailable — please configure the Microsoft 365 connection in settings first.',
     'Keine offenen Empfehlungen — gut gemacht!' => 'No open recommendations — well done!',
+    'Noch nicht berechnet — wird im Hintergrund erstellt.' => 'Not yet computed — generated in the background.',
+    'Jetzt berechnen' => 'Compute now',
+    'Die Sicherheitsanalyse wird im Hintergrund berechnet (Cache-Warm-Job) und erscheint in Kürze. Du kannst sie auch sofort berechnen:'
+        => 'The security analysis is computed in the background (cache-warm job) and will appear shortly. You can also compute it immediately:',
 ];

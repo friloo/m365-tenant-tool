@@ -75,6 +75,34 @@ class SecurityPostureService
     }
 
     /**
+     * Cached variant of runChecks(). The full posture is expensive (~35 checks,
+     * many Graph calls including full user enumeration), so the *computed
+     * result* is cached as a whole rather than relying on per-call caching.
+     * Page loads within the TTL are then instant. A flushed cache (?refresh)
+     * or the cache-warm cron transparently recompute it.
+     */
+    public function runChecksCached(int $ttlSeconds = 1800): array
+    {
+        $cached = $this->graph->getCache()->remember(
+            'posture_checks_full',
+            fn() => $this->runChecks(),
+            $ttlSeconds
+        );
+        return is_array($cached) && $cached ? $cached : $this->runChecks();
+    }
+
+    /**
+     * Read the cached posture without ever computing it live. Returns null on a
+     * cold cache — used by the Action Center so the landing page never blocks
+     * on the (slow) full posture computation; the cache-warm cron fills it.
+     */
+    public function cachedChecks(): ?array
+    {
+        $c = $this->graph->getCache()->get('posture_checks_full');
+        return is_array($c) && $c ? $c : null;
+    }
+
+    /**
      * Compute weighted score (high=3, medium=2, low=1 points each).
      */
     public function getScore(array $checks): array

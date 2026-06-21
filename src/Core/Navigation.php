@@ -65,9 +65,9 @@ class Navigation
             ['hub' => 'zugriff', 'icon' => 'geo-alt',           'label' => 'Named Locations',         'route' => 'namedlocations',         'admin' => false],
             ['hub' => 'zugriff', 'icon' => 'fingerprint',       'label' => 'Authentifizierungsmethoden','route' => 'authmethods',          'admin' => false],
             ['hub' => 'zugriff', 'icon' => 'patch-check',       'label' => 'Auth-Strength',           'route' => 'authstrength',           'admin' => false],
-            ['hub' => 'zugriff', 'icon' => 'clock-history',     'label' => 'Token-Lifetime',          'route' => 'tokenlifetime',          'admin' => false],
-            ['hub' => 'zugriff', 'icon' => 'arrow-left-right',  'label' => 'Cross-Tenant-Access',     'route' => 'crosstenantaccess',      'admin' => false],
-            ['hub' => 'zugriff', 'icon' => 'person-bounding-box','label' => 'Identity Provider Trust','route' => 'identityproviders',      'admin' => false],
+            ['hub' => 'zugriff', 'icon' => 'clock-history',     'label' => 'Token-Lifetime',          'route' => 'tokenlifetime',          'admin' => false, 'advanced' => true],
+            ['hub' => 'zugriff', 'icon' => 'arrow-left-right',  'label' => 'Cross-Tenant-Access',     'route' => 'crosstenantaccess',      'admin' => false, 'advanced' => true],
+            ['hub' => 'zugriff', 'icon' => 'person-bounding-box','label' => 'Identity Provider Trust','route' => 'identityproviders',      'admin' => false, 'advanced' => true],
             ['hub' => 'zugriff', 'icon' => 'person-lock',       'label' => 'Admin-Rollen',            'route' => 'adminroles',             'admin' => false],
             ['hub' => 'zugriff', 'icon' => 'lightning-charge',  'label' => 'PIM (JIT-Admin)',         'route' => 'pim',                    'admin' => false],
             ['hub' => 'zugriff', 'icon' => 'sliders',           'label' => 'PIM-Einstellungen',       'route' => 'pimsettings',            'admin' => false],
@@ -77,9 +77,9 @@ class Navigation
             ['hub' => 'bedrohungen', 'icon' => 'bar-chart-line',     'label' => 'Secure Score',        'route' => 'securescore',       'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'bell',               'label' => 'Defender Alerts',     'route' => 'defenderalerts',    'admin' => false],
             ['hub' => 'bedrohungen', 'icon' => 'exclamation-triangle','label' => 'Risiko-Anmeldungen', 'route' => 'riskysignins',      'admin' => false],
-            ['hub' => 'bedrohungen', 'icon' => 'shield-slash',       'label' => 'MFA-Fatigue',         'route' => 'mfafatigue',        'admin' => false],
-            ['hub' => 'bedrohungen', 'icon' => 'eye-fill',           'label' => 'Insider-Threat',      'route' => 'insiderthreat',     'admin' => false],
-            ['hub' => 'bedrohungen', 'icon' => 'bullseye',           'label' => 'Phishing-Simulationen','route' => 'phishingsim',      'admin' => false],
+            ['hub' => 'bedrohungen', 'icon' => 'shield-slash',       'label' => 'MFA-Fatigue',         'route' => 'mfafatigue',        'admin' => false, 'advanced' => true],
+            ['hub' => 'bedrohungen', 'icon' => 'eye-fill',           'label' => 'Insider-Threat',      'route' => 'insiderthreat',     'admin' => false, 'advanced' => true],
+            ['hub' => 'bedrohungen', 'icon' => 'bullseye',           'label' => 'Phishing-Simulationen','route' => 'phishingsim',      'admin' => false, 'advanced' => true],
 
             // ── E-Mail-Sicherheit ───────────────────────────────────────
             ['hub' => 'email', 'icon' => 'envelope',        'label' => 'Postfächer',             'route' => 'mailboxes',                   'admin' => false],
@@ -106,7 +106,7 @@ class Navigation
             ['hub' => 'infoprotection', 'icon' => 'file-earmark-x', 'label' => 'DLP-Richtlinien',        'route' => 'dlppolicies',       'admin' => false],
             ['hub' => 'infoprotection', 'icon' => 'shield-shaded',  'label' => 'DLP-Vorfälle',           'route' => 'dlpincidents',      'admin' => false],
             ['hub' => 'infoprotection', 'icon' => 'hourglass-split','label' => 'Aufbewahrung (Retention)','route' => 'retention',        'admin' => false],
-            ['hub' => 'infoprotection', 'icon' => 'archive',        'label' => 'eDiscovery-Fälle',       'route' => 'ediscovery',        'admin' => false],
+            ['hub' => 'infoprotection', 'icon' => 'archive',        'label' => 'eDiscovery-Fälle',       'route' => 'ediscovery',        'admin' => false, 'advanced' => true],
 
             // ── Härtung & Posture ───────────────────────────────────────
             ['hub' => 'haertung', 'icon' => 'sliders2-vertical', 'label' => 'Security Center',      'route' => 'hardening',                            'admin' => false],
@@ -114,7 +114,7 @@ class Navigation
             ['hub' => 'haertung', 'icon' => 'file-earmark-lock', 'label' => 'DSGVO-Status',         'route' => 'securityposture#cat-dsgvo-datenschutz','admin' => false],
             ['hub' => 'haertung', 'icon' => 'compass',           'label' => 'Härtungs-Leitfaden',  'route' => 'bestpractice',                         'admin' => false],
             ['hub' => 'haertung', 'icon' => 'patch-check',       'label' => 'Compliance-Profile',  'route' => 'complianceprofile',                    'admin' => true],
-            ['hub' => 'haertung', 'icon' => 'lock-fill',         'label' => 'Customer Lockbox',    'route' => 'customerlockbox',                      'admin' => false],
+            ['hub' => 'haertung', 'icon' => 'lock-fill',         'label' => 'Customer Lockbox',    'route' => 'customerlockbox',                      'admin' => false, 'advanced' => true],
             ['hub' => 'haertung', 'icon' => 'database-fill-check','label' => 'Backup-Status',       'route' => 'backup',                               'admin' => false],
 
             // ── Compliance & Audit ──────────────────────────────────────

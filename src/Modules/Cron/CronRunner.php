@@ -225,7 +225,7 @@ class CronRunner
                         t('Gruppen')                    => fn() => (new GroupsService($graph))->getAll(),
                         t('Lizenzen')                   => fn() => (new LicensesService($graph))->getSkus(),
                         t('Dienststatus')               => fn() => (new ServiceHealthService($graph))->getOverview(),
-                        'Security Posture'              => fn() => (new SecurityPostureService($graph))->runChecks(),
+                        'Security Posture'              => fn() => (new SecurityPostureService($graph))->runChecksCached(),
                     ];
 
                     foreach ($jobs as $label => $fn) {
