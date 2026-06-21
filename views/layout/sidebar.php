@@ -36,6 +36,7 @@ function navItem(string $icon, string $label, string $route, string $current, ar
 $activeHub = Navigation::activeHubKey($currentPath);
 ?>
 <?php navItem('speedometer2', t('Dashboard'), '', $currentPath, $allRoutes); ?>
+<?php navItem('compass', t('Konfigurations-Center'), 'action-center', $currentPath, $allRoutes); ?>
 <?php navItem('star', t('Favoriten'), 'favorites', $currentPath, $allRoutes); ?>
 <?php navItem('grid-1x2', t('Modul-Übersicht'), 'overview', $currentPath, $allRoutes); ?>
 

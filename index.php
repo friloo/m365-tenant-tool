@@ -460,6 +460,9 @@ $router->get('/',        [\App\Modules\Dashboard\DashboardController::class, 'in
 // Modul-Übersicht (module map)
 $router->get('/overview', [\App\Modules\Overview\OverviewController::class, 'index']);
 
+// Action Center — guided "start here" configuration surface
+$router->get('/action-center', [\App\Modules\ActionCenter\ActionCenterController::class, 'index']);
+
 // Favoriten (client-side, localStorage)
 $router->get('/favorites', [\App\Modules\Favorites\FavoritesController::class, 'index']);
 
