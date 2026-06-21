@@ -834,6 +834,7 @@ $router->post('/complianceprofile/apply-step', [\App\Modules\ComplianceProfile\C
 // ── Audit-Diff ─────────────────────────────────────────────
 $router->get('/auditdiff',                  [\App\Modules\AuditDiff\AuditDiffController::class, 'index']);
 $router->post('/auditdiff/capture',         [\App\Modules\AuditDiff\AuditDiffController::class, 'capture']);
+$router->post('/auditdiff/baseline',        [\App\Modules\AuditDiff\AuditDiffController::class, 'setBaseline']);
 
 // ── DSGVO/NIS-2 Audit-Report ───────────────────────────────
 $router->get('/auditreport',                [\App\Modules\AuditReport\AuditReportController::class, 'index']);

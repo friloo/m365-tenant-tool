@@ -617,6 +617,31 @@ class CronRunner
                 },
             ],
 
+            'config_drift_check' => [
+                'label'            => t('Konfigurations-Drift prüfen'),
+                'description'      => t('Vergleicht den neuesten Tenant-Snapshot mit der gesetzten Baseline und warnt bei Abweichungen sicherheitsrelevanter Einstellungen.'),
+                'default_interval' => 1440, // daily (runs after the snapshot job)
+                'handler'          => function (): string {
+                    $drift = \App\Modules\AuditDiff\SnapshotService::driftAgainstBaseline();
+                    if ($drift === null) {
+                        return t('Keine Baseline gesetzt oder kein neuerer Snapshot.');
+                    }
+                    $n = \App\Modules\AuditDiff\SnapshotService::diffCount($drift['diff']);
+                    if ($n === 0) {
+                        return t('Keine Abweichung von der Baseline.');
+                    }
+                    \App\Modules\Notifications\NotificationService::push(
+                        t(':n Konfigurations-Abweichung(en) von der Baseline', ['n' => $n]),
+                        t('Sicherheitsrelevante Tenant-Einstellungen haben sich gegenüber der Baseline (Snapshot #:id) geändert. Details unter Audit-Diff.', ['id' => $drift['baseline_id']]),
+                        'warn',
+                        '/auditdiff?left=' . $drift['baseline_id'] . '&right=' . $drift['latest_id'],
+                        'compliance',
+                        'config_drift_' . $drift['latest_id']
+                    );
+                    return t(':n Abweichung(en) erkannt — Warnung gesendet.', ['n' => $n]);
+                },
+            ],
+
             'notification_trim' => [
                 'label'            => t('Benachrichtigungen aufräumen'),
                 'description'      => t('Alte In-App-Benachrichtigungen aufräumen'),
