@@ -446,12 +446,12 @@ $readinessIcon = match($score['readiness']) {
 
     <!-- Helpful Links -->
     <div class="card mb-4 shadow-sm">
-      <div class="card-header fw-semibold"><i class="bi bi-box-arrow-up-right me-2"></i>Weiterführende Links</div>
+      <div class="card-header fw-semibold"><i class="bi bi-box-arrow-up-right me-2"></i><?= te('Weiterführende Links') ?></div>
       <div class="card-body p-0">
         <ul class="list-group list-group-flush small">
           <li class="list-group-item">
             <a href="https://admin.exchange.microsoft.com/#/migration" target="_blank" rel="noopener noreferrer">
-              <i class="bi bi-envelope me-1"></i> Exchange Admin Center – Migration
+              <i class="bi bi-envelope me-1"></i> <?= te('Exchange Admin Center – Migration') ?>
             </a>
           </li>
           <li class="list-group-item">

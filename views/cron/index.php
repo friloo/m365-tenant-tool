@@ -66,21 +66,21 @@ function cronIn(?string $dt): string {
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">In Bearbeitung</div>
+            <div class="metric-label"><?= te('In Bearbeitung') ?></div>
             <div class="metric-value"><?= number_format($queueStats['processing']) ?></div>
-            <div class="metric-sub">Wird verarbeitet</div>
+            <div class="metric-sub"><?= te('Wird verarbeitet') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Erledigt (24h)</div>
+            <div class="metric-label"><?= te('Erledigt (24h)') ?></div>
             <div class="metric-value"><?= number_format($queueStats['done']) ?></div>
-            <div class="metric-sub">Erfolgreich</div>
+            <div class="metric-sub"><?= te('Erfolgreich') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Fehlgeschlagen</div>
+            <div class="metric-label"><?= te('Fehlgeschlagen') ?></div>
             <div class="metric-value <?= $queueStats['failed'] > 0 ? 'text-danger' : '' ?>">
                 <?= number_format($queueStats['failed']) ?>
             </div>
@@ -88,10 +88,10 @@ function cronIn(?string $dt): string {
                 <?php if ($queueStats['failed'] > 0): ?>
                     <form method="post" action="/cron/queue/retry" class="d-inline">
                         <?= \App\Core\Csrf::field() ?>
-                        <button class="btn btn-link btn-sm p-0" style="font-size:11px;">Alle wiederholen</button>
+                        <button class="btn btn-link btn-sm p-0" style="font-size:11px;"><?= te('Alle wiederholen') ?></button>
                     </form>
                 <?php else: ?>
-                    Alle OK
+                    <?= te('Alle OK') ?>
                 <?php endif; ?>
             </div>
         </div>
@@ -102,19 +102,19 @@ function cronIn(?string $dt): string {
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-clock text-primary"></i>
-        <h6>Geplante Aufgaben</h6>
+        <h6><?= te('Geplante Aufgaben') ?></h6>
         <span class="ms-auto text-muted" style="font-size:12px;"><?= count($jobs) ?> Jobs</span>
     </div>
 
     <table class="data-table">
         <thead>
             <tr>
-                <th>Aufgabe</th>
-                <th>Status</th>
-                <th>Letzter Lauf</th>
-                <th>Nächster Lauf</th>
-                <th>Intervall</th>
-                <th style="width:160px;">Aktionen</th>
+                <th><?= te('Aufgabe') ?></th>
+                <th><?= te('Status') ?></th>
+                <th><?= te('Letzter Lauf') ?></th>
+                <th><?= te('Nächster Lauf') ?></th>
+                <th><?= te('Intervall') ?></th>
+                <th style="width:160px;"><?= te('Aktionen') ?></th>
             </tr>
         </thead>
         <tbody>
@@ -132,13 +132,13 @@ function cronIn(?string $dt): string {
                 </td>
                 <td>
                     <?php if (!$enabled): ?>
-                        <span class="badge-disabled">Deaktiviert</span>
+                        <span class="badge-disabled"><?= te('Deaktiviert') ?></span>
                     <?php elseif ($lastStatus === 'success'): ?>
                         <span class="badge-enabled">OK</span>
                     <?php elseif ($lastStatus === 'error'): ?>
-                        <span class="badge-danger" title="<?= $e($job['last_run_log'] ?? '') ?>">Fehler</span>
+                        <span class="badge-danger" title="<?= $e($job['last_run_log'] ?? '') ?>"><?= te('Fehler') ?></span>
                     <?php else: ?>
-                        <span class="badge-neutral">Noch nicht gelaufen</span>
+                        <span class="badge-neutral"><?= te('Noch nicht gelaufen') ?></span>
                     <?php endif; ?>
                     <?php if ($job['last_run_seconds']): ?>
                         <span style="font-size:10px;color:#9ca3af;margin-left:4px;"><?= number_format((float)$job['last_run_seconds'], 1) ?>s</span>
@@ -163,14 +163,14 @@ function cronIn(?string $dt): string {
                         <form method="post" action="/cron/run-job/<?= $e($jobKey) ?>">
                             <?= \App\Core\Csrf::field() ?>
                             <button type="submit" class="btn btn-sm btn-outline-primary"
-                                    title="Jetzt ausführen"
-                                    onclick="return confirm('Job jetzt ausführen?')">
+                                    title="<?= te('Jetzt ausführen') ?>"
+                                    onclick="return confirm('<?= te('Job jetzt ausführen?') ?>')">
                                 <i class="bi bi-play"></i>
                             </button>
                         </form>
                         <!-- Configure -->
                         <button type="button" class="btn btn-sm btn-outline-secondary"
-                                title="Konfigurieren"
+                                title="<?= te('Konfigurieren') ?>"
                                 onclick="openJobConfig('<?= $e($jobKey) ?>', <?= (int)$enabled ?>, <?= $interval ?>)">
                             <i class="bi bi-gear"></i>
                         </button>
@@ -187,13 +187,13 @@ function cronIn(?string $dt): string {
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-list-task text-secondary"></i>
-        <h6>Job-Warteschlange (letzte 30 Einträge)</h6>
+        <h6><?= te('Job-Warteschlange (letzte 30 Einträge)') ?></h6>
         <?php if ($queueStats['done'] > 0): ?>
         <form method="post" action="/cron/queue/prune" class="ms-auto">
             <?= \App\Core\Csrf::field() ?>
             <button type="submit" class="btn btn-sm btn-outline-secondary"
-                    onclick="return confirm('Abgeschlossene Jobs löschen?')">
-                <i class="bi bi-trash me-1"></i> Erledigte löschen
+                    onclick="return confirm('<?= te('Abgeschlossene Jobs löschen?') ?>')">
+                <i class="bi bi-trash me-1"></i> <?= te('Erledigte löschen') ?>
             </button>
         </form>
         <?php endif; ?>
@@ -202,13 +202,13 @@ function cronIn(?string $dt): string {
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Typ</th>
-                    <th>Status</th>
-                    <th>Versuche</th>
-                    <th>Erstellt</th>
-                    <th>Verarbeitet</th>
-                    <th>Fehler</th>
+                    <th><?= te('ID') ?></th>
+                    <th><?= te('Typ') ?></th>
+                    <th><?= te('Status') ?></th>
+                    <th><?= te('Versuche') ?></th>
+                    <th><?= te('Erstellt') ?></th>
+                    <th><?= te('Verarbeitet') ?></th>
+                    <th><?= te('Fehler') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -251,7 +251,7 @@ function cronIn(?string $dt): string {
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Job konfigurieren</h5>
+                <h5 class="modal-title"><?= te('Job konfigurieren') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="post" id="jobConfigForm" action="">

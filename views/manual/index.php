@@ -844,112 +844,112 @@
         <li><strong><?= te('Vorgespräche:') ?></strong> <?= te('Betriebs­rat und Daten­schutz­beauftragten <strong>vor</strong> der ersten Simulation einbinden — in Deutschland ist eine Phishing-Simulation eine Mitarbeiter-Schulungs­maßnahme, die u. U. mitbestimmungs­pflichtig ist (§ 87 Abs. 1 Nr. 6 BetrVG).') ?></li>
     </ul>
 
-    <h3>2. Vorbereitung &amp; Kommunikation</h3>
+    <h3><?= te('2. Vorbereitung &amp; Kommunikation') ?></h3>
     <ol>
         <li>
-            <strong>Pilotphase planen.</strong> Niemals direkt den ganzen Tenant ins kalte Wasser werfen — beginnen Sie mit einer Pilotgruppe von 10–30 Personen aus IT, Marketing oder Verwaltung.
+            <strong><?= te('Pilotphase planen.') ?></strong> <?= te('Niemals direkt den ganzen Tenant ins kalte Wasser werfen — beginnen Sie mit einer Pilotgruppe von 10–30 Personen aus IT, Marketing oder Verwaltung.') ?>
         </li>
         <li>
-            <strong>Vorab-Kommunikation:</strong> ankündigen, dass „in den nächsten Wochen Phishing-Simulationen stattfinden werden, ohne konkreten Termin". Das ist nicht der Verrat — Mitarbeiter sollen wissen, dass es passieren <em>kann</em>, aber nicht <em>wann</em>.
+            <strong><?= te('Vorab-Kommunikation:') ?></strong> <?= te('ankündigen, dass „in den nächsten Wochen Phishing-Simulationen stattfinden werden, ohne konkreten Termin". Das ist nicht der Verrat — Mitarbeiter sollen wissen, dass es passieren <em>kann</em>, aber nicht <em>wann</em>.') ?>
         </li>
         <li>
-            <strong>Reporting-Plugin in Outlook aktivieren:</strong> stellen Sie sicher, dass der Button „Report Phishing" oder „Report Message" in Outlook für alle User sichtbar ist (Defender-Portal → Email &amp; collaboration → Policies → User reported settings).
+            <strong><?= te('Reporting-Plugin in Outlook aktivieren:') ?></strong> <?= te('stellen Sie sicher, dass der Button „Report Phishing" oder „Report Message" in Outlook für alle User sichtbar ist (Defender-Portal → Email &amp; collaboration → Policies → User reported settings).') ?>
         </li>
         <li>
-            <strong>Training-Module vorbereiten:</strong> Microsoft bringt einen Standard-Pool von ca. 70 Trainings­videos mit. Schauen Sie sie sich vorher an und wählen Sie 3–5 aus, die zu Ihrer Kampagne passen.
+            <strong><?= te('Training-Module vorbereiten:') ?></strong> <?= te('Microsoft bringt einen Standard-Pool von ca. 70 Trainings­videos mit. Schauen Sie sie sich vorher an und wählen Sie 3–5 aus, die zu Ihrer Kampagne passen.') ?>
         </li>
     </ol>
 
-    <h3>3. Erste Simulation anlegen</h3>
+    <h3><?= te('3. Erste Simulation anlegen') ?></h3>
     <ol>
         <li>
-            <strong>Defender-Portal öffnen:</strong>
-            <a href="https://security.microsoft.com/attacksimulator" target="_blank" rel="noopener">security.microsoft.com/attacksimulator</a> → Reiter <em>Simulations</em> → <em>+ Launch a simulation</em>.
+            <strong><?= te('Defender-Portal öffnen:') ?></strong>
+            <a href="https://security.microsoft.com/attacksimulator" target="_blank" rel="noopener">security.microsoft.com/attacksimulator</a> → <?= te('Reiter <em>Simulations</em> → <em>+ Launch a simulation</em>.') ?>
         </li>
         <li>
-            <strong>Technik wählen.</strong> Microsoft bietet sechs Standard-Techniken — beginnen Sie mit <em>Credential Harvest</em> (gefälschte Login-Seite), das ist statistisch der häufigste reale Angriffstyp.
+            <strong><?= te('Technik wählen.') ?></strong> <?= te('Microsoft bietet sechs Standard-Techniken — beginnen Sie mit <em>Credential Harvest</em> (gefälschte Login-Seite), das ist statistisch der häufigste reale Angriffstyp.') ?>
             <ul style="margin-top:6px;">
-                <li><em>Credential Harvest</em> — gefälschte Anmelde-Seite</li>
-                <li><em>Malware Attachment</em> — schädlicher Anhang</li>
-                <li><em>Link in Attachment</em> — Link im Dokument</li>
-                <li><em>Link to Malware</em> — Direkt-Link zu Malware</li>
-                <li><em>Drive-by URL</em> — bösartige Webseite</li>
-                <li><em>OAuth Consent Grant</em> — gefälschte App-Berechtigungs-Anfrage (besonders aktuell)</li>
+                <li><em>Credential Harvest</em> — <?= te('gefälschte Anmelde-Seite') ?></li>
+                <li><em>Malware Attachment</em> — <?= te('schädlicher Anhang') ?></li>
+                <li><em>Link in Attachment</em> — <?= te('Link im Dokument') ?></li>
+                <li><em>Link to Malware</em> — <?= te('Direkt-Link zu Malware') ?></li>
+                <li><em>Drive-by URL</em> — <?= te('bösartige Webseite') ?></li>
+                <li><em>OAuth Consent Grant</em> — <?= te('gefälschte App-Berechtigungs-Anfrage (besonders aktuell)') ?></li>
             </ul>
         </li>
         <li>
-            <strong>Payload wählen.</strong> Microsoft liefert Hunderte fertige Payloads in vielen Sprachen — wählen Sie eine deutschsprachige Variante, am besten mit einem Bezug zu Ihrem Branchen­alltag (Paket­benachrichtigung, Bewerbung, Microsoft-Sicherheits­warnung, …). Mit Klick auf eine Payload sehen Sie eine Vorschau.
+            <strong><?= te('Payload wählen.') ?></strong> <?= te('Microsoft liefert Hunderte fertige Payloads in vielen Sprachen — wählen Sie eine deutschsprachige Variante, am besten mit einem Bezug zu Ihrem Branchen­alltag (Paket­benachrichtigung, Bewerbung, Microsoft-Sicherheits­warnung, …). Mit Klick auf eine Payload sehen Sie eine Vorschau.') ?>
         </li>
         <li>
-            <strong>Empfänger auswählen.</strong> Für die erste Kampagne 10–30 Pilot-User. Spätere Kampagnen können auf Gruppen abzielen oder alle User auf einmal.
+            <strong><?= te('Empfänger auswählen.') ?></strong> <?= te('Für die erste Kampagne 10–30 Pilot-User. Spätere Kampagnen können auf Gruppen abzielen oder alle User auf einmal.') ?>
         </li>
         <li>
-            <strong>Training konfigurieren.</strong> User, die auf den Link klicken / Daten eingeben / die Mail nicht melden, bekommen automatisch ein Training zugewiesen (Microsoft empfiehlt das „NIST"-Trainingspfad).
+            <strong><?= te('Training konfigurieren.') ?></strong> <?= te('User, die auf den Link klicken / Daten eingeben / die Mail nicht melden, bekommen automatisch ein Training zugewiesen (Microsoft empfiehlt das „NIST"-Trainingspfad).') ?>
         </li>
         <li>
-            <strong>Phishing-Landing-Page wählen.</strong> Bei <em>Credential Harvest</em> sieht der User nach Eingabe seiner Daten eine kurze Erklärungs-Seite („Dies war eine Simulation — bitte verwenden Sie nie Ihr echtes Passwort auf solchen Seiten").
+            <strong><?= te('Phishing-Landing-Page wählen.') ?></strong> <?= te('Bei <em>Credential Harvest</em> sieht der User nach Eingabe seiner Daten eine kurze Erklärungs-Seite („Dies war eine Simulation — bitte verwenden Sie nie Ihr echtes Passwort auf solchen Seiten").') ?>
         </li>
         <li>
-            <strong>Zeitfenster setzen.</strong> Empfohlen: 2-Wochen-Fenster, in denen die Mail zufällig verteilt wird. Microsoft hat ein „Region-Aware-Delivery"-Feature, das die Mail in den lokalen Bürozeiten ausliefert.
+            <strong><?= te('Zeitfenster setzen.') ?></strong> <?= te('Empfohlen: 2-Wochen-Fenster, in denen die Mail zufällig verteilt wird. Microsoft hat ein „Region-Aware-Delivery"-Feature, das die Mail in den lokalen Bürozeiten ausliefert.') ?>
         </li>
         <li>
-            <strong>Starten.</strong> Vor dem finalen Klick auf <em>Submit</em> erhalten Sie eine Zusammenfassung — prüfen Sie sie sorgfältig.
+            <strong><?= te('Starten.') ?></strong> <?= te('Vor dem finalen Klick auf <em>Submit</em> erhalten Sie eine Zusammenfassung — prüfen Sie sie sorgfältig.') ?>
         </li>
     </ol>
 
-    <h3>4. Während der Kampagne</h3>
+    <h3><?= te('4. Während der Kampagne') ?></h3>
     <ul>
-        <li>Im Defender-Portal können Sie den Live-Status sehen — wieviele User die Mail bekommen haben, wieviele geklickt haben, wieviele „kompromittiert" sind.</li>
-        <li>Im Tool wird die Simulation unter <a href="/phishingsim">/phishingsim</a> mit denselben Daten gespiegelt.</li>
-        <li>Helpdesk-Tickets von Usern, die fragen „ist diese Mail echt?" sind erwünschte Reaktionen — kein Anlass zur Sorge.</li>
+        <li><?= te('Im Defender-Portal können Sie den Live-Status sehen — wieviele User die Mail bekommen haben, wieviele geklickt haben, wieviele „kompromittiert" sind.') ?></li>
+        <li><?= te('Im Tool wird die Simulation unter') ?> <a href="/phishingsim">/phishingsim</a> <?= te('mit denselben Daten gespiegelt.') ?></li>
+        <li><?= te('Helpdesk-Tickets von Usern, die fragen „ist diese Mail echt?" sind erwünschte Reaktionen — kein Anlass zur Sorge.') ?></li>
     </ul>
 
-    <h3>5. Nachbereitung</h3>
+    <h3><?= te('5. Nachbereitung') ?></h3>
     <ol>
         <li>
-            <strong>Reporting-Quote analysieren.</strong> Wenn weniger als 30 % der User die Phishing-Mail gemeldet haben, ist das ein klares Schulungs­signal — das Reporting-Plugin ist entweder unbekannt oder nicht installiert.
+            <strong><?= te('Reporting-Quote analysieren.') ?></strong> <?= te('Wenn weniger als 30 % der User die Phishing-Mail gemeldet haben, ist das ein klares Schulungs­signal — das Reporting-Plugin ist entweder unbekannt oder nicht installiert.') ?>
         </li>
         <li>
-            <strong>Compromised-User zuweisen.</strong> User, die geklickt + Daten eingegeben haben, bekommen automatisch Trainings — überprüfen Sie nach 14 Tagen die Abschluss­quote. Wer das Training nicht abschließt, bekommt eine Eskalation an den Vorgesetzten.
+            <strong><?= te('Compromised-User zuweisen.') ?></strong> <?= te('User, die geklickt + Daten eingegeben haben, bekommen automatisch Trainings — überprüfen Sie nach 14 Tagen die Abschluss­quote. Wer das Training nicht abschließt, bekommt eine Eskalation an den Vorgesetzten.') ?>
         </li>
         <li>
-            <strong>Transparenter Bericht an die Belegschaft.</strong> Senden Sie eine anonymisierte Zusammenfassung („28 % der Mitarbeiter haben geklickt, 12 % haben Credentials eingegeben, 65 % haben die Mail gemeldet — wir machen die nächste Runde in 3 Monaten"). Das fördert Awareness ohne Beschämung.
+            <strong><?= te('Transparenter Bericht an die Belegschaft.') ?></strong> <?= te('Senden Sie eine anonymisierte Zusammenfassung („28 % der Mitarbeiter haben geklickt, 12 % haben Credentials eingegeben, 65 % haben die Mail gemeldet — wir machen die nächste Runde in 3 Monaten"). Das fördert Awareness ohne Beschämung.') ?>
         </li>
         <li>
-            <strong>Datenschutz-konform speichern.</strong> Defender speichert die Daten 90 Tage automatisch; für längere Aufbewahrung müssen Sie sie exportieren — was bei DSGVO problematisch ist, weil Mitarbeiter dann namentlich auftauchen.
+            <strong><?= te('Datenschutz-konform speichern.') ?></strong> <?= te('Defender speichert die Daten 90 Tage automatisch; für längere Aufbewahrung müssen Sie sie exportieren — was bei DSGVO problematisch ist, weil Mitarbeiter dann namentlich auftauchen.') ?>
         </li>
     </ol>
 
-    <h3>6. Kadenz</h3>
-    <p>Empfehlung: <strong>alle 2–3 Monate</strong> eine Kampagne, je mit anderer Technik und anderem Payload. Studien zeigen, dass die Klick-Quote bei einer konstanten Kampagne nach ca. 18 Monaten von typisch 25 % auf unter 5 % sinkt.</p>
+    <h3><?= te('6. Kadenz') ?></h3>
+    <p><?= te('Empfehlung: <strong>alle 2–3 Monate</strong> eine Kampagne, je mit anderer Technik und anderem Payload. Studien zeigen, dass die Klick-Quote bei einer konstanten Kampagne nach ca. 18 Monaten von typisch 25 % auf unter 5 % sinkt.') ?></p>
 
-    <h3>7. Häufige Fallstricke</h3>
+    <h3><?= te('7. Häufige Fallstricke') ?></h3>
     <ul>
-        <li><strong>Personalrat/Betriebsrat nicht eingebunden.</strong> Kann zu Beschwerden und im schlimmsten Fall zu Untersagung führen. Vorher klären.</li>
-        <li><strong>Beschämungs-Kommunikation.</strong> Wer dem Marketing einen Brief schickt „Sie sind unser bester Klicker", verliert die Belegschaft. Stattdessen anonyme Aggregate.</li>
-        <li><strong>Zu seltene Wiederholung.</strong> Eine Phishing-Simulation pro Jahr bringt fast nichts — Skills verblassen schnell.</li>
-        <li><strong>Standard-Payloads ohne Anpassung.</strong> Microsoft-Standard-Templates sind oft zu generisch. Erstellen Sie für die zweite/dritte Kampagne <em>Custom Payloads</em>, die Ihren Branchen-Kontext aufnehmen.</li>
-        <li><strong>Verteilung über Mail-Allow-Listen umgehen.</strong> Defender Simulator ist standardmäßig auf der Allow-Liste — wenn Ihre Anti-Spam-Regeln zu aggressiv sind, kann die Simulations-Mail trotzdem gefiltert werden. Prüfen Sie im Vorhinein mit einer Test-Simulation an die IT-Abteilung.</li>
+        <li><strong><?= te('Personalrat/Betriebsrat nicht eingebunden.') ?></strong> <?= te('Kann zu Beschwerden und im schlimmsten Fall zu Untersagung führen. Vorher klären.') ?></li>
+        <li><strong><?= te('Beschämungs-Kommunikation.') ?></strong> <?= te('Wer dem Marketing einen Brief schickt „Sie sind unser bester Klicker", verliert die Belegschaft. Stattdessen anonyme Aggregate.') ?></li>
+        <li><strong><?= te('Zu seltene Wiederholung.') ?></strong> <?= te('Eine Phishing-Simulation pro Jahr bringt fast nichts — Skills verblassen schnell.') ?></li>
+        <li><strong><?= te('Standard-Payloads ohne Anpassung.') ?></strong> <?= te('Microsoft-Standard-Templates sind oft zu generisch. Erstellen Sie für die zweite/dritte Kampagne <em>Custom Payloads</em>, die Ihren Branchen-Kontext aufnehmen.') ?></li>
+        <li><strong><?= te('Verteilung über Mail-Allow-Listen umgehen.') ?></strong> <?= te('Defender Simulator ist standardmäßig auf der Allow-Liste — wenn Ihre Anti-Spam-Regeln zu aggressiv sind, kann die Simulations-Mail trotzdem gefiltert werden. Prüfen Sie im Vorhinein mit einer Test-Simulation an die IT-Abteilung.') ?></li>
     </ul>
 
     <div class="tip-box">
         <i class="bi bi-lightbulb"></i>
-        <strong>Pro-Tipp:</strong> Nach 2–3 erfolgreichen Kampagnen lassen sich die Simulationen mit der <em>Automation</em>-Funktion im Defender-Portal auch selbst-fahrend einrichten — Microsoft wählt dann pro Quartal eine neue Technik + Payload aus und versendet die Mail an User-Gruppen, die schon eine Weile keine Simulation mehr bekommen haben.
+        <strong><?= te('Pro-Tipp:') ?></strong> <?= te('Nach 2–3 erfolgreichen Kampagnen lassen sich die Simulationen mit der <em>Automation</em>-Funktion im Defender-Portal auch selbst-fahrend einrichten — Microsoft wählt dann pro Quartal eine neue Technik + Payload aus und versendet die Mail an User-Gruppen, die schon eine Weile keine Simulation mehr bekommen haben.') ?>
     </div>
 
-    <h3>8. Weiterführende Links</h3>
+    <h3><?= te('8. Weiterführende Links') ?></h3>
     <ul>
         <li><a href="https://learn.microsoft.com/de-de/defender-office-365/attack-simulation-training-get-started" target="_blank" rel="noopener">Microsoft Learn — Attack Simulation Training</a></li>
-        <li><a href="https://learn.microsoft.com/de-de/defender-office-365/attack-simulation-training-payloads" target="_blank" rel="noopener">Payload-Bibliothek</a></li>
+        <li><a href="https://learn.microsoft.com/de-de/defender-office-365/attack-simulation-training-payloads" target="_blank" rel="noopener"><?= te('Payload-Bibliothek') ?></a></li>
         <li><a href="https://learn.microsoft.com/de-de/defender-office-365/attack-simulation-training-simulation-automations" target="_blank" rel="noopener">Simulation Automations</a></li>
-        <li><a href="https://www.bsi.bund.de/DE/Themen/Verbraucherinnen-und-Verbraucher/Cyber-Sicherheitslage/Methoden-der-Cyber-Kriminalitaet/Spam-Phishing-Co/Phishing/phishing_node.html" target="_blank" rel="noopener">BSI — Phishing-Methoden</a></li>
+        <li><a href="https://www.bsi.bund.de/DE/Themen/Verbraucherinnen-und-Verbraucher/Cyber-Sicherheitslage/Methoden-der-Cyber-Kriminalitaet/Spam-Phishing-Co/Phishing/phishing_node.html" target="_blank" rel="noopener"><?= te('BSI — Phishing-Methoden') ?></a></li>
     </ul>
 </div>
 
 <!-- Identity Providers ──────────────────────────────────── -->
 <div class="man-section" id="identityproviders">
     <h2><i class="bi bi-person-bounding-box text-primary"></i> External Identity Provider Trust</h2>
-    <p>Listet alle konfigurierten externen Identity Providers im Tenant (Google, Facebook, Apple für B2C-Szenarien) sowie federierte Domains (ADFS, Okta, Ping Identity, …). Jeder zusätzliche IdP ist eine Erweiterung der Angriffsfläche — sollte periodisch auditiert werden.</p>
+    <p><?= te('Listet alle konfigurierten externen Identity Providers im Tenant (Google, Facebook, Apple für B2C-Szenarien) sowie federierte Domains (ADFS, Okta, Ping Identity, …). Jeder zusätzliche IdP ist eine Erweiterung der Angriffsfläche — sollte periodisch auditiert werden.') ?></p>
     <p><span class="perm-tag">IdentityProvider.Read.All</span> <span class="perm-tag">Domain.Read.All</span></p>
 </div>
 

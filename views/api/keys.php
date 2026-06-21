@@ -45,7 +45,7 @@ use App\Core\Csrf;
         const inp = document.getElementById('freshKey');
         inp.select();
         navigator.clipboard.writeText(inp.value).then(() => {
-            this.innerHTML = '<i class="bi bi-check-lg"></i> Kopiert!';
+            this.innerHTML = '<i class="bi bi-check-lg"></i> ' + <?= json_encode(t('Kopiert!'), JSON_UNESCAPED_UNICODE) ?>;
             this.classList.remove('btn-warning'); this.classList.add('btn-success');
             setTimeout(() => location.href = '/settings/api-keys', 2000);
         });
@@ -54,57 +54,57 @@ use App\Core\Csrf;
 <?php endif; ?>
 
 <div class="content-card mb-3">
-    <h5 class="mb-3"><i class="bi bi-plus-circle"></i> Neuen Schlüssel erstellen</h5>
+    <h5 class="mb-3"><i class="bi bi-plus-circle"></i> <?= te('Neuen Schlüssel erstellen') ?></h5>
     <form method="post" action="/settings/api-keys/create" class="row g-3">
         <?= Csrf::field() ?>
         <div class="col-md-6">
-            <label class="form-label">Name</label>
-            <input class="form-control" type="text" name="name" placeholder="z. B. PowerBI Dashboard" required>
-            <div class="form-text">Frei wählbarer Bezeichner für deine eigene Übersicht.</div>
+            <label class="form-label"><?= te('Name') ?></label>
+            <input class="form-control" type="text" name="name" placeholder="<?= te('z. B. PowerBI Dashboard') ?>" required>
+            <div class="form-text"><?= te('Frei wählbarer Bezeichner für deine eigene Übersicht.') ?></div>
         </div>
         <div class="col-md-6">
-            <label class="form-label">Berechtigungen (Scopes)</label>
+            <label class="form-label"><?= te('Berechtigungen (Scopes)') ?></label>
             <div class="d-flex flex-column gap-2">
                 <label class="form-check m-0 p-2 border rounded" style="cursor:pointer;">
                     <input class="form-check-input me-2" type="checkbox" name="scopes[]" value="read" checked>
-                    <strong>read</strong> &mdash; lesender Zugriff auf alle GET-Endpunkte
+                    <strong>read</strong> &mdash; <?= te('lesender Zugriff auf alle GET-Endpunkte') ?>
                 </label>
                 <label class="form-check m-0 p-2 border rounded" style="cursor:pointer;">
                     <input class="form-check-input me-2" type="checkbox" name="scopes[]" value="write">
-                    <strong>write</strong> &mdash; Benachrichtigungen pushen, Hardening anwenden, Snapshots erstellen
+                    <strong>write</strong> &mdash; <?= te('Benachrichtigungen pushen, Hardening anwenden, Snapshots erstellen') ?>
                 </label>
                 <label class="form-check m-0 p-2 border rounded text-muted" style="cursor:pointer;">
                     <input class="form-check-input me-2" type="checkbox" name="scopes[]" value="admin">
-                    <strong>admin</strong> &mdash; reserviert für zukünftige Admin-Endpunkte
+                    <strong>admin</strong> &mdash; <?= te('reserviert für zukünftige Admin-Endpunkte') ?>
                 </label>
             </div>
         </div>
         <div class="col-12">
-            <button class="btn btn-primary" type="submit"><i class="bi bi-plus-lg"></i> Schlüssel erstellen</button>
+            <button class="btn btn-primary" type="submit"><i class="bi bi-plus-lg"></i> <?= te('Schlüssel erstellen') ?></button>
         </div>
     </form>
 </div>
 
 <div class="content-card">
-    <h5 class="mb-3"><i class="bi bi-list-ul"></i> Bestehende Schlüssel <span class="badge bg-secondary"><?= count($keys) ?></span></h5>
+    <h5 class="mb-3"><i class="bi bi-list-ul"></i> <?= te('Bestehende Schlüssel') ?> <span class="badge bg-secondary"><?= count($keys) ?></span></h5>
     <?php if (empty($keys)): ?>
         <div class="text-center text-muted py-5">
             <i class="bi bi-key" style="font-size:42px; opacity:0.4;"></i>
-            <p class="mt-3 mb-0">Noch keine API-Keys angelegt.</p>
-            <p class="small">Erstelle oben den ersten Key, um externe Werkzeuge anzubinden.</p>
+            <p class="mt-3 mb-0"><?= te('Noch keine API-Keys angelegt.') ?></p>
+            <p class="small"><?= te('Erstelle oben den ersten Key, um externe Werkzeuge anzubinden.') ?></p>
         </div>
     <?php else: ?>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>Name</th>
-                        <th>Scopes</th>
-                        <th>Erstellt</th>
-                        <th>Erstellt von</th>
-                        <th>Zuletzt verwendet</th>
-                        <th>Status</th>
-                        <th class="text-end">Aktionen</th>
+                        <th><?= te('Name') ?></th>
+                        <th><?= te('Scopes') ?></th>
+                        <th><?= te('Erstellt') ?></th>
+                        <th><?= te('Erstellt von') ?></th>
+                        <th><?= te('Zuletzt verwendet') ?></th>
+                        <th><?= te('Status') ?></th>
+                        <th class="text-end"><?= te('Aktionen') ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -118,21 +118,21 @@ use App\Core\Csrf;
                         </td>
                         <td class="small text-muted"><?= View::escape($k['created_at']) ?></td>
                         <td class="small text-muted"><?= View::escape($k['created_by'] ?: '—') ?></td>
-                        <td class="small text-muted"><?= View::escape($k['last_used'] ?: '— nie —') ?></td>
+                        <td class="small text-muted"><?= $k['last_used'] ? View::escape($k['last_used']) : te('— nie —') ?></td>
                         <td>
                             <?php if ($k['revoked_at']): ?>
-                                <span class="badge bg-danger"><i class="bi bi-x-circle"></i> widerrufen</span>
+                                <span class="badge bg-danger"><i class="bi bi-x-circle"></i> <?= te('widerrufen') ?></span>
                             <?php else: ?>
-                                <span class="badge bg-success"><i class="bi bi-check-circle"></i> aktiv</span>
+                                <span class="badge bg-success"><i class="bi bi-check-circle"></i> <?= te('aktiv') ?></span>
                             <?php endif; ?>
                         </td>
                         <td class="text-end">
                             <?php if (!$k['revoked_at']): ?>
                                 <form method="post" action="/settings/api-keys/<?= (int)$k['id'] ?>/revoke" class="d-inline"
-                                      onsubmit="return confirm('Diesen Key wirklich widerrufen? Externe Tools verlieren sofort den Zugriff.');">
+                                      onsubmit="return confirm('<?= t('Diesen Key wirklich widerrufen? Externe Tools verlieren sofort den Zugriff.') ?>');">
                                     <?= Csrf::field() ?>
                                     <button class="btn btn-sm btn-outline-danger" type="submit">
-                                        <i class="bi bi-x-circle"></i> Widerrufen
+                                        <i class="bi bi-x-circle"></i> <?= te('Widerrufen') ?>
                                     </button>
                                 </form>
                             <?php else: ?>
