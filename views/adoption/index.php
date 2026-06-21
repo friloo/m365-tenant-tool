@@ -408,7 +408,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                         fill: true,
                     },
                     {
-                        label: 'Privat-Chat',
+                        label: <?= json_encode(t('Privat-Chat'), JSON_UNESCAPED_UNICODE) ?>,
                         data: teamsPrivChat,
                         borderColor: '#3b82f6',
                         backgroundColor: 'rgba(59,130,246,0.06)',
@@ -418,7 +418,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                         fill: false,
                     },
                     {
-                        label: 'Anrufe',
+                        label: <?= json_encode(t('Anrufe'), JSON_UNESCAPED_UNICODE) ?>,
                         data: teamsCalls,
                         borderColor: '#16a34a',
                         backgroundColor: 'rgba(22,163,74,0.06)',
@@ -428,7 +428,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                         fill: false,
                     },
                     {
-                        label: 'Meetings',
+                        label: <?= json_encode(t('Meetings'), JSON_UNESCAPED_UNICODE) ?>,
                         data: teamsMeetings,
                         borderColor: '#d97706',
                         backgroundColor: 'rgba(217,119,6,0.06)',
@@ -459,7 +459,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                 labels: odLabels,
                 datasets: [
                     {
-                        label: 'Angesehen / Bearbeitet',
+                        label: <?= json_encode(t('Angesehen / Bearbeitet'), JSON_UNESCAPED_UNICODE) ?>,
                         data: odViewed,
                         borderColor: '#0078d4',
                         backgroundColor: 'rgba(0,120,212,0.08)',
@@ -469,7 +469,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                         fill: true,
                     },
                     {
-                        label: 'Synchronisiert',
+                        label: <?= json_encode(t('Synchronisiert'), JSON_UNESCAPED_UNICODE) ?>,
                         data: odSynced,
                         borderColor: '#16a34a',
                         backgroundColor: 'rgba(22,163,74,0.06)',
@@ -479,7 +479,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                         fill: false,
                     },
                     {
-                        label: 'Intern geteilt',
+                        label: <?= json_encode(t('Intern geteilt'), JSON_UNESCAPED_UNICODE) ?>,
                         data: odSharedInt,
                         borderColor: '#d97706',
                         backgroundColor: 'rgba(217,119,6,0.06)',
@@ -489,7 +489,7 @@ $denominator = $totalUsers > 0 ? $totalUsers : $totalActive;
                         fill: false,
                     },
                     {
-                        label: 'Extern geteilt',
+                        label: <?= json_encode(t('Extern geteilt'), JSON_UNESCAPED_UNICODE) ?>,
                         data: odSharedExt,
                         borderColor: '#dc2626',
                         backgroundColor: 'rgba(220,38,38,0.06)',

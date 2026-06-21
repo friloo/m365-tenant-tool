@@ -275,36 +275,36 @@
 
 <!-- Lizenz-Berater ───────────────────────────────────────── -->
 <div class="man-section" id="licenseadvisor">
-    <h2><i class="bi bi-lightbulb text-primary"></i> Lizenz-Berater</h2>
-    <p>Analysiert die Lizenznutzung und identifiziert Benutzer, die lizenzierte Dienste nicht aktiv nutzen (potenzielle Einsparungen).</p>
-    <p>In den Einstellungen können Kriterien konfiguriert werden, welche Dienste für eine „sinnvolle" Lizenz als nötig gelten (Exchange Online, Teams, SharePoint, OneDrive, Office Desktop, Intune).</p>
-    <p>Das Modul zeigt dann Benutzer, die lizenziert sind, aber mindestens einen der konfigurierten Dienste nicht nutzen — mit der Möglichkeit zum CSV-Export für die Entscheidungsfindung.</p>
+    <h2><i class="bi bi-lightbulb text-primary"></i> <?= te('Lizenz-Berater') ?></h2>
+    <p><?= te('Analysiert die Lizenznutzung und identifiziert Benutzer, die lizenzierte Dienste nicht aktiv nutzen (potenzielle Einsparungen).') ?></p>
+    <p><?= te('In den Einstellungen können Kriterien konfiguriert werden, welche Dienste für eine „sinnvolle" Lizenz als nötig gelten (Exchange Online, Teams, SharePoint, OneDrive, Office Desktop, Intune).') ?></p>
+    <p><?= te('Das Modul zeigt dann Benutzer, die lizenziert sind, aber mindestens einen der konfigurierten Dienste nicht nutzen — mit der Möglichkeit zum CSV-Export für die Entscheidungsfindung.') ?></p>
     <p><span class="perm-tag">User.Read.All</span> <span class="perm-tag">Reports.Read.All</span> <span class="perm-tag">AuditLog.Read.All</span></p>
 </div>
 
 <!-- MFA-Methoden ─────────────────────────────────────────── -->
 <div class="man-section" id="mfa">
-    <h2><i class="bi bi-shield-lock text-primary"></i> MFA-Methoden</h2>
-    <p>Zeigt für jeden Benutzer, welche Authentifizierungsmethoden registriert sind: Microsoft Authenticator, SMS/Anruf, FIDO2-Schlüssel, softwarebasierter TOTP-Token u.a.</p>
-    <p>Benutzer ohne MFA-Registrierung sind deutlich markiert und können gefiltert angezeigt werden. Der CSV-Export eignet sich für Compliance-Berichte.</p>
-    <div class="tip-box"><i class="bi bi-lightbulb"></i>Verwende den Filter „Kein MFA", um schnell alle Konten ohne zweiten Faktor zu identifizieren, und leite dann entsprechende Maßnahmen ein.</div>
+    <h2><i class="bi bi-shield-lock text-primary"></i> <?= te('MFA-Methoden') ?></h2>
+    <p><?= te('Zeigt für jeden Benutzer, welche Authentifizierungsmethoden registriert sind: Microsoft Authenticator, SMS/Anruf, FIDO2-Schlüssel, softwarebasierter TOTP-Token u.a.') ?></p>
+    <p><?= te('Benutzer ohne MFA-Registrierung sind deutlich markiert und können gefiltert angezeigt werden. Der CSV-Export eignet sich für Compliance-Berichte.') ?></p>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Verwende den Filter „Kein MFA", um schnell alle Konten ohne zweiten Faktor zu identifizieren, und leite dann entsprechende Maßnahmen ein.') ?></div>
     <p><span class="perm-tag">UserAuthenticationMethod.Read.All</span></p>
 </div>
 
 <!-- Passwort-Ablauf ──────────────────────────────────────── -->
 <div class="man-section" id="passwordexpiry">
-    <h2><i class="bi bi-key text-primary"></i> Passwort-Ablauf</h2>
-    <p>Zeigt Benutzer, deren Passwort abgelaufen ist oder bald abläuft — basierend auf der konfigurierten Passwort-Ablauf-Richtlinie (Standard: 90 Tage).</p>
-    <p>Die Ansicht ist in Kategorien unterteilt: Abgelaufen, Kritisch (weniger als 7 Tage), Warnung (weniger als 30 Tage) und Alle.</p>
-    <p>Benutzer mit aktiviertem „Passwort läuft nie ab" werden entsprechend markiert.</p>
+    <h2><i class="bi bi-key text-primary"></i> <?= te('Passwort-Ablauf') ?></h2>
+    <p><?= te('Zeigt Benutzer, deren Passwort abgelaufen ist oder bald abläuft — basierend auf der konfigurierten Passwort-Ablauf-Richtlinie (Standard: 90 Tage).') ?></p>
+    <p><?= te('Die Ansicht ist in Kategorien unterteilt: Abgelaufen, Kritisch (weniger als 7 Tage), Warnung (weniger als 30 Tage) und Alle.') ?></p>
+    <p><?= te('Benutzer mit aktiviertem „Passwort läuft nie ab" werden entsprechend markiert.') ?></p>
     <p><span class="perm-tag">User.Read.All</span></p>
 </div>
 
 <!-- OneDrive ─────────────────────────────────────────────── -->
 <div class="man-section" id="onedrive">
     <h2><i class="bi bi-cloud text-primary"></i> OneDrive</h2>
-    <p>Zeigt die OneDrive-Nutzung aller Benutzer: verwendeter und verfügbarer Speicher, Anzahl der Dateien, letzte Aktivität.</p>
-    <p>Der Bericht basiert auf dem Microsoft 365 Nutzungsbericht (<code>/reports/oneDriveUsageAccountDetail</code>) und wird täglich von Microsoft aktualisiert — die Daten können daher bis zu 48 Stunden alt sein.</p>
+    <p><?= te('Zeigt die OneDrive-Nutzung aller Benutzer: verwendeter und verfügbarer Speicher, Anzahl der Dateien, letzte Aktivität.') ?></p>
+    <p><?= te('Der Bericht basiert auf dem Microsoft 365 Nutzungsbericht (<code>/reports/oneDriveUsageAccountDetail</code>) und wird täglich von Microsoft aktualisiert — die Daten können daher bis zu 48 Stunden alt sein.') ?></p>
     <p><span class="perm-tag">Reports.Read.All</span></p>
 </div>
 

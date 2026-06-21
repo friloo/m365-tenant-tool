@@ -5,10 +5,7 @@
 <div class="alert alert-info d-flex gap-3 mb-3">
     <i class="bi bi-shield-fill-check flex-shrink-0 mt-1" style="font-size:1.4rem;color:#0078d4;"></i>
     <div>
-        <strong>Phishing-resistente MFA</strong> ist seit 2024 Microsofts offizielle Empfehlung
-        (FIDO2, Windows Hello, Certificate-Based, Hardware OATH). SMS-OTP und Voice-Call gelten
-        als unsicher gegen Adversary-in-the-Middle-Angriffe. Selbst Microsoft Authenticator-Push
-        ist nicht vollständig phishing-resistent — nur FIDO2 und Zertifikate sind es.
+        <strong><?= te('Phishing-resistente MFA') ?></strong> <?= te('ist seit 2024 Microsofts offizielle Empfehlung (FIDO2, Windows Hello, Certificate-Based, Hardware OATH). SMS-OTP und Voice-Call gelten als unsicher gegen Adversary-in-the-Middle-Angriffe. Selbst Microsoft Authenticator-Push ist nicht vollständig phishing-resistent — nur FIDO2 und Zertifikate sind es.') ?>
     </div>
 </div>
 

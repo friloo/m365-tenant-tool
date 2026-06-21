@@ -14,7 +14,7 @@
 <?php endif; ?>
 
 <p class="text-muted mb-3" style="font-size:13px;">
-    Übersicht aller freigegebenen Postfächer im Tenant
+    <?= te('Übersicht aller freigegebenen Postfächer im Tenant') ?>
 </p>
 
 <!-- Permissions info alert -->

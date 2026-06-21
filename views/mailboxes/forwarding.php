@@ -177,17 +177,17 @@ $ruleExt   = count($report['external_forward'] ?? []);
 
         <?php if (!empty($report['delete_rules'])): ?>
         <div class="content-card mb-4">
-            <div class="card-header-custom"><i class="bi bi-trash-fill text-warning"></i><h6>Inbox-Regeln, die Mails löschen</h6></div>
+            <div class="card-header-custom"><i class="bi bi-trash-fill text-warning"></i><h6><?= te('Inbox-Regeln, die Mails löschen') ?></h6></div>
             <div class="card-body-custom">
-                <p class="text-muted small mb-3">Oft mit Phishing-Hijack kombiniert: eine Regel löscht Sicherheits-Benachrichtigungen, damit der echte User nichts merkt.</p>
+                <p class="text-muted small mb-3"><?= te('Oft mit Phishing-Hijack kombiniert: eine Regel löscht Sicherheits-Benachrichtigungen, damit der echte User nichts merkt.') ?></p>
                 <div class="table-responsive"><table class="data-table">
-                    <thead><tr><th>Benutzer</th><th>Regel</th><th>Status</th></tr></thead>
+                    <thead><tr><th><?= te('Benutzer') ?></th><th><?= te('Regel') ?></th><th><?= te('Status') ?></th></tr></thead>
                     <tbody>
                     <?php foreach ($report['delete_rules'] as $r): ?>
                         <tr>
                             <td><div class="fw-medium"><?= $e($r['name']) ?></div><div class="text-muted small"><?= $e($r['upn']) ?></div></td>
                             <td><code><?= $e($r['rule']) ?></code></td>
-                            <td><?php if ($r['enabled']): ?><span class="badge bg-warning text-dark">Aktiv</span><?php else: ?><span class="badge bg-secondary">Inaktiv</span><?php endif; ?></td>
+                            <td><?php if ($r['enabled']): ?><span class="badge bg-warning text-dark"><?= te('Aktiv') ?></span><?php else: ?><span class="badge bg-secondary"><?= te('Inaktiv') ?></span><?php endif; ?></td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
@@ -198,17 +198,17 @@ $ruleExt   = count($report['external_forward'] ?? []);
 
         <?php if (!empty($report['internal_forward'])): ?>
         <div class="content-card mb-4">
-            <div class="card-header-custom"><i class="bi bi-arrow-right text-info"></i><h6>Interne Auto-Weiterleitungen <span class="text-muted small ms-2">(weniger kritisch)</span></h6></div>
+            <div class="card-header-custom"><i class="bi bi-arrow-right text-info"></i><h6><?= te('Interne Auto-Weiterleitungen') ?> <span class="text-muted small ms-2"><?= te('(weniger kritisch)') ?></span></h6></div>
             <div class="card-body-custom p-0">
                 <div class="table-responsive"><table class="data-table">
-                    <thead><tr><th>Benutzer</th><th>Regel</th><th>Weiterleitung an</th><th>Status</th></tr></thead>
+                    <thead><tr><th><?= te('Benutzer') ?></th><th><?= te('Regel') ?></th><th><?= te('Weiterleitung an') ?></th><th><?= te('Status') ?></th></tr></thead>
                     <tbody>
                     <?php foreach (array_slice($report['internal_forward'], 0, 100) as $r): ?>
                         <tr>
                             <td><div class="fw-medium"><?= $e($r['name']) ?></div><div class="text-muted small"><?= $e($r['upn']) ?></div></td>
                             <td><code><?= $e($r['rule']) ?></code></td>
                             <td class="text-muted small"><?= $e($r['forwards_to']) ?></td>
-                            <td><?php if ($r['enabled']): ?><span class="badge bg-success">Aktiv</span><?php else: ?><span class="badge bg-secondary">Inaktiv</span><?php endif; ?></td>
+                            <td><?php if ($r['enabled']): ?><span class="badge bg-success"><?= te('Aktiv') ?></span><?php else: ?><span class="badge bg-secondary"><?= te('Inaktiv') ?></span><?php endif; ?></td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>

@@ -45,16 +45,16 @@ $recBadge = function (string $rec): string {
     <table class="table align-middle mb-0">
       <thead>
         <tr>
-          <th>Methode</th>
-          <th>Status</th>
-          <th>Empfehlung</th>
-          <th>Hinweis</th>
-          <?php if ($isAdmin ?? false): ?><th class="text-end">Aktion</th><?php endif ?>
+          <th><?= te('Methode') ?></th>
+          <th><?= te('Status') ?></th>
+          <th><?= te('Empfehlung') ?></th>
+          <th><?= te('Hinweis') ?></th>
+          <?php if ($isAdmin ?? false): ?><th class="text-end"><?= te('Aktion') ?></th><?php endif ?>
         </tr>
       </thead>
       <tbody>
         <?php if (empty($methods)): ?>
-          <tr><td colspan="5" class="text-muted text-center py-4">Keine Methoden gelesen — Berechtigung <code>Policy.Read.All</code> prüfen.</td></tr>
+          <tr><td colspan="5" class="text-muted text-center py-4"><?= te('Keine Methoden gelesen — Berechtigung') ?> <code>Policy.Read.All</code> <?= te('prüfen.') ?></td></tr>
         <?php endif ?>
         <?php foreach ($methods as $m): ?>
           <tr>
@@ -66,11 +66,11 @@ $recBadge = function (string $rec): string {
             <td class="text-end">
               <?php $target = $m['state'] === 'enabled' ? 'disabled' : 'enabled'; ?>
               <form method="post" action="/authmethods/<?= $e(rawurlencode($m['id'])) ?>/set-state" class="d-inline"
-                    onsubmit="return confirm('Methode <?= $e($m['label']) ?> auf \'<?= $e($target) ?>\' setzen? Wirkt sofort tenant-weit.');">
+                    onsubmit="return confirm('<?= $e(t('Methode')) ?> <?= $e($m['label']) ?> <?= $e(t('auf')) ?> \'<?= $e($target) ?>\' <?= $e(t('setzen? Wirkt sofort tenant-weit.')) ?>');">
                 <?= \App\Core\Csrf::field() ?>
                 <input type="hidden" name="state" value="<?= $e($target) ?>">
                 <button type="submit" class="btn btn-sm <?= $target === 'enabled' ? 'btn-outline-success' : 'btn-outline-secondary' ?>">
-                  <?= $target === 'enabled' ? 'Aktivieren' : 'Deaktivieren' ?>
+                  <?= $target === 'enabled' ? te('Aktivieren') : te('Deaktivieren') ?>
                 </button>
               </form>
             </td>
@@ -83,7 +83,7 @@ $recBadge = function (string $rec): string {
 </div>
 
 <p class="small text-muted">
-  Schreiben erfordert die Graph-Berechtigung <code>Policy.ReadWrite.AuthenticationMethod</code>.
-  Feinkonfiguration (z. B. Zielgruppen je Methode, Number-Matching-Details) im
-  <a href="https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade" target="_blank" rel="noopener">Entra-Portal</a>.
+  <?= te('Schreiben erfordert die Graph-Berechtigung') ?> <code>Policy.ReadWrite.AuthenticationMethod</code>.
+  <?= te('Feinkonfiguration (z. B. Zielgruppen je Methode, Number-Matching-Details) im') ?>
+  <a href="https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade" target="_blank" rel="noopener"><?= te('Entra-Portal') ?></a>.
 </p>

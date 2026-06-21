@@ -64,22 +64,22 @@
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-list-ul text-primary"></i>
-        <h6>Enterprise Apps</h6>
+        <h6><?= te('Enterprise Apps') ?></h6>
         <span class="ms-auto text-muted small"><?= count($apps) ?> App(s)</span>
     </div>
     <div class="card-body-custom p-0">
         <?php if (empty($apps)): ?>
-            <div class="text-muted small p-4 text-center">Keine Apps gefunden.</div>
+            <div class="text-muted small p-4 text-center"><?= te('Keine Apps gefunden.') ?></div>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>App</th>
-                            <th>Risiko</th>
-                            <th>Permissions</th>
-                            <th>Letzte Anmeldung</th>
-                            <th>Status</th>
+                            <th><?= te('App') ?></th>
+                            <th><?= te('Risiko') ?></th>
+                            <th><?= te('Permissions') ?></th>
+                            <th><?= te('Letzte Anmeldung') ?></th>
+                            <th><?= te('Status') ?></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -87,14 +87,14 @@
                     <?php foreach ($apps as $a):
                         $rs    = (int)$a['risk_score'];
                         $rsCol = $rs >= 60 ? '#dc2626' : ($rs >= 30 ? '#d97706' : ($rs > 0 ? '#0284c7' : '#16a34a'));
-                        $rsLbl = $rs >= 60 ? 'Hoch' : ($rs >= 30 ? 'Mittel' : ($rs > 0 ? 'Niedrig' : 'OK'));
+                        $rsLbl = $rs >= 60 ? te('Hoch') : ($rs >= 30 ? te('Mittel') : ($rs > 0 ? te('Niedrig') : 'OK'));
                     ?>
                         <tr>
                             <td>
                                 <div class="fw-medium">
                                     <?= $e($a['name']) ?>
                                     <?php if ($a['is_microsoft']): ?>
-                                        <i class="bi bi-microsoft text-primary ms-1" title="Microsoft First-Party"></i>
+                                        <i class="bi bi-microsoft text-primary ms-1" title="<?= te('Microsoft First-Party') ?>"></i>
                                     <?php endif; ?>
                                 </div>
                                 <div class="text-muted small font-monospace"><?= $e($a['appId']) ?></div>
@@ -115,9 +115,9 @@
                             <td class="text-muted small">
                                 <?php if ($a['last_sign_in']): ?>
                                     <?= $e(date('d.m.Y', strtotime($a['last_sign_in']))) ?>
-                                    <div class="text-muted small">vor <?= (int)$a['days_since_signin'] ?> Tagen</div>
+                                    <div class="text-muted small"><?= te('vor') ?> <?= (int)$a['days_since_signin'] ?> <?= te('Tagen') ?></div>
                                 <?php else: ?>
-                                    <span class="text-warning">nie / kein Report</span>
+                                    <span class="text-warning"><?= te('nie / kein Report') ?></span>
                                 <?php endif; ?>
                             </td>
                             <td>

@@ -118,6 +118,13 @@ return [
     'Fortschritt' => 'Progress',
     'Fertig!' => 'Done!',
     'Seite neu laden' => 'Reload page',
+    'Aktionen erfolgreich angewendet.' => 'actions applied successfully.',
+    'fehlgeschlagen. Details siehe Protokoll oben.' => 'failed. See the log above for details.',
+    'Aktionen fehlgeschlagen. Bitte Berechtigungen prüfen.' => 'actions failed. Please check permissions.',
+    'Profil "' => 'Apply profile "',
+    '" jetzt anwenden? Es werden ' => '" now? This runs ',
+    ' Hardening-Aktionen ausgeführt — bestehende Werte werden überschrieben.' => ' hardening actions — existing values will be overwritten.',
+    'Abgebrochen:' => 'Aborted:',
 
     // ── Customer Lockbox (views/customerlockbox/index.php) ─────────────────
     'ohne Customer Lockbox darf Microsoft Support im Notfall

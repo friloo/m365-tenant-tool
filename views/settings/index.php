@@ -680,54 +680,54 @@
                     <div class="d-flex align-items-center gap-3 p-2 rounded mb-2"
                          id="previewBar" style="background:#0078d4;color:#fff;border-radius:8px;">
                         <span id="previewLogo" style="font-size:20px;font-weight:700;">M</span>
-                        <span id="previewTitle" style="font-size:15px;font-weight:600;">Freigabe-Überprüfung</span>
+                        <span id="previewTitle" style="font-size:15px;font-weight:600;"><?= te('Freigabe-Überprüfung') ?></span>
                     </div>
                     <div class="text-muted" style="font-size:12px;">
-                        <i class="bi bi-eye me-1"></i>Vorschau der Titelleiste
+                        <i class="bi bi-eye me-1"></i><?= te('Vorschau der Titelleiste') ?>
                     </div>
                 </div>
 
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label fw-medium">Primärfarbe</label>
+                        <label class="form-label fw-medium"><?= te('Primärfarbe') ?></label>
                         <div class="input-group">
                             <input type="color" name="brand_primary_color" id="brandColor"
                                    class="form-control form-control-color"
                                    value="<?= $e($s['brand_primary_color']) ?>"
-                                   title="Farbe wählen">
+                                   title="<?= te('Farbe wählen') ?>">
                             <input type="text" id="brandColorText" class="form-control font-monospace"
                                    value="<?= $e($s['brand_primary_color']) ?>"
                                    placeholder="#0078d4" maxlength="7" readonly>
                         </div>
-                        <div class="form-text">Standard: #0078d4 (Microsoft Blau)</div>
+                        <div class="form-text"><?= te('Standard: #0078d4 (Microsoft Blau)') ?></div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-medium">Logo-URL</label>
+                        <label class="form-label fw-medium"><?= te('Logo-URL') ?></label>
                         <input type="url" name="brand_logo_url" id="brandLogoUrl" class="form-control"
                                value="<?= $e($s['brand_logo_url']) ?>"
                                placeholder="https://firma.de/logo.png">
-                        <div class="form-text">PNG/SVG, wird in der Titelleiste angezeigt. Leer = Textkürzel.</div>
+                        <div class="form-text"><?= te('PNG/SVG, wird in der Titelleiste angezeigt. Leer = Textkürzel.') ?></div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-medium">Logo-Text / Kürzel</label>
+                        <label class="form-label fw-medium"><?= te('Logo-Text / Kürzel') ?></label>
                         <input type="text" name="brand_logo_text" id="brandLogoText" class="form-control"
                                value="<?= $e($s['brand_logo_text']) ?>"
                                placeholder="M" maxlength="3">
-                        <div class="form-text">Kürzel wenn kein Logo gesetzt (max. 3 Zeichen).</div>
+                        <div class="form-text"><?= te('Kürzel wenn kein Logo gesetzt (max. 3 Zeichen).') ?></div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-medium">Support-E-Mail (optional)</label>
+                        <label class="form-label fw-medium"><?= te('Support-E-Mail (optional)') ?></label>
                         <input type="email" name="brand_review_support_email" class="form-control"
                                value="<?= $e($s['brand_review_support_email']) ?>"
                                placeholder="it@firma.de">
-                        <div class="form-text">Wird auf der Bestätigungsseite als Kontakt angezeigt.</div>
+                        <div class="form-text"><?= te('Wird auf der Bestätigungsseite als Kontakt angezeigt.') ?></div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-medium">Fußzeilentext (optional)</label>
+                        <label class="form-label fw-medium"><?= te('Fußzeilentext (optional)') ?></label>
                         <input type="text" name="brand_review_footer" class="form-control"
                                value="<?= $e($s['brand_review_footer']) ?>"
                                placeholder="© Firma GmbH · IT-Abteilung">
-                        <div class="form-text">Erscheint am unteren Rand der öffentlichen Seite.</div>
+                        <div class="form-text"><?= te('Erscheint am unteren Rand der öffentlichen Seite.') ?></div>
                     </div>
                 </div>
             </div>
@@ -735,9 +735,9 @@
 
         <div class="settings-savebar d-flex gap-2 align-items-center">
             <button type="submit" class="btn btn-primary px-4">
-                <i class="bi bi-check2 me-1"></i> Einstellungen speichern
+                <i class="bi bi-check2 me-1"></i> <?= te('Einstellungen speichern') ?>
             </button>
-            <span class="text-muted small">Speichert alle Tabs gemeinsam.</span>
+            <span class="text-muted small"><?= te('Speichert alle Tabs gemeinsam.') ?></span>
         </div>
         </form>
 
@@ -748,8 +748,8 @@ function updateAiDefaults() {
     const modelEl = document.getElementById('aiModel');
     const hintEl  = document.getElementById('aiModelHint');
     const defaults = { openai: 'gpt-4o-mini', deepseek: 'deepseek-chat', ollama: 'llama3.2' };
-    const hints    = { openai: 'z.B. gpt-4o-mini, gpt-4o', deepseek: 'z.B. deepseek-chat, deepseek-reasoner', ollama: 'z.B. llama3.2, mistral, phi3' };
-    if (modelEl && !modelEl.value) modelEl.placeholder = defaults[p] || 'Modellname';
+    const hints    = { openai: <?= json_encode(t('z.B. gpt-4o-mini, gpt-4o'), JSON_UNESCAPED_UNICODE) ?>, deepseek: <?= json_encode(t('z.B. deepseek-chat, deepseek-reasoner'), JSON_UNESCAPED_UNICODE) ?>, ollama: <?= json_encode(t('z.B. llama3.2, mistral, phi3'), JSON_UNESCAPED_UNICODE) ?> };
+    if (modelEl && !modelEl.value) modelEl.placeholder = defaults[p] || <?= json_encode(t('Modellname'), JSON_UNESCAPED_UNICODE) ?>;
     if (hintEl) hintEl.textContent = hints[p] || '';
 }
 updateAiDefaults();

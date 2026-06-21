@@ -320,21 +320,21 @@
 
         <?php if (!empty($share)): ?>
 
-        <h1 class="page-title">Freigabe-Überprüfung</h1>
+        <h1 class="page-title"><?= te('Freigabe-Überprüfung') ?></h1>
         <p class="page-lead">
-            Sie haben eine Datei oder einen Ordner freigegeben, die regelmäßig überprüft werden muss.
-            Bitte bestätigen Sie, ob diese Freigabe noch benötigt wird.
+            <?= te('Sie haben eine Datei oder einen Ordner freigegeben, die regelmäßig überprüft werden muss. '
+            . 'Bitte bestätigen Sie, ob diese Freigabe noch benötigt wird.') ?>
         </p>
 
         <div class="info-block">
             <div class="info-row">
                 <div class="info-icon"><i class="bi bi-file-earmark-text"></i></div>
                 <div class="info-content">
-                    <div class="info-label">Datei / Ordner</div>
+                    <div class="info-label"><?= te('Datei / Ordner') ?></div>
                     <div class="info-value">
                         <?= htmlspecialchars($share['item_name'] ?? '—') ?>
                         <?php if (!empty($share['item_url'])): ?>
-                            <a href="<?= htmlspecialchars($share['item_url']) ?>" target="_blank" rel="noopener" title="Datei öffnen">
+                            <a href="<?= htmlspecialchars($share['item_url']) ?>" target="_blank" rel="noopener" title="<?= te('Datei öffnen') ?>">
                                 <i class="bi bi-box-arrow-up-right"></i>
                             </a>
                         <?php endif; ?>
@@ -344,14 +344,14 @@
             <div class="info-row">
                 <div class="info-icon"><i class="bi bi-building"></i></div>
                 <div class="info-content">
-                    <div class="info-label">Speicherort</div>
+                    <div class="info-label"><?= te('Speicherort') ?></div>
                     <div class="info-value"><?= htmlspecialchars($share['site_name'] ?? '—') ?></div>
                 </div>
             </div>
             <div class="info-row">
                 <div class="info-icon"><i class="bi bi-share"></i></div>
                 <div class="info-content">
-                    <div class="info-label">Freigabe-Typ</div>
+                    <div class="info-label"><?= te('Freigabe-Typ') ?></div>
                     <div class="info-value">
                         <?php
                         $scopeClass = match($share['share_scope'] ?? '') {
@@ -367,9 +367,9 @@
                             default        => 'question-circle',
                         };
                         $scopeLabel = match($share['share_scope'] ?? '') {
-                            'anonymous'    => 'Öffentlich (Anyone-Link)',
-                            'users'        => 'Externe Benutzer',
-                            'organization' => 'Gesamte Organisation',
+                            'anonymous'    => te('Öffentlich (Anyone-Link)'),
+                            'users'        => te('Externe Benutzer'),
+                            'organization' => te('Gesamte Organisation'),
                             default        => htmlspecialchars($share['share_scope'] ?? ''),
                         };
                         ?>
@@ -383,7 +383,7 @@
             <div class="info-row">
                 <div class="info-icon"><i class="bi bi-calendar-check"></i></div>
                 <div class="info-content">
-                    <div class="info-label">Freigabe seit</div>
+                    <div class="info-label"><?= te('Freigabe seit') ?></div>
                     <div class="info-value">
                         <?= $share['first_detected']
                             ? htmlspecialchars(date('d.m.Y', strtotime($share['first_detected'])))
@@ -397,9 +397,9 @@
         <div class="deadline-block">
             <div class="deadline-icon"><i class="bi bi-hourglass-split"></i></div>
             <div class="info-content">
-                <div class="deadline-label">Automatischer Widerruf am</div>
+                <div class="deadline-label"><?= te('Automatischer Widerruf am') ?></div>
                 <div class="deadline-date"><?= htmlspecialchars(date('d.m.Y', strtotime($share['auto_revoke_at']))) ?></div>
-                <div class="deadline-note">Bitte bestätigen Sie rechtzeitig, um die Freigabe zu erhalten.</div>
+                <div class="deadline-note"><?= te('Bitte bestätigen Sie rechtzeitig, um die Freigabe zu erhalten.') ?></div>
             </div>
         </div>
         <?php endif; ?>

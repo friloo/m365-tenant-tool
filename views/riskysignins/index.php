@@ -9,7 +9,7 @@
 <?php if (!empty($diagnostic)): ?>
     <div class="alert alert-warning mb-3">
         <i class="bi bi-info-circle me-2"></i>
-        <strong>Warum sehe ich nichts?</strong>
+        <strong><?= te('Warum sehe ich nichts?') ?></strong>
         <div class="small mt-1"><?= $e($diagnostic) ?></div>
     </div>
 <?php endif; ?>
@@ -17,8 +17,8 @@
 <?php if ($highRiskCount > 0): ?>
     <div class="alert alert-danger mb-4">
         <i class="bi bi-shield-x me-2"></i>
-        <strong><?= $highRiskCount ?> Benutzer mit hohem Risiko!</strong>
-        Diese Konten sollten sofort überprüft und gesichert werden.
+        <strong><?= te(':n Benutzer mit hohem Risiko!', ['n' => $highRiskCount]) ?></strong>
+        <?= te('Diese Konten sollten sofort überprüft und gesichert werden.') ?>
     </div>
 <?php endif; ?>
 
@@ -26,29 +26,29 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Risikobenutzer</div>
+            <div class="metric-label"><?= te('Risikobenutzer') ?></div>
             <div class="metric-value" style="color:<?= count($riskyUsers) > 0 ? '#dc2626' : '#111827' ?>;">
                 <?= count($riskyUsers) ?>
             </div>
-            <div class="metric-sub">Aktuell gefährdet</div>
+            <div class="metric-sub"><?= te('Aktuell gefährdet') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Hohes Risiko</div>
+            <div class="metric-label"><?= te('Hohes Risiko') ?></div>
             <div class="metric-value" style="color:<?= $highRiskCount > 0 ? '#dc2626' : '#16a34a' ?>;">
                 <?= $highRiskCount ?>
             </div>
-            <div class="metric-sub">Kritische Benutzer</div>
+            <div class="metric-sub"><?= te('Kritische Benutzer') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Mittleres Risiko</div>
+            <div class="metric-label"><?= te('Mittleres Risiko') ?></div>
             <div class="metric-value" style="color:<?= $mediumRiskCount > 0 ? '#d97706' : '#111827' ?>;">
                 <?= $mediumRiskCount ?>
             </div>
-            <div class="metric-sub">Überwachungsbedarf</div>
+            <div class="metric-sub"><?= te('Überwachungsbedarf') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
