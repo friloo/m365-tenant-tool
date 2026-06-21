@@ -36,7 +36,7 @@ class Router
                 if (!headers_sent()) {
                     header('Content-Type: text/html; charset=utf-8');
                 }
-                echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Sicherheitsfehler</title></head><body style="font-family:system-ui;text-align:center;padding:80px;"><h2>&#128274; CSRF-Schutz</h2><p>Ungültiges oder abgelaufenes Sicherheits-Token.</p><p>Bitte <a href="javascript:history.back()">gehe zurück</a> und versuche es erneut.</p></body></html>';
+                echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' . t('Sicherheitsfehler') . '</title></head><body style="font-family:system-ui;text-align:center;padding:80px;"><h2>&#128274; ' . t('CSRF-Schutz') . '</h2><p>' . t('Ungültiges oder abgelaufenes Sicherheits-Token.') . '</p><p>' . t('Bitte :link und versuche es erneut.', ['link' => '<a href="javascript:history.back()">' . t('gehe zurück') . '</a>']) . '</p></body></html>';
                 exit;
             }
         }
@@ -55,7 +55,7 @@ class Router
         if (file_exists(BASE_PATH . '/views/errors/404.php')) {
             require BASE_PATH . '/views/errors/404.php';
         } else {
-            echo '<h1>404 — Not Found</h1>';
+            echo '<h1>' . t('404 — Nicht gefunden') . '</h1>';
         }
     }
 

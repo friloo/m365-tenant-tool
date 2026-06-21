@@ -35,7 +35,7 @@ class SetupWizardController
         $data = $this->dataForStep($step);
 
         View::render('setupwizard/index', [
-            'pageTitle' => 'Einrichtungs-Assistent',
+            'pageTitle' => t('Einrichtungs-Assistent'),
             'step'      => $step,
             'totalSteps'=> self::TOTAL_STEPS,
             'stepData'  => $data,
@@ -64,7 +64,7 @@ class SetupWizardController
         if ($next > self::TOTAL_STEPS) {
             $cfg->set('setup_wizard_completed', '1');
             AppAudit::log('setup_wizard_done', 'setupwizard', 'Assistent abgeschlossen');
-            Session::flash('success', 'Einrichtungs-Assistent abgeschlossen — viel Erfolg!');
+            Session::flash('success', t('Einrichtungs-Assistent abgeschlossen — viel Erfolg!'));
             Redirect::to('/');
         }
         Redirect::to('/setup?step=' . $next);
@@ -74,7 +74,7 @@ class SetupWizardController
     {
         LocalAuth::requireAdmin();
         Config::getInstance()->delete('setup_wizard_completed');
-        Session::flash('success', 'Einrichtungs-Assistent zurückgesetzt.');
+        Session::flash('success', t('Einrichtungs-Assistent zurückgesetzt.'));
         Redirect::to('/setup');
     }
 
@@ -111,31 +111,31 @@ class SetupWizardController
         $checks = [];
         $checks[] = $this->mkCheck(
             $tenantId !== '',
-            'Tenant-ID gesetzt',
-            $tenantId !== '' ? 'GUID des Microsoft-365-Mandanten ist hinterlegt.' : 'Keine Tenant-ID in den Einstellungen — bitte in /settings ergänzen.'
+            t('Tenant-ID gesetzt'),
+            $tenantId !== '' ? t('GUID des Microsoft-365-Mandanten ist hinterlegt.') : t('Keine Tenant-ID in den Einstellungen — bitte in /settings ergänzen.')
         );
         $checks[] = $this->mkCheck(
             $clientId !== '',
-            'Client-ID gesetzt',
-            $clientId !== '' ? 'App-Registrierung ist hinterlegt.' : 'Keine Client-ID — bitte in /settings ergänzen.'
+            t('Client-ID gesetzt'),
+            $clientId !== '' ? t('App-Registrierung ist hinterlegt.') : t('Keine Client-ID — bitte in /settings ergänzen.')
         );
         $checks[] = $this->mkCheck(
             $secret !== '',
-            'Client-Secret gesetzt',
-            $secret !== '' ? 'Verschlüsselt gespeichert.' : 'Kein Client-Secret — bitte in /settings ergänzen.'
+            t('Client-Secret gesetzt'),
+            $secret !== '' ? t('Verschlüsselt gespeichert.') : t('Kein Client-Secret — bitte in /settings ergänzen.')
         );
 
-        $tokenOk = false; $tokenMsg = 'Token-Abruf nicht möglich, weil Tenant-Daten fehlen.';
+        $tokenOk = false; $tokenMsg = t('Token-Abruf nicht möglich, weil Tenant-Daten fehlen.');
         if ($tenantId !== '' && $clientId !== '' && $secret !== '') {
             try {
                 app_graph()->get('/organization?$select=id,displayName');
                 $tokenOk  = true;
-                $tokenMsg = 'Test-Aufruf an /organization erfolgreich.';
+                $tokenMsg = t('Test-Aufruf an /organization erfolgreich.');
             } catch (\Throwable $e) {
-                $tokenMsg = 'Test-Aufruf fehlgeschlagen: ' . $e->getMessage();
+                $tokenMsg = t('Test-Aufruf fehlgeschlagen: ') . $e->getMessage();
             }
         }
-        $checks[] = $this->mkCheck($tokenOk, 'Graph-API erreichbar', $tokenMsg, $tokenOk ? 'ok' : 'fail');
+        $checks[] = $this->mkCheck($tokenOk, t('Graph-API erreichbar'), $tokenMsg, $tokenOk ? 'ok' : 'fail');
 
         $allOk = !array_filter($checks, fn($c) => $c['status'] === 'fail');
         return ['checks' => $checks, 'all_ok' => $allOk, 'settings_url' => '/settings'];

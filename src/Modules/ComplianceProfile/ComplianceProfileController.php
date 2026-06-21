@@ -17,7 +17,7 @@ class ComplianceProfileController
     {
         LocalAuth::require();
         View::render('complianceprofile/index', [
-            'pageTitle' => 'Compliance-Profile',
+            'pageTitle' => t('Compliance-Profile'),
             'profiles'  => ComplianceProfileService::profiles(),
             'current'   => (string)Config::getInstance()->get('compliance_profile', ''),
         ]);
@@ -40,11 +40,11 @@ class ComplianceProfileController
 
         if ($result['ok']) {
             Config::getInstance()->set('compliance_profile', $key);
-            Session::flash('success', 'Compliance-Profil "' . $key . '" angewendet.');
+            Session::flash('success', t('Compliance-Profil ":key" angewendet.', ['key' => $key]));
             $ok = count($result['results']);
             NotificationService::push(
-                'Compliance-Profil angewendet',
-                'Profil "' . $key . '" mit ' . $ok . ' Hardening-Aktionen vollständig durchgelaufen.',
+                t('Compliance-Profil angewendet'),
+                t('Profil ":key" mit :count Hardening-Aktionen vollständig durchgelaufen.', ['key' => $key, 'count' => $ok]),
                 'success',
                 '/complianceprofile',
                 'compliance'
@@ -53,17 +53,17 @@ class ComplianceProfileController
             $failed = array_filter($result['results'], fn($r) => !$r['ok']);
             $failCount = count($failed);
             $okCount   = count($result['results']) - $failCount;
-            Session::flash('error', 'Profil teilweise angewendet — ' . $okCount . ' OK, ' . $failCount . ' Fehler. Details siehe Audit-Log.');
+            Session::flash('error', t('Profil teilweise angewendet — :ok OK, :fail Fehler. Details siehe Audit-Log.', ['ok' => $okCount, 'fail' => $failCount]));
             NotificationService::push(
-                'Compliance-Profil teilweise angewendet',
-                $okCount . ' Aktionen OK, ' . $failCount . ' fehlgeschlagen. Profil: ' . $key,
+                t('Compliance-Profil teilweise angewendet'),
+                t(':ok Aktionen OK, :fail fehlgeschlagen. Profil: :key', ['ok' => $okCount, 'fail' => $failCount, 'key' => $key]),
                 'warn',
                 '/complianceprofile',
                 'compliance'
             );
         }
         AppAudit::log('compliance_profile_apply', 'complianceprofile',
-            'Profil: ' . $key . ' — ' . json_encode($result['results'], JSON_UNESCAPED_UNICODE));
+            t('Profil: :key — :results', ['key' => $key, 'results' => json_encode($result['results'], JSON_UNESCAPED_UNICODE)]));
 
         Redirect::to('/complianceprofile');
     }
@@ -92,11 +92,11 @@ class ComplianceProfileController
 
         $profiles = ComplianceProfileService::profiles();
         if (!isset($profiles[$profileKey])) {
-            echo json_encode(['ok' => false, 'msg' => 'Unbekanntes Profil.']);
+            echo json_encode(['ok' => false, 'msg' => t('Unbekanntes Profil.')]);
             return;
         }
         if (!in_array($actionId, $profiles[$profileKey]['actions'], true)) {
-            echo json_encode(['ok' => false, 'msg' => 'Aktion "' . $actionId . '" gehört nicht zum Profil ' . $profileKey . '.']);
+            echo json_encode(['ok' => false, 'msg' => t('Aktion ":action" gehört nicht zum Profil :profile.', ['action' => $actionId, 'profile' => $profileKey])]);
             return;
         }
 
@@ -108,17 +108,23 @@ class ComplianceProfileController
             $msg    = (string)($result['msg'] ?? '');
         } catch (\Throwable $e) {
             $ok  = false;
-            $msg = 'Ausnahme: ' . $e->getMessage();
+            $msg = t('Ausnahme: :msg', ['msg' => $e->getMessage()]);
         }
 
         AppAudit::log('compliance_profile_step', 'complianceprofile',
-            "Profil {$profileKey} · Schritt " . ($index + 1) . ' · ' . $actionId . ' · ' . ($ok ? 'OK' : 'FEHLER') . ' · ' . $msg);
+            t('Profil :profile · Schritt :step · :action · :status · :msg', [
+                'profile' => $profileKey,
+                'step'    => $index + 1,
+                'action'  => $actionId,
+                'status'  => $ok ? 'OK' : 'FEHLER',
+                'msg'     => $msg,
+            ]));
 
         if ($isLast) {
             Config::getInstance()->set('compliance_profile', $profileKey);
             NotificationService::push(
-                'Compliance-Profil angewendet',
-                'Profil "' . ($profiles[$profileKey]['name'] ?? $profileKey) . '" durchgelaufen.',
+                t('Compliance-Profil angewendet'),
+                t('Profil ":name" durchgelaufen.', ['name' => ($profiles[$profileKey]['name'] ?? $profileKey)]),
                 'success',
                 '/complianceprofile',
                 'compliance'

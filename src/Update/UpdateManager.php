@@ -54,50 +54,50 @@ class UpdateManager
     {
         $this->maintenanceOn();
         try {
-            $this->setProgress(0, 'start', 'Update wird gestartet…');
+            $this->setProgress(0, 'start', t('Update wird gestartet…'));
 
             // 1. Get latest SHA
-            $this->setProgress(5, 'version', 'Aktuelle Version wird abgerufen…');
+            $this->setProgress(5, 'version', t('Aktuelle Version wird abgerufen…'));
             $versionData = $this->proxyGet('/version');
-            $latestSha = $versionData['sha'] ?? throw new \RuntimeException('Keine SHA vom Proxy erhalten');
+            $latestSha = $versionData['sha'] ?? throw new \RuntimeException(t('Keine SHA vom Proxy erhalten'));
 
             // 2. Download ZIP
-            $this->setProgress(20, 'download', 'Update-Paket wird heruntergeladen…');
+            $this->setProgress(20, 'download', t('Update-Paket wird heruntergeladen…'));
             $zipPath = $this->downloadZip($latestSha);
 
             // 3. Extract to staging
-            $this->setProgress(50, 'extract', 'Paket wird entpackt…');
+            $this->setProgress(50, 'extract', t('Paket wird entpackt…'));
             $stagingDir = BASE_PATH . '/' . self::STAGING_DIR;
             $this->cleanDir($stagingDir);
             $this->extractZip($zipPath, $stagingDir);
             @unlink($zipPath);
 
             // 4. Apply staging to production
-            $this->setProgress(65, 'apply', 'Dateien werden übernommen…');
+            $this->setProgress(65, 'apply', t('Dateien werden übernommen…'));
             $this->applyStagingToProduction($stagingDir);
             $this->cleanDir($stagingDir);
 
             // 5. Run migrations
-            $this->setProgress(80, 'migrations', 'Datenbank-Migrationen werden ausgeführt…');
+            $this->setProgress(80, 'migrations', t('Datenbank-Migrationen werden ausgeführt…'));
             $migCount = $this->runPendingMigrations();
 
             // 6. Clear caches
-            $this->setProgress(90, 'cache', 'Cache wird geleert…');
+            $this->setProgress(90, 'cache', t('Cache wird geleert…'));
             $this->clearCaches();
 
             // 7. Save version
             $this->saveCurrentVersion($latestSha);
 
             // 8. Audit log
-            $this->auditLog("Update auf {$latestSha} installiert ({$migCount} Migrationen)", $username);
+            $this->auditLog(t('Update auf :sha installiert (:count Migrationen)', ['sha' => $latestSha, 'count' => $migCount]), $username);
 
-            $this->setProgress(100, 'done', 'Update erfolgreich abgeschlossen.');
+            $this->setProgress(100, 'done', t('Update erfolgreich abgeschlossen.'));
 
-            return ['success' => true, 'message' => "Update auf " . substr($latestSha, 0, 7) . " installiert. {$migCount} Migration(en) ausgeführt."];
+            return ['success' => true, 'message' => t('Update auf :sha installiert. :count Migration(en) ausgeführt.', ['sha' => substr($latestSha, 0, 7), 'count' => $migCount])];
 
         } catch (\Throwable $e) {
-            $this->setProgress(-1, 'error', 'Fehler: ' . $e->getMessage());
-            $this->auditLog('Update fehlgeschlagen: ' . $e->getMessage(), $username);
+            $this->setProgress(-1, 'error', t('Fehler: :msg', ['msg' => $e->getMessage()]));
+            $this->auditLog(t('Update fehlgeschlagen: :msg', ['msg' => $e->getMessage()]), $username);
             return ['success' => false, 'message' => $e->getMessage()];
         } finally {
             $this->maintenanceOff();
@@ -169,7 +169,7 @@ class UpdateManager
                     $code = (int)($e->errorInfo[1] ?? 0);
                     $ignorable = [1060, 1061, 1062, 1050, 1091, 1054];
                     if (!in_array($code, $ignorable, true)) {
-                        throw new \RuntimeException("Migration {$filename} fehlgeschlagen: " . $e->getMessage());
+                        throw new \RuntimeException(t('Migration :filename fehlgeschlagen: :msg', ['filename' => $filename, 'msg' => $e->getMessage()]));
                     }
                 }
             }
@@ -215,15 +215,15 @@ class UpdateManager
         // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
 
         if ($curlErr !== '') {
-            throw new \RuntimeException('cURL-Fehler: ' . $curlErr);
+            throw new \RuntimeException(t('cURL-Fehler: :err', ['err' => $curlErr]));
         }
         if ($httpCode >= 400) {
-            throw new \RuntimeException("Proxy returned HTTP {$httpCode} for {$path}");
+            throw new \RuntimeException(t('Proxy lieferte HTTP :code für :path', ['code' => $httpCode, 'path' => $path]));
         }
 
         $data = json_decode((string) $body, true);
         if (!is_array($data)) {
-            throw new \RuntimeException('Ungültige JSON-Antwort vom Proxy');
+            throw new \RuntimeException(t('Ungültige JSON-Antwort vom Proxy'));
         }
         if (isset($data['error'])) {
             throw new \RuntimeException((string) $data['error']);
@@ -254,16 +254,16 @@ class UpdateManager
         // curl_close removed: no-op since PHP 8.0, deprecated since 8.5
 
         if ($curlErr !== '') {
-            throw new \RuntimeException('Download-Fehler: ' . $curlErr);
+            throw new \RuntimeException(t('Download-Fehler: :err', ['err' => $curlErr]));
         }
         if ($httpCode >= 400) {
-            throw new \RuntimeException("Proxy returned HTTP {$httpCode} for ZIP download");
+            throw new \RuntimeException(t('Proxy lieferte HTTP :code für ZIP-Download', ['code' => $httpCode]));
         }
         if (empty($body)) {
-            throw new \RuntimeException('Leere ZIP-Antwort vom Proxy erhalten');
+            throw new \RuntimeException(t('Leere ZIP-Antwort vom Proxy erhalten'));
         }
         if (substr((string) $body, 0, 2) !== 'PK') {
-            throw new \RuntimeException('Heruntergeladene Datei ist kein gültiges ZIP-Archiv');
+            throw new \RuntimeException(t('Heruntergeladene Datei ist kein gültiges ZIP-Archiv'));
         }
 
         file_put_contents($tmpPath, $body);
@@ -273,7 +273,7 @@ class UpdateManager
     private function extractZip(string $zipPath, string $targetDir): void
     {
         if (!class_exists('ZipArchive')) {
-            throw new \RuntimeException('ZipArchive PHP-Extension fehlt');
+            throw new \RuntimeException(t('ZipArchive PHP-Extension fehlt'));
         }
 
         if (!is_dir($targetDir)) {
@@ -283,7 +283,7 @@ class UpdateManager
         $zip = new \ZipArchive();
         $result = $zip->open($zipPath);
         if ($result !== true) {
-            throw new \RuntimeException('ZIP konnte nicht geöffnet werden (Code: ' . $result . ')');
+            throw new \RuntimeException(t('ZIP konnte nicht geöffnet werden (Code: :code)', ['code' => $result]));
         }
 
         // Detect common top-level prefix (GitHub-style zip: "repo-sha123/")

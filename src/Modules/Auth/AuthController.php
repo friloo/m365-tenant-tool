@@ -75,7 +75,7 @@ class AuthController
         DB::execute("INSERT INTO login_attempts (ip_address) VALUES (?)", [$ip]);
         AppAudit::log('login_failed', 'auth', "IP: {$ip}");
 
-        Session::flash('error', 'Ungültige Zugangsdaten.');
+        Session::flash('error', t('Ungültige Zugangsdaten.'));
         Redirect::to('/login');
     }
 
@@ -132,7 +132,7 @@ class AuthController
                 $remaining = count($hashes);
                 $this->completeTwofaLogin($creds, 'login_recovery_code');
                 if ($remaining <= 2) {
-                    Session::flash('success', "Wiederherstellungscode verwendet. Noch {$remaining} Code(s) übrig — bitte neue Codes generieren.");
+                    Session::flash('success', t('Wiederherstellungscode verwendet. Noch :n Code(s) übrig — bitte neue Codes generieren.', ['n' => $remaining]));
                 }
                 return;
             }
@@ -143,7 +143,7 @@ class AuthController
         DB::execute("INSERT INTO login_attempts (ip_address) VALUES (?)", [$ip]);
         AppAudit::log('login_2fa_failed', 'auth', "User: " . ($creds['username'] ?? '?'));
 
-        Session::flash('error', 'Ungültiger Code. Bitte erneut versuchen.');
+        Session::flash('error', t('Ungültiger Code. Bitte erneut versuchen.'));
         Redirect::to('/login/2fa');
     }
 

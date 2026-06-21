@@ -162,19 +162,19 @@ class RiskySignInsService
     public function formatRiskEventType(string $type): string
     {
         return match ($type) {
-            'anonymizedIPAddress'             => 'Anonymisierte IP-Adresse',
-            'atypicalTravelActivity'          => 'Ungewöhnliche Reiseaktivität',
-            'impossibleTravel'                => 'Unmögliche Reise',
-            'unfamiliarFeatures'              => 'Unbekannte Anmeldemerkmale',
-            'maliciousIPAddress'              => 'Schädliche IP-Adresse',
-            'suspiciousIPAddress'             => 'Verdächtige IP-Adresse',
-            'leakedCredentials'               => 'Kompromittierte Anmeldedaten',
-            'investigationsThreatIntelligence' => 'Threat Intelligence',
-            'passwordSpray'                   => 'Passwort-Spray-Angriff',
-            'newCountry'                      => 'Anmeldung aus neuem Land',
-            'adminConfirmedUserCompromised'   => 'Admin bestätigt Kompromittierung',
-            'mcasSuspiciousInboxManipulationRules' => 'Verdächtige Postfachregeln',
-            'suspiciousInboxForwarding'       => 'Verdächtige Weiterleitung',
+            'anonymizedIPAddress'             => t('Anonymisierte IP-Adresse'),
+            'atypicalTravelActivity'          => t('Ungewöhnliche Reiseaktivität'),
+            'impossibleTravel'                => t('Unmögliche Reise'),
+            'unfamiliarFeatures'              => t('Unbekannte Anmeldemerkmale'),
+            'maliciousIPAddress'              => t('Schädliche IP-Adresse'),
+            'suspiciousIPAddress'             => t('Verdächtige IP-Adresse'),
+            'leakedCredentials'               => t('Kompromittierte Anmeldedaten'),
+            'investigationsThreatIntelligence' => t('Threat Intelligence'),
+            'passwordSpray'                   => t('Passwort-Spray-Angriff'),
+            'newCountry'                      => t('Anmeldung aus neuem Land'),
+            'adminConfirmedUserCompromised'   => t('Admin bestätigt Kompromittierung'),
+            'mcasSuspiciousInboxManipulationRules' => t('Verdächtige Postfachregeln'),
+            'suspiciousInboxForwarding'       => t('Verdächtige Weiterleitung'),
             default                           => str_replace(['_', 'Az'], [' ', 'AZ'], $type),
         };
     }

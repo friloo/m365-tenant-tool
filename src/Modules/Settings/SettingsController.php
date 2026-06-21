@@ -142,7 +142,7 @@ class SettingsController
             // Update admin password
             if (!empty($_POST['admin_password'])) {
                 if ($_POST['admin_password'] !== ($_POST['admin_password_confirm'] ?? '')) {
-                    Session::flash('error', 'Passwörter stimmen nicht überein.');
+                    Session::flash('error', t('Passwörter stimmen nicht überein.'));
                     Redirect::to('/settings');
                 }
                 $hash = password_hash($_POST['admin_password'], PASSWORD_BCRYPT);
@@ -156,9 +156,9 @@ class SettingsController
             date_default_timezone_set($config->get('timezone', 'Europe/Berlin'));
 
             AppAudit::log('settings_updated', 'settings');
-            Session::flash('success', 'Einstellungen gespeichert.');
+            Session::flash('success', t('Einstellungen gespeichert.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: :msg', ['msg' => $e->getMessage()]));
         }
 
         Redirect::to('/settings');
@@ -168,7 +168,7 @@ class SettingsController
     {
         LocalAuth::require();
         app_graph()->getCache()->flush();
-        Session::flash('success', 'Cache erfolgreich geleert.');
+        Session::flash('success', t('Cache erfolgreich geleert.'));
         Redirect::to('/settings');
     }
 
@@ -178,21 +178,21 @@ class SettingsController
         $config = Config::getInstance();
         $to = $config->get('alert_email_to');
         if (!$to) {
-            Session::flash('error', 'Keine Alert-E-Mail-Adresse konfiguriert.');
+            Session::flash('error', t('Keine Alert-E-Mail-Adresse konfiguriert.'));
             Redirect::to('/settings');
         }
 
         $body = \App\Helpers\Mailer::alertTemplate(
-            'Test-E-Mail',
-            '<p>Diese E-Mail bestätigt, dass der E-Mail-Versand korrekt konfiguriert ist.</p>',
+            t('Test-E-Mail'),
+            '<p>' . t('Diese E-Mail bestätigt, dass der E-Mail-Versand korrekt konfiguriert ist.') . '</p>',
             $config->get('app_name', 'M365 Tenant Tool')
         );
 
         $ok = \App\Helpers\Mailer::send($to, 'Test-E-Mail — M365 Tenant Tool', $body);
         if ($ok) {
-            Session::flash('success', 'Test-E-Mail gesendet an ' . $to);
+            Session::flash('success', t('Test-E-Mail gesendet an :to', ['to' => $to]));
         } else {
-            Session::flash('error', 'E-Mail-Versand fehlgeschlagen. SMTP-Einstellungen prüfen.');
+            Session::flash('error', t('E-Mail-Versand fehlgeschlagen. SMTP-Einstellungen prüfen.'));
         }
         Redirect::to('/settings');
     }
@@ -207,7 +207,7 @@ class SettingsController
     {
         LocalAuth::require();
         \App\Database\DB::execute('DELETE FROM graph_tokens');
-        \App\Core\Session::flash('success', 'Token gelöscht — ein neues wird beim nächsten API-Aufruf geholt.');
+        \App\Core\Session::flash('success', t('Token gelöscht — ein neues wird beim nächsten API-Aufruf geholt.'));
         \App\Core\Redirect::to('/settings/permissions');
     }
 
@@ -240,9 +240,9 @@ class SettingsController
         LocalAuth::requireAdmin();
         try {
             app_service(LicenseAdvisorService::class)->savePrices($_POST);
-            Session::flash('success', 'Lizenzpreise gespeichert.');
+            Session::flash('success', t('Lizenzpreise gespeichert.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: :msg', ['msg' => $e->getMessage()]));
         }
         Redirect::to('/settings/license-prices');
     }
@@ -295,13 +295,13 @@ class SettingsController
         LocalAuth::requireAdmin();
         $secret = Session::get('_totp_setup_secret');
         if (!$secret) {
-            Session::flash('error', 'Kein Setup-Geheimnis gefunden. Bitte beginne von vorne.');
+            Session::flash('error', t('Kein Setup-Geheimnis gefunden. Bitte beginne von vorne.'));
             Redirect::to('/settings/2fa');
             return;
         }
         $code = trim($_POST['code'] ?? '');
         if (!TotpService::verify($secret, $code)) {
-            Session::flash('error', 'Ungültiger Code. Bitte überprüfe deine Authenticator-App und versuche es erneut.');
+            Session::flash('error', t('Ungültiger Code. Bitte überprüfe deine Authenticator-App und versuche es erneut.'));
             Redirect::to('/settings/2fa');
             return;
         }
@@ -325,14 +325,14 @@ class SettingsController
         $password = $_POST['confirm_password'] ?? '';
         $hash     = $config->get('admin_password');
         if (!$hash || !password_verify($password, $hash)) {
-            Session::flash('error', 'Falsches Passwort — 2FA wurde nicht deaktiviert.');
+            Session::flash('error', t('Falsches Passwort — 2FA wurde nicht deaktiviert.'));
             Redirect::to('/settings/2fa');
             return;
         }
         $config->delete('admin_totp_secret');
         $config->delete('admin_totp_recovery_codes');
         AppAudit::log('totp_disabled', 'settings', 'TOTP 2FA deaktiviert');
-        Session::flash('success', '2FA wurde erfolgreich deaktiviert.');
+        Session::flash('success', t('2FA wurde erfolgreich deaktiviert.'));
         Redirect::to('/settings/2fa');
     }
 

@@ -25,7 +25,7 @@ class OffboardingController
         }
 
         View::render('offboarding/index', [
-            'pageTitle' => 'Offboarding-Assistent',
+            'pageTitle' => t('Offboarding-Assistent'),
             'user'      => $user,
             'state'     => $state,
             'flash'     => Session::getFlash('success'),
@@ -55,9 +55,9 @@ class OffboardingController
         $service = app_service(OffboardingService::class);
         try {
             $service->disableAccount($userId);
-            Session::flash('success', 'Konto deaktiviert.');
+            Session::flash('success', t('Konto deaktiviert.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/offboarding?user=' . urlencode($userId));
     }
@@ -69,9 +69,9 @@ class OffboardingController
         $service = app_service(OffboardingService::class);
         try {
             $service->revokeSessions($userId);
-            Session::flash('success', 'Alle Sitzungen widerrufen.');
+            Session::flash('success', t('Alle Sitzungen widerrufen.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/offboarding?user=' . urlencode($userId));
     }
@@ -83,9 +83,9 @@ class OffboardingController
         $service = app_service(OffboardingService::class);
         try {
             $service->removeAllLicenses($userId);
-            Session::flash('success', 'Alle Lizenzen entfernt.');
+            Session::flash('success', t('Alle Lizenzen entfernt.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/offboarding?user=' . urlencode($userId));
     }
@@ -97,9 +97,9 @@ class OffboardingController
         $service = app_service(OffboardingService::class);
         try {
             $removed = $service->removeFromAllGroups($userId);
-            Session::flash('success', "{$removed} Gruppe(n) entfernt.");
+            Session::flash('success', t(':count Gruppe(n) entfernt.', ['count' => $removed]));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/offboarding?user=' . urlencode($userId));
     }
@@ -108,7 +108,7 @@ class OffboardingController
     {
         LocalAuth::requireAdmin();
         $userId = $_POST['user_id'] ?? '';
-        Session::flash('success', 'Postfach-Konvertierung muss im Exchange Admin Center manuell durchgeführt werden. Direktlink im Profil des Benutzers.');
+        Session::flash('success', t('Postfach-Konvertierung muss im Exchange Admin Center manuell durchgeführt werden. Direktlink im Profil des Benutzers.'));
         Redirect::to('/offboarding?user=' . urlencode($userId));
     }
 }

@@ -109,7 +109,7 @@ class WorkflowService
             try {
                 $matches = $this->evaluateTrigger($w);
                 if (empty($matches)) {
-                    DB::execute("UPDATE app_workflows SET last_run=NOW(), last_status='idle', last_msg='Keine Treffer' WHERE id=?", [(int)$w['id']]);
+                    DB::execute("UPDATE app_workflows SET last_run=NOW(), last_status='idle', last_msg=? WHERE id=?", [t('Keine Treffer'), (int)$w['id']]);
                     continue;
                 }
                 foreach ($matches as $ctx) {
@@ -119,7 +119,7 @@ class WorkflowService
                 $ran++;
                 DB::execute(
                     "UPDATE app_workflows SET last_run=NOW(), last_status='ok', last_msg=? WHERE id=?",
-                    ['Treffer: ' . count($matches), (int)$w['id']]
+                    [t('Treffer: :count', ['count' => count($matches)]), (int)$w['id']]
                 );
             } catch (\Throwable $e) {
                 DB::execute(
@@ -224,40 +224,40 @@ class WorkflowService
         switch ($type) {
             case 'assign_license':
                 $sku = (string)($cfg['sku_id'] ?? '');
-                if (!$sku || empty($user['id'])) return 'übersprungen (keine SKU/User)';
+                if (!$sku || empty($user['id'])) return t('übersprungen (keine SKU/User)');
                 $this->graph->post("/users/{$user['id']}/assignLicense", [
                     'addLicenses'    => [['skuId' => $sku]],
                     'removeLicenses' => [],
                 ]);
-                return 'Lizenz ' . $sku . ' an ' . ($user['userPrincipalName'] ?? '?') . ' zugewiesen';
+                return t('Lizenz :sku an :user zugewiesen', ['sku' => $sku, 'user' => $user['userPrincipalName'] ?? '?']);
 
             case 'add_to_group':
                 $gid = (string)($cfg['group_id'] ?? '');
-                if (!$gid || empty($user['id'])) return 'übersprungen (keine Gruppe/User)';
+                if (!$gid || empty($user['id'])) return t('übersprungen (keine Gruppe/User)');
                 $this->graph->post("/groups/{$gid}/members/\$ref", [
                     '@odata.id' => 'https://graph.microsoft.com/v1.0/directoryObjects/' . $user['id'],
                 ]);
-                return $user['userPrincipalName'] . ' zu Gruppe ' . $gid;
+                return t(':user zu Gruppe :group', ['user' => $user['userPrincipalName'], 'group' => $gid]);
 
             case 'send_mail':
                 $to = $this->resolveTemplate((string)($cfg['to'] ?? ''), $ctx);
-                $subject = $this->resolveTemplate((string)($cfg['subject'] ?? 'Workflow-Benachrichtigung'), $ctx);
+                $subject = $this->resolveTemplate((string)($cfg['subject'] ?? t('Workflow-Benachrichtigung')), $ctx);
                 $body = $this->resolveTemplate((string)($cfg['body'] ?? ''), $ctx);
-                if ($to === '') return 'keine Empfänger-Adresse';
+                if ($to === '') return t('keine Empfänger-Adresse');
                 if (class_exists(\App\Helpers\Mailer::class)) {
                     \App\Helpers\Mailer::send($to, $subject, $body);
-                    return 'Mail an ' . $to;
+                    return t('Mail an :to', ['to' => $to]);
                 }
-                return 'Mailer fehlt';
+                return t('Mailer fehlt');
 
             case 'send_notification':
                 $title = $this->resolveTemplate((string)($cfg['title'] ?? 'Workflow'), $ctx);
                 $body  = $this->resolveTemplate((string)($cfg['body']  ?? ''), $ctx);
                 NotificationService::push($title, $body, (string)($cfg['severity'] ?? 'info'), null, 'workflow');
-                return 'In-App-Benachrichtigung erzeugt';
+                return t('In-App-Benachrichtigung erzeugt');
 
             default:
-                return 'Unbekannte Aktion ' . $type;
+                return t('Unbekannte Aktion :type', ['type' => $type]);
         }
     }
 

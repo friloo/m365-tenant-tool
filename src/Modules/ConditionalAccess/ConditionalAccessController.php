@@ -75,20 +75,20 @@ class ConditionalAccessController
         ];
 
         if ($def['displayName'] === '') {
-            Session::flash('error', 'Ein Name für die Richtlinie ist erforderlich.');
+            Session::flash('error', t('Ein Name für die Richtlinie ist erforderlich.'));
             Redirect::to('/conditionalaccess');
         }
 
         if ($def['template'] === 'country_block' && $def['namedLocationId'] === '') {
-            Session::flash('error', 'Bitte einen Länder-Standort auswählen.');
+            Session::flash('error', t('Bitte einen Länder-Standort auswählen.'));
             Redirect::to('/conditionalaccess');
         }
 
         try {
             app_service(ConditionalAccessService::class)->createPolicy($def);
-            Session::flash('success', 'Richtlinie "' . $def['displayName'] . '" wurde angelegt (im Report-Modus — zum Aktivieren umschalten).');
+            Session::flash('success', t('Richtlinie „:name" wurde angelegt (im Report-Modus — zum Aktivieren umschalten).', ['name' => $def['displayName']]));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Richtlinie konnte nicht erstellt werden: ' . $e->getMessage());
+            Session::flash('error', t('Richtlinie konnte nicht erstellt werden:') . ' ' . $e->getMessage());
         }
         Redirect::to('/conditionalaccess');
     }
@@ -100,13 +100,13 @@ class ConditionalAccessController
         try {
             app_service(ConditionalAccessService::class)->toggleState($id, $newState);
             $labels = [
-                'enabled'                           => 'Aktiviert',
-                'disabled'                          => 'Deaktiviert',
-                'enabledForReportingButNotEnforced' => 'Report-only',
+                'enabled'                           => t('Aktiviert'),
+                'disabled'                          => t('Deaktiviert'),
+                'enabledForReportingButNotEnforced' => t('Report-only'),
             ];
-            Session::flash('success', 'Richtlinienstatus geändert: ' . ($labels[$newState] ?? $newState));
+            Session::flash('success', t('Richtlinienstatus geändert:') . ' ' . ($labels[$newState] ?? $newState));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Statusänderung fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Statusänderung fehlgeschlagen:') . ' ' . $e->getMessage());
         }
         Redirect::to('/conditionalaccess');
     }
@@ -116,9 +116,9 @@ class ConditionalAccessController
         LocalAuth::requireAdmin();
         try {
             app_service(ConditionalAccessService::class)->deletePolicy($id);
-            Session::flash('success', 'Richtlinie wurde gelöscht.');
+            Session::flash('success', t('Richtlinie wurde gelöscht.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Löschen fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Löschen fehlgeschlagen:') . ' ' . $e->getMessage());
         }
         Redirect::to('/conditionalaccess');
     }

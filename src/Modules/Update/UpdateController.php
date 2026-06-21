@@ -18,14 +18,14 @@ class UpdateController
 
         $um             = UpdateManagerFactory::create();
         $currentVersion = $um->getCurrentVersion();
-        $currentVersionShort = $currentVersion ? substr($currentVersion, 0, 7) : 'unbekannt';
+        $currentVersionShort = $currentVersion ? substr($currentVersion, 0, 7) : t('unbekannt');
 
         $runtimeFile = BASE_PATH . '/config/runtime.php';
         $rt      = file_exists($runtimeFile) ? (include $runtimeFile) : [];
         $channel = $rt['update']['channel'] ?? 'stable';
 
         View::render('update/index', [
-            'pageTitle'       => 'Updates',
+            'pageTitle'       => t('Updates'),
             'currentVersion'  => $currentVersion,
             'currentVersionShort' => $currentVersionShort,
             'channel'         => $channel,
@@ -71,7 +71,7 @@ class UpdateController
         header('Content-Type: application/json');
         $um = UpdateManagerFactory::create();
         $p  = $um->getProgress();
-        echo json_encode($p ?? ['pct' => 0, 'step' => 'idle', 'text' => 'Bereit']);
+        echo json_encode($p ?? ['pct' => 0, 'step' => 'idle', 'text' => t('Bereit')]);
     }
 
     /** POST /settings/update/channel */
@@ -81,7 +81,7 @@ class UpdateController
 
         $channel = $_POST['channel'] ?? '';
         if (!array_key_exists($channel, UpdateManager::CHANNELS)) {
-            Session::flash('error', 'Ungültiger Channel: ' . $channel);
+            Session::flash('error', t('Ungültiger Channel: :channel', ['channel' => $channel]));
             Redirect::to('/settings/update');
         }
 
@@ -96,7 +96,7 @@ class UpdateController
         $rt['update']['channel'] = $channel;
         file_put_contents($runtimeFile, '<?php return ' . var_export($rt, true) . ';');
 
-        Session::flash('success', 'Channel geändert zu ' . $channel);
+        Session::flash('success', t('Channel geändert zu :channel', ['channel' => $channel]));
         Redirect::to('/settings/update');
     }
 
@@ -107,9 +107,9 @@ class UpdateController
         try {
             $um    = UpdateManagerFactory::create();
             $count = $um->runPendingMigrations();
-            Session::flash('success', "{$count} Migration(en) ausgeführt.");
+            Session::flash('success', t(':count Migration(en) ausgeführt.', ['count' => $count]));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler beim Ausführen der Migrationen: ' . $e->getMessage());
+            Session::flash('error', t('Fehler beim Ausführen der Migrationen: :msg', ['msg' => $e->getMessage()]));
         }
         Redirect::to('/settings/update');
     }

@@ -62,11 +62,11 @@ class SignInAnomalyService
                 1800                            // 30 min
             );
         } catch (\Throwable $e) {
-            return $this->emptyResult($recentHours, 'Sign-in-Log nicht abrufbar: ' . $e->getMessage());
+            return $this->emptyResult($recentHours, t('Sign-in-Log nicht abrufbar: :msg', ['msg' => $e->getMessage()]));
         }
 
         if (empty($recent)) {
-            return $this->emptyResult($recentHours, 'Keine Sign-ins im Zeitraum.');
+            return $this->emptyResult($recentHours, t('Keine Sign-ins im Zeitraum.'));
         }
 
         // Baseline: only successful sign-ins, country codes only, to build
@@ -143,7 +143,7 @@ class SignInAnomalyService
             'credential_stuffing_signatures' => $credStuffing,
             'impossible_travel_count'        => $impossible,
             'atrisk_signins'                 => $atRisk,
-            'note'                           => 'Aggregierte Zähler, keine Benutzer-, IP- oder Länder-Details.',
+            'note'                           => t('Aggregierte Zähler, keine Benutzer-, IP- oder Länder-Details.'),
         ];
     }
 

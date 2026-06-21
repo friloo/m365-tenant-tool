@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= \App\Core\View::escape($pageTitle ?? 'Dashboard') ?> — <?= \App\Core\View::escape(\App\Core\Config::getInstance()->get('app_name', 'M365 Tenant Tool')) ?></title>
+    <title><?= te($pageTitle ?? 'Dashboard') ?> — <?= \App\Core\View::escape(\App\Core\Config::getInstance()->get('app_name', 'M365 Tenant Tool')) ?></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/public/css/app.css?v=<?= @filemtime(BASE_PATH . '/public/css/app.css') ?: '1' ?>">
@@ -186,9 +186,9 @@
                 <i class="bi bi-list" style="font-size: 20px;"></i>
             </button>
             <div class="breadcrumb-area">
-                <span class="page-title"><?= \App\Core\View::escape($pageTitle ?? 'Dashboard') ?></span>
+                <span class="page-title"><?= te($pageTitle ?? 'Dashboard') ?></span>
                 <?php if (!empty($breadcrumb)): ?>
-                    <span><?= implode(' / ', array_map('htmlspecialchars', $breadcrumb)) ?></span>
+                    <span><?= implode(' / ', array_map('te', $breadcrumb)) ?></span>
                 <?php endif; ?>
             </div>
             <!-- Quick search trigger -->

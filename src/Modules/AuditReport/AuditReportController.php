@@ -29,7 +29,7 @@ class AuditReportController
         AppAudit::log('audit_report_view', 'auditreport', 'DSGVO/NIS-2 Audit-Report angezeigt');
 
         View::render('auditreport/index', [
-            'pageTitle'   => 'DSGVO / NIS-2 Audit-Report',
+            'pageTitle'   => t('DSGVO / NIS-2 Audit-Report'),
             'tenantInfo'  => $tenantInfo,
             'hardening'   => $hardening,
             'permissions' => $permissions,
@@ -97,44 +97,44 @@ class AuditReportController
         return [
             [
                 'art'  => 'DSGVO Art. 32 Abs. 1 lit. b',
-                'name' => 'Vertraulichkeit, Integrität, Verfügbarkeit',
-                'desc' => 'Technische Maßnahmen gegen unautorisierten Zugriff auf personenbezogene Daten.',
+                'name' => t('Vertraulichkeit, Integrität, Verfügbarkeit'),
+                'desc' => t('Technische Maßnahmen gegen unautorisierten Zugriff auf personenbezogene Daten.'),
                 'items'=> $sel(['security_defaults','block_legacy_auth','sp_sharing','sp_anon_expiry','sp_default_link','sp_onedrive_sharing','sp_external_reshare','sp_idle_signout']),
             ],
             [
                 'art'  => 'DSGVO Art. 32 Abs. 1 lit. d',
-                'name' => 'Regelmäßige Überprüfung',
-                'desc' => 'Verfahren zur regelmäßigen Bewertung der Wirksamkeit der Sicherheitsmaßnahmen.',
+                'name' => t('Regelmäßige Überprüfung'),
+                'desc' => t('Verfahren zur regelmäßigen Bewertung der Wirksamkeit der Sicherheitsmaßnahmen.'),
                 'items'=> $sel(['audit_log','pim_roles','app_consent']),
             ],
             [
                 'art'  => 'DSGVO Art. 25',
-                'name' => 'Datenschutz durch Technikgestaltung',
-                'desc' => 'Privacy by Design — Standards, die Daten von Anfang an schützen.',
+                'name' => t('Datenschutz durch Technikgestaltung'),
+                'desc' => t('Privacy by Design — Standards, die Daten von Anfang an schützen.'),
                 'items'=> $sel(['guest_invite','guest_user_role','restrict_user_read','block_user_app','block_user_secgroup','block_user_tenants']),
             ],
             [
                 'art'  => 'NIS-2 Art. 21 Abs. 2 lit. i',
-                'name' => 'Zugriffskontrolle & MFA',
-                'desc' => 'Pflicht zur Multifaktor-Authentifizierung und sicheren Anmeldeverfahren.',
+                'name' => t('Zugriffskontrolle & MFA'),
+                'desc' => t('Pflicht zur Multifaktor-Authentifizierung und sicheren Anmeldeverfahren.'),
                 'items'=> $sel(['security_defaults','mfa_all','block_legacy_auth','pim_roles']),
             ],
             [
                 'art'  => 'NIS-2 Art. 21 Abs. 2 lit. e',
-                'name' => 'Lieferkettensicherheit',
-                'desc' => 'OAuth-Apps und Gast-Berechtigungen müssen kontrolliert werden.',
+                'name' => t('Lieferkettensicherheit'),
+                'desc' => t('OAuth-Apps und Gast-Berechtigungen müssen kontrolliert werden.'),
                 'items'=> $sel(['app_consent','guest_invite','guest_user_role']),
             ],
             [
                 'art'  => 'NIS-2 Art. 21 Abs. 2 lit. h',
-                'name' => 'Krypto & Mail-Sicherheit',
-                'desc' => 'Sichere Übertragung und Phishing-Abwehr per Defender for Office 365.',
+                'name' => t('Krypto & Mail-Sicherheit'),
+                'desc' => t('Sichere Übertragung und Phishing-Abwehr per Defender for Office 365.'),
                 'items'=> $sel(['defender_safe_links','external_sender_id']),
             ],
             [
                 'art'  => 'BSI ORP.4.A23',
-                'name' => 'Regelung des Passwortgebrauchs',
-                'desc' => 'Sichere Authentifizierungsmethoden, keine Legacy-Protokolle.',
+                'name' => t('Regelung des Passwortgebrauchs'),
+                'desc' => t('Sichere Authentifizierungsmethoden, keine Legacy-Protokolle.'),
                 'items'=> $sel(['block_legacy_auth','security_defaults','mfa_all']),
             ],
         ];

@@ -29,7 +29,7 @@ class SharingController
         }
 
         View::render('sharing/index', [
-            'pageTitle'    => 'Freigaben',
+            'pageTitle'    => t('Freigaben'),
             'summary'      => $summary,
             'statusFilter' => $statusFilter,
             'scopeFilter'  => $scopeFilter,
@@ -46,15 +46,15 @@ class SharingController
         $permissionId = trim($_POST['permission_id'] ?? '');
 
         if (!$driveId || !$itemId || !$permissionId) {
-            Session::flash('error', 'Ungültige Parameter.');
+            Session::flash('error', t('Ungültige Parameter.'));
             Redirect::to('/sharing');
         }
 
         try {
             app_service(SharingService::class)->revokePermission($driveId, $itemId, $permissionId);
-            Session::flash('success', 'Freigabe wurde widerrufen.');
+            Session::flash('success', t('Freigabe wurde widerrufen.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Widerrufen fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Widerrufen fehlgeschlagen: ') . $e->getMessage());
         }
         Redirect::to('/sharing');
     }
@@ -68,9 +68,9 @@ class SharingController
         $found  = count(array_filter($log, fn($l) => str_starts_with($l, 'NEW')));
 
         if (!empty($errors)) {
-            Session::flash('error', 'Scan-Fehler: ' . implode('; ', $errors));
+            Session::flash('error', t('Scan-Fehler: ') . implode('; ', $errors));
         } else {
-            Session::flash('success', "Scan abgeschlossen — {$found} neue Freigaben gefunden.");
+            Session::flash('success', t('Scan abgeschlossen — :found neue Freigaben gefunden.', ['found' => $found]));
         }
         Redirect::to('/sharing');
     }
@@ -82,7 +82,7 @@ class SharingController
         $items = $data['items'] ?? [];
 
         CsvExporter::download('freigaben_' . date('Ymd') . '.csv',
-            ['Typ', 'Name', 'Quelle', 'Freigabe-Typ', 'Besitzer', 'Erstmals erkannt', 'Status'],
+            [t('Typ'), t('Name'), t('Quelle'), t('Freigabe-Typ'), t('Besitzer'), t('Erstmals erkannt'), t('Status')],
             array_map(fn($i) => [
                 $i['type']    ?? '',
                 $i['name']    ?? '',

@@ -84,11 +84,11 @@ class BreakGlassService
                 null, 0
             );
         } catch (\Throwable $e) {
-            $entry['issues'][] = 'Konto nicht gefunden: ' . $e->getMessage();
+            $entry['issues'][] = t('Konto nicht gefunden: ') . $e->getMessage();
             return $entry;
         }
         if (empty($user['id'])) {
-            $entry['issues'][] = 'Konto nicht gefunden im Tenant.';
+            $entry['issues'][] = t('Konto nicht gefunden im Tenant.');
             return $entry;
         }
 
@@ -116,7 +116,7 @@ class BreakGlassService
         }
 
         if (!$entry['accountEnabled']) {
-            $entry['issues'][] = 'Konto ist deaktiviert — im Notfall nicht nutzbar!';
+            $entry['issues'][] = t('Konto ist deaktiviert — im Notfall nicht nutzbar!');
         }
 
         // Transitive group memberships — needed because both the Global Admin role
@@ -143,7 +143,7 @@ class BreakGlassService
                 || !empty(array_intersect($groupIds, $principals));
         } catch (\Throwable) {}
         if (!$entry['isGlobalAdmin']) {
-            $entry['issues'][] = 'Hat keine permanente Global-Administrator-Rolle (auch nicht über eine Gruppe). Nur via PIM-Eligible wäre im Notfall problematisch, weil die Aktivierung MFA verlangt.';
+            $entry['issues'][] = t('Hat keine permanente Global-Administrator-Rolle (auch nicht über eine Gruppe). Nur via PIM-Eligible wäre im Notfall problematisch, weil die Aktivierung MFA verlangt.');
         }
 
         // MFA-Registration
@@ -175,7 +175,7 @@ class BreakGlassService
             }
             $entry['caExcluded'] = $excludedFrom;
             if (empty($excludedFrom)) {
-                $entry['issues'][] = 'Account ist aus KEINER aktiven CA-Policy ausgeschlossen (weder direkt noch über eine Gruppe) — Gefahr: bei einem CA-Fehler sperrst du dich aus.';
+                $entry['issues'][] = t('Account ist aus KEINER aktiven CA-Policy ausgeschlossen (weder direkt noch über eine Gruppe) — Gefahr: bei einem CA-Fehler sperrst du dich aus.');
             }
         } catch (\Throwable) {
             $entry['caExcluded'] = null;
@@ -183,9 +183,9 @@ class BreakGlassService
 
         // Last sign-in
         if ($entry['daysSinceSignIn'] === null) {
-            $entry['issues'][] = 'Account hat sich noch nie angemeldet — bitte einmal testen, ob er funktioniert.';
+            $entry['issues'][] = t('Account hat sich noch nie angemeldet — bitte einmal testen, ob er funktioniert.');
         } elseif ($entry['daysSinceSignIn'] > 180) {
-            $entry['issues'][] = "Letzter Login vor {$entry['daysSinceSignIn']} Tagen — Account-Test wird empfohlen (≤ 180 Tage).";
+            $entry['issues'][] = t('Letzter Login vor :days Tagen — Account-Test wird empfohlen (≤ 180 Tage).', ['days' => $entry['daysSinceSignIn']]);
         }
 
         return $entry;

@@ -17,7 +17,7 @@ class OneDriveController
 
         $users = []; $drives = []; $loadErr = null;
         try { $users = app_service(UsersService::class)->getAll(); }
-        catch (\Throwable $e) { $loadErr = 'Benutzer nicht ladbar: ' . $e->getMessage(); error_log('OneDrive index users: ' . $e->getMessage()); }
+        catch (\Throwable $e) { $loadErr = t('Benutzer nicht ladbar: ') . $e->getMessage(); error_log('OneDrive index users: ' . $e->getMessage()); }
 
         // getStorageOverview covers ALL provisioned OneDrives: tenant usage report
         // first, with an automatic per-user fallback (real names) when the report
@@ -74,7 +74,7 @@ class OneDriveController
         $notProvisioned = count($list) - $provisioned;
 
         View::render('onedrive/personal', [
-            'pageTitle'      => 'OneDrive – Persönliche Laufwerke',
+            'pageTitle'      => t('OneDrive – Persönliche Laufwerke'),
             'list'           => $list,
             'provisioned'    => $provisioned,
             'notProvisioned' => $notProvisioned,
@@ -92,10 +92,10 @@ class OneDriveController
             $ok = $service->provisionDrive($id);
             Session::flash(
                 $ok ? 'success' : 'error',
-                $ok ? 'OneDrive wurde erfolgreich provisioniert.' : 'Provisionierung fehlgeschlagen — prüfen Sie Lizenzzuweisung und Berechtigungen.'
+                $ok ? t('OneDrive wurde erfolgreich provisioniert.') : t('Provisionierung fehlgeschlagen — prüfen Sie Lizenzzuweisung und Berechtigungen.')
             );
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/onedrive/personal');
     }
@@ -106,9 +106,9 @@ class OneDriveController
         $service = app_service(OneDriveService::class);
         try {
             $service->deprovisionDrive($id);
-            Session::flash('success', 'OneDrive wurde gelöscht (Papierkorb). Endgültige Löschung nach 93 Tagen.');
+            Session::flash('success', t('OneDrive wurde gelöscht (Papierkorb). Endgültige Löschung nach 93 Tagen.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler beim Löschen: ' . $e->getMessage());
+            Session::flash('error', t('Fehler beim Löschen: ') . $e->getMessage());
         }
         Redirect::to('/onedrive/personal');
     }

@@ -62,7 +62,7 @@ class ShareReviewController
             View::render('sharereview/review', [
                 'token' => htmlspecialchars($token, ENT_QUOTES),
                 'share' => $data ?? [],
-                'error' => 'Bitte geben Sie eine Begründung ein (mindestens 5 Zeichen).',
+                'error' => t('Bitte geben Sie eine Begründung ein (mindestens 5 Zeichen).'),
             ], false);
             return;
         }
@@ -88,7 +88,7 @@ class ShareReviewController
         $stats        = $service->getStats();
 
         View::render('sharereview/admin', [
-            'pageTitle'    => 'Freigaben-Monitor',
+            'pageTitle'    => t('Freigaben-Monitor'),
             'shares'       => $shares,
             'stats'        => $stats,
             'statusFilter' => $statusFilter,
@@ -102,9 +102,9 @@ class ShareReviewController
         LocalAuth::require();
         try {
             app_service(ShareReviewService::class)->manualRevoke((int)$id);
-            Session::flash('success', 'Freigabe wurde widerrufen.');
+            Session::flash('success', t('Freigabe wurde widerrufen.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/sharing/monitor');
     }
@@ -114,9 +114,9 @@ class ShareReviewController
         LocalAuth::require();
         $ok = app_service(ShareReviewService::class)->sendManualReminder((int)$id);
         if ($ok) {
-            Session::flash('success', 'Erinnerung wurde gesendet.');
+            Session::flash('success', t('Erinnerung wurde gesendet.'));
         } else {
-            Session::flash('error', 'E-Mail konnte nicht gesendet werden. SMTP konfiguriert?');
+            Session::flash('error', t('E-Mail konnte nicht gesendet werden. SMTP konfiguriert?'));
         }
         Redirect::to('/sharing/monitor');
     }
@@ -125,7 +125,7 @@ class ShareReviewController
     {
         LocalAuth::requireAdmin();
         $log = app_service(ShareReviewService::class)->scanAndSync();
-        Session::flash('success', count($log) . ' Freigaben gescannt/aktualisiert.');
+        Session::flash('success', t(':count Freigaben gescannt/aktualisiert.', ['count' => count($log)]));
         Redirect::to('/sharing/monitor');
     }
 }

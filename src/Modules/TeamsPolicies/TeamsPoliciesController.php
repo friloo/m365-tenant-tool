@@ -26,7 +26,7 @@ class TeamsPoliciesController
         $teamStats   = $service->getTeamStats();
 
         View::render('teamspolicies/index', [
-            'pageTitle'   => 'Teams-Übersicht & Richtlinien',
+            'pageTitle'   => t('Teams-Übersicht & Richtlinien'),
             'appSettings' => $appSettings,
             'teamwork'    => $teamwork,
             'orgApps'     => $orgApps,

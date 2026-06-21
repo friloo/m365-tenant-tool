@@ -15,7 +15,7 @@ class SharingPoliciesController
         $service = app_service(SharingPoliciesService::class);
 
         View::render('sharingpolicies/index', [
-            'pageTitle'        => 'Freigaberichtlinien',
+            'pageTitle'        => t('Freigaberichtlinien'),
             'spSettings'       => $service->getSharePointSettings(),
             'teamsSettings'    => $service->getTeamsSettings(),
             'crossTenant'      => $service->getCrossTenantPolicy(),
@@ -56,9 +56,9 @@ class SharingPoliciesController
             if (!empty($payload)) {
                 $service->updateSharePointSettings($payload);
             }
-            Session::flash('success', 'SharePoint-Freigabeeinstellungen gespeichert.');
+            Session::flash('success', t('SharePoint-Freigabeeinstellungen gespeichert.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            Session::flash('error', t('Fehler beim Speichern: ') . $e->getMessage());
         }
 
         Redirect::to('/sharing/policies');
@@ -72,15 +72,15 @@ class SharingPoliciesController
 
         $valid = ['Disabled', 'ExistingExternalUserSharingOnly', 'ExternalUserSharingOnly', 'ExternalUserAndGuestSharing'];
         if (!$siteId || !in_array($capability, $valid)) {
-            Session::flash('error', 'Ungültige Eingabe.');
+            Session::flash('error', t('Ungültige Eingabe.'));
             Redirect::to('/sharing/policies');
         }
 
         try {
             app_service(SharingPoliciesService::class)->updateSiteSharing($siteId, $capability);
-            Session::flash('success', 'Freigabe-Einstellung für die Site aktualisiert.');
+            Session::flash('success', t('Freigabe-Einstellung für die Site aktualisiert.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
 
         Redirect::to('/sharing/policies#sites');

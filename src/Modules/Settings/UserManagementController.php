@@ -33,7 +33,7 @@ class UserManagementController
         $role = in_array($_POST['role'] ?? '', ['operator', 'admin']) ? $_POST['role'] : 'operator';
 
         if (!$upn || !filter_var($upn, FILTER_VALIDATE_EMAIL)) {
-            Session::flash('error', 'Ungültige E-Mail-Adresse / UPN.');
+            Session::flash('error', t('Ungültige E-Mail-Adresse / UPN.'));
             Redirect::to('/settings/users');
         }
 
@@ -43,9 +43,9 @@ class UserManagementController
                  ON DUPLICATE KEY UPDATE role = VALUES(role), is_active = 1',
                 [$upn, $role]
             );
-            Session::flash('success', "{$upn} wurde hinzugefügt.");
+            Session::flash('success', t(':upn wurde hinzugefügt.', ['upn' => $upn]));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: :msg', ['msg' => $e->getMessage()]));
         }
 
         Redirect::to('/settings/users');
@@ -62,7 +62,7 @@ class UserManagementController
             'UPDATE m365_users SET role = ?, is_active = ? WHERE id = ?',
             [$role, $active, (int)$id]
         );
-        Session::flash('success', 'Benutzer aktualisiert.');
+        Session::flash('success', t('Benutzer aktualisiert.'));
         Redirect::to('/settings/users');
     }
 
@@ -70,7 +70,7 @@ class UserManagementController
     {
         LocalAuth::requireAdmin();
         DB::execute('DELETE FROM m365_users WHERE id = ?', [(int)$id]);
-        Session::flash('success', 'Benutzer entfernt.');
+        Session::flash('success', t('Benutzer entfernt.'));
         Redirect::to('/settings/users');
     }
 

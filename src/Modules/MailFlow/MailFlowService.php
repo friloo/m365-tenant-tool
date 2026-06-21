@@ -89,52 +89,52 @@ class MailFlowService
     {
         return [
             [
-                'label' => 'Transportregeln (Mailflow-Regeln)',
+                'label' => t('Transportregeln (Mailflow-Regeln)'),
                 'url'   => 'https://admin.exchange.microsoft.com/#/transportrules',
                 'icon'  => 'arrow-left-right',
-                'desc'  => 'Regeln für eingehende und ausgehende E-Mails erstellen und verwalten',
+                'desc'  => t('Regeln für eingehende und ausgehende E-Mails erstellen und verwalten'),
             ],
             [
-                'label' => 'Anti-Spam-Richtlinien',
+                'label' => t('Anti-Spam-Richtlinien'),
                 'url'   => 'https://security.microsoft.com/antispam',
                 'icon'  => 'shield-x',
-                'desc'  => 'Spam-Filter und Quarantäne-Einstellungen konfigurieren',
+                'desc'  => t('Spam-Filter und Quarantäne-Einstellungen konfigurieren'),
             ],
             [
-                'label' => 'Anti-Malware-Richtlinien',
+                'label' => t('Anti-Malware-Richtlinien'),
                 'url'   => 'https://security.microsoft.com/antimalwarev2',
                 'icon'  => 'bug',
-                'desc'  => 'Malware-Schutz für eingehende E-Mails konfigurieren',
+                'desc'  => t('Malware-Schutz für eingehende E-Mails konfigurieren'),
             ],
             [
-                'label' => 'Anti-Phishing-Richtlinien',
+                'label' => t('Anti-Phishing-Richtlinien'),
                 'url'   => 'https://security.microsoft.com/antiphishing',
                 'icon'  => 'fish',
-                'desc'  => 'Phishing-Schutz und Impersonation-Erkennung',
+                'desc'  => t('Phishing-Schutz und Impersonation-Erkennung'),
             ],
             [
-                'label' => 'DKIM-Einstellungen',
+                'label' => t('DKIM-Einstellungen'),
                 'url'   => 'https://security.microsoft.com/dkimv2',
                 'icon'  => 'key',
-                'desc'  => 'DKIM-Signaturen für ausgehende E-Mails konfigurieren',
+                'desc'  => t('DKIM-Signaturen für ausgehende E-Mails konfigurieren'),
             ],
             [
-                'label' => 'Akzeptierte Domänen',
+                'label' => t('Akzeptierte Domänen'),
                 'url'   => 'https://admin.exchange.microsoft.com/#/accepteddomains',
                 'icon'  => 'globe',
-                'desc'  => 'Verwaltung der akzeptierten E-Mail-Domänen',
+                'desc'  => t('Verwaltung der akzeptierten E-Mail-Domänen'),
             ],
             [
-                'label' => 'Connector-Konfiguration',
+                'label' => t('Connector-Konfiguration'),
                 'url'   => 'https://admin.exchange.microsoft.com/#/connectors',
                 'icon'  => 'diagram-2',
-                'desc'  => 'Eingehende und ausgehende Connectors für Mail-Routing',
+                'desc'  => t('Eingehende und ausgehende Connectors für Mail-Routing'),
             ],
             [
-                'label' => 'Quarantäne',
+                'label' => t('Quarantäne'),
                 'url'   => 'https://security.microsoft.com/quarantine',
                 'icon'  => 'inbox',
-                'desc'  => 'Quarantänisierte E-Mails überprüfen und freigeben',
+                'desc'  => t('Quarantänisierte E-Mails überprüfen und freigeben'),
             ],
         ];
     }

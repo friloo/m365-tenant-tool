@@ -40,29 +40,29 @@ class GraphErrorTranslator
             || (stripos($msg, 'SharePoint') !== false && stripos($msg, 'license') !== false)) {
             return [
                 'type'   => 'license',
-                'short'  => 'SharePoint nicht lizenziert',
-                'detail' => 'Der Tenant hat keine SharePoint-Online-Lizenz. Diese Funktion ist daher nicht zutreffend.',
+                'short'  => t('SharePoint nicht lizenziert'),
+                'detail' => t('Der Tenant hat keine SharePoint-Online-Lizenz. Diese Funktion ist daher nicht zutreffend.'),
             ];
         }
         if (stripos($msg, 'not applicable to target tenant') !== false) {
             return [
                 'type'   => 'not_applicable',
-                'short'  => 'Im Tenant nicht aktiviert',
-                'detail' => 'Microsoft Graph meldet "Request not applicable to target tenant". Häufige Gründe: passende Lizenz fehlt (z.B. Intune/EM&S für /deviceManagement, Office-365-Subscription für Reports), Dienst ist im Tenant nicht aktiviert, oder der Tenant-Typ (B2C, Government, Sovereign Cloud) unterstützt diesen Endpunkt nicht.',
+                'short'  => t('Im Tenant nicht aktiviert'),
+                'detail' => t('Microsoft Graph meldet "Request not applicable to target tenant". Häufige Gründe: passende Lizenz fehlt (z.B. Intune/EM&S für /deviceManagement, Office-365-Subscription für Reports), Dienst ist im Tenant nicht aktiviert, oder der Tenant-Typ (B2C, Government, Sovereign Cloud) unterstützt diesen Endpunkt nicht.'),
             ];
         }
         if (stripos($msg, 'Tenant does not have') !== false && stripos($msg, 'license') !== false) {
             return [
                 'type'   => 'license',
-                'short'  => 'Lizenz fehlt im Tenant',
-                'detail' => 'Microsoft Graph meldet: ' . self::trimMsg($msg),
+                'short'  => t('Lizenz fehlt im Tenant'),
+                'detail' => t('Microsoft Graph meldet: :msg', ['msg' => self::trimMsg($msg)]),
             ];
         }
         if (stripos($msg, 'anonymized') !== false || stripos($msg, 'anonym') !== false) {
             return [
                 'type'   => 'feature_disabled',
-                'short'  => 'Datenschutzmodus für Berichte aktiv',
-                'detail' => 'Im Microsoft-365-Admin-Center ist der Datenschutz für Berichtsdaten aktiviert — die Endpunkte liefern dann anonymisierte oder leere Daten. Lösungsweg: Admin-Center → Einstellungen → Org-Einstellungen → Berichte → "Verborgene Benutzer-/Gruppen-/Site-Namen anzeigen" einschalten.',
+                'short'  => t('Datenschutzmodus für Berichte aktiv'),
+                'detail' => t('Im Microsoft-365-Admin-Center ist der Datenschutz für Berichtsdaten aktiviert — die Endpunkte liefern dann anonymisierte oder leere Daten. Lösungsweg: Admin-Center → Einstellungen → Org-Einstellungen → Berichte → "Verborgene Benutzer-/Gruppen-/Site-Namen anzeigen" einschalten.'),
             ];
         }
 
@@ -70,19 +70,19 @@ class GraphErrorTranslator
         if ($status === 401 || stripos($code, 'invalidauthentication') !== false) {
             return [
                 'type'    => 'authentication',
-                'short'   => 'Token ungültig oder abgelaufen',
-                'detail'  => 'Microsoft Graph hat den Zugriff abgelehnt (401). Bitte Token-Aktualisierung versuchen.',
+                'short'   => t('Token ungültig oder abgelaufen'),
+                'detail'  => t('Microsoft Graph hat den Zugriff abgelehnt (401). Bitte Token-Aktualisierung versuchen.'),
                 'fix_url' => '/settings/refresh-token',
             ];
         }
         if ($status === 403 || stripos($code, 'authorization_requestdenied') !== false
             || stripos($code, 'insufficientprivileges') !== false || stripos($code, 'invalidscope') !== false) {
-            $permHint = $requiredPermission ? " Konkret benötigt: <code>{$requiredPermission}</code>." : '';
+            $permHint = $requiredPermission ? t(' Konkret benötigt: <code>:perm</code>.', ['perm' => $requiredPermission]) : '';
             return [
                 'type'    => 'permission',
-                'short'   => 'Berechtigung fehlt oder kein Admin Consent',
-                'detail'  => 'Microsoft Graph hat die Anfrage abgelehnt (403).' . $permHint
-                          . ' Mögliche Ursachen: Die App-Berechtigung ist in Azure noch nicht eingetragen, oder ein Global Admin hat noch keinen Admin Consent erteilt. Unter Einstellungen → Berechtigungen prüfen welche fehlt.',
+                'short'   => t('Berechtigung fehlt oder kein Admin Consent'),
+                'detail'  => t('Microsoft Graph hat die Anfrage abgelehnt (403).') . $permHint
+                          . t(' Mögliche Ursachen: Die App-Berechtigung ist in Azure noch nicht eingetragen, oder ein Global Admin hat noch keinen Admin Consent erteilt. Unter Einstellungen → Berechtigungen prüfen welche fehlt.'),
                 'fix_url' => '/settings/permissions',
             ];
         }
@@ -95,44 +95,37 @@ class GraphErrorTranslator
             if (str_contains($url, '/reports/')) {
                 return [
                     'type'   => 'reports_unavailable',
-                    'short'  => 'Reports-API liefert keine Daten (404)',
-                    'detail' => 'Der Endpunkt ' . self::trimMsg($url) . ' antwortet mit 404. '
-                              . 'Microsoft gibt diesen Statuscode aus drei Gründen — bitte einen davon prüfen: '
-                              . '(1) Tenant hat keinen Office-365-Plan, der Aktivitätsberichte unterstützt (E1/E3/E5 oder Business). '
-                              . '(2) Datenschutz für Berichte ist aktiviert — Admin Center → Einstellungen → Org-Einstellungen → Berichte → "Verborgene Namen anzeigen". '
-                              . '(3) Reports.Read.All-Permission fehlt im App-Token (zwar oft 403, aber bei manchen Lizenz-Kombinationen wird 404 gemeldet). '
-                              . 'Original-Antwort: ' . self::trimMsg($msg),
+                    'short'  => t('Reports-API liefert keine Daten (404)'),
+                    'detail' => t('Der Endpunkt :url antwortet mit 404. Microsoft gibt diesen Statuscode aus drei Gründen — bitte einen davon prüfen: (1) Tenant hat keinen Office-365-Plan, der Aktivitätsberichte unterstützt (E1/E3/E5 oder Business). (2) Datenschutz für Berichte ist aktiviert — Admin Center → Einstellungen → Org-Einstellungen → Berichte → "Verborgene Namen anzeigen". (3) Reports.Read.All-Permission fehlt im App-Token (zwar oft 403, aber bei manchen Lizenz-Kombinationen wird 404 gemeldet). Original-Antwort: :msg', ['url' => self::trimMsg($url), 'msg' => self::trimMsg($msg)]),
                     'fix_url' => '/settings/permissions',
                 ];
             }
             return [
                 'type'   => 'not_found',
-                'short'  => 'Endpunkt oder Ressource nicht gefunden (404)',
-                'detail' => 'Microsoft Graph antwortet mit 404 für ' . self::trimMsg($url) . '. '
-                          . 'Mögliche Gründe: API-Pfad in neuerer Graph-Version umbenannt, Ressource im Tenant nicht angelegt, oder Tenant-Typ unterstützt diesen Endpunkt nicht. '
-                          . 'Original-Antwort: ' . self::trimMsg($msg),
+                'short'  => t('Endpunkt oder Ressource nicht gefunden (404)'),
+                'detail' => t('Microsoft Graph antwortet mit 404 für :url. Mögliche Gründe: API-Pfad in neuerer Graph-Version umbenannt, Ressource im Tenant nicht angelegt, oder Tenant-Typ unterstützt diesen Endpunkt nicht. Original-Antwort: :msg', ['url' => self::trimMsg($url), 'msg' => self::trimMsg($msg)]),
             ];
         }
         if ($status === 429) {
             return [
                 'type'   => 'rate_limit',
-                'short'  => 'Rate-Limit erreicht',
-                'detail' => 'Microsoft Graph drosselt die Anfragen (429). Bitte später erneut versuchen.',
+                'short'  => t('Rate-Limit erreicht'),
+                'detail' => t('Microsoft Graph drosselt die Anfragen (429). Bitte später erneut versuchen.'),
             ];
         }
         if ($status >= 500) {
             return [
                 'type'   => 'server_error',
-                'short'  => 'Microsoft Graph antwortet mit Server-Fehler',
-                'detail' => 'Microsoft Graph hat den Status ' . $status . ' geliefert. Das ist meist temporär — bitte später erneut versuchen.',
+                'short'  => t('Microsoft Graph antwortet mit Server-Fehler'),
+                'detail' => t('Microsoft Graph hat den Status :status geliefert. Das ist meist temporär — bitte später erneut versuchen.', ['status' => $status]),
             ];
         }
 
         // 3) Fallback: rohe Botschaft anzeigen, damit der Admin selbst entscheiden kann
         return [
             'type'   => 'unknown',
-            'short'  => 'Microsoft Graph: Fehler',
-            'detail' => 'HTTP ' . ($status ?: '?') . ' — ' . self::trimMsg($msg ?: $code ?: 'unbekannt'),
+            'short'  => t('Microsoft Graph: Fehler'),
+            'detail' => 'HTTP ' . ($status ?: '?') . ' — ' . self::trimMsg($msg ?: $code ?: t('unbekannt')),
         ];
     }
 
@@ -179,7 +172,7 @@ class GraphErrorTranslator
         $hint = self::translate(['status' => $status, 'message' => $msg], $requiredPermission);
         return $hint ?? [
             'type'   => 'unknown',
-            'short'  => 'Fehler',
+            'short'  => t('Fehler'),
             'detail' => self::trimMsg($msg),
         ];
     }

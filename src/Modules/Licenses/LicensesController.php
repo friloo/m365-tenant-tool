@@ -16,10 +16,10 @@ class LicensesController
 
         $skus = []; $loadErr = null;
         try { $skus = $service->getSkus(); }
-        catch (\Throwable $e) { $loadErr = 'Lizenzen nicht ladbar: ' . $e->getMessage(); error_log('Licenses index: ' . $e->getMessage()); }
+        catch (\Throwable $e) { $loadErr = t('Lizenzen nicht ladbar: :error', ['error' => $e->getMessage()]); error_log('Licenses index: ' . $e->getMessage()); }
 
         View::render('licenses/index', [
-            'pageTitle' => 'Lizenzen',
+            'pageTitle' => t('Lizenzen'),
             'skus'      => $skus,
             'error'     => Session::getFlash('error') ?: $loadErr,
         ]);
@@ -31,7 +31,7 @@ class LicensesController
         try { $skus = app_service(LicensesService::class)->getSkus(); }
         catch (\Throwable $e) { error_log('Licenses export: ' . $e->getMessage()); $skus = []; }
         CsvExporter::download('lizenzen_' . date('Ymd') . '.csv',
-            ['Produkt', 'SKU', 'Genutzt', 'Gesamt', 'Verfügbar', 'Nutzung %'],
+            [t('Produkt'), t('SKU'), t('Genutzt'), t('Gesamt'), t('Verfügbar'), t('Nutzung %')],
             array_map(fn($s) => [
                 $s['name'],
                 $s['partNumber'],
@@ -54,12 +54,12 @@ class LicensesController
 
         $subscriptions = []; $expiringSoon = []; $loadErr = null;
         try { $subscriptions = $service->getSubscriptionExpiry(); }
-        catch (\Throwable $e) { $loadErr = 'Abos: ' . $e->getMessage(); error_log('Licenses expiry subs: ' . $e->getMessage()); }
+        catch (\Throwable $e) { $loadErr = t('Abos: :error', ['error' => $e->getMessage()]); error_log('Licenses expiry subs: ' . $e->getMessage()); }
         try { $expiringSoon = $service->getExpiringSoon(60); }
         catch (\Throwable $e) { error_log('Licenses expiry soon: ' . $e->getMessage()); }
 
         View::render('licenses/expiry', [
-            'pageTitle'     => 'Lizenz-Ablauf',
+            'pageTitle'     => t('Lizenz-Ablauf'),
             'subscriptions' => $subscriptions,
             'expiringSoon'  => $expiringSoon,
             'error'         => Session::getFlash('error') ?: $loadErr,

@@ -68,7 +68,7 @@ class LocalAuth
         self::require();
         if (!self::isAdmin()) {
             http_response_code(403);
-            die('<h2>403 — Nur für Administratoren</h2>');
+            die('<h2>' . t('403 — Nur für Administratoren') . '</h2>');
         }
     }
 

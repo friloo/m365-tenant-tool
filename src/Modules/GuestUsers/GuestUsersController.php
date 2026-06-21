@@ -18,7 +18,7 @@ class GuestUsersController
         $stats   = $service->getStats($guests);
 
         View::render('guestusers/index', [
-            'pageTitle' => 'Gastbenutzer',
+            'pageTitle' => t('Gastbenutzer'),
             'guests'    => $guests,
             'stats'     => $stats,
             'flash'     => Session::getFlash('success'),
@@ -31,9 +31,9 @@ class GuestUsersController
         LocalAuth::require();
         try {
             app_service(GuestUsersService::class)->disableGuest($id);
-            Session::flash('success', 'Gastbenutzer deaktiviert.');
+            Session::flash('success', t('Gastbenutzer deaktiviert.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/guestusers');
     }
@@ -44,9 +44,9 @@ class GuestUsersController
         LocalAuth::requireAdmin();
         try {
             app_service(GuestUsersService::class)->removeGuest($id);
-            Session::flash('success', 'Gastbenutzer gelöscht.');
+            Session::flash('success', t('Gastbenutzer gelöscht.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Löschen fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Löschen fehlgeschlagen: ') . $e->getMessage());
         }
         Redirect::to('/guestusers');
     }
@@ -56,11 +56,11 @@ class GuestUsersController
         LocalAuth::require();
         $guests = app_service(GuestUsersService::class)->getAll();
         CsvExporter::download('gastbenutzer_' . date('Ymd') . '.csv',
-            ['Name', 'E-Mail', 'Status', 'Einladungsstatus', 'Erstellt', 'Letzter Login'],
+            [t('Name'), t('E-Mail'), t('Status'), t('Einladungsstatus'), t('Erstellt'), t('Letzter Login')],
             array_map(fn($g) => [
                 $g['displayName'] ?? '',
                 $g['mail'] ?? $g['userPrincipalName'] ?? '',
-                ($g['accountEnabled'] ?? true) ? 'Aktiv' : 'Deaktiviert',
+                ($g['accountEnabled'] ?? true) ? t('Aktiv') : t('Deaktiviert'),
                 $g['externalUserState'] ?? '',
                 CsvExporter::formatDate($g['createdDateTime'] ?? ''),
                 CsvExporter::formatDate($g['signInActivity']['lastSignInDateTime'] ?? ''),

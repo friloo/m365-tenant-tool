@@ -28,7 +28,7 @@ class StaleAccountsController
         $log     = $service->getLog(100);
 
         View::render('staleaccounts/index', [
-            'pageTitle' => 'Inaktive Konten',
+            'pageTitle' => t('Inaktive Konten'),
             'users'     => $users,
             'stats'     => $stats,
             'log'       => $log,
@@ -67,7 +67,7 @@ class StaleAccountsController
             }
 
             if (!$target || empty($target['assignedLicenses'])) {
-                Session::flash('error', 'Benutzer nicht gefunden oder hat keine Lizenzen.');
+                Session::flash('error', t('Benutzer nicht gefunden oder hat keine Lizenzen.'));
                 Redirect::to('/staleaccounts');
                 return;
             }
@@ -79,9 +79,9 @@ class StaleAccountsController
                 'count'  => count($skuIds),
             ]);
 
-            Session::flash('success', 'Lizenzen für ' . ($target['displayName'] ?? $userId) . ' entfernt.');
+            Session::flash('success', t('Lizenzen für :name entfernt.', ['name' => $target['displayName'] ?? $userId]));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler beim Entfernen der Lizenzen: ' . $e->getMessage());
+            Session::flash('error', t('Fehler beim Entfernen der Lizenzen: ') . $e->getMessage());
         }
 
         Redirect::to('/staleaccounts');
@@ -102,13 +102,13 @@ class StaleAccountsController
 
         CsvExporter::download(
             'inaktive_konten_' . date('Ymd') . '.csv',
-            ['Name', 'UPN', 'Abteilung', 'Position', 'Tage inaktiv', 'Letzter Login', 'Lizenzen'],
+            [t('Name'), t('UPN'), t('Abteilung'), t('Position'), t('Tage inaktiv'), t('Letzter Login'), t('Lizenzen')],
             array_map(fn($u) => [
                 $u['displayName'] ?? '',
                 $u['userPrincipalName'] ?? '',
                 $u['department'] ?? '',
                 $u['jobTitle'] ?? '',
-                ($u['neverSignedIn'] ?? false) ? 'Nie' : ($u['daysInactive'] ?? ''),
+                ($u['neverSignedIn'] ?? false) ? t('Nie') : ($u['daysInactive'] ?? ''),
                 CsvExporter::formatDate($u['signInActivity']['lastSignInDateTime'] ?? ''),
                 count($u['assignedLicenses'] ?? []),
             ], $users)

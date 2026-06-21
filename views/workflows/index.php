@@ -29,7 +29,7 @@ use App\Modules\Workflows\WorkflowService;
                 <?php $actions = json_decode((string)$w['actions'], true) ?: []; ?>
                 <tr>
                     <td><a href="/workflows/edit/<?= (int)$w['id'] ?>"><?= View::escape($w['name']) ?></a></td>
-                    <td><span class="badge bg-info text-dark"><?= View::escape(WorkflowService::TRIGGERS[$w['trigger_key']] ?? $w['trigger_key']) ?></span></td>
+                    <td><span class="badge bg-info text-dark"><?= te(WorkflowService::TRIGGERS[$w['trigger_key']] ?? $w['trigger_key']) ?></span></td>
                     <td><?= count($actions) ?></td>
                     <td class="small text-muted"><?= View::escape($w['last_run'] ?: '—') ?></td>
                     <td>

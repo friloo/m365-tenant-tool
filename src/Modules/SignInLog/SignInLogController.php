@@ -47,7 +47,7 @@ class SignInLogController
         $countries = $service->getDistinctCountries($logs);
 
         View::render('signinlog/index', [
-            'pageTitle' => 'Anmeldeprotokoll',
+            'pageTitle' => t('Anmeldeprotokoll'),
             'logs'      => $logs,
             'stats'     => $stats,
             'apps'      => $apps,
@@ -84,17 +84,17 @@ class SignInLogController
         CsvExporter::download(
             'anmeldelog_' . date('Ymd_Hi') . '.csv',
             [
-                'Datum/Uhrzeit',
-                'Benutzer',
-                'UPN',
-                'App',
-                'IP-Adresse',
-                'Land',
-                'Gerät',
-                'Ergebnis',
-                'Fehlercode',
-                'Risiko',
-                'CA-Status',
+                t('Datum/Uhrzeit'),
+                t('Benutzer'),
+                t('UPN'),
+                t('App'),
+                t('IP-Adresse'),
+                t('Land'),
+                t('Gerät'),
+                t('Ergebnis'),
+                t('Fehlercode'),
+                t('Risiko'),
+                t('CA-Status'),
             ],
             array_map(function (array $log): array {
                 $success    = ($log['status']['errorCode'] ?? 1) === 0;
@@ -112,7 +112,7 @@ class SignInLogController
                     $log['ipAddress'] ?? '',
                     $country,
                     $os,
-                    $success ? 'Erfolgreich' : 'Fehlgeschlagen',
+                    $success ? t('Erfolgreich') : t('Fehlgeschlagen'),
                     (string)$errorCode,
                     $risk,
                     $caStatus,

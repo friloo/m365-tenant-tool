@@ -122,17 +122,17 @@ class SecurityPostureService
             'ca_mfa_all_users' => [
                 'fail' => [
                     'priority'    => 'critical',
-                    'title'       => 'MFA für alle Benutzer erzwingen',
-                    'description' => 'Keine aktive Conditional-Access-Richtlinie verlangt MFA für alle Benutzer. Ohne diese Richtlinie können Konten allein durch gestohlene Passwörter kompromittiert werden.',
-                    'action'      => 'Richtlinie erstellen',
+                    'title'       => t('MFA für alle Benutzer erzwingen'),
+                    'description' => t('Keine aktive Conditional-Access-Richtlinie verlangt MFA für alle Benutzer. Ohne diese Richtlinie können Konten allein durch gestohlene Passwörter kompromittiert werden.'),
+                    'action'      => t('Richtlinie erstellen'),
                     'module_url'  => '/conditionalaccess',
                     'ca_template' => 'mfa_all',
                 ],
                 'warn' => [
                     'priority'    => 'high',
-                    'title'       => 'MFA-Richtlinie aktivieren (Report-Modus)',
-                    'description' => 'Eine MFA-Richtlinie ist im Report-Modus vorhanden, erzwingt MFA aber noch nicht. Aktivierung erforderlich.',
-                    'action'      => 'Zu CA-Richtlinien',
+                    'title'       => t('MFA-Richtlinie aktivieren (Report-Modus)'),
+                    'description' => t('Eine MFA-Richtlinie ist im Report-Modus vorhanden, erzwingt MFA aber noch nicht. Aktivierung erforderlich.'),
+                    'action'      => t('Zu CA-Richtlinien'),
                     'module_url'  => '/conditionalaccess',
                     'ca_template' => null,
                 ],
@@ -140,9 +140,9 @@ class SecurityPostureService
             'ca_admin_mfa' => [
                 'fail' => [
                     'priority'    => 'critical',
-                    'title'       => 'Administratoren durch dedizierte MFA-Richtlinie schützen',
-                    'description' => 'Keine aktive CA-Richtlinie erzwingt MFA explizit für Admin-Rollen. Administratorkonten sind besonders hochwertige Angriffsziele.',
-                    'action'      => 'Richtlinie erstellen',
+                    'title'       => t('Administratoren durch dedizierte MFA-Richtlinie schützen'),
+                    'description' => t('Keine aktive CA-Richtlinie erzwingt MFA explizit für Admin-Rollen. Administratorkonten sind besonders hochwertige Angriffsziele.'),
+                    'action'      => t('Richtlinie erstellen'),
                     'module_url'  => '/conditionalaccess',
                     'ca_template' => 'mfa_admins',
                 ],
@@ -150,17 +150,17 @@ class SecurityPostureService
             'legacy_auth_blocked' => [
                 'fail' => [
                     'priority'    => 'critical',
-                    'title'       => 'Legacy-Authentifizierung blockieren',
-                    'description' => 'Ältere Protokolle (IMAP, POP3, SMTP AUTH, MAPI) umgehen MFA vollständig. Über 99% der Passwort-Spray-Angriffe nutzen Legacy-Auth.',
-                    'action'      => 'Richtlinie erstellen',
+                    'title'       => t('Legacy-Authentifizierung blockieren'),
+                    'description' => t('Ältere Protokolle (IMAP, POP3, SMTP AUTH, MAPI) umgehen MFA vollständig. Über 99% der Passwort-Spray-Angriffe nutzen Legacy-Auth.'),
+                    'action'      => t('Richtlinie erstellen'),
                     'module_url'  => '/conditionalaccess',
                     'ca_template' => 'block_legacy',
                 ],
                 'warn' => [
                     'priority'    => 'high',
-                    'title'       => 'Legacy-Auth-Blockierung aktivieren',
-                    'description' => 'Die Richtlinie zum Blockieren von Legacy-Authentifizierung ist nur im Report-Modus. Vollständige Aktivierung erforderlich.',
-                    'action'      => 'Zu CA-Richtlinien',
+                    'title'       => t('Legacy-Auth-Blockierung aktivieren'),
+                    'description' => t('Die Richtlinie zum Blockieren von Legacy-Authentifizierung ist nur im Report-Modus. Vollständige Aktivierung erforderlich.'),
+                    'action'      => t('Zu CA-Richtlinien'),
                     'module_url'  => '/conditionalaccess',
                     'ca_template' => null,
                 ],
@@ -168,9 +168,9 @@ class SecurityPostureService
             'sign_in_risk_policy' => [
                 'fail' => [
                     'priority'    => 'high',
-                    'title'       => 'Risikobasierte Anmelderichtlinie einrichten',
-                    'description' => 'Keine CA-Richtlinie reagiert auf Anmelderisiken (verdächtige IPs, unmögliche Reisen). Microsoft Entra erkennt diese Muster automatisch, sie werden aber nicht genutzt.',
-                    'action'      => 'Zu CA-Richtlinien',
+                    'title'       => t('Risikobasierte Anmelderichtlinie einrichten'),
+                    'description' => t('Keine CA-Richtlinie reagiert auf Anmelderisiken (verdächtige IPs, unmögliche Reisen). Microsoft Entra erkennt diese Muster automatisch, sie werden aber nicht genutzt.'),
+                    'action'      => t('Zu CA-Richtlinien'),
                     'module_url'  => '/conditionalaccess',
                     'ca_template' => null,
                 ],
@@ -178,9 +178,9 @@ class SecurityPostureService
             'user_risk_policy' => [
                 'fail' => [
                     'priority'    => 'high',
-                    'title'       => 'Benutzerrisiko-Richtlinie einrichten',
-                    'description' => 'Keine CA-Richtlinie reagiert auf hohes Benutzerrisiko (geleakte Credentials, kompromittierte Konten). Betroffene Benutzer können ungehindert weiterarbeiten.',
-                    'action'      => 'Zu CA-Richtlinien',
+                    'title'       => t('Benutzerrisiko-Richtlinie einrichten'),
+                    'description' => t('Keine CA-Richtlinie reagiert auf hohes Benutzerrisiko (geleakte Credentials, kompromittierte Konten). Betroffene Benutzer können ungehindert weiterarbeiten.'),
+                    'action'      => t('Zu CA-Richtlinien'),
                     'module_url'  => '/conditionalaccess',
                     'ca_template' => null,
                 ],
@@ -188,17 +188,17 @@ class SecurityPostureService
             'mfa_registration_rate' => [
                 'fail' => [
                     'priority'    => 'high',
-                    'title'       => 'MFA-Registrierungsrate erhöhen',
-                    'description' => 'Weniger als 75% der Benutzer haben MFA registriert. Kampagne zur MFA-Einrichtung starten oder Registrierung per CA erzwingen.',
-                    'action'      => 'MFA-Übersicht',
+                    'title'       => t('MFA-Registrierungsrate erhöhen'),
+                    'description' => t('Weniger als 75% der Benutzer haben MFA registriert. Kampagne zur MFA-Einrichtung starten oder Registrierung per CA erzwingen.'),
+                    'action'      => t('MFA-Übersicht'),
                     'module_url'  => '/mfamethods',
                     'ca_template' => null,
                 ],
                 'warn' => [
                     'priority'    => 'medium',
-                    'title'       => 'MFA-Registrierungsrate verbessern',
-                    'description' => 'Die MFA-Registrierungsrate liegt unter 95%. Nicht registrierte Benutzer identifizieren und zur Registrierung auffordern.',
-                    'action'      => 'Nicht registrierte anzeigen',
+                    'title'       => t('MFA-Registrierungsrate verbessern'),
+                    'description' => t('Die MFA-Registrierungsrate liegt unter 95%. Nicht registrierte Benutzer identifizieren und zur Registrierung auffordern.'),
+                    'action'      => t('Nicht registrierte anzeigen'),
                     'module_url'  => '/mfamethods',
                     'ca_template' => null,
                 ],
@@ -206,17 +206,17 @@ class SecurityPostureService
             'risky_users_open' => [
                 'fail' => [
                     'priority'    => 'high',
-                    'title'       => 'Risikobehaftete Benutzer untersuchen',
-                    'description' => 'Mehrere Benutzer haben einen aktiven Risikostatus (atRisk). Diese Konten sind möglicherweise kompromittiert und benötigen sofortige Überprüfung.',
-                    'action'      => 'Risikobenutzer anzeigen',
+                    'title'       => t('Risikobehaftete Benutzer untersuchen'),
+                    'description' => t('Mehrere Benutzer haben einen aktiven Risikostatus (atRisk). Diese Konten sind möglicherweise kompromittiert und benötigen sofortige Überprüfung.'),
+                    'action'      => t('Risikobenutzer anzeigen'),
                     'module_url'  => '/hardening',
                     'ca_template' => null,
                 ],
                 'warn' => [
                     'priority'    => 'medium',
-                    'title'       => 'Risikobenutzer überprüfen',
-                    'description' => 'Einige Benutzer haben einen aktiven Risikostatus. Überprüfung und ggf. Kennwortänderung empfohlen.',
-                    'action'      => 'Risikobenutzer anzeigen',
+                    'title'       => t('Risikobenutzer überprüfen'),
+                    'description' => t('Einige Benutzer haben einen aktiven Risikostatus. Überprüfung und ggf. Kennwortänderung empfohlen.'),
+                    'action'      => t('Risikobenutzer anzeigen'),
                     'module_url'  => '/hardening',
                     'ca_template' => null,
                 ],
@@ -224,9 +224,9 @@ class SecurityPostureService
             'device_compliance_rate' => [
                 'fail' => [
                     'priority'    => 'medium',
-                    'title'       => 'Geräte-Compliance-Rate verbessern',
-                    'description' => 'Mehr als 20% der verwalteten Geräte sind nicht konform. Nicht konforme Geräte sollten keinen Zugriff auf Unternehmensressourcen erhalten.',
-                    'action'      => 'Geräte anzeigen',
+                    'title'       => t('Geräte-Compliance-Rate verbessern'),
+                    'description' => t('Mehr als 20% der verwalteten Geräte sind nicht konform. Nicht konforme Geräte sollten keinen Zugriff auf Unternehmensressourcen erhalten.'),
+                    'action'      => t('Geräte anzeigen'),
                     'module_url'  => '/devices',
                     'ca_template' => null,
                 ],
@@ -234,9 +234,9 @@ class SecurityPostureService
             'ca_device_compliance' => [
                 'fail' => [
                     'priority'    => 'medium',
-                    'title'       => 'Gerätekonformität in Conditional Access erzwingen',
-                    'description' => 'Keine CA-Richtlinie verlangt konforme oder Hybrid-Azure-AD-joinete Geräte. Ermöglicht Zugriff von unverwalteten Privatgeräten.',
-                    'action'      => 'Zu CA-Richtlinien',
+                    'title'       => t('Gerätekonformität in Conditional Access erzwingen'),
+                    'description' => t('Keine CA-Richtlinie verlangt konforme oder Hybrid-Azure-AD-joinete Geräte. Ermöglicht Zugriff von unverwalteten Privatgeräten.'),
+                    'action'      => t('Zu CA-Richtlinien'),
                     'module_url'  => '/conditionalaccess',
                     'ca_template' => null,
                 ],
@@ -244,17 +244,17 @@ class SecurityPostureService
             'defender_alerts' => [
                 'fail' => [
                     'priority'    => 'high',
-                    'title'       => 'Offene Defender-Alerts bearbeiten',
-                    'description' => 'Es gibt viele ungelöste Microsoft Defender-Sicherheitswarnungen. Alerts sollten zeitnah untersucht und geschlossen werden.',
-                    'action'      => 'Alerts anzeigen',
+                    'title'       => t('Offene Defender-Alerts bearbeiten'),
+                    'description' => t('Es gibt viele ungelöste Microsoft Defender-Sicherheitswarnungen. Alerts sollten zeitnah untersucht und geschlossen werden.'),
+                    'action'      => t('Alerts anzeigen'),
                     'module_url'  => '/hardening',
                     'ca_template' => null,
                 ],
                 'warn' => [
                     'priority'    => 'medium',
-                    'title'       => 'Offene Defender-Alerts prüfen',
-                    'description' => 'Einige ungelöste Microsoft Defender-Sicherheitswarnungen vorhanden.',
-                    'action'      => 'Alerts anzeigen',
+                    'title'       => t('Offene Defender-Alerts prüfen'),
+                    'description' => t('Einige ungelöste Microsoft Defender-Sicherheitswarnungen vorhanden.'),
+                    'action'      => t('Alerts anzeigen'),
                     'module_url'  => '/hardening',
                     'ca_template' => null,
                 ],
@@ -262,17 +262,17 @@ class SecurityPostureService
             'secure_score' => [
                 'fail' => [
                     'priority'    => 'medium',
-                    'title'       => 'Microsoft Secure Score verbessern',
-                    'description' => 'Der Secure Score liegt unter 30%. Microsoft empfiehlt konkrete Maßnahmen im Security-Portal. Höchst-Priorität-Empfehlungen zuerst umsetzen.',
-                    'action'      => 'Sicherheitsmodul',
+                    'title'       => t('Microsoft Secure Score verbessern'),
+                    'description' => t('Der Secure Score liegt unter 30%. Microsoft empfiehlt konkrete Maßnahmen im Security-Portal. Höchst-Priorität-Empfehlungen zuerst umsetzen.'),
+                    'action'      => t('Sicherheitsmodul'),
                     'module_url'  => '/hardening',
                     'ca_template' => null,
                 ],
                 'warn' => [
                     'priority'    => 'low',
-                    'title'       => 'Secure Score weiter verbessern',
-                    'description' => 'Der Secure Score liegt unter 50%. Weitere Empfehlungen aus dem Microsoft Security Center umsetzen.',
-                    'action'      => 'Sicherheitsmodul',
+                    'title'       => t('Secure Score weiter verbessern'),
+                    'description' => t('Der Secure Score liegt unter 50%. Weitere Empfehlungen aus dem Microsoft Security Center umsetzen.'),
+                    'action'      => t('Sicherheitsmodul'),
                     'module_url'  => '/hardening',
                     'ca_template' => null,
                 ],
@@ -280,17 +280,17 @@ class SecurityPostureService
             'admin_count' => [
                 'fail' => [
                     'priority'    => 'high',
-                    'title'       => 'Anzahl globaler Administratoren reduzieren',
-                    'description' => 'Mehr als 5 aktive globale Administratoren erhöhen das Angriffsrisiko erheblich. Microsoft empfiehlt max. 2-4 globale Admins und die Nutzung von Least-Privilege-Rollen.',
-                    'action'      => 'Benutzerrollen prüfen',
+                    'title'       => t('Anzahl globaler Administratoren reduzieren'),
+                    'description' => t('Mehr als 5 aktive globale Administratoren erhöhen das Angriffsrisiko erheblich. Microsoft empfiehlt max. 2-4 globale Admins und die Nutzung von Least-Privilege-Rollen.'),
+                    'action'      => t('Benutzerrollen prüfen'),
                     'module_url'  => '/users',
                     'ca_template' => null,
                 ],
                 'warn' => [
                     'priority'    => 'low',
-                    'title'       => 'Globale Administratoren auf Notwendigkeit prüfen',
-                    'description' => 'Es gibt 3-5 globale Administratoren. Prüfen ob Least-Privilege-Rollen ausreichen würden.',
-                    'action'      => 'Benutzerrollen prüfen',
+                    'title'       => t('Globale Administratoren auf Notwendigkeit prüfen'),
+                    'description' => t('Es gibt 3-5 globale Administratoren. Prüfen ob Least-Privilege-Rollen ausreichen würden.'),
+                    'action'      => t('Benutzerrollen prüfen'),
                     'module_url'  => '/users',
                     'ca_template' => null,
                 ],
@@ -298,9 +298,9 @@ class SecurityPostureService
             'named_locations' => [
                 'fail' => [
                     'priority'    => 'low',
-                    'title'       => 'Vertrauenswürdige Standorte konfigurieren',
-                    'description' => 'Keine Named Locations konfiguriert. Vertrauenswürdige IP-Bereiche und Länder ermöglichen differenziertere CA-Richtlinien.',
-                    'action'      => 'Standorte konfigurieren',
+                    'title'       => t('Vertrauenswürdige Standorte konfigurieren'),
+                    'description' => t('Keine Named Locations konfiguriert. Vertrauenswürdige IP-Bereiche und Länder ermöglichen differenziertere CA-Richtlinien.'),
+                    'action'      => t('Standorte konfigurieren'),
                     'module_url'  => '/namedlocations',
                     'ca_template' => null,
                 ],
@@ -308,17 +308,17 @@ class SecurityPostureService
             'app_secrets_expiry' => [
                 'fail' => [
                     'priority'    => 'medium',
-                    'title'       => 'Abgelaufene App-Secrets erneuern',
-                    'description' => 'Abgelaufene App-Secrets können Dienste unterbrechen oder eine Sicherheitslücke darstellen wenn Rotationszyklen nicht eingehalten werden.',
-                    'action'      => 'App-Registrierungen',
+                    'title'       => t('Abgelaufene App-Secrets erneuern'),
+                    'description' => t('Abgelaufene App-Secrets können Dienste unterbrechen oder eine Sicherheitslücke darstellen wenn Rotationszyklen nicht eingehalten werden.'),
+                    'action'      => t('App-Registrierungen'),
                     'module_url'  => '/hardening',
                     'ca_template' => null,
                 ],
                 'warn' => [
                     'priority'    => 'medium',
-                    'title'       => 'App-Secrets bald ablaufend — erneuern',
-                    'description' => 'Einige App-Secrets laufen in weniger als 30 Tagen ab. Jetzt erneuern um Dienstunterbrechungen zu vermeiden.',
-                    'action'      => 'App-Registrierungen',
+                    'title'       => t('App-Secrets bald ablaufend — erneuern'),
+                    'description' => t('Einige App-Secrets laufen in weniger als 30 Tagen ab. Jetzt erneuern um Dienstunterbrechungen zu vermeiden.'),
+                    'action'      => t('App-Registrierungen'),
                     'module_url'  => '/hardening',
                     'ca_template' => null,
                 ],
@@ -326,17 +326,17 @@ class SecurityPostureService
             'no_stale_licensed' => [
                 'fail' => [
                     'priority'    => 'medium',
-                    'title'       => 'Inaktive lizenzierte Konten bereinigen',
-                    'description' => 'Mehrere aktive, lizenzierte Benutzer haben sich seit über 90 Tagen nicht angemeldet. Ungenutzte Konten sollten deaktiviert und Lizenzen freigegeben werden.',
-                    'action'      => 'Benutzer prüfen',
+                    'title'       => t('Inaktive lizenzierte Konten bereinigen'),
+                    'description' => t('Mehrere aktive, lizenzierte Benutzer haben sich seit über 90 Tagen nicht angemeldet. Ungenutzte Konten sollten deaktiviert und Lizenzen freigegeben werden.'),
+                    'action'      => t('Benutzer prüfen'),
                     'module_url'  => '/users',
                     'ca_template' => null,
                 ],
                 'warn' => [
                     'priority'    => 'low',
-                    'title'       => 'Inaktive Benutzerkonten überprüfen',
-                    'description' => 'Einige lizenzierte Benutzer waren über 90 Tage inaktiv.',
-                    'action'      => 'Benutzer prüfen',
+                    'title'       => t('Inaktive Benutzerkonten überprüfen'),
+                    'description' => t('Einige lizenzierte Benutzer waren über 90 Tage inaktiv.'),
+                    'action'      => t('Benutzer prüfen'),
                     'module_url'  => '/users',
                     'ca_template' => null,
                 ],
@@ -344,9 +344,9 @@ class SecurityPostureService
             'guest_user_count' => [
                 'fail' => [
                     'priority'    => 'medium',
-                    'title'       => 'Gastbenutzer überprüfen und bereinigen',
-                    'description' => 'Viele aktive Gastbenutzer können das Risiko unbeabsichtigter Datenweitergabe erhöhen. Regelmäßige Zugriffsüberprüfungen (Access Reviews) empfohlen.',
-                    'action'      => 'Benutzer anzeigen',
+                    'title'       => t('Gastbenutzer überprüfen und bereinigen'),
+                    'description' => t('Viele aktive Gastbenutzer können das Risiko unbeabsichtigter Datenweitergabe erhöhen. Regelmäßige Zugriffsüberprüfungen (Access Reviews) empfohlen.'),
+                    'action'      => t('Benutzer anzeigen'),
                     'module_url'  => '/users',
                     'ca_template' => null,
                 ],
@@ -354,9 +354,9 @@ class SecurityPostureService
             'passwordless_capable' => [
                 'fail' => [
                     'priority'    => 'low',
-                    'title'       => 'Passwortlose Authentifizierung einführen',
-                    'description' => 'Noch keine Benutzer haben passwortlose Methoden (FIDO2, Windows Hello, Microsoft Authenticator Passwordless) registriert. Diese sind phishing-sicherer als klassische MFA.',
-                    'action'      => 'MFA-Methoden',
+                    'title'       => t('Passwortlose Authentifizierung einführen'),
+                    'description' => t('Noch keine Benutzer haben passwortlose Methoden (FIDO2, Windows Hello, Microsoft Authenticator Passwordless) registriert. Diese sind phishing-sicherer als klassische MFA.'),
+                    'action'      => t('MFA-Methoden'),
                     'module_url'  => '/mfamethods',
                     'ca_template' => null,
                 ],
@@ -364,17 +364,17 @@ class SecurityPostureService
             'security_defaults' => [
                 'fail' => [
                     'priority'    => 'critical',
-                    'title'       => 'Basis-Schutz fehlt — weder Security Defaults noch CA aktiv',
-                    'description' => 'Weder Security Defaults noch Conditional-Access-Richtlinien sind aktiv. Der Tenant hat keinen automatisierten Basisschutz gegen gängige Angriffe.',
-                    'action'      => 'CA-Richtlinien einrichten',
+                    'title'       => t('Basis-Schutz fehlt — weder Security Defaults noch CA aktiv'),
+                    'description' => t('Weder Security Defaults noch Conditional-Access-Richtlinien sind aktiv. Der Tenant hat keinen automatisierten Basisschutz gegen gängige Angriffe.'),
+                    'action'      => t('CA-Richtlinien einrichten'),
                     'module_url'  => '/conditionalaccess',
                     'ca_template' => null,
                 ],
                 'warn' => [
                     'priority'    => 'medium',
-                    'title'       => 'Security Defaults und CA gleichzeitig aktiv',
-                    'description' => 'Security Defaults und eigene CA-Richtlinien sind gleichzeitig aktiv. Dies kann zu Konflikten führen. Security Defaults deaktivieren und vollständig auf CA setzen.',
-                    'action'      => 'Zu CA-Richtlinien',
+                    'title'       => t('Security Defaults und CA gleichzeitig aktiv'),
+                    'description' => t('Security Defaults und eigene CA-Richtlinien sind gleichzeitig aktiv. Dies kann zu Konflikten führen. Security Defaults deaktivieren und vollständig auf CA setzen.'),
+                    'action'      => t('Zu CA-Richtlinien'),
                     'module_url'  => '/conditionalaccess',
                     'ca_template' => null,
                 ],
@@ -382,17 +382,17 @@ class SecurityPostureService
             'admins_mfa_registered' => [
                 'fail' => [
                     'priority'    => 'critical',
-                    'title'       => 'Globale Admins ohne MFA-Registrierung',
-                    'description' => 'Mindestens ein globaler Administrator hat keine MFA-Methode registriert. Admin-Konten ohne MFA sind das größte Einzelrisiko in einem M365-Tenant.',
-                    'action'      => 'MFA-Status prüfen',
+                    'title'       => t('Globale Admins ohne MFA-Registrierung'),
+                    'description' => t('Mindestens ein globaler Administrator hat keine MFA-Methode registriert. Admin-Konten ohne MFA sind das größte Einzelrisiko in einem M365-Tenant.'),
+                    'action'      => t('MFA-Status prüfen'),
                     'module_url'  => '/mfamethods',
                     'ca_template' => null,
                 ],
                 'warn' => [
                     'priority'    => 'high',
-                    'title'       => 'Admin-MFA-Status überprüfen',
-                    'description' => 'MFA-Daten für globale Administratoren konnten nicht vollständig verifiziert werden.',
-                    'action'      => 'MFA-Status prüfen',
+                    'title'       => t('Admin-MFA-Status überprüfen'),
+                    'description' => t('MFA-Daten für globale Administratoren konnten nicht vollständig verifiziert werden.'),
+                    'action'      => t('MFA-Status prüfen'),
                     'module_url'  => '/mfamethods',
                     'ca_template' => null,
                 ],
@@ -400,17 +400,17 @@ class SecurityPostureService
             'app_consent_policy' => [
                 'fail' => [
                     'priority'    => 'high',
-                    'title'       => 'Benutzer dürfen beliebigen Apps zustimmen',
-                    'description' => 'Die aktuelle App-Zustimmungsrichtlinie erlaubt Benutzern, OAuth-Berechtigungen an Drittanbieter-Apps zu vergeben. Dies ermöglicht OAuth-Phishing-Angriffe (Consent Phishing).',
-                    'action'      => 'Richtlinie prüfen',
+                    'title'       => t('Benutzer dürfen beliebigen Apps zustimmen'),
+                    'description' => t('Die aktuelle App-Zustimmungsrichtlinie erlaubt Benutzern, OAuth-Berechtigungen an Drittanbieter-Apps zu vergeben. Dies ermöglicht OAuth-Phishing-Angriffe (Consent Phishing).'),
+                    'action'      => t('Richtlinie prüfen'),
                     'module_url'  => '/settings',
                     'ca_template' => null,
                 ],
                 'warn' => [
                     'priority'    => 'medium',
-                    'title'       => 'App-Zustimmungsrichtlinie einschränken',
-                    'description' => 'Benutzer können bestimmten Apps ohne Admin-Genehmigung zustimmen. Admin-Consent-Workflow aktivieren um alle Zustimmungen zu kontrollieren.',
-                    'action'      => 'Richtlinie prüfen',
+                    'title'       => t('App-Zustimmungsrichtlinie einschränken'),
+                    'description' => t('Benutzer können bestimmten Apps ohne Admin-Genehmigung zustimmen. Admin-Consent-Workflow aktivieren um alle Zustimmungen zu kontrollieren.'),
+                    'action'      => t('Richtlinie prüfen'),
                     'module_url'  => '/settings',
                     'ca_template' => null,
                 ],
@@ -418,17 +418,17 @@ class SecurityPostureService
             'external_collab_policy' => [
                 'fail' => [
                     'priority'    => 'medium',
-                    'title'       => 'Einladungsrichtlinie für Gäste einschränken',
-                    'description' => 'Jeder (auch externe Gäste) kann neue Gäste in den Tenant einladen. Einladungen sollten auf Admins und Gast-Einlader begrenzt werden.',
-                    'action'      => 'Richtlinie prüfen',
+                    'title'       => t('Einladungsrichtlinie für Gäste einschränken'),
+                    'description' => t('Jeder (auch externe Gäste) kann neue Gäste in den Tenant einladen. Einladungen sollten auf Admins und Gast-Einlader begrenzt werden.'),
+                    'action'      => t('Richtlinie prüfen'),
                     'module_url'  => '/settings',
                     'ca_template' => null,
                 ],
                 'warn' => [
                     'priority'    => 'low',
-                    'title'       => 'Gasteinladungen nur durch Admins erlauben',
-                    'description' => 'Alle Benutzer dürfen Gäste einladen. Empfehlung: nur Admins und dedizierte Gast-Einlader.',
-                    'action'      => 'Richtlinie prüfen',
+                    'title'       => t('Gasteinladungen nur durch Admins erlauben'),
+                    'description' => t('Alle Benutzer dürfen Gäste einladen. Empfehlung: nur Admins und dedizierte Gast-Einlader.'),
+                    'action'      => t('Richtlinie prüfen'),
                     'module_url'  => '/settings',
                     'ca_template' => null,
                 ],
@@ -436,17 +436,17 @@ class SecurityPostureService
             'sspr_adoption' => [
                 'fail' => [
                     'priority'    => 'medium',
-                    'title'       => 'Self-Service Password Reset (SSPR) einführen',
-                    'description' => 'Kein Benutzer hat SSPR registriert. SSPR reduziert Helpdesk-Aufwand und verhindert dass Benutzer unsichere Passwort-Reset-Wege nutzen.',
-                    'action'      => 'MFA-Methoden',
+                    'title'       => t('Self-Service Password Reset (SSPR) einführen'),
+                    'description' => t('Kein Benutzer hat SSPR registriert. SSPR reduziert Helpdesk-Aufwand und verhindert dass Benutzer unsichere Passwort-Reset-Wege nutzen.'),
+                    'action'      => t('MFA-Methoden'),
                     'module_url'  => '/mfamethods',
                     'ca_template' => null,
                 ],
                 'warn' => [
                     'priority'    => 'low',
-                    'title'       => 'SSPR-Registrierungsrate verbessern',
-                    'description' => 'Weniger als 50% der Benutzer haben SSPR registriert. Fehlende Registrierungen erhöhen Helpdesk-Last.',
-                    'action'      => 'MFA-Methoden',
+                    'title'       => t('SSPR-Registrierungsrate verbessern'),
+                    'description' => t('Weniger als 50% der Benutzer haben SSPR registriert. Fehlende Registrierungen erhöhen Helpdesk-Last.'),
+                    'action'      => t('MFA-Methoden'),
                     'module_url'  => '/mfamethods',
                     'ca_template' => null,
                 ],
@@ -454,9 +454,9 @@ class SecurityPostureService
             'ca_session_controls' => [
                 'fail' => [
                     'priority'    => 'low',
-                    'title'       => 'Sitzungslebensdauer einschränken (CA)',
-                    'description' => 'Keine CA-Richtlinie erzwingt eine maximale Sitzungsdauer oder verhindert persistente Browser-Sitzungen. Lang lebende Tokens erhöhen das Risiko bei gestohlenen Refresh-Tokens.',
-                    'action'      => 'Zu CA-Richtlinien',
+                    'title'       => t('Sitzungslebensdauer einschränken (CA)'),
+                    'description' => t('Keine CA-Richtlinie erzwingt eine maximale Sitzungsdauer oder verhindert persistente Browser-Sitzungen. Lang lebende Tokens erhöhen das Risiko bei gestohlenen Refresh-Tokens.'),
+                    'action'      => t('Zu CA-Richtlinien'),
                     'module_url'  => '/conditionalaccess',
                     'ca_template' => null,
                 ],
@@ -464,9 +464,9 @@ class SecurityPostureService
             'pim_adoption' => [
                 'fail' => [
                     'priority'    => 'medium',
-                    'title'       => 'Privileged Identity Management (PIM) einführen',
-                    'description' => 'Keine PIM-berechtigten Rollenzuweisungen gefunden. PIM ermöglicht Just-in-Time-Zugriff für Admin-Rollen — Admins sind nur aktiv wenn nötig, mit Genehmigungsprozess und Audit-Trail.',
-                    'action'      => 'Benutzer & Rollen',
+                    'title'       => t('Privileged Identity Management (PIM) einführen'),
+                    'description' => t('Keine PIM-berechtigten Rollenzuweisungen gefunden. PIM ermöglicht Just-in-Time-Zugriff für Admin-Rollen — Admins sind nur aktiv wenn nötig, mit Genehmigungsprozess und Audit-Trail.'),
+                    'action'      => t('Benutzer & Rollen'),
                     'module_url'  => '/users',
                     'ca_template' => null,
                 ],
@@ -474,17 +474,17 @@ class SecurityPostureService
             'break_glass' => [
                 'fail' => [
                     'priority'    => 'high',
-                    'title'       => 'Notfallzugangskonto (Break-Glass) fehlt',
-                    'description' => 'Kein globales Admin-Konto ohne Lizenz gefunden. Microsoft empfiehlt mindestens 2 dedizierte Notfallkonten: cloud-only, kein MFA, keine Lizenz, starkes Passwort offline hinterlegt — für den Fall dass MFA oder CA nicht funktionieren.',
-                    'action'      => 'Admin-Rollen prüfen',
+                    'title'       => t('Notfallzugangskonto (Break-Glass) fehlt'),
+                    'description' => t('Kein globales Admin-Konto ohne Lizenz gefunden. Microsoft empfiehlt mindestens 2 dedizierte Notfallkonten: cloud-only, kein MFA, keine Lizenz, starkes Passwort offline hinterlegt — für den Fall dass MFA oder CA nicht funktionieren.'),
+                    'action'      => t('Admin-Rollen prüfen'),
                     'module_url'  => '/adminroles',
                     'ca_template' => null,
                 ],
                 'warn' => [
                     'priority'    => 'medium',
-                    'title'       => 'Nur 1 Notfallkonto konfiguriert',
-                    'description' => 'Nur ein potenzielles Notfallkonto gefunden. Microsoft empfiehlt mindestens 2 unabhängige Break-Glass-Konten für Redundanz.',
-                    'action'      => 'Admin-Rollen prüfen',
+                    'title'       => t('Nur 1 Notfallkonto konfiguriert'),
+                    'description' => t('Nur ein potenzielles Notfallkonto gefunden. Microsoft empfiehlt mindestens 2 unabhängige Break-Glass-Konten für Redundanz.'),
+                    'action'      => t('Admin-Rollen prüfen'),
                     'module_url'  => '/adminroles',
                     'ca_template' => null,
                 ],
@@ -492,9 +492,9 @@ class SecurityPostureService
             'defender_for_office' => [
                 'fail' => [
                     'priority'    => 'high',
-                    'title'       => 'Defender for Office 365 nicht lizenziert',
-                    'description' => 'Kein Microsoft Defender for Office 365 Abonnement gefunden. Safe Links, Safe Attachments und Anti-Phishing-Schutz sind nicht verfügbar — ein kritisches Sicherheitsrisiko für E-Mail-Angriffe.',
-                    'action'      => 'Lizenzen prüfen',
+                    'title'       => t('Defender for Office 365 nicht lizenziert'),
+                    'description' => t('Kein Microsoft Defender for Office 365 Abonnement gefunden. Safe Links, Safe Attachments und Anti-Phishing-Schutz sind nicht verfügbar — ein kritisches Sicherheitsrisiko für E-Mail-Angriffe.'),
+                    'action'      => t('Lizenzen prüfen'),
                     'module_url'  => '/licenses',
                     'ca_template' => null,
                 ],
@@ -531,8 +531,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'mfa_registration_rate',
             'category'    => 'Identität & MFA',
-            'label'       => 'MFA-Registrierungsrate',
-            'description' => 'Anteil der Benutzer mit registrierter MFA-Methode.',
+            'label'       => t('MFA-Registrierungsrate'),
+            'description' => t('Anteil der Benutzer mit registrierter MFA-Methode.'),
             'severity'    => 'high',
         ];
         try {
@@ -545,14 +545,14 @@ class SecurityPostureService
             $registered = count(array_filter($users, fn($u) => $u['isMfaRegistered'] ?? false));
             $rate       = $total > 0 ? round($registered / $total * 100, 1) : 0;
             if ($rate >= 95) {
-                return array_merge($base, ['status' => 'pass', 'detail' => "{$registered}/{$total} Benutzer haben MFA registriert ({$rate}%)."]);
+                return array_merge($base, ['status' => 'pass', 'detail' => t(':registered/:total Benutzer haben MFA registriert (:rate%).', ['registered' => $registered, 'total' => $total, 'rate' => $rate])]);
             }
             if ($rate >= 75) {
-                return array_merge($base, ['status' => 'warn', 'detail' => "MFA-Registrierungsrate: {$rate}% ({$registered}/{$total}) — Ziel ist ≥95%."]);
+                return array_merge($base, ['status' => 'warn', 'detail' => t('MFA-Registrierungsrate: :rate% (:registered/:total) — Ziel ist ≥95%.', ['rate' => $rate, 'registered' => $registered, 'total' => $total])]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => "Niedrige MFA-Registrierungsrate: {$rate}% ({$registered}/{$total})."]);
+            return array_merge($base, ['status' => 'fail', 'detail' => t('Niedrige MFA-Registrierungsrate: :rate% (:registered/:total).', ['rate' => $rate, 'registered' => $registered, 'total' => $total])]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt oder API-Fehler.')]);
         }
     }
 
@@ -561,8 +561,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'ca_mfa_all_users',
             'category'    => 'Conditional Access',
-            'label'       => 'MFA für alle Benutzer (CA)',
-            'description' => 'Aktive CA-Richtlinie, die MFA für alle oder die meisten Benutzer verlangt.',
+            'label'       => t('MFA für alle Benutzer (CA)'),
+            'description' => t('Aktive CA-Richtlinie, die MFA für alle oder die meisten Benutzer verlangt.'),
             'severity'    => 'high',
         ];
         $foundEnabled = $foundReport = false;
@@ -588,12 +588,12 @@ class SecurityPostureService
             }
         }
         if ($foundEnabled) {
-            return array_merge($base, ['status' => 'pass', 'detail' => 'Aktive CA-Richtlinie verlangt MFA für alle Benutzer.']);
+            return array_merge($base, ['status' => 'pass', 'detail' => t('Aktive CA-Richtlinie verlangt MFA für alle Benutzer.')]);
         }
         if ($foundReport) {
-            return array_merge($base, ['status' => 'warn', 'detail' => 'MFA-Richtlinie existiert, ist aber nur im Report-Modus — noch nicht aktiv.']);
+            return array_merge($base, ['status' => 'warn', 'detail' => t('MFA-Richtlinie existiert, ist aber nur im Report-Modus — noch nicht aktiv.')]);
         }
-        return array_merge($base, ['status' => 'fail', 'detail' => 'Keine aktive CA-Richtlinie erzwingt MFA für alle Benutzer.']);
+        return array_merge($base, ['status' => 'fail', 'detail' => t('Keine aktive CA-Richtlinie erzwingt MFA für alle Benutzer.')]);
     }
 
     private function checkCaAdminMfa(array $policies): array
@@ -601,8 +601,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'ca_admin_mfa',
             'category'    => 'Conditional Access',
-            'label'       => 'MFA für Administratoren (CA)',
-            'description' => 'Aktive CA-Richtlinie, die MFA explizit für Admin-Rollen verlangt.',
+            'label'       => t('MFA für Administratoren (CA)'),
+            'description' => t('Aktive CA-Richtlinie, die MFA explizit für Admin-Rollen verlangt.'),
             'severity'    => 'high',
         ];
         foreach ($policies as $p) {
@@ -617,10 +617,10 @@ class SecurityPostureService
             $incUsers = $p['conditions']['users']['includeUsers'] ?? [];
             $incRoles = $p['conditions']['users']['includeRoles'] ?? [];
             if (in_array('All', (array)$incUsers, true) || !empty($incRoles)) {
-                return array_merge($base, ['status' => 'pass', 'detail' => 'Aktive CA-Richtlinie verlangt MFA für Admin-Rollen oder alle Benutzer.']);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Aktive CA-Richtlinie verlangt MFA für Admin-Rollen oder alle Benutzer.')]);
             }
         }
-        return array_merge($base, ['status' => 'fail', 'detail' => 'Keine aktive CA-Richtlinie schützt explizit Admin-Rollen mit MFA.']);
+        return array_merge($base, ['status' => 'fail', 'detail' => t('Keine aktive CA-Richtlinie schützt explizit Admin-Rollen mit MFA.')]);
     }
 
     private function checkPasswordlessCapable(): array
@@ -628,8 +628,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'passwordless_capable',
             'category'    => 'Identität & MFA',
-            'label'       => 'Passwortlose Authentifizierung',
-            'description' => 'Mindestens ein Benutzer nutzt FIDO2, Windows Hello oder Authenticator Passwordless.',
+            'label'       => t('Passwortlose Authentifizierung'),
+            'description' => t('Mindestens ein Benutzer nutzt FIDO2, Windows Hello oder Authenticator Passwordless.'),
             'severity'    => 'low',
         ];
         try {
@@ -641,11 +641,11 @@ class SecurityPostureService
             $capable = count(array_filter($users, fn($u) => $u['isPasswordlessCapable'] ?? false));
             $total   = count($users);
             if ($capable > 0) {
-                return array_merge($base, ['status' => 'pass', 'detail' => "{$capable} von {$total} Benutzer(n) sind für passwortlose Anmeldung registriert."]);
+                return array_merge($base, ['status' => 'pass', 'detail' => t(':capable von :total Benutzer(n) sind für passwortlose Anmeldung registriert.', ['capable' => $capable, 'total' => $total])]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => 'Noch kein Benutzer hat eine passwortlose Methode (FIDO2, Windows Hello, Passwordless) registriert.']);
+            return array_merge($base, ['status' => 'fail', 'detail' => t('Noch kein Benutzer hat eine passwortlose Methode (FIDO2, Windows Hello, Passwordless) registriert.')]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt oder API-Fehler.')]);
         }
     }
 
@@ -654,8 +654,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'risky_users_open',
             'category'    => 'Identität & MFA',
-            'label'       => 'Risikobenutzer (atRisk)',
-            'description' => 'Anzahl der Benutzer mit aktivem Risikostatus in Entra Identity Protection.',
+            'label'       => t('Risikobenutzer (atRisk)'),
+            'description' => t('Anzahl der Benutzer mit aktivem Risikostatus in Entra Identity Protection.'),
             'severity'    => 'medium',
         ];
         try {
@@ -666,18 +666,18 @@ class SecurityPostureService
             );
             // A swallowed 403 yields count 0 — don't report that as a clean "pass".
             if ($this->graph->getLastError() !== null) {
-                return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (IdentityRiskyUser.Read.All erforderlich).']);
+                return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt (IdentityRiskyUser.Read.All erforderlich).')]);
             }
             $count = (int)($data['@odata.count'] ?? count($data['value'] ?? []));
             if ($count === 0) {
-                return array_merge($base, ['status' => 'pass', 'detail' => 'Keine Benutzer mit aktivem Risikostatus.']);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Keine Benutzer mit aktivem Risikostatus.')]);
             }
             if ($count <= 5) {
-                return array_merge($base, ['status' => 'warn', 'detail' => "{$count} Benutzer mit aktivem Risikostatus — Überprüfung empfohlen."]);
+                return array_merge($base, ['status' => 'warn', 'detail' => t(':count Benutzer mit aktivem Risikostatus — Überprüfung empfohlen.', ['count' => $count])]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => "{$count} Benutzer mit aktivem Risikostatus erfordern sofortige Aufmerksamkeit."]);
+            return array_merge($base, ['status' => 'fail', 'detail' => t(':count Benutzer mit aktivem Risikostatus erfordern sofortige Aufmerksamkeit.', ['count' => $count])]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (IdentityRiskyUser.Read.All erforderlich).']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt (IdentityRiskyUser.Read.All erforderlich).')]);
         }
     }
 
@@ -686,8 +686,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'legacy_auth_blocked',
             'category'    => 'Conditional Access',
-            'label'       => 'Legacy-Authentifizierung blockiert',
-            'description' => 'CA-Richtlinie blockiert ältere Protokolle (IMAP, POP3, SMTP AUTH, MAPI).',
+            'label'       => t('Legacy-Authentifizierung blockiert'),
+            'description' => t('CA-Richtlinie blockiert ältere Protokolle (IMAP, POP3, SMTP AUTH, MAPI).'),
             'severity'    => 'high',
         ];
         $foundEnabled = $foundReport = false;
@@ -711,12 +711,12 @@ class SecurityPostureService
             }
         }
         if ($foundEnabled) {
-            return array_merge($base, ['status' => 'pass', 'detail' => 'Aktive CA-Richtlinie blockiert Legacy-Authentifizierung.']);
+            return array_merge($base, ['status' => 'pass', 'detail' => t('Aktive CA-Richtlinie blockiert Legacy-Authentifizierung.')]);
         }
         if ($foundReport) {
-            return array_merge($base, ['status' => 'warn', 'detail' => 'Legacy-Auth-Block im Report-Modus — noch nicht aktiv.']);
+            return array_merge($base, ['status' => 'warn', 'detail' => t('Legacy-Auth-Block im Report-Modus — noch nicht aktiv.')]);
         }
-        return array_merge($base, ['status' => 'fail', 'detail' => 'Keine CA-Richtlinie blockiert Legacy-Authentifizierung.']);
+        return array_merge($base, ['status' => 'fail', 'detail' => t('Keine CA-Richtlinie blockiert Legacy-Authentifizierung.')]);
     }
 
     private function checkSignInRiskPolicy(array $policies): array
@@ -724,8 +724,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'sign_in_risk_policy',
             'category'    => 'Conditional Access',
-            'label'       => 'Anmelderisiko-Richtlinie (CA)',
-            'description' => 'Aktive CA-Richtlinie reagiert auf mittleres/hohes Anmelderisiko.',
+            'label'       => t('Anmelderisiko-Richtlinie (CA)'),
+            'description' => t('Aktive CA-Richtlinie reagiert auf mittleres/hohes Anmelderisiko.'),
             'severity'    => 'medium',
         ];
         foreach ($policies as $p) {
@@ -734,10 +734,10 @@ class SecurityPostureService
             }
             $riskLevels = array_map('strtolower', (array)($p['conditions']['signInRiskLevels'] ?? []));
             if (!empty(array_intersect($riskLevels, ['medium', 'high']))) {
-                return array_merge($base, ['status' => 'pass', 'detail' => 'Aktive CA-Richtlinie reagiert auf Anmelderisiko (mittel/hoch).']);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Aktive CA-Richtlinie reagiert auf Anmelderisiko (mittel/hoch).')]);
             }
         }
-        return array_merge($base, ['status' => 'fail', 'detail' => 'Keine CA-Richtlinie reagiert auf Anmelderisiken. Benötigt Entra ID P2.']);
+        return array_merge($base, ['status' => 'fail', 'detail' => t('Keine CA-Richtlinie reagiert auf Anmelderisiken. Benötigt Entra ID P2.')]);
     }
 
     private function checkUserRiskPolicy(array $policies): array
@@ -745,8 +745,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'user_risk_policy',
             'category'    => 'Conditional Access',
-            'label'       => 'Benutzerrisiko-Richtlinie (CA)',
-            'description' => 'Aktive CA-Richtlinie reagiert auf hohes Benutzerrisiko (kompromittierte Konten).',
+            'label'       => t('Benutzerrisiko-Richtlinie (CA)'),
+            'description' => t('Aktive CA-Richtlinie reagiert auf hohes Benutzerrisiko (kompromittierte Konten).'),
             'severity'    => 'medium',
         ];
         foreach ($policies as $p) {
@@ -755,10 +755,10 @@ class SecurityPostureService
             }
             $riskLevels = array_map('strtolower', (array)($p['conditions']['userRiskLevels'] ?? []));
             if (!empty(array_intersect($riskLevels, ['medium', 'high']))) {
-                return array_merge($base, ['status' => 'pass', 'detail' => 'Aktive CA-Richtlinie reagiert auf hohes Benutzerrisiko.']);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Aktive CA-Richtlinie reagiert auf hohes Benutzerrisiko.')]);
             }
         }
-        return array_merge($base, ['status' => 'fail', 'detail' => 'Keine CA-Richtlinie reagiert auf Benutzerrisiken. Benötigt Entra ID P2.']);
+        return array_merge($base, ['status' => 'fail', 'detail' => t('Keine CA-Richtlinie reagiert auf Benutzerrisiken. Benötigt Entra ID P2.')]);
     }
 
     private function checkCaDeviceCompliance(array $policies): array
@@ -766,8 +766,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'ca_device_compliance',
             'category'    => 'Conditional Access',
-            'label'       => 'Gerätekonformität in CA',
-            'description' => 'CA-Richtlinie verlangt konforme oder Hybrid-AD-joinete Geräte.',
+            'label'       => t('Gerätekonformität in CA'),
+            'description' => t('CA-Richtlinie verlangt konforme oder Hybrid-AD-joinete Geräte.'),
             'severity'    => 'medium',
         ];
         foreach ($policies as $p) {
@@ -776,10 +776,10 @@ class SecurityPostureService
             }
             $controls = array_map('strtolower', (array)($p['grantControls']['builtInControls'] ?? []));
             if (!empty(array_intersect($controls, ['compliantdevice', 'domainjoinedevice']))) {
-                return array_merge($base, ['status' => 'pass', 'detail' => 'Aktive CA-Richtlinie fordert konforme/Hybrid-Geräte.']);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Aktive CA-Richtlinie fordert konforme/Hybrid-Geräte.')]);
             }
         }
-        return array_merge($base, ['status' => 'fail', 'detail' => 'Keine CA-Richtlinie erzwingt Gerätekonformität.']);
+        return array_merge($base, ['status' => 'fail', 'detail' => t('Keine CA-Richtlinie erzwingt Gerätekonformität.')]);
     }
 
     private function checkCaGuestRestriction(array $policies): array
@@ -787,8 +787,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'ca_guest_restriction',
             'category'    => 'Conditional Access',
-            'label'       => 'Gastbenutzer-CA-Richtlinie',
-            'description' => 'Aktive CA-Richtlinie mit speziellen Bedingungen für Gastbenutzer.',
+            'label'       => t('Gastbenutzer-CA-Richtlinie'),
+            'description' => t('Aktive CA-Richtlinie mit speziellen Bedingungen für Gastbenutzer.'),
             'severity'    => 'low',
         ];
         foreach ($policies as $p) {
@@ -799,10 +799,10 @@ class SecurityPostureService
             $incGuest = $p['conditions']['users']['includeGuestsOrExternalUsers'] ?? null;
             $incUsersArr = (array)($p['conditions']['users']['includeUsers'] ?? []);
             if ($incGuest !== null || in_array('GuestsOrExternalUsers', $incUsersArr, true)) {
-                return array_merge($base, ['status' => 'pass', 'detail' => 'Aktive CA-Richtlinie adressiert Gastbenutzer spezifisch.']);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Aktive CA-Richtlinie adressiert Gastbenutzer spezifisch.')]);
             }
         }
-        return array_merge($base, ['status' => 'warn', 'detail' => 'Keine CA-Richtlinie mit expliziten Bedingungen für Gastbenutzer gefunden.']);
+        return array_merge($base, ['status' => 'warn', 'detail' => t('Keine CA-Richtlinie mit expliziten Bedingungen für Gastbenutzer gefunden.')]);
     }
 
     private function checkDeviceComplianceRate(): array
@@ -810,8 +810,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'device_compliance_rate',
             'category'    => 'Geräte & Compliance',
-            'label'       => 'Geräte-Compliance-Rate',
-            'description' => 'Anteil der verwalteten Intune-Geräte, die konform sind.',
+            'label'       => t('Geräte-Compliance-Rate'),
+            'description' => t('Anteil der verwalteten Intune-Geräte, die konform sind.'),
             'severity'    => 'medium',
         ];
         try {
@@ -822,7 +822,7 @@ class SecurityPostureService
             );
             $total = (int)($all['@odata.count'] ?? count($all['value'] ?? []));
             if ($total === 0) {
-                return array_merge($base, ['status' => 'unknown', 'detail' => 'Keine Intune-Geräte gefunden oder Berechtigung fehlt.']);
+                return array_merge($base, ['status' => 'unknown', 'detail' => t('Keine Intune-Geräte gefunden oder Berechtigung fehlt.')]);
             }
             $nonComp = $this->graph->getEventual(
                 '/deviceManagement/managedDevices',
@@ -832,14 +832,14 @@ class SecurityPostureService
             $nonCompliantCount = (int)($nonComp['@odata.count'] ?? count($nonComp['value'] ?? []));
             $rate = round(($total - $nonCompliantCount) / $total * 100, 1);
             if ($rate >= 90) {
-                return array_merge($base, ['status' => 'pass', 'detail' => "{$rate}% der Geräte sind konform ({$nonCompliantCount} nicht konform von {$total})."]);
+                return array_merge($base, ['status' => 'pass', 'detail' => t(':rate% der Geräte sind konform (:nonCompliant nicht konform von :total).', ['rate' => $rate, 'nonCompliant' => $nonCompliantCount, 'total' => $total])]);
             }
             if ($rate >= 70) {
-                return array_merge($base, ['status' => 'warn', 'detail' => "Compliance-Rate: {$rate}% — {$nonCompliantCount} von {$total} Geräten nicht konform."]);
+                return array_merge($base, ['status' => 'warn', 'detail' => t('Compliance-Rate: :rate% — :nonCompliant von :total Geräten nicht konform.', ['rate' => $rate, 'nonCompliant' => $nonCompliantCount, 'total' => $total])]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => "Niedrige Compliance-Rate: {$rate}% — {$nonCompliantCount} von {$total} Geräten nicht konform."]);
+            return array_merge($base, ['status' => 'fail', 'detail' => t('Niedrige Compliance-Rate: :rate% — :nonCompliant von :total Geräten nicht konform.', ['rate' => $rate, 'nonCompliant' => $nonCompliantCount, 'total' => $total])]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (DeviceManagementManagedDevices.Read.All).']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt (DeviceManagementManagedDevices.Read.All).')]);
         }
     }
 
@@ -848,8 +848,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'defender_alerts',
             'category'    => 'Geräte & Compliance',
-            'label'       => 'Offene Defender-Alerts',
-            'description' => 'Anzahl ungelöster Microsoft Defender-Sicherheitswarnungen.',
+            'label'       => t('Offene Defender-Alerts'),
+            'description' => t('Anzahl ungelöster Microsoft Defender-Sicherheitswarnungen.'),
             'severity'    => 'high',
         ];
         try {
@@ -859,18 +859,18 @@ class SecurityPostureService
                 'dash_alerts', 300
             );
             if ($this->graph->getLastError() !== null) {
-                return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder Defender nicht lizenziert.']);
+                return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt oder Defender nicht lizenziert.')]);
             }
             $count = (int)($data['@odata.count'] ?? count($data['value'] ?? []));
             if ($count === 0) {
-                return array_merge($base, ['status' => 'pass', 'detail' => 'Keine offenen Defender-Sicherheitswarnungen.']);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Keine offenen Defender-Sicherheitswarnungen.')]);
             }
             if ($count <= 5) {
-                return array_merge($base, ['status' => 'warn', 'detail' => "{$count} offene Sicherheitswarnung(en) — Überprüfung empfohlen."]);
+                return array_merge($base, ['status' => 'warn', 'detail' => t(':count offene Sicherheitswarnung(en) — Überprüfung empfohlen.', ['count' => $count])]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => "{$count} offene Sicherheitswarnungen erfordern Aufmerksamkeit."]);
+            return array_merge($base, ['status' => 'fail', 'detail' => t(':count offene Sicherheitswarnungen erfordern Aufmerksamkeit.', ['count' => $count])]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder Defender nicht lizenziert.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt oder Defender nicht lizenziert.')]);
         }
     }
 
@@ -879,28 +879,28 @@ class SecurityPostureService
         $base = [
             'id'          => 'secure_score',
             'category'    => 'Konfiguration & Apps',
-            'label'       => 'Microsoft Secure Score',
-            'description' => 'Secure Score als Prozentwert des erreichbaren Maximums (Ziel: >50%).',
+            'label'       => t('Microsoft Secure Score'),
+            'description' => t('Secure Score als Prozentwert des erreichbaren Maximums (Ziel: >50%).'),
             'severity'    => 'medium',
         ];
         try {
             $data  = $this->graph->get('/security/secureScores', ['$top' => '1', '$select' => 'currentScore,maxScore'], 'securescore_latest', 3600);
             $items = $data['value'] ?? [];
             if (empty($items)) {
-                return array_merge($base, ['status' => 'unknown', 'detail' => 'Keine Secure-Score-Daten verfügbar.']);
+                return array_merge($base, ['status' => 'unknown', 'detail' => t('Keine Secure-Score-Daten verfügbar.')]);
             }
             $current = (float)($items[0]['currentScore'] ?? 0);
             $max     = (float)($items[0]['maxScore']     ?? 0);
             $pct     = $max > 0 ? round($current / $max * 100, 1) : 0;
             if ($pct > 50) {
-                return array_merge($base, ['status' => 'pass', 'detail' => "Secure Score: {$current}/{$max} Punkte ({$pct}%)."]);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Secure Score: :current/:max Punkte (:pct%).', ['current' => $current, 'max' => $max, 'pct' => $pct])]);
             }
             if ($pct >= 30) {
-                return array_merge($base, ['status' => 'warn', 'detail' => "Secure Score: {$current}/{$max} Punkte ({$pct}%) — Verbesserungspotenzial."]);
+                return array_merge($base, ['status' => 'warn', 'detail' => t('Secure Score: :current/:max Punkte (:pct%) — Verbesserungspotenzial.', ['current' => $current, 'max' => $max, 'pct' => $pct])]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => "Niedriger Secure Score: {$current}/{$max} Punkte ({$pct}%)."]);
+            return array_merge($base, ['status' => 'fail', 'detail' => t('Niedriger Secure Score: :current/:max Punkte (:pct%).', ['current' => $current, 'max' => $max, 'pct' => $pct])]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt oder API-Fehler.')]);
         }
     }
 
@@ -909,8 +909,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'admin_count',
             'category'    => 'Konfiguration & Apps',
-            'label'       => 'Globale Administratoren',
-            'description' => 'Anzahl der Benutzer mit der Rolle "Globaler Administrator" (Ziel: max. 4).',
+            'label'       => t('Globale Administratoren'),
+            'description' => t('Anzahl der Benutzer mit der Rolle "Globaler Administrator" (Ziel: max. 4).'),
             'severity'    => 'high',
         ];
         try {
@@ -921,20 +921,20 @@ class SecurityPostureService
             );
             $roles = $data['value'] ?? [];
             if (empty($roles)) {
-                return array_merge($base, ['status' => 'unknown', 'detail' => 'Globale Administratoren-Rolle nicht gefunden.']);
+                return array_merge($base, ['status' => 'unknown', 'detail' => t('Globale Administratoren-Rolle nicht gefunden.')]);
             }
             $roleId  = $roles[0]['id'];
             $members = $this->graph->get("/directoryRoles/{$roleId}/members", ['$select' => 'id'], "dir_role_members_{$roleId}", 1800);
             $count   = count($members['value'] ?? []);
             if ($count <= 2) {
-                return array_merge($base, ['status' => 'pass', 'detail' => "{$count} globale Administrator(en) — optimal (max. 4 empfohlen)."]);
+                return array_merge($base, ['status' => 'pass', 'detail' => t(':count globale Administrator(en) — optimal (max. 4 empfohlen).', ['count' => $count])]);
             }
             if ($count <= 4) {
-                return array_merge($base, ['status' => 'warn', 'detail' => "{$count} globale Administratoren — akzeptabel, aber Least-Privilege prüfen."]);
+                return array_merge($base, ['status' => 'warn', 'detail' => t(':count globale Administratoren — akzeptabel, aber Least-Privilege prüfen.', ['count' => $count])]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => "{$count} globale Administratoren — zu viele. Microsoft empfiehlt max. 2-4."]);
+            return array_merge($base, ['status' => 'fail', 'detail' => t(':count globale Administratoren — zu viele. Microsoft empfiehlt max. 2-4.', ['count' => $count])]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt oder API-Fehler.')]);
         }
     }
 
@@ -943,19 +943,19 @@ class SecurityPostureService
         $base = [
             'id'          => 'named_locations',
             'category'    => 'Konfiguration & Apps',
-            'label'       => 'Named Locations konfiguriert',
-            'description' => 'Mindestens ein vertrauenswürdiger Standort (IP oder Land) ist konfiguriert.',
+            'label'       => t('Named Locations konfiguriert'),
+            'description' => t('Mindestens ein vertrauenswürdiger Standort (IP oder Land) ist konfiguriert.'),
             'severity'    => 'low',
         ];
         try {
             $data  = $this->graph->get('/identity/conditionalAccess/namedLocations', ['$top' => '100'], 'named_locations', 1800);
             $count = count($data['value'] ?? []);
             if ($count > 0) {
-                return array_merge($base, ['status' => 'pass', 'detail' => "{$count} Named Location(s) konfiguriert."]);
+                return array_merge($base, ['status' => 'pass', 'detail' => t(':count Named Location(s) konfiguriert.', ['count' => $count])]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => 'Keine Named Locations konfiguriert. Vertrauenswürdige IPs/Länder fehlen.']);
+            return array_merge($base, ['status' => 'fail', 'detail' => t('Keine Named Locations konfiguriert. Vertrauenswürdige IPs/Länder fehlen.')]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt oder API-Fehler.')]);
         }
     }
 
@@ -964,14 +964,14 @@ class SecurityPostureService
         $base = [
             'id'          => 'app_secrets_expiry',
             'category'    => 'Konfiguration & Apps',
-            'label'       => 'App-Secrets Ablaufdatum',
-            'description' => 'App-Registrierungen ohne abgelaufene oder bald ablaufende Secrets.',
+            'label'       => t('App-Secrets Ablaufdatum'),
+            'description' => t('App-Registrierungen ohne abgelaufene oder bald ablaufende Secrets.'),
             'severity'    => 'medium',
         ];
         try {
             $data      = $this->graph->get('/applications', ['$select' => 'id,displayName,passwordCredentials', '$top' => '100'], 'applications_secrets', 900);
             if ($this->graph->getLastError() !== null) {
-                return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (Application.Read.All erforderlich).']);
+                return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt (Application.Read.All erforderlich).')]);
             }
             $now       = time();
             $threshold = strtotime('+30 days');
@@ -990,14 +990,14 @@ class SecurityPostureService
                 }
             }
             if ($expired > 0) {
-                return array_merge($base, ['status' => 'fail', 'detail' => "{$expired} abgelaufenes Secret(s)" . ($soon > 0 ? ", {$soon} läuft in <30 Tagen ab." : ".")]);
+                return array_merge($base, ['status' => 'fail', 'detail' => t(':expired abgelaufenes Secret(s)', ['expired' => $expired]) . ($soon > 0 ? t(', :soon läuft in <30 Tagen ab.', ['soon' => $soon]) : t('.'))]);
             }
             if ($soon > 0) {
-                return array_merge($base, ['status' => 'warn', 'detail' => "{$soon} Secret(s) läuft in <30 Tagen ab — Erneuerung erforderlich."]);
+                return array_merge($base, ['status' => 'warn', 'detail' => t(':soon Secret(s) läuft in <30 Tagen ab — Erneuerung erforderlich.', ['soon' => $soon])]);
             }
-            return array_merge($base, ['status' => 'pass', 'detail' => 'Keine abgelaufenen oder bald ablaufenden App-Secrets.']);
+            return array_merge($base, ['status' => 'pass', 'detail' => t('Keine abgelaufenen oder bald ablaufenden App-Secrets.')]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt oder API-Fehler.')]);
         }
     }
 
@@ -1006,8 +1006,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'no_stale_licensed',
             'category'    => 'Konfiguration & Apps',
-            'label'       => 'Inaktive lizenzierte Konten',
-            'description' => 'Aktive, lizenzierte Benutzer ohne Anmeldung seit mehr als 90 Tagen.',
+            'label'       => t('Inaktive lizenzierte Konten'),
+            'description' => t('Aktive, lizenzierte Benutzer ohne Anmeldung seit mehr als 90 Tagen.'),
             'severity'    => 'low',
         ];
         try {
@@ -1030,14 +1030,14 @@ class SecurityPostureService
                 }
             }
             if ($stale === 0) {
-                return array_merge($base, ['status' => 'pass', 'detail' => 'Keine inaktiven lizenzierten Konten gefunden.']);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Keine inaktiven lizenzierten Konten gefunden.')]);
             }
             if ($stale <= 5) {
-                return array_merge($base, ['status' => 'warn', 'detail' => "{$stale} lizenzierte Benutzer seit >90 Tagen inaktiv."]);
+                return array_merge($base, ['status' => 'warn', 'detail' => t(':stale lizenzierte Benutzer seit >90 Tagen inaktiv.', ['stale' => $stale])]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => "{$stale} lizenzierte Benutzer seit >90 Tagen ohne Anmeldung."]);
+            return array_merge($base, ['status' => 'fail', 'detail' => t(':stale lizenzierte Benutzer seit >90 Tagen ohne Anmeldung.', ['stale' => $stale])]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt oder API-Fehler.')]);
         }
     }
 
@@ -1046,22 +1046,22 @@ class SecurityPostureService
         $base = [
             'id'          => 'guest_user_count',
             'category'    => 'Konfiguration & Apps',
-            'label'       => 'Gastbenutzer',
-            'description' => 'Anzahl aktiver Gastbenutzer — sollte regelmäßig überprüft werden.',
+            'label'       => t('Gastbenutzer'),
+            'description' => t('Anzahl aktiver Gastbenutzer — sollte regelmäßig überprüft werden.'),
             'severity'    => 'low',
         ];
         try {
             $data   = $this->graph->getEventual('/users', ['$count' => 'true', '$top' => '1', '$select' => 'id', '$filter' => "userType eq 'Guest'"], 'dash_guests_count', 1800);
             $guests = (int)($data['@odata.count'] ?? count($data['value'] ?? []));
             if ($guests <= 10) {
-                return array_merge($base, ['status' => 'pass', 'detail' => "{$guests} aktive Gastbenutzer — unkritisch."]);
+                return array_merge($base, ['status' => 'pass', 'detail' => t(':guests aktive Gastbenutzer — unkritisch.', ['guests' => $guests])]);
             }
             if ($guests <= 30) {
-                return array_merge($base, ['status' => 'warn', 'detail' => "{$guests} Gastbenutzer — regelmäßige Überprüfung empfohlen."]);
+                return array_merge($base, ['status' => 'warn', 'detail' => t(':guests Gastbenutzer — regelmäßige Überprüfung empfohlen.', ['guests' => $guests])]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => "{$guests} Gastbenutzer — Überprüfung und Bereinigung erforderlich."]);
+            return array_merge($base, ['status' => 'fail', 'detail' => t(':guests Gastbenutzer — Überprüfung und Bereinigung erforderlich.', ['guests' => $guests])]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt oder API-Fehler.')]);
         }
     }
 
@@ -1070,8 +1070,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'security_defaults',
             'category'    => 'Conditional Access',
-            'label'       => 'Security Defaults vs. CA',
-            'description' => 'Security Defaults und Conditional Access sollten nicht gleichzeitig aktiv sein.',
+            'label'       => t('Security Defaults vs. CA'),
+            'description' => t('Security Defaults und Conditional Access sollten nicht gleichzeitig aktiv sein.'),
             'severity'    => 'high',
         ];
         try {
@@ -1080,17 +1080,17 @@ class SecurityPostureService
             $hasActiveCa = !empty(array_filter($policies, fn($p) => strtolower($p['state'] ?? '') === 'enabled'));
 
             if ($sdEnabled && $hasActiveCa) {
-                return array_merge($base, ['status' => 'warn', 'detail' => 'Security Defaults ist aktiv, aber eigene CA-Richtlinien sind ebenfalls aktiviert — kann zu Konflikten führen.']);
+                return array_merge($base, ['status' => 'warn', 'detail' => t('Security Defaults ist aktiv, aber eigene CA-Richtlinien sind ebenfalls aktiviert — kann zu Konflikten führen.')]);
             }
             if (!$sdEnabled && !$hasActiveCa) {
-                return array_merge($base, ['status' => 'fail', 'detail' => 'Weder Security Defaults noch aktive CA-Richtlinien vorhanden — kein Basisschutz.']);
+                return array_merge($base, ['status' => 'fail', 'detail' => t('Weder Security Defaults noch aktive CA-Richtlinien vorhanden — kein Basisschutz.')]);
             }
             if ($sdEnabled && !$hasActiveCa) {
-                return array_merge($base, ['status' => 'warn', 'detail' => 'Security Defaults aktiv — bietet Basisschutz, aber keine granulare Steuerung. CA-Migration empfohlen.']);
+                return array_merge($base, ['status' => 'warn', 'detail' => t('Security Defaults aktiv — bietet Basisschutz, aber keine granulare Steuerung. CA-Migration empfohlen.')]);
             }
-            return array_merge($base, ['status' => 'pass', 'detail' => 'Security Defaults deaktiviert, eigene CA-Richtlinien aktiv — optimal.']);
+            return array_merge($base, ['status' => 'pass', 'detail' => t('Security Defaults deaktiviert, eigene CA-Richtlinien aktiv — optimal.')]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (Policy.Read.All erforderlich).']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt (Policy.Read.All erforderlich).')]);
         }
     }
 
@@ -1099,8 +1099,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'admins_mfa_registered',
             'category'    => 'Identität & MFA',
-            'label'       => 'Alle Admins haben MFA',
-            'description' => 'Alle globalen Administratoren haben eine MFA-Methode registriert.',
+            'label'       => t('Alle Admins haben MFA'),
+            'description' => t('Alle globalen Administratoren haben eine MFA-Methode registriert.'),
             'severity'    => 'high',
         ];
         try {
@@ -1108,13 +1108,13 @@ class SecurityPostureService
             $roles = $this->graph->get('/directoryRoles', ['$filter' => "roleTemplateId eq '" . self::ROLE_GLOBAL_ADMIN . "'", '$select' => 'id'], 'dir_role_global_admin', 3600);
             $roleList = $roles['value'] ?? [];
             if (empty($roleList)) {
-                return array_merge($base, ['status' => 'unknown', 'detail' => 'Globale Administratorrolle nicht gefunden.']);
+                return array_merge($base, ['status' => 'unknown', 'detail' => t('Globale Administratorrolle nicht gefunden.')]);
             }
             $roleId  = $roleList[0]['id'];
             $members = $this->graph->get("/directoryRoles/{$roleId}/members", ['$select' => 'id,userPrincipalName'], "dir_role_members_{$roleId}", 1800);
             $admins  = $members['value'] ?? [];
             if (empty($admins)) {
-                return array_merge($base, ['status' => 'unknown', 'detail' => 'Keine Mitglieder der Administratorrolle gefunden.']);
+                return array_merge($base, ['status' => 'unknown', 'detail' => t('Keine Mitglieder der Administratorrolle gefunden.')]);
             }
 
             // Get MFA data — use existing cache if available
@@ -1140,11 +1140,11 @@ class SecurityPostureService
             }
 
             if (empty($noMfa)) {
-                return array_merge($base, ['status' => 'pass', 'detail' => 'Alle ' . count($admins) . ' globale(n) Administrator(en) haben MFA registriert.']);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Alle :count globale(n) Administrator(en) haben MFA registriert.', ['count' => count($admins)])]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => count($noMfa) . ' Admin(s) ohne MFA: ' . implode(', ', array_slice($noMfa, 0, 3)) . (count($noMfa) > 3 ? ' …' : '')]);
+            return array_merge($base, ['status' => 'fail', 'detail' => t(':count Admin(s) ohne MFA: :list', ['count' => count($noMfa), 'list' => implode(', ', array_slice($noMfa, 0, 3))]) . (count($noMfa) > 3 ? t(' …') : '')]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt oder API-Fehler.')]);
         }
     }
 
@@ -1153,15 +1153,15 @@ class SecurityPostureService
         $base = [
             'id'          => 'sspr_adoption',
             'category'    => 'Identität & MFA',
-            'label'       => 'Self-Service Password Reset (SSPR)',
-            'description' => 'Anteil der Benutzer mit registrierter SSPR-Methode.',
+            'label'       => t('Self-Service Password Reset (SSPR)'),
+            'description' => t('Anteil der Benutzer mit registrierter SSPR-Methode.'),
             'severity'    => 'medium',
         ];
         try {
             $data  = $this->graph->get('/reports/authenticationMethods/usersRegisteredByFeature', [], 'sspr_feature_summary', 3600);
             $total = (int)($data['totalUserCount'] ?? 0);
             if ($total === 0) {
-                return array_merge($base, ['status' => 'unknown', 'detail' => 'Keine Benutzerdaten verfügbar.']);
+                return array_merge($base, ['status' => 'unknown', 'detail' => t('Keine Benutzerdaten verfügbar.')]);
             }
             $ssprCount = 0;
             foreach ((array)($data['userRegistrationFeatureCounts'] ?? []) as $item) {
@@ -1172,14 +1172,14 @@ class SecurityPostureService
             }
             $rate = round($ssprCount / $total * 100, 1);
             if ($rate >= 70) {
-                return array_merge($base, ['status' => 'pass', 'detail' => "{$ssprCount}/{$total} Benutzer haben SSPR registriert ({$rate}%)."]);
+                return array_merge($base, ['status' => 'pass', 'detail' => t(':ssprCount/:total Benutzer haben SSPR registriert (:rate%).', ['ssprCount' => $ssprCount, 'total' => $total, 'rate' => $rate])]);
             }
             if ($rate >= 1) {
-                return array_merge($base, ['status' => 'warn', 'detail' => "Nur {$rate}% ({$ssprCount}/{$total}) haben SSPR registriert — Ziel: >70%."]);
+                return array_merge($base, ['status' => 'warn', 'detail' => t('Nur :rate% (:ssprCount/:total) haben SSPR registriert — Ziel: >70%.', ['rate' => $rate, 'ssprCount' => $ssprCount, 'total' => $total])]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => 'Kein Benutzer hat SSPR registriert. SSPR-Einführung empfohlen.']);
+            return array_merge($base, ['status' => 'fail', 'detail' => t('Kein Benutzer hat SSPR registriert. SSPR-Einführung empfohlen.')]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (Reports.Read.All) oder SSPR nicht lizenziert.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt (Reports.Read.All) oder SSPR nicht lizenziert.')]);
         }
     }
 
@@ -1188,8 +1188,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'ca_session_controls',
             'category'    => 'Conditional Access',
-            'label'       => 'CA-Sitzungssteuerung',
-            'description' => 'CA-Richtlinie begrenzt Sitzungsdauer oder verhindert persistente Browser-Sitzungen.',
+            'label'       => t('CA-Sitzungssteuerung'),
+            'description' => t('CA-Richtlinie begrenzt Sitzungsdauer oder verhindert persistente Browser-Sitzungen.'),
             'severity'    => 'low',
         ];
         foreach ($policies as $p) {
@@ -1204,10 +1204,10 @@ class SecurityPostureService
             $hasNoPersist = strtolower($persistent['mode'] ?? '') === 'never';
 
             if ($hasFreq || $hasNoPersist) {
-                return array_merge($base, ['status' => 'pass', 'detail' => 'Aktive CA-Richtlinie steuert Sitzungslebensdauer oder persistente Sitzungen.']);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Aktive CA-Richtlinie steuert Sitzungslebensdauer oder persistente Sitzungen.')]);
             }
         }
-        return array_merge($base, ['status' => 'fail', 'detail' => 'Keine CA-Richtlinie kontrolliert Sitzungsdauer oder Browser-Persistenz.']);
+        return array_merge($base, ['status' => 'fail', 'detail' => t('Keine CA-Richtlinie kontrolliert Sitzungsdauer oder Browser-Persistenz.')]);
     }
 
     private function checkPimAdoption(): array
@@ -1215,8 +1215,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'pim_adoption',
             'category'    => 'Konfiguration & Apps',
-            'label'       => 'Privileged Identity Management (PIM)',
-            'description' => 'Just-in-Time Admin-Zugriff durch PIM-berechtigte Rollenzuweisungen.',
+            'label'       => t('Privileged Identity Management (PIM)'),
+            'description' => t('Just-in-Time Admin-Zugriff durch PIM-berechtigte Rollenzuweisungen.'),
             'severity'    => 'medium',
         ];
         try {
@@ -1227,11 +1227,11 @@ class SecurityPostureService
             );
             $count = (int)($data['@odata.count'] ?? count($data['value'] ?? []));
             if ($count > 0) {
-                return array_merge($base, ['status' => 'pass', 'detail' => "{$count} PIM-berechtigte Rollenzuweisung(en) aktiv — Just-in-Time-Zugriff wird genutzt."]);
+                return array_merge($base, ['status' => 'pass', 'detail' => t(':count PIM-berechtigte Rollenzuweisung(en) aktiv — Just-in-Time-Zugriff wird genutzt.', ['count' => $count])]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => 'Keine PIM-berechtigten Rollenzuweisungen. Alle Admins haben dauerhaften Zugriff.']);
+            return array_merge($base, ['status' => 'fail', 'detail' => t('Keine PIM-berechtigten Rollenzuweisungen. Alle Admins haben dauerhaften Zugriff.')]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (RoleManagement.Read.Directory) oder Entra ID P2 nicht lizenziert.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt (RoleManagement.Read.Directory) oder Entra ID P2 nicht lizenziert.')]);
         }
     }
 
@@ -1240,32 +1240,32 @@ class SecurityPostureService
         $base = [
             'id'          => 'app_consent_policy',
             'category'    => 'Konfiguration & Apps',
-            'label'       => 'App-Zustimmungsrichtlinie',
-            'description' => 'Benutzer dürfen nicht ohne Admin-Genehmigung OAuth-Berechtigungen vergeben.',
+            'label'       => t('App-Zustimmungsrichtlinie'),
+            'description' => t('Benutzer dürfen nicht ohne Admin-Genehmigung OAuth-Berechtigungen vergeben.'),
             'severity'    => 'high',
         ];
         if ($authPolicy === null) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (Policy.Read.All erforderlich).']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt (Policy.Read.All erforderlich).')]);
         }
         try {
             $policies  = (array)($authPolicy['permissionGrantPolicyIdsAssignedToDefaultUserRole'] ?? []);
 
             if (empty($policies)) {
-                return array_merge($base, ['status' => 'pass', 'detail' => 'Benutzer können keinen Apps ohne Admin-Genehmigung zustimmen — optimal.']);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Benutzer können keinen Apps ohne Admin-Genehmigung zustimmen — optimal.')]);
             }
             // Check for legacy broad consent
             $hasLegacy = !empty(array_filter($policies, fn($p) => str_contains(strtolower($p), 'legacy') && !str_contains(strtolower($p), 'admin')));
             $hasLowRisk = !empty(array_filter($policies, fn($p) => str_contains(strtolower($p), 'low-risk') || str_contains(strtolower($p), 'lowrisk')));
 
             if ($hasLegacy) {
-                return array_merge($base, ['status' => 'fail', 'detail' => 'Benutzer dürfen beliebigen Apps zustimmen (legacy consent policy). Consent-Phishing-Risiko.']);
+                return array_merge($base, ['status' => 'fail', 'detail' => t('Benutzer dürfen beliebigen Apps zustimmen (legacy consent policy). Consent-Phishing-Risiko.')]);
             }
             if ($hasLowRisk) {
-                return array_merge($base, ['status' => 'warn', 'detail' => 'Benutzer dürfen risikoarmen Apps zustimmen. Admin-Consent-Workflow für alle empfohlen.']);
+                return array_merge($base, ['status' => 'warn', 'detail' => t('Benutzer dürfen risikoarmen Apps zustimmen. Admin-Consent-Workflow für alle empfohlen.')]);
             }
-            return array_merge($base, ['status' => 'warn', 'detail' => 'Consent-Richtlinie vorhanden — manuelle Überprüfung empfohlen: ' . implode(', ', $policies)]);
+            return array_merge($base, ['status' => 'warn', 'detail' => t('Consent-Richtlinie vorhanden — manuelle Überprüfung empfohlen: :policies', ['policies' => implode(', ', $policies)])]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt oder API-Fehler.')]);
         }
     }
 
@@ -1274,32 +1274,32 @@ class SecurityPostureService
         $base = [
             'id'          => 'external_collab_policy',
             'category'    => 'Konfiguration & Apps',
-            'label'       => 'Gasteinladungsrichtlinie',
-            'description' => 'Wer darf externe Gastbenutzer in den Tenant einladen.',
+            'label'       => t('Gasteinladungsrichtlinie'),
+            'description' => t('Wer darf externe Gastbenutzer in den Tenant einladen.'),
             'severity'    => 'medium',
         ];
         if ($authPolicy === null) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt (Policy.Read.All erforderlich).']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt (Policy.Read.All erforderlich).')]);
         }
         try {
             $setting = strtolower($authPolicy['allowInvitesFrom'] ?? '');
             $labels  = [
-                'none'                                 => 'Niemand darf einladen — sehr restriktiv.',
-                'adminsandguestinviters'               => 'Nur Admins und Gast-Einlader dürfen einladen — empfohlen.',
-                'adminsguestinvitersandallmembers'     => 'Alle Mitglieder dürfen einladen — moderat.',
-                'everyone'                             => 'Jeder (inkl. Gäste) darf einladen — unsicher.',
+                'none'                                 => t('Niemand darf einladen — sehr restriktiv.'),
+                'adminsandguestinviters'               => t('Nur Admins und Gast-Einlader dürfen einladen — empfohlen.'),
+                'adminsguestinvitersandallmembers'     => t('Alle Mitglieder dürfen einladen — moderat.'),
+                'everyone'                             => t('Jeder (inkl. Gäste) darf einladen — unsicher.'),
             ];
-            $detail = $labels[$setting] ?? "Einstellung: {$setting}";
+            $detail = $labels[$setting] ?? t('Einstellung: :setting', ['setting' => $setting]);
 
             if (in_array($setting, ['none', 'adminsandguestinviters'], true)) {
                 return array_merge($base, ['status' => 'pass', 'detail' => $detail]);
             }
             if ($setting === 'adminsguestinvitersandallmembers') {
-                return array_merge($base, ['status' => 'warn', 'detail' => $detail . ' Empfehlung: auf Admins und Gast-Einlader einschränken.']);
+                return array_merge($base, ['status' => 'warn', 'detail' => $detail . t(' Empfehlung: auf Admins und Gast-Einlader einschränken.')]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => $detail . ' Einschränkung auf Admins dringend empfohlen.']);
+            return array_merge($base, ['status' => 'fail', 'detail' => $detail . t(' Einschränkung auf Admins dringend empfohlen.')]);
         } catch (\Throwable) {
-            return array_merge($base, ['status' => 'unknown', 'detail' => 'Berechtigung fehlt oder API-Fehler.']);
+            return array_merge($base, ['status' => 'unknown', 'detail' => t('Berechtigung fehlt oder API-Fehler.')]);
         }
     }
 
@@ -1321,8 +1321,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'break_glass',
             'category'    => 'E-Mail & Endpoint-Schutz',
-            'label'       => 'Notfallzugangskonto konfiguriert',
-            'description' => 'Mindestens 2 globale Admin-Konten ohne Lizenz und ohne On-Premises-Sync vorhanden (Break-Glass-Muster).',
+            'label'       => t('Notfallzugangskonto konfiguriert'),
+            'description' => t('Mindestens 2 globale Admin-Konten ohne Lizenz und ohne On-Premises-Sync vorhanden (Break-Glass-Muster).'),
             'severity'    => 'high',
         ];
         try {
@@ -1334,7 +1334,7 @@ class SecurityPostureService
             );
             $roleList = $roles['value'] ?? [];
             if (empty($roleList)) {
-                return array_merge($base, ['status' => 'unknown', 'detail' => 'Globale Admin-Rolle nicht gefunden.']);
+                return array_merge($base, ['status' => 'unknown', 'detail' => t('Globale Admin-Rolle nicht gefunden.')]);
             }
             $roleId  = $roleList[0]['id'];
             $members = $this->graph->get(
@@ -1352,12 +1352,12 @@ class SecurityPostureService
                 }
             }
             if ($candidates >= 2) {
-                return array_merge($base, ['status' => 'pass', 'detail' => "{$candidates} potenzielle Notfallkonten gefunden (ohne Lizenz, Cloud-only)."]);
+                return array_merge($base, ['status' => 'pass', 'detail' => t(':candidates potenzielle Notfallkonten gefunden (ohne Lizenz, Cloud-only).', ['candidates' => $candidates])]);
             }
             if ($candidates === 1) {
-                return array_merge($base, ['status' => 'warn', 'detail' => 'Nur 1 Notfallkonto gefunden. Microsoft empfiehlt mindestens 2.']);
+                return array_merge($base, ['status' => 'warn', 'detail' => t('Nur 1 Notfallkonto gefunden. Microsoft empfiehlt mindestens 2.')]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => 'Kein globales Admin-Konto ohne Lizenz gefunden. Notfallkonten sollten keine Lizenzen haben.']);
+            return array_merge($base, ['status' => 'fail', 'detail' => t('Kein globales Admin-Konto ohne Lizenz gefunden. Notfallkonten sollten keine Lizenzen haben.')]);
         } catch (\Throwable $e) {
             return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
         }
@@ -1368,8 +1368,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'defender_for_office',
             'category'    => 'E-Mail & Endpoint-Schutz',
-            'label'       => 'Defender for Office 365 lizenziert',
-            'description' => 'Microsoft Defender for Office 365 (Safe Links, Safe Attachments, Anti-Phishing) ist aktiv.',
+            'label'       => t('Defender for Office 365 lizenziert'),
+            'description' => t('Microsoft Defender for Office 365 (Safe Links, Safe Attachments, Anti-Phishing) ist aktiv.'),
             'severity'    => 'high',
         ];
         try {
@@ -1385,13 +1385,13 @@ class SecurityPostureService
             foreach ($skus as $sku) {
                 if ($sku['capabilityStatus'] !== 'Enabled') continue;
                 if (in_array($sku['skuPartNumber'], $mdoSkus, true)) {
-                    return array_merge($base, ['status' => 'pass', 'detail' => 'Defender for Office 365 Lizenz aktiv: ' . $sku['skuPartNumber']]);
+                    return array_merge($base, ['status' => 'pass', 'detail' => t('Defender for Office 365 Lizenz aktiv: :sku', ['sku' => $sku['skuPartNumber']])]);
                 }
                 if (in_array($sku['skuPartNumber'], $bundleSkus, true)) {
-                    return array_merge($base, ['status' => 'pass', 'detail' => 'Defender for Office 365 im Bundle enthalten: ' . $sku['skuPartNumber']]);
+                    return array_merge($base, ['status' => 'pass', 'detail' => t('Defender for Office 365 im Bundle enthalten: :sku', ['sku' => $sku['skuPartNumber']])]);
                 }
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => 'Kein Defender for Office 365 Abonnement aktiv.']);
+            return array_merge($base, ['status' => 'fail', 'detail' => t('Kein Defender for Office 365 Abonnement aktiv.')]);
         } catch (\Throwable $e) {
             return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
         }
@@ -1422,14 +1422,14 @@ class SecurityPostureService
         $base = [
             'id'          => 'gdpr_tenant_region',
             'category'    => 'DSGVO & Datenschutz',
-            'label'       => 'Tenant-Region in EU/EWR',
-            'description' => 'Der Tenant-Standort bestimmt, in welcher Datacenter-Region M365-Daten primär gespeichert werden. EU-Standort ist für DSGVO-konforme Verarbeitung relevant.',
+            'label'       => t('Tenant-Region in EU/EWR'),
+            'description' => t('Der Tenant-Standort bestimmt, in welcher Datacenter-Region M365-Daten primär gespeichert werden. EU-Standort ist für DSGVO-konforme Verarbeitung relevant.'),
             'severity'    => 'high',
         ];
         try {
             $org = $this->graph->get('/organization', ['$select' => 'countryLetterCode,country,preferredDataLocation'], 'org_region', 3600);
             $row = $org['value'][0] ?? null;
-            if (!$row) return array_merge($base, ['status' => 'unknown', 'detail' => 'Organisation nicht lesbar.']);
+            if (!$row) return array_merge($base, ['status' => 'unknown', 'detail' => t('Organisation nicht lesbar.')]);
             $code = strtoupper($row['countryLetterCode'] ?? '');
             $pdl  = strtoupper($row['preferredDataLocation'] ?? '');
             // EU/EWR-Staaten (Stand 2026)
@@ -1437,9 +1437,9 @@ class SecurityPostureService
             $euPdl   = ['EUR','EU','DEU','FRA','NOR','SWE','GBR']; // GBR Übergangs-Adäquanzbeschluss
             $inEu = in_array($code, $euCodes, true) || in_array($pdl, $euPdl, true);
             if ($inEu) {
-                return array_merge($base, ['status' => 'pass', 'detail' => "Tenant-Region: {$code}" . ($pdl ? " (preferredDataLocation={$pdl})" : '')]);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Tenant-Region: :code', ['code' => $code]) . ($pdl ? t(' (preferredDataLocation=:pdl)', ['pdl' => $pdl]) : '')]);
             }
-            return array_merge($base, ['status' => 'fail', 'detail' => "Tenant-Region außerhalb EU/EWR: {$code}. DSGVO-Übermittlung in Drittländer prüfen (Art. 44–49)."]);
+            return array_merge($base, ['status' => 'fail', 'detail' => t('Tenant-Region außerhalb EU/EWR: :code. DSGVO-Übermittlung in Drittländer prüfen (Art. 44–49).', ['code' => $code])]);
         } catch (\Throwable $e) {
             return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
         }
@@ -1450,20 +1450,20 @@ class SecurityPostureService
         $base = [
             'id'          => 'gdpr_sharepoint_sharing',
             'category'    => 'DSGVO & Datenschutz',
-            'label'       => 'SharePoint External Sharing restriktiv',
-            'description' => 'Die Tenant-weite Freigabe-Einstellung sollte externe Freigabe einschränken — Anyone-Links sind DSGVO-kritisch (Art. 25 Privacy by Default).',
+            'label'       => t('SharePoint External Sharing restriktiv'),
+            'description' => t('Die Tenant-weite Freigabe-Einstellung sollte externe Freigabe einschränken — Anyone-Links sind DSGVO-kritisch (Art. 25 Privacy by Default).'),
             'severity'    => 'high',
         ];
         $s = $this->loadSpSettings();
         if (isset($s['__skip'])) return array_merge($base, ['status' => 'pass', 'detail' => $s['__skip']]);
-        if (empty($s))           return array_merge($base, ['status' => 'unknown', 'detail' => 'SharePoint-Tenant-Settings nicht lesbar (Permission SharePointTenantSettings.Read.All?).']);
+        if (empty($s))           return array_merge($base, ['status' => 'unknown', 'detail' => t('SharePoint-Tenant-Settings nicht lesbar (Permission SharePointTenantSettings.Read.All?).')]);
         $cap = $s['sharingCapability'] ?? '';
         return match ($cap) {
-            'disabled'                          => array_merge($base, ['status' => 'pass', 'detail' => 'Externe Freigabe komplett deaktiviert.']),
-            'existingExternalUserSharingOnly'   => array_merge($base, ['status' => 'pass', 'detail' => 'Nur an bekannte externe Benutzer — restriktiv.']),
-            'externalUserSharingOnly'           => array_merge($base, ['status' => 'warn', 'detail' => 'Nur an authentifizierte Externe — akzeptabel, aber prüfen.']),
-            'externalUserAndGuestSharing'       => array_merge($base, ['status' => 'fail', 'detail' => 'Anyone-Links sind aktiv — DSGVO-Risiko: unbekannte Dritte können auf Daten zugreifen.']),
-            default                             => array_merge($base, ['status' => 'unknown', 'detail' => "Unbekannter sharingCapability-Wert: {$cap}"]),
+            'disabled'                          => array_merge($base, ['status' => 'pass', 'detail' => t('Externe Freigabe komplett deaktiviert.')]),
+            'existingExternalUserSharingOnly'   => array_merge($base, ['status' => 'pass', 'detail' => t('Nur an bekannte externe Benutzer — restriktiv.')]),
+            'externalUserSharingOnly'           => array_merge($base, ['status' => 'warn', 'detail' => t('Nur an authentifizierte Externe — akzeptabel, aber prüfen.')]),
+            'externalUserAndGuestSharing'       => array_merge($base, ['status' => 'fail', 'detail' => t('Anyone-Links sind aktiv — DSGVO-Risiko: unbekannte Dritte können auf Daten zugreifen.')]),
+            default                             => array_merge($base, ['status' => 'unknown', 'detail' => t('Unbekannter sharingCapability-Wert: :cap', ['cap' => $cap])]),
         };
     }
 
@@ -1472,24 +1472,24 @@ class SecurityPostureService
         $base = [
             'id'          => 'gdpr_anonymous_link_expiry',
             'category'    => 'DSGVO & Datenschutz',
-            'label'       => 'Anonyme Freigabe-Links laufen ab',
-            'description' => 'Anyone-Links ohne Ablaufdatum verletzen Speicherbegrenzung (Art. 5 Abs. 1e DSGVO). Empfehlung: ≤ 90 Tage.',
+            'label'       => t('Anonyme Freigabe-Links laufen ab'),
+            'description' => t('Anyone-Links ohne Ablaufdatum verletzen Speicherbegrenzung (Art. 5 Abs. 1e DSGVO). Empfehlung: ≤ 90 Tage.'),
             'severity'    => 'medium',
         ];
         $s = $this->loadSpSettings();
         if (isset($s['__skip'])) return array_merge($base, ['status' => 'pass', 'detail' => $s['__skip']]);
-        if (empty($s))           return array_merge($base, ['status' => 'unknown', 'detail' => 'SharePoint-Tenant-Settings nicht lesbar.']);
+        if (empty($s))           return array_merge($base, ['status' => 'unknown', 'detail' => t('SharePoint-Tenant-Settings nicht lesbar.')]);
         $days = (int)($s['requireAnonymousLinksExpireInDays'] ?? 0);
         if (($s['sharingCapability'] ?? '') === 'disabled') {
-            return array_merge($base, ['status' => 'pass', 'detail' => 'Externe Freigabe deaktiviert — Ablauf irrelevant.']);
+            return array_merge($base, ['status' => 'pass', 'detail' => t('Externe Freigabe deaktiviert — Ablauf irrelevant.')]);
         }
         if ($days <= 0) {
-            return array_merge($base, ['status' => 'fail', 'detail' => 'Anyone-Links haben keinen Ablauf — DSGVO-Risiko.']);
+            return array_merge($base, ['status' => 'fail', 'detail' => t('Anyone-Links haben keinen Ablauf — DSGVO-Risiko.')]);
         }
         if ($days > 90) {
-            return array_merge($base, ['status' => 'warn', 'detail' => "Anyone-Links laufen nach {$days} Tagen ab — empfohlen ≤ 90."]);
+            return array_merge($base, ['status' => 'warn', 'detail' => t('Anyone-Links laufen nach :days Tagen ab — empfohlen ≤ 90.', ['days' => $days])]);
         }
-        return array_merge($base, ['status' => 'pass', 'detail' => "Anyone-Links laufen nach {$days} Tagen ab."]);
+        return array_merge($base, ['status' => 'pass', 'detail' => t('Anyone-Links laufen nach :days Tagen ab.', ['days' => $days])]);
     }
 
     private function checkGdprDefaultSharingLink(): array
@@ -1497,18 +1497,18 @@ class SecurityPostureService
         $base = [
             'id'          => 'gdpr_default_sharing_link',
             'category'    => 'DSGVO & Datenschutz',
-            'label'       => 'Standard-Freigabetyp ist intern',
-            'description' => 'Der Default-Linktyp sollte „internal" oder „direct" (named) sein — Anyone als Standard begünstigt versehentliche Datenweitergabe.',
+            'label'       => t('Standard-Freigabetyp ist intern'),
+            'description' => t('Der Default-Linktyp sollte „internal" oder „direct" (named) sein — Anyone als Standard begünstigt versehentliche Datenweitergabe.'),
             'severity'    => 'medium',
         ];
         $s = $this->loadSpSettings();
         if (isset($s['__skip'])) return array_merge($base, ['status' => 'pass', 'detail' => $s['__skip']]);
-        if (empty($s))           return array_merge($base, ['status' => 'unknown', 'detail' => 'SharePoint-Tenant-Settings nicht lesbar.']);
+        if (empty($s))           return array_merge($base, ['status' => 'unknown', 'detail' => t('SharePoint-Tenant-Settings nicht lesbar.')]);
         $type = $s['defaultSharingLinkType'] ?? '';
         return match ($type) {
-            'direct', 'internal' => array_merge($base, ['status' => 'pass', 'detail' => "Standard-Link: {$type}"]),
-            'anonymousAccess'    => array_merge($base, ['status' => 'fail', 'detail' => 'Standard-Link ist Anyone — DSGVO-kritisch.']),
-            default              => array_merge($base, ['status' => 'warn', 'detail' => "Standard-Link: {$type}"]),
+            'direct', 'internal' => array_merge($base, ['status' => 'pass', 'detail' => t('Standard-Link: :type', ['type' => $type])]),
+            'anonymousAccess'    => array_merge($base, ['status' => 'fail', 'detail' => t('Standard-Link ist Anyone — DSGVO-kritisch.')]),
+            default              => array_merge($base, ['status' => 'warn', 'detail' => t('Standard-Link: :type', ['type' => $type])]),
         };
     }
 
@@ -1531,7 +1531,7 @@ class SecurityPostureService
         } catch (\Throwable $e) {
             $msg = $e->getMessage();
             if (stripos($msg, 'SPO license') !== false || stripos($msg, 'SharePoint') !== false && stripos($msg, 'license') !== false) {
-                return $cache = ['__skip' => 'SharePoint Online ist im Tenant nicht lizenziert — Prüfung nicht zutreffend.'];
+                return $cache = ['__skip' => t('SharePoint Online ist im Tenant nicht lizenziert — Prüfung nicht zutreffend.')];
             }
             return $cache = [];
         }
@@ -1542,17 +1542,17 @@ class SecurityPostureService
         $base = [
             'id'          => 'gdpr_sensitivity_labels',
             'category'    => 'DSGVO & Datenschutz',
-            'label'       => 'Sensitivity Labels veröffentlicht',
-            'description' => 'Vertraulichkeitsbezeichnungen sind Voraussetzung für Information-Protection (Art. 32 DSGVO Maßnahmen zur Datenintegrität).',
+            'label'       => t('Sensitivity Labels veröffentlicht'),
+            'description' => t('Vertraulichkeitsbezeichnungen sind Voraussetzung für Information-Protection (Art. 32 DSGVO Maßnahmen zur Datenintegrität).'),
             'severity'    => 'medium',
         ];
         $labels = $this->loadSensitivityLabels();
         if (isset($labels['__skip'])) return array_merge($base, ['status' => 'pass', 'detail' => $labels['__skip']]);
-        if ($labels === null)          return array_merge($base, ['status' => 'unknown', 'detail' => 'Sensitivity-Labels-Endpunkt nicht erreichbar — Berechtigung InformationProtectionPolicy.Read.All prüfen.']);
+        if ($labels === null)          return array_merge($base, ['status' => 'unknown', 'detail' => t('Sensitivity-Labels-Endpunkt nicht erreichbar — Berechtigung InformationProtectionPolicy.Read.All prüfen.')]);
         $active = count(array_filter($labels, fn($l) => $l['isActive'] ?? true));
-        if (empty($labels))            return array_merge($base, ['status' => 'fail', 'detail' => 'Keine Sensitivity Labels gefunden.']);
-        if ($active === 0)             return array_merge($base, ['status' => 'warn', 'detail' => count($labels) . ' Labels existieren, aber keines ist aktiv.']);
-        return array_merge($base, ['status' => 'pass', 'detail' => "{$active} aktive Sensitivity Labels (von " . count($labels) . ')']);
+        if (empty($labels))            return array_merge($base, ['status' => 'fail', 'detail' => t('Keine Sensitivity Labels gefunden.')]);
+        if ($active === 0)             return array_merge($base, ['status' => 'warn', 'detail' => t(':count Labels existieren, aber keines ist aktiv.', ['count' => count($labels)])]);
+        return array_merge($base, ['status' => 'pass', 'detail' => t(':active aktive Sensitivity Labels (von :total)', ['active' => $active, 'total' => count($labels)])]);
     }
 
     private function checkGdprDlpOrLabelsActive(): array
@@ -1560,18 +1560,18 @@ class SecurityPostureService
         $base = [
             'id'          => 'gdpr_dlp_or_labels',
             'category'    => 'DSGVO & Datenschutz',
-            'label'       => 'DLP-/Label-Schutz für personenbezogene Daten',
-            'description' => 'Mindestens eine Information-Protection-Schutzmaßnahme (Sensitivity Label aktiv) ist erforderlich (Art. 25 + Art. 32 DSGVO).',
+            'label'       => t('DLP-/Label-Schutz für personenbezogene Daten'),
+            'description' => t('Mindestens eine Information-Protection-Schutzmaßnahme (Sensitivity Label aktiv) ist erforderlich (Art. 25 + Art. 32 DSGVO).'),
             'severity'    => 'high',
         ];
         $labels = $this->loadSensitivityLabels();
         if (isset($labels['__skip'])) return array_merge($base, ['status' => 'pass', 'detail' => $labels['__skip']]);
-        if ($labels === null)          return array_merge($base, ['status' => 'unknown', 'detail' => 'Sensitivity-Labels-Endpunkt nicht erreichbar — Berechtigung InformationProtectionPolicy.Read.All prüfen.']);
+        if ($labels === null)          return array_merge($base, ['status' => 'unknown', 'detail' => t('Sensitivity-Labels-Endpunkt nicht erreichbar — Berechtigung InformationProtectionPolicy.Read.All prüfen.')]);
         $active = count(array_filter($labels, fn($l) => $l['isActive'] ?? true));
         if ($active > 0) {
-            return array_merge($base, ['status' => 'pass', 'detail' => "{$active} Sensitivity Labels aktiv."]);
+            return array_merge($base, ['status' => 'pass', 'detail' => t(':active Sensitivity Labels aktiv.', ['active' => $active])]);
         }
-        return array_merge($base, ['status' => 'fail', 'detail' => 'Keine aktive Schutzmaßnahme (DLP/Label) gefunden.']);
+        return array_merge($base, ['status' => 'fail', 'detail' => t('Keine aktive Schutzmaßnahme (DLP/Label) gefunden.')]);
     }
 
     /**
@@ -1609,8 +1609,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'gdpr_retention_policies',
             'category'    => 'DSGVO & Datenschutz',
-            'label'       => 'Aufbewahrungs-/eDiscovery-Fälle aktiv',
-            'description' => 'Aufbewahrungsrichtlinien sind nötig für Speicherbegrenzung & Auskunfts-/Löschpflichten (Art. 5 + Art. 17 DSGVO).',
+            'label'       => t('Aufbewahrungs-/eDiscovery-Fälle aktiv'),
+            'description' => t('Aufbewahrungsrichtlinien sind nötig für Speicherbegrenzung & Auskunfts-/Löschpflichten (Art. 5 + Art. 17 DSGVO).'),
             'severity'    => 'medium',
         ];
         try {
@@ -1623,9 +1623,9 @@ class SecurityPostureService
             );
             $active = count(array_filter($cases, fn($c) => ($c['status'] ?? '') === 'active'));
             if (empty($cases)) {
-                return array_merge($base, ['status' => 'warn', 'detail' => 'Keine eDiscovery-/Aufbewahrungsfälle konfiguriert.']);
+                return array_merge($base, ['status' => 'warn', 'detail' => t('Keine eDiscovery-/Aufbewahrungsfälle konfiguriert.')]);
             }
-            return array_merge($base, ['status' => 'pass', 'detail' => "{$active} aktive Fälle, " . count($cases) . ' insgesamt.']);
+            return array_merge($base, ['status' => 'pass', 'detail' => t(':active aktive Fälle, :total insgesamt.', ['active' => $active, 'total' => count($cases)])]);
         } catch (\Throwable $e) {
             return array_merge($base, ['status' => 'unknown', 'detail' => $e->getMessage()]);
         }
@@ -1636,8 +1636,8 @@ class SecurityPostureService
         $base = [
             'id'          => 'gdpr_audit_log',
             'category'    => 'DSGVO & Datenschutz',
-            'label'       => 'Audit-Log aktiv & abrufbar',
-            'description' => 'Ohne Audit-Log keine Nachvollziehbarkeit von Datenzugriffen (Art. 32 DSGVO, Rechenschaftspflicht).',
+            'label'       => t('Audit-Log aktiv & abrufbar'),
+            'description' => t('Ohne Audit-Log keine Nachvollziehbarkeit von Datenzugriffen (Art. 32 DSGVO, Rechenschaftspflicht).'),
             'severity'    => 'high',
         ];
         try {
@@ -1651,14 +1651,14 @@ class SecurityPostureService
             // "pass". Check the last error first so a missing permission is
             // surfaced instead of a false green.
             if ($this->graph->getLastError() !== null) {
-                return array_merge($base, ['status' => 'warn', 'detail' => 'Audit-Log nicht abrufbar — Berechtigung AuditLog.Read.All prüfen.']);
+                return array_merge($base, ['status' => 'warn', 'detail' => t('Audit-Log nicht abrufbar — Berechtigung AuditLog.Read.All prüfen.')]);
             }
             if (!empty($data['value'])) {
-                return array_merge($base, ['status' => 'pass', 'detail' => 'Audit-Log liefert Daten.']);
+                return array_merge($base, ['status' => 'pass', 'detail' => t('Audit-Log liefert Daten.')]);
             }
-            return array_merge($base, ['status' => 'warn', 'detail' => 'Audit-Log antwortet, aber leer — Permission/Ausstellungsdatum prüfen.']);
+            return array_merge($base, ['status' => 'warn', 'detail' => t('Audit-Log antwortet, aber leer — Permission/Ausstellungsdatum prüfen.')]);
         } catch (\Throwable $e) {
-            return array_merge($base, ['status' => 'fail', 'detail' => 'Audit-Log nicht abrufbar: ' . $e->getMessage()]);
+            return array_merge($base, ['status' => 'fail', 'detail' => t('Audit-Log nicht abrufbar: :error', ['error' => $e->getMessage()])]);
         }
     }
 

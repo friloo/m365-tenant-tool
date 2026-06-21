@@ -14,7 +14,7 @@ class WorkflowsController
     {
         LocalAuth::require();
         View::render('workflows/index', [
-            'pageTitle' => 'Workflow-Automatisierung',
+            'pageTitle' => t('Workflow-Automatisierung'),
             'workflows' => WorkflowService::listAll(),
         ]);
     }
@@ -24,7 +24,7 @@ class WorkflowsController
         LocalAuth::requireAdmin();
         $workflow = (int)$id > 0 ? WorkflowService::find((int)$id) : null;
         View::render('workflows/edit', [
-            'pageTitle' => $workflow ? ('Workflow: ' . $workflow['name']) : 'Neuer Workflow',
+            'pageTitle' => $workflow ? t('Workflow: :name', ['name' => $workflow['name']]) : t('Neuer Workflow'),
             'workflow'  => $workflow,
             'triggers'  => WorkflowService::TRIGGERS,
             'actions'   => WorkflowService::ACTIONS,
@@ -62,7 +62,7 @@ class WorkflowsController
             'created_by'  => LocalAuth::username(),
         ]);
         AppAudit::log('workflow_save', 'workflows', "ID: {$saved}");
-        Session::flash('success', 'Workflow gespeichert.');
+        Session::flash('success', t('Workflow gespeichert.'));
         Redirect::to('/workflows/edit/' . $saved);
     }
 
@@ -71,7 +71,7 @@ class WorkflowsController
         LocalAuth::requireAdmin();
         WorkflowService::delete((int)$id);
         AppAudit::log('workflow_delete', 'workflows', "ID: {$id}");
-        Session::flash('success', 'Workflow gelöscht.');
+        Session::flash('success', t('Workflow gelöscht.'));
         Redirect::to('/workflows');
     }
 
@@ -80,15 +80,15 @@ class WorkflowsController
         LocalAuth::requireAdmin();
         $workflow = WorkflowService::find((int)$id);
         if (!$workflow) {
-            Session::flash('error', 'Workflow nicht gefunden.');
+            Session::flash('error', t('Workflow nicht gefunden.'));
             Redirect::to('/workflows');
         }
         try {
             $svc = app_service(WorkflowService::class);
             $svc->runDue();
-            Session::flash('success', 'Workflow ausgeführt (siehe Run-Log).');
+            Session::flash('success', t('Workflow ausgeführt (siehe Run-Log).'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Ausführung fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Ausführung fehlgeschlagen: :error', ['error' => $e->getMessage()]));
         }
         Redirect::to('/workflows/edit/' . (int)$id);
     }

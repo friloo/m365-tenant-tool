@@ -22,14 +22,14 @@ class OnboardingController
             $licenses = $service->getAvailableLicenses();
         } catch (\Throwable $e) {
             error_log('Onboarding licenses: ' . $e->getMessage());
-            $loadError = 'Lizenzen konnten nicht geladen werden: ' . $e->getMessage();
+            $loadError = t('Lizenzen konnten nicht geladen werden: ') . $e->getMessage();
         }
         try {
             $groups = $service->getGroups();
         } catch (\Throwable $e) {
             error_log('Onboarding groups: ' . $e->getMessage());
             $loadError = ($loadError ? $loadError . ' | ' : '')
-                . 'Gruppen konnten nicht geladen werden: ' . $e->getMessage();
+                . t('Gruppen konnten nicht geladen werden: ') . $e->getMessage();
         }
         try {
             $domains = $service->getVerifiedDomains();
@@ -38,7 +38,7 @@ class OnboardingController
         }
 
         View::render('onboarding/wizard', [
-            'pageTitle' => 'Benutzer-Onboarding',
+            'pageTitle' => t('Benutzer-Onboarding'),
             'licenses'  => $licenses,
             'groups'    => $groups,
             'domains'   => $domains,
@@ -75,15 +75,15 @@ class OnboardingController
                 return;
             }
 
-            $msg = 'Benutzer "' . ($result['user']['displayName'] ?? '') . '" erfolgreich erstellt.';
+            $msg = t('Benutzer ":name" erfolgreich erstellt.', ['name' => $result['user']['displayName'] ?? '']);
             if (!empty($result['errors'])) {
-                $msg .= ' Hinweise: ' . implode(' | ', $result['errors']);
+                $msg .= t(' Hinweise: ') . implode(' | ', $result['errors']);
             }
             Session::flash('success', $msg);
             Redirect::to('/users/' . ($result['user']['id'] ?? ''));
         } catch (\Throwable $e) {
             $hint = $this->permissionHint($e->getMessage());
-            Session::flash('error', 'Onboarding fehlgeschlagen: ' . $e->getMessage() . ($hint ? ' — ' . $hint : ''));
+            Session::flash('error', t('Onboarding fehlgeschlagen: ') . $e->getMessage() . ($hint ? ' — ' . $hint : ''));
             Redirect::to('/onboarding');
         }
     }
@@ -96,13 +96,13 @@ class OnboardingController
     private function permissionHint(string $msg): ?string
     {
         if (stripos($msg, 'Insufficient privileges') !== false || stripos($msg, 'Authorization_RequestDenied') !== false) {
-            return 'Die App-Registrierung in Azure braucht die Application-Permission "User.ReadWrite.All" (+ Admin Consent). Lese-Berechtigung allein reicht für POST /users nicht. Permissions prüfen unter /settings/permissions.';
+            return t('Die App-Registrierung in Azure braucht die Application-Permission "User.ReadWrite.All" (+ Admin Consent). Lese-Berechtigung allein reicht für POST /users nicht. Permissions prüfen unter /settings/permissions.');
         }
         if (stripos($msg, 'license') !== false && stripos($msg, 'available') !== false) {
-            return 'Im Tenant sind keine verfügbaren Lizenzen für die gewählte SKU vorhanden.';
+            return t('Im Tenant sind keine verfügbaren Lizenzen für die gewählte SKU vorhanden.');
         }
         if (stripos($msg, 'userPrincipalName') !== false && stripos($msg, 'already exists') !== false) {
-            return 'Ein Benutzer mit dieser UPN existiert bereits.';
+            return t('Ein Benutzer mit dieser UPN existiert bereits.');
         }
         return null;
     }
