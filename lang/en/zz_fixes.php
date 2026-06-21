@@ -17,4 +17,10 @@ return [
     'Diese Einstellung wird im :link unter :section verwaltet.'
         => 'This setting is managed in the :link under :section.',
     'Einstellungen → OneDrive' => 'Settings → OneDrive',
+
+    // Round 2: bare bold labels that were left untranslated
+    'Azure AD / Entra ID P1 oder P2'              => 'Azure AD / Entra ID P1 or P2',
+    'Entra ID P1 oder P2'                         => 'Entra ID P1 or P2',
+    'MFA-für-Alle CA-Policy'                      => 'MFA-for-all CA policy',
+    'Block-Auto-Forwarding zu externen Empfängern' => 'Block auto-forwarding to external recipients',
 ];

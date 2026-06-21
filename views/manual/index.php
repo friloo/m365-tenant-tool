@@ -538,8 +538,8 @@
         <li><strong><?= te('Anonyme Link-Ablauffrist') ?></strong> — <?= te('z. B. auf 30 Tage setzen') ?></li>
         <li><strong>Default-Sharing-Linktyp</strong> — <?= te('auf „intern" zwingen') ?></li>
         <li><strong>Block-Legacy-Authentication CA-Policy</strong> — <?= te('mit einem Klick anlegen') ?></li>
-        <li><strong>MFA-für-Alle CA-Policy</strong> — <?= te('Template, das nach Bestätigung im Report-Only-Modus angelegt wird') ?></li>
-        <li><strong>Block-Auto-Forwarding zu externen Empfängern</strong> — <?= te('Authorization-Policy / Out­bound-Spam') ?></li>
+        <li><strong><?= te('MFA-für-Alle CA-Policy') ?></strong> — <?= te('Template, das nach Bestätigung im Report-Only-Modus angelegt wird') ?></li>
+        <li><strong><?= te('Block-Auto-Forwarding zu externen Empfängern') ?></strong> — <?= te('Authorization-Policy / Out­bound-Spam') ?></li>
         <li><strong><?= te('App-Consent einschränken') ?></strong> — <?= te('User-Consent auf „nur für verifizierte Publisher mit Low-Risk-Permissions"') ?></li>
         <li><strong>Guest-Invite-Restrictions</strong> — <?= te('nur Admins dürfen einladen') ?></li>
     </ul>
