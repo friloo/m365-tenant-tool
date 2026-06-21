@@ -348,6 +348,7 @@ return [
     'Gesamt' => 'Total',
     'Erteilt' => 'Granted',
     'Fehlend' => 'Missing',
+    'davon' => 'of which',
     'Schreib-Permissions)' => 'write permissions)',
     'Eingeschränkte Funktionen:' => 'Restricted features:',
     'Tenant-Härtung (alle 21 Items)' => 'Tenant hardening (all 21 items)',

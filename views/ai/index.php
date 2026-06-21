@@ -539,7 +539,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Network error / browser-side timeout. Server probably still
                 // running thanks to ignore_user_abort — try a soft reload after
                 // a short delay so the user lands on the freshly cached page.
-                hint.textContent = 'Verbindung unterbrochen — lade Ergebnis nach…';
+                hint.textContent = <?= json_encode(t('Verbindung unterbrochen — lade Ergebnis nach…'), JSON_UNESCAPED_UNICODE) ?>;
                 setTimeout(() => window.location.href = '/ai', 5000);
             });
         });

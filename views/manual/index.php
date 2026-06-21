@@ -678,10 +678,10 @@
 
 <!-- KI-Sicherheitsberater ──────────────────────────────── -->
 <div class="man-section" id="ai">
-    <h2><i class="bi bi-robot text-primary"></i> KI-Sicherheitsberater</h2>
-    <p>Eine Gesamt-Übersicht des Tenants, die auf den anonymisierten Metriken aller Module aufbaut und durch ein optionales LLM zu einer Geschäftsführungs-tauglichen Zusammenfassung verdichtet wird.</p>
-    <h3>Was die KI sieht</h3>
-    <p><strong>Ausschließlich aggregierte Counts und Prozentwerte</strong>. Niemals UPNs, niemals Domain-Namen, niemals Geräte-Namen, niemals Tenant-IDs, niemals SKU-Bezeichnungen, niemals einzelne IP-Adressen oder Zeitstempel. Beispiel:</p>
+    <h2><i class="bi bi-robot text-primary"></i> <?= te('KI-Sicherheitsberater') ?></h2>
+    <p><?= te('Eine Gesamt-Übersicht des Tenants, die auf den anonymisierten Metriken aller Module aufbaut und durch ein optionales LLM zu einer Geschäftsführungs-tauglichen Zusammenfassung verdichtet wird.') ?></p>
+    <h3><?= te('Was die KI sieht') ?></h3>
+    <p><strong><?= te('Ausschließlich aggregierte Counts und Prozentwerte') ?></strong>. <?= te('Niemals UPNs, niemals Domain-Namen, niemals Geräte-Namen, niemals Tenant-IDs, niemals SKU-Bezeichnungen, niemals einzelne IP-Adressen oder Zeitstempel. Beispiel:') ?></p>
     <pre style="font-size:12px;background:#f9fafb;padding:10px;border-radius:6px;">{
   "users":   {"total": 50, "mfa_pct": 60, "stale_90d": 5},
   "devices": {"total": 80, "compliant_pct": 87},
@@ -689,137 +689,137 @@
   "risky":   {"users_at_risk": 0},
   "secure_score": {"current": 130, "max": 200}
 }</pre>
-    <h3>Empfehlungen</h3>
-    <p>Die konkreten Empfehlungen (mit Step-by-Step-Anleitung, BSI-/NIS-2-/DSGVO-Artikel-Zitaten und Microsoft-Doku-Links) kommen aus einer hartcodierten <code>RecommendationLibrary</code> — nicht aus der KI. Dadurch sind die Empfehlungen reproduzierbar und nicht-halluzinierend. Die KI liefert nur den 2–3-sätzigen Executive-Summary-Text und einen Score 0–100.</p>
-    <h3>Anomalie-Erkennung</h3>
-    <p>Zwei deterministische Anomaly-Services laufen im Hintergrund und fließen in den Kontext ein:</p>
+    <h3><?= te('Empfehlungen') ?></h3>
+    <p><?= te('Die konkreten Empfehlungen (mit Step-by-Step-Anleitung, BSI-/NIS-2-/DSGVO-Artikel-Zitaten und Microsoft-Doku-Links) kommen aus einer hartcodierten <code>RecommendationLibrary</code> — nicht aus der KI. Dadurch sind die Empfehlungen reproduzierbar und nicht-halluzinierend. Die KI liefert nur den 2–3-sätzigen Executive-Summary-Text und einen Score 0–100.') ?></p>
+    <h3><?= te('Anomalie-Erkennung') ?></h3>
+    <p><?= te('Zwei deterministische Anomaly-Services laufen im Hintergrund und fließen in den Kontext ein:') ?></p>
     <ul>
-        <li><strong>Audit-Log-Anomalien</strong> — 7-Tage-Rollup vs. 23-Tage-Baseline mit Poisson-Schwelle (avg + 2·√avg). Findet Aktivitäts-Spikes pro Kategorie.</li>
-        <li><strong>Sign-in-Anomalien</strong> — Credential-Stuffing-Signaturen (≥ 5 Failures + Success in 30 min), Impossible-Travel (Successful-Pair < 4 h, unterschiedliche Länder), Logins aus neuen Ländern, Off-Hours-Logins.</li>
+        <li><strong><?= te('Audit-Log-Anomalien') ?></strong> — <?= te('7-Tage-Rollup vs. 23-Tage-Baseline mit Poisson-Schwelle (avg + 2·√avg). Findet Aktivitäts-Spikes pro Kategorie.') ?></li>
+        <li><strong><?= te('Sign-in-Anomalien') ?></strong> — <?= te('Credential-Stuffing-Signaturen (≥ 5 Failures + Success in 30 min), Impossible-Travel (Successful-Pair < 4 h, unterschiedliche Länder), Logins aus neuen Ländern, Off-Hours-Logins.') ?></li>
     </ul>
-    <h3>Protokoll</h3>
-    <p>Unter <em>Einstellungen → KI-Sicherheitsberater → Protokoll anzeigen</em> kann der Administrator nachsehen, welche exakten Daten beim letzten Aufruf an die KI gesendet wurden — als Audit-Trail für DSGVO-Compliance.</p>
-    <h3>Provider-Konfiguration</h3>
+    <h3><?= te('Protokoll') ?></h3>
+    <p><?= te('Unter <em>Einstellungen → KI-Sicherheitsberater → Protokoll anzeigen</em> kann der Administrator nachsehen, welche exakten Daten beim letzten Aufruf an die KI gesendet wurden — als Audit-Trail für DSGVO-Compliance.') ?></p>
+    <h3><?= te('Provider-Konfiguration') ?></h3>
     <ul>
-        <li><strong>OpenAI</strong> — gpt-4o-mini empfohlen, schnell und günstig</li>
-        <li><strong>DeepSeek</strong> — günstige Alternative</li>
-        <li><strong>Ollama (lokal)</strong> — komplett on-prem, keine Daten verlassen das Netz; llama3.2 funktioniert gut</li>
+        <li><strong>OpenAI</strong> — <?= te('gpt-4o-mini empfohlen, schnell und günstig') ?></li>
+        <li><strong>DeepSeek</strong> — <?= te('günstige Alternative') ?></li>
+        <li><strong>Ollama (lokal)</strong> — <?= te('komplett on-prem, keine Daten verlassen das Netz; llama3.2 funktioniert gut') ?></li>
     </ul>
 </div>
 
 <!-- Executive-Report ───────────────────────────────────── -->
 <div class="man-section" id="executivereport">
-    <h2><i class="bi bi-envelope-paper text-primary"></i> Executive-Report</h2>
-    <p>Monatliche HTML-Mail an die Geschäftsführung mit den wichtigsten Tenant-KPIs. Läuft automatisch am 1. jedes Monats via Cron.</p>
-    <h3>Inhalt</h3>
+    <h2><i class="bi bi-envelope-paper text-primary"></i> <?= te('Executive-Report') ?></h2>
+    <p><?= te('Monatliche HTML-Mail an die Geschäftsführung mit den wichtigsten Tenant-KPIs. Läuft automatisch am 1. jedes Monats via Cron.') ?></p>
+    <h3><?= te('Inhalt') ?></h3>
     <ul>
-        <li><strong>Security-Score</strong> aus den Posture-Checks (grün/orange/rot je nach Wert).</li>
-        <li><strong>4 KPI-Tiles</strong>: Benutzer, Geräte (mit non-compliant), MFA-Quote, Conditional-Access-Policies.</li>
-        <li><strong>4 Risk-Tiles</strong>: Risikobenutzer, offene Defender Alerts, Gastbenutzer, Lizenz-SKUs.</li>
-        <li><strong>Top-Findings</strong> — bis zu 5 fehlgeschlagene Posture-Checks.</li>
-        <li><strong>Footer</strong> mit Link auf den KI-Berater für vollständige Empfehlungen.</li>
+        <li><strong>Security-Score</strong> <?= te('aus den Posture-Checks (grün/orange/rot je nach Wert).') ?></li>
+        <li><strong><?= te('4 KPI-Tiles') ?></strong>: <?= te('Benutzer, Geräte (mit non-compliant), MFA-Quote, Conditional-Access-Policies.') ?></li>
+        <li><strong><?= te('4 Risk-Tiles') ?></strong>: <?= te('Risikobenutzer, offene Defender Alerts, Gastbenutzer, Lizenz-SKUs.') ?></li>
+        <li><strong>Top-Findings</strong> — <?= te('bis zu 5 fehlgeschlagene Posture-Checks.') ?></li>
+        <li><strong>Footer</strong> <?= te('mit Link auf den KI-Berater für vollständige Empfehlungen.') ?></li>
     </ul>
-    <p>Empfänger ist standardmäßig die Alert-E-Mail-Adresse, kann aber pro Report-Typ überschrieben werden (mehrere durch Komma getrennt).</p>
-    <p>Buttons <em>„Vorschau im Browser"</em> und <em>„Jetzt versenden"</em> erlauben Tests, ohne auf den 1. des Monats zu warten.</p>
+    <p><?= te('Empfänger ist standardmäßig die Alert-E-Mail-Adresse, kann aber pro Report-Typ überschrieben werden (mehrere durch Komma getrennt).') ?></p>
+    <p><?= te('Buttons <em>„Vorschau im Browser"</em> und <em>„Jetzt versenden"</em> erlauben Tests, ohne auf den 1. des Monats zu warten.') ?></p>
 </div>
 
 <!-- MFA-Fatigue ─────────────────────────────────────────── -->
 <div class="man-section" id="mfafatigue">
-    <h2><i class="bi bi-shield-slash text-primary"></i> MFA-Fatigue-Erkennung</h2>
-    <p>MFA-Fatigue ist die Strategie, mit der ein Angreifer ein gestohlenes Passwort doch noch nutzbar macht: er triggert wiederholt MFA-Push-Notifications auf dem Handy des Opfers, bis es genervt „Approve" tippt. Bekanntester Fall: Uber-Hack 2022.</p>
-    <h3>Was die Seite zeigt</h3>
+    <h2><i class="bi bi-shield-slash text-primary"></i> <?= te('MFA-Fatigue-Erkennung') ?></h2>
+    <p><?= te('MFA-Fatigue ist die Strategie, mit der ein Angreifer ein gestohlenes Passwort doch noch nutzbar macht: er triggert wiederholt MFA-Push-Notifications auf dem Handy des Opfers, bis es genervt „Approve" tippt. Bekanntester Fall: Uber-Hack 2022.') ?></p>
+    <h3><?= te('Was die Seite zeigt') ?></h3>
     <ul>
-        <li><strong>MFA-Denials gesamt</strong> im gewählten Zeitraum (24h / 7 Tage / 30 Tage).</li>
-        <li><strong>Verdächtige Cluster</strong> — pro User gruppiert in 30-Minuten-Fenster; ab 5 Denials gilt es als verdächtig.</li>
-        <li><strong>Erfolgreich (Approve!)</strong> — Cluster, in denen direkt nach den Denials eine erfolgreiche Anmeldung stand. Sofort-Maßnahmen einleiten!</li>
+        <li><strong><?= te('MFA-Denials gesamt') ?></strong> <?= te('im gewählten Zeitraum (24h / 7 Tage / 30 Tage).') ?></li>
+        <li><strong><?= te('Verdächtige Cluster') ?></strong> — <?= te('pro User gruppiert in 30-Minuten-Fenster; ab 5 Denials gilt es als verdächtig.') ?></li>
+        <li><strong><?= te('Erfolgreich (Approve!)') ?></strong> — <?= te('Cluster, in denen direkt nach den Denials eine erfolgreiche Anmeldung stand. Sofort-Maßnahmen einleiten!') ?></li>
     </ul>
-    <h3>Sofortmaßnahmen bei einem erfolgreichen Angriff</h3>
+    <h3><?= te('Sofortmaßnahmen bei einem erfolgreichen Angriff') ?></h3>
     <ol>
-        <li>Konto sperren (<code>/users</code> → Benutzer → Deaktivieren).</li>
-        <li>Alle aktiven Sitzungen widerrufen (<code>revokeSignInSessions</code>).</li>
-        <li>Passwort-Reset erzwingen.</li>
-        <li>Inbox-Regeln im <a href="/mailboxrules">Auto-Forward-Audit</a> prüfen — typischerweise legt ein Angreifer als Erstes eine Weiterleitungs-Regel an.</li>
-        <li>Im <a href="/oauthaudit">OAuth-Audit</a> nachsehen, ob die App neuen Consents gegeben wurden.</li>
+        <li><?= te('Konto sperren (<code>/users</code> → Benutzer → Deaktivieren).') ?></li>
+        <li><?= te('Alle aktiven Sitzungen widerrufen (<code>revokeSignInSessions</code>).') ?></li>
+        <li><?= te('Passwort-Reset erzwingen.') ?></li>
+        <li><?= te('Inbox-Regeln im') ?> <a href="/mailboxrules"><?= te('Auto-Forward-Audit') ?></a> <?= te('prüfen — typischerweise legt ein Angreifer als Erstes eine Weiterleitungs-Regel an.') ?></li>
+        <li><?= te('Im') ?> <a href="/oauthaudit"><?= te('OAuth-Audit') ?></a> <?= te('nachsehen, ob die App neuen Consents gegeben wurden.') ?></li>
     </ol>
-    <h3>Prävention</h3>
+    <h3><?= te('Prävention') ?></h3>
     <ul>
-        <li>Auf <strong>Number-Matching</strong> umstellen (Microsoft hat das 2023 standardmäßig aktiviert).</li>
-        <li>Für privilegierte Konten: FIDO2 oder Windows Hello erzwingen (siehe <a href="/authstrength">Auth-Strength</a>).</li>
-        <li>Sign-in-Frequency in CA-Policies erhöhen, damit ein gekaperter Token nicht 90 Tage gültig bleibt (siehe <a href="/tokenlifetime">Token-Lifetime</a>).</li>
+        <li><?= te('Auf <strong>Number-Matching</strong> umstellen (Microsoft hat das 2023 standardmäßig aktiviert).') ?></li>
+        <li><?= te('Für privilegierte Konten: FIDO2 oder Windows Hello erzwingen (siehe') ?> <a href="/authstrength"><?= te('Auth-Strength') ?></a><?= te(').') ?></li>
+        <li><?= te('Sign-in-Frequency in CA-Policies erhöhen, damit ein gekaperter Token nicht 90 Tage gültig bleibt (siehe') ?> <a href="/tokenlifetime"><?= te('Token-Lifetime') ?></a><?= te(').') ?></li>
     </ul>
     <p><span class="perm-tag">AuditLog.Read.All</span></p>
 </div>
 
 <!-- Insider-Threat ──────────────────────────────────────── -->
 <div class="man-section" id="insiderthreat">
-    <h2><i class="bi bi-eye-fill text-primary"></i> Insider-Threat-Detection (Light)</h2>
-    <p>Statistische Anomalie-Erkennung pro User, basierend auf Sign-in- und Audit-Log-Daten. Das volle Microsoft Purview Insider Risk Management ist mächtiger, aber lizenz-pflichtig (E5 / Compliance-Add-on); dieses Modul liefert die wichtigsten Signale ohne zusätzliche Lizenz.</p>
-    <h3>Erfasste Signale</h3>
+    <h2><i class="bi bi-eye-fill text-primary"></i> <?= te('Insider-Threat-Detection (Light)') ?></h2>
+    <p><?= te('Statistische Anomalie-Erkennung pro User, basierend auf Sign-in- und Audit-Log-Daten. Das volle Microsoft Purview Insider Risk Management ist mächtiger, aber lizenz-pflichtig (E5 / Compliance-Add-on); dieses Modul liefert die wichtigsten Signale ohne zusätzliche Lizenz.') ?></p>
+    <h3><?= te('Erfasste Signale') ?></h3>
     <ul>
-        <li><strong>Off-Hours-Anmeldungen</strong> — wieviel Prozent der Logins fanden zwischen 22:00 und 06:00 statt? &gt; 50 % = Score +25, &gt; 25 % = +10.</li>
-        <li><strong>Geo-Diversität</strong> — Anmeldungen aus &gt; 3 verschiedenen Ländern in 30 Tagen = +15.</li>
-        <li><strong>Massendownloads</strong> — ≥ 50 OneDrive-File-Reads in einer Stunde = +15 pro Burst.</li>
-        <li><strong>Mass-Mail-Send</strong> — ≥ 100 Mails in einer Stunde = +20 pro Burst.</li>
-        <li><strong>Lösch-Aktivität</strong> — ≥ 100 Lösch-Events = +25, ≥ 30 = +10.</li>
-        <li><strong>Sharing-Aktivität</strong> — ≥ 50 Sharing-Events = +20.</li>
+        <li><strong><?= te('Off-Hours-Anmeldungen') ?></strong> — <?= te('wieviel Prozent der Logins fanden zwischen 22:00 und 06:00 statt? &gt; 50 % = Score +25, &gt; 25 % = +10.') ?></li>
+        <li><strong><?= te('Geo-Diversität') ?></strong> — <?= te('Anmeldungen aus &gt; 3 verschiedenen Ländern in 30 Tagen = +15.') ?></li>
+        <li><strong><?= te('Massendownloads') ?></strong> — <?= te('≥ 50 OneDrive-File-Reads in einer Stunde = +15 pro Burst.') ?></li>
+        <li><strong>Mass-Mail-Send</strong> — <?= te('≥ 100 Mails in einer Stunde = +20 pro Burst.') ?></li>
+        <li><strong><?= te('Lösch-Aktivität') ?></strong> — <?= te('≥ 100 Lösch-Events = +25, ≥ 30 = +10.') ?></li>
+        <li><strong><?= te('Sharing-Aktivität') ?></strong> — <?= te('≥ 50 Sharing-Events = +20.') ?></li>
     </ul>
-    <p>Der Gesamt-Score wird auf 100 gecappt. User mit Score ≥ 50 sind High-Risk und sollten geprüft werden — entweder ein legitimer „Power User" (Marketing, Außendienst) oder ein Insider-Threat-Verdachtsfall.</p>
+    <p><?= te('Der Gesamt-Score wird auf 100 gecappt. User mit Score ≥ 50 sind High-Risk und sollten geprüft werden — entweder ein legitimer „Power User" (Marketing, Außendienst) oder ein Insider-Threat-Verdachtsfall.') ?></p>
     <p><span class="perm-tag">AuditLog.Read.All</span></p>
 </div>
 
 <!-- Cross-Tenant-Access ────────────────────────────────── -->
 <div class="man-section" id="crosstenantaccess">
-    <h2><i class="bi bi-arrow-left-right text-primary"></i> Cross-Tenant-Access (B2B/Federation)</h2>
-    <p>Regelt, welche externen Tenants Zugriff auf Ihre Ressourcen haben und in welche externen Tenants Ihre User dürfen. Drei Ebenen:</p>
+    <h2><i class="bi bi-arrow-left-right text-primary"></i> <?= te('Cross-Tenant-Access (B2B/Federation)') ?></h2>
+    <p><?= te('Regelt, welche externen Tenants Zugriff auf Ihre Ressourcen haben und in welche externen Tenants Ihre User dürfen. Drei Ebenen:') ?></p>
     <h3>Default-Policy</h3>
-    <p>Gilt für alle externen Tenants ohne expliziten Eintrag. Microsoft-Default: B2B-Kollaboration erlaubt, B2B-Direct-Connect (Teams-Federation) blockiert, kein Trust für MFA/Compliant-Device.</p>
-    <h3>Partner-spezifisch</h3>
-    <p>Pro bekanntem Partner können Overrides definiert werden — z. B. eine engere Beziehung mit konkreten Tochterunternehmen, in denen MFA-Trust gegenseitig akzeptiert wird (dann muss der Gast nicht ein zweites Mal MFA durchlaufen).</p>
+    <p><?= te('Gilt für alle externen Tenants ohne expliziten Eintrag. Microsoft-Default: B2B-Kollaboration erlaubt, B2B-Direct-Connect (Teams-Federation) blockiert, kein Trust für MFA/Compliant-Device.') ?></p>
+    <h3><?= te('Partner-spezifisch') ?></h3>
+    <p><?= te('Pro bekanntem Partner können Overrides definiert werden — z. B. eine engere Beziehung mit konkreten Tochterunternehmen, in denen MFA-Trust gegenseitig akzeptiert wird (dann muss der Gast nicht ein zweites Mal MFA durchlaufen).') ?></p>
     <h3>Service-Provider (MSP)</h3>
-    <p>Markiert einen Tenant als „Managed Service Provider" — gibt diesem erweiterte Verwaltungs-Berechtigungen für unseren Tenant. Sicherheits-kritisch.</p>
-    <p><span class="perm-tag">Policy.Read.All</span> · Schreib-Operationen über Entra-Portal.</p>
+    <p><?= te('Markiert einen Tenant als „Managed Service Provider" — gibt diesem erweiterte Verwaltungs-Berechtigungen für unseren Tenant. Sicherheits-kritisch.') ?></p>
+    <p><span class="perm-tag">Policy.Read.All</span> · <?= te('Schreib-Operationen über Entra-Portal.') ?></p>
 </div>
 
 <!-- Token-Lifetime ──────────────────────────────────────── -->
 <div class="man-section" id="tokenlifetime">
-    <h2><i class="bi bi-clock-history text-primary"></i> Token-Lifetime &amp; Sign-in-Frequency</h2>
-    <p>Microsoft hat 2021 die globalen Token-Lifetime-Policies deprecated. Heute steuert man die effektive Anmelde-Frequenz über das <code>signInFrequency</code>-Setting in Conditional-Access-Policies.</p>
-    <h3>Empfohlene Werte</h3>
+    <h2><i class="bi bi-clock-history text-primary"></i> <?= te('Token-Lifetime &amp; Sign-in-Frequency') ?></h2>
+    <p><?= te('Microsoft hat 2021 die globalen Token-Lifetime-Policies deprecated. Heute steuert man die effektive Anmelde-Frequenz über das <code>signInFrequency</code>-Setting in Conditional-Access-Policies.') ?></p>
+    <h3><?= te('Empfohlene Werte') ?></h3>
     <table style="width:100%;border-collapse:collapse;font-size:13px;">
-        <thead><tr style="background:#f3f4f6;"><th style="padding:6px;text-align:left;border:1px solid #e5e7eb;">App-Klasse</th><th style="padding:6px;text-align:left;border:1px solid #e5e7eb;">Sign-in-Frequency</th></tr></thead>
+        <thead><tr style="background:#f3f4f6;"><th style="padding:6px;text-align:left;border:1px solid #e5e7eb;"><?= te('App-Klasse') ?></th><th style="padding:6px;text-align:left;border:1px solid #e5e7eb;">Sign-in-Frequency</th></tr></thead>
         <tbody>
-            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Privileged Roles (Admin)</td><td style="padding:6px;border:1px solid #e5e7eb;">4 Stunden</td></tr>
-            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Sensitive Apps (Finance, HR)</td><td style="padding:6px;border:1px solid #e5e7eb;">12 Stunden</td></tr>
-            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Standard Office-Apps</td><td style="padding:6px;border:1px solid #e5e7eb;">7 Tage</td></tr>
-            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Privater Browser (Persistent-Browser)</td><td style="padding:6px;border:1px solid #e5e7eb;">Niemals persistent</td></tr>
+            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Privileged Roles (Admin)</td><td style="padding:6px;border:1px solid #e5e7eb;"><?= te('4 Stunden') ?></td></tr>
+            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Sensitive Apps (Finance, HR)</td><td style="padding:6px;border:1px solid #e5e7eb;"><?= te('12 Stunden') ?></td></tr>
+            <tr><td style="padding:6px;border:1px solid #e5e7eb;">Standard Office-Apps</td><td style="padding:6px;border:1px solid #e5e7eb;"><?= te('7 Tage') ?></td></tr>
+            <tr><td style="padding:6px;border:1px solid #e5e7eb;"><?= te('Privater Browser (Persistent-Browser)') ?></td><td style="padding:6px;border:1px solid #e5e7eb;"><?= te('Niemals persistent') ?></td></tr>
         </tbody>
     </table>
-    <p>Konfiguration: <a href="https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies" target="_blank" rel="noopener">Entra → Conditional Access → Policy</a> → Sitzung → Sign-in frequency.</p>
+    <p><?= te('Konfiguration:') ?> <a href="https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies" target="_blank" rel="noopener">Entra → Conditional Access → Policy</a> → <?= te('Sitzung → Sign-in frequency.') ?></p>
     <p><span class="perm-tag">Policy.Read.All</span></p>
 </div>
 
 <!-- Lifecycle Workflows ─────────────────────────────────── -->
 <div class="man-section" id="lifecycle">
     <h2><i class="bi bi-diagram-2 text-primary"></i> Lifecycle Workflows</h2>
-    <p>Microsoft Entra ID Governance bietet automatisierte Workflows für die drei Lebens­phasen eines Mitarbeiter­kontos:</p>
+    <p><?= te('Microsoft Entra ID Governance bietet automatisierte Workflows für die drei Lebens­phasen eines Mitarbeiter­kontos:') ?></p>
     <ul>
-        <li><strong>Joiner</strong> — beim Eintritt: zu Standard-Gruppen hinzufügen, Welcome-Mail senden, Manager benachrichtigen, Lizenzen zuweisen.</li>
-        <li><strong>Mover</strong> — bei Abteilungs-Wechsel: alte Gruppen entfernen, neue zuweisen, Mailbox-Permissions anpassen.</li>
-        <li><strong>Leaver</strong> — beim Austritt: Konto deaktivieren, Lizenzen entziehen, Manager benachrichtigen, nach X Tagen löschen.</li>
+        <li><strong>Joiner</strong> — <?= te('beim Eintritt: zu Standard-Gruppen hinzufügen, Welcome-Mail senden, Manager benachrichtigen, Lizenzen zuweisen.') ?></li>
+        <li><strong>Mover</strong> — <?= te('bei Abteilungs-Wechsel: alte Gruppen entfernen, neue zuweisen, Mailbox-Permissions anpassen.') ?></li>
+        <li><strong>Leaver</strong> — <?= te('beim Austritt: Konto deaktivieren, Lizenzen entziehen, Manager benachrichtigen, nach X Tagen löschen.') ?></li>
     </ul>
-    <p>Voraussetzung: <strong>Microsoft Entra ID Governance</strong> (separate Lizenz oder im E5-Bundle).</p>
-    <p>Konfiguration im Entra-Portal — das Tool zeigt nur die definierten Workflows mit ihrem Status. Schreib-Operationen sind über die Graph-API möglich, sind aber nicht im Tool integriert (komplexe Task-Definitionen würden ihre eigene UI brauchen).</p>
+    <p><?= te('Voraussetzung:') ?> <strong>Microsoft Entra ID Governance</strong> <?= te('(separate Lizenz oder im E5-Bundle).') ?></p>
+    <p><?= te('Konfiguration im Entra-Portal — das Tool zeigt nur die definierten Workflows mit ihrem Status. Schreib-Operationen sind über die Graph-API möglich, sind aber nicht im Tool integriert (komplexe Task-Definitionen würden ihre eigene UI brauchen).') ?></p>
 </div>
 
 <!-- Phishing-Simulationen Modul + ausführliche Anleitung ─── -->
 <div class="man-section" id="phishingsim">
-    <h2><i class="bi bi-bullseye text-primary"></i> Phishing-Simulationen</h2>
-    <p>Übersicht der durchgeführten Phishing-Simulationen aus Microsoft Defender Attack Simulation Training. Pro Simulation werden Empfänger-Anzahl, Klick-Rate, „Compromised"-Rate (User hat Credentials eingegeben oder Datei geöffnet) und Reporting-Rate (User hat die Phishing-Mail korrekt gemeldet) angezeigt.</p>
-    <h3>Wichtige Kennzahlen</h3>
+    <h2><i class="bi bi-bullseye text-primary"></i> <?= te('Phishing-Simulationen') ?></h2>
+    <p><?= te('Übersicht der durchgeführten Phishing-Simulationen aus Microsoft Defender Attack Simulation Training. Pro Simulation werden Empfänger-Anzahl, Klick-Rate, „Compromised"-Rate (User hat Credentials eingegeben oder Datei geöffnet) und Reporting-Rate (User hat die Phishing-Mail korrekt gemeldet) angezeigt.') ?></p>
+    <h3><?= te('Wichtige Kennzahlen') ?></h3>
     <ul>
-        <li><strong>Compromised-Rate &lt; 5 %</strong> ist ein gutes Ziel. &gt; 20 % bedeutet dringender Schulungs­bedarf.</li>
-        <li><strong>Reporting-Rate &gt; 50 %</strong> zeigt, dass die User das „Report Phishing"-Plugin in Outlook aktiv nutzen.</li>
-        <li><strong>Training-Quote</strong> — wieviele der erwischten User haben das zugewiesene Training auch abgeschlossen.</li>
+        <li><strong><?= te('Compromised-Rate &lt; 5 %') ?></strong> <?= te('ist ein gutes Ziel. &gt; 20 % bedeutet dringender Schulungs­bedarf.') ?></li>
+        <li><strong><?= te('Reporting-Rate &gt; 50 %') ?></strong> <?= te('zeigt, dass die User das „Report Phishing"-Plugin in Outlook aktiv nutzen.') ?></li>
+        <li><strong><?= te('Training-Quote') ?></strong> — <?= te('wieviele der erwischten User haben das zugewiesene Training auch abgeschlossen.') ?></li>
     </ul>
 </div>
 

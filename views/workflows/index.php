@@ -4,10 +4,10 @@ use App\Modules\Workflows\WorkflowService;
 ?>
 <div class="content-card">
     <div class="d-flex justify-content-between align-items-center mb-2">
-        <h1 class="mb-0"><i class="bi bi-diagram-2"></i> Workflow-Automatisierung <?= \App\Core\Help::tip('workflow_automation') ?></h1>
-        <a href="/workflows/edit/0" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Neuer Workflow</a>
+        <h1 class="mb-0"><i class="bi bi-diagram-2"></i> <?= te('Workflow-Automatisierung') ?> <?= \App\Core\Help::tip('workflow_automation') ?></h1>
+        <a href="/workflows/edit/0" class="btn btn-primary"><i class="bi bi-plus-lg"></i> <?= te('Neuer Workflow') ?></a>
     </div>
-    <p class="text-muted">Trigger + Aktionen, ausgeführt vom Cron alle 15 Minuten. Leichtgewichtig im Vergleich zu Power Automate, aber ausreichend für 80 % der Tenant-Standardabläufe.</p>
+    <p class="text-muted"><?= te('Trigger + Aktionen, ausgeführt vom Cron alle 15 Minuten. Leichtgewichtig im Vergleich zu Power Automate, aber ausreichend für 80 % der Tenant-Standardabläufe.') ?></p>
 
     <?php $flash = \App\Core\Session::getFlash('success'); $err = \App\Core\Session::getFlash('error'); ?>
     <?php if ($flash): ?><div class="alert alert-success"><?= View::escape($flash) ?></div><?php endif; ?>
@@ -16,13 +16,13 @@ use App\Modules\Workflows\WorkflowService;
     <?php if (empty($workflows)): ?>
         <div class="alert alert-light text-center text-muted py-5">
             <i class="bi bi-diagram-2" style="font-size:36px"></i>
-            <p class="mt-2 mb-0">Noch keine Workflows angelegt.</p>
-            <p class="small">Klicke oben auf <strong>Neuer Workflow</strong>, um z. B. „Neuer Gast → in Gruppe X aufnehmen + Mail an IT-Leitung" zu konfigurieren.</p>
+            <p class="mt-2 mb-0"><?= te('Noch keine Workflows angelegt.') ?></p>
+            <p class="small"><?= te('Klicke oben auf') ?> <strong><?= te('Neuer Workflow') ?></strong><?= te(', um z. B. „Neuer Gast → in Gruppe X aufnehmen + Mail an IT-Leitung" zu konfigurieren.') ?></p>
         </div>
     <?php else: ?>
         <table class="table table-sm">
             <thead><tr>
-                <th>Name</th><th>Trigger</th><th>Aktionen</th><th>Letzter Lauf</th><th>Status</th><th>Aktiv</th><th></th>
+                <th><?= te('Name') ?></th><th><?= te('Trigger') ?></th><th><?= te('Aktionen') ?></th><th><?= te('Letzter Lauf') ?></th><th><?= te('Status') ?></th><th><?= te('Aktiv') ?></th><th></th>
             </tr></thead>
             <tbody>
             <?php foreach ($workflows as $w): ?>
@@ -41,9 +41,9 @@ use App\Modules\Workflows\WorkflowService;
                     </td>
                     <td>
                         <?php if ($w['enabled']): ?>
-                            <span class="badge bg-success">aktiv</span>
+                            <span class="badge bg-success"><?= te('aktiv') ?></span>
                         <?php else: ?>
-                            <span class="badge bg-secondary">pausiert</span>
+                            <span class="badge bg-secondary"><?= te('pausiert') ?></span>
                         <?php endif; ?>
                     </td>
                     <td>

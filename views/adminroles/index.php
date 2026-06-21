@@ -220,7 +220,7 @@
                     <?php if ($memberCount === 0): ?>
                     <tr>
                         <td colspan="<?= LocalAuth::isAdmin() ? 5 : 4 ?>" class="text-center text-muted py-2" style="font-size:13px;">
-                            Keine Mitglieder
+                            <?= te('Keine Mitglieder') ?>
                         </td>
                     </tr>
                     <?php endif; ?>
@@ -236,10 +236,10 @@
     <div class="card-body-custom">
         <div class="empty-state">
             <i class="bi bi-people" style="font-size:2.5rem;color:#d1d5db;"></i>
-            <div class="mt-3 fw-semibold">Keine aktiven Rollenzuweisungen gefunden</div>
+            <div class="mt-3 fw-semibold"><?= te('Keine aktiven Rollenzuweisungen gefunden') ?></div>
             <div class="text-muted small mt-1">
-                Entweder sind keine Rollen zugewiesen oder die Berechtigungen
-                (<code>RoleManagement.Read.All</code>) fehlen.
+                <?= te('Entweder sind keine Rollen zugewiesen oder die Berechtigungen') ?>
+                (<code>RoleManagement.Read.All</code>) <?= te('fehlen.') ?>
             </div>
         </div>
     </div>

@@ -89,27 +89,27 @@ $exportParams = http_build_query(array_filter([
                        value="<?= $e($filters['user'] ?? '') ?>">
             </div>
             <div class="col-6 col-sm-4 col-md-2 col-lg-1">
-                <label class="form-label form-label-sm small fw-medium mb-1">Zeitraum</label>
+                <label class="form-label form-label-sm small fw-medium mb-1"><?= te('Zeitraum') ?></label>
                 <select name="days" class="form-select form-select-sm">
-                    <?php foreach ([1 => '1 Tag', 7 => '7 Tage', 14 => '14 Tage', 30 => '30 Tage'] as $val => $label): ?>
+                    <?php foreach ([1 => t('1 Tag'), 7 => t('7 Tage'), 14 => t('14 Tage'), 30 => t('30 Tage')] as $val => $label): ?>
                         <option value="<?= $val ?>" <?= (int)($filters['days'] ?? 7) === $val ? 'selected' : '' ?>>
-                            <?= $label ?>
+                            <?= $e($label) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </div>
             <div class="col-6 col-sm-4 col-md-2 col-lg-1">
-                <label class="form-label form-label-sm small fw-medium mb-1">Ergebnis</label>
+                <label class="form-label form-label-sm small fw-medium mb-1"><?= te('Ergebnis') ?></label>
                 <select name="status" class="form-select form-select-sm">
-                    <option value="" <?= ($filters['status'] ?? '') === '' ? 'selected' : '' ?>>Alle</option>
-                    <option value="success" <?= ($filters['status'] ?? '') === 'success' ? 'selected' : '' ?>>Nur Erfolg</option>
-                    <option value="failure" <?= ($filters['status'] ?? '') === 'failure' ? 'selected' : '' ?>>Nur Fehler</option>
+                    <option value="" <?= ($filters['status'] ?? '') === '' ? 'selected' : '' ?>><?= te('Alle') ?></option>
+                    <option value="success" <?= ($filters['status'] ?? '') === 'success' ? 'selected' : '' ?>><?= te('Nur Erfolg') ?></option>
+                    <option value="failure" <?= ($filters['status'] ?? '') === 'failure' ? 'selected' : '' ?>><?= te('Nur Fehler') ?></option>
                 </select>
             </div>
             <div class="col-6 col-sm-4 col-md-2 col-lg-2">
                 <label class="form-label form-label-sm small fw-medium mb-1">App</label>
                 <select name="app" class="form-select form-select-sm">
-                    <option value="">Alle</option>
+                    <option value=""><?= te('Alle') ?></option>
                     <?php foreach ($apps as $appName): ?>
                         <option value="<?= $e($appName) ?>" <?= ($filters['app'] ?? '') === $appName ? 'selected' : '' ?>>
                             <?= $e($appName) ?>
@@ -118,9 +118,9 @@ $exportParams = http_build_query(array_filter([
                 </select>
             </div>
             <div class="col-6 col-sm-4 col-md-2 col-lg-2">
-                <label class="form-label form-label-sm small fw-medium mb-1">Land</label>
+                <label class="form-label form-label-sm small fw-medium mb-1"><?= te('Land') ?></label>
                 <select name="country" class="form-select form-select-sm">
-                    <option value="">Alle</option>
+                    <option value=""><?= te('Alle') ?></option>
                     <?php foreach ($countries as $country): ?>
                         <option value="<?= $e($country) ?>" <?= ($filters['country'] ?? '') === $country ? 'selected' : '' ?>>
                             <?= $e($country) ?>
@@ -129,25 +129,25 @@ $exportParams = http_build_query(array_filter([
                 </select>
             </div>
             <div class="col-6 col-sm-4 col-md-2 col-lg-1">
-                <label class="form-label form-label-sm small fw-medium mb-1">Risiko</label>
+                <label class="form-label form-label-sm small fw-medium mb-1"><?= te('Risiko') ?></label>
                 <select name="risk" class="form-select form-select-sm">
-                    <option value="" <?= ($filters['risk'] ?? '') === '' ? 'selected' : '' ?>>Alle</option>
-                    <option value="none"   <?= ($filters['risk'] ?? '') === 'none'   ? 'selected' : '' ?>>Keine</option>
-                    <option value="low"    <?= ($filters['risk'] ?? '') === 'low'    ? 'selected' : '' ?>>Niedrig</option>
-                    <option value="medium" <?= ($filters['risk'] ?? '') === 'medium' ? 'selected' : '' ?>>Mittel</option>
-                    <option value="high"   <?= ($filters['risk'] ?? '') === 'high'   ? 'selected' : '' ?>>Hoch</option>
+                    <option value="" <?= ($filters['risk'] ?? '') === '' ? 'selected' : '' ?>><?= te('Alle') ?></option>
+                    <option value="none"   <?= ($filters['risk'] ?? '') === 'none'   ? 'selected' : '' ?>><?= te('Keine') ?></option>
+                    <option value="low"    <?= ($filters['risk'] ?? '') === 'low'    ? 'selected' : '' ?>><?= te('Niedrig') ?></option>
+                    <option value="medium" <?= ($filters['risk'] ?? '') === 'medium' ? 'selected' : '' ?>><?= te('Mittel') ?></option>
+                    <option value="high"   <?= ($filters['risk'] ?? '') === 'high'   ? 'selected' : '' ?>><?= te('Hoch') ?></option>
                 </select>
             </div>
             <div class="col-12 col-lg d-flex align-items-end gap-2 flex-wrap">
                 <button type="submit" class="btn btn-primary btn-sm">
-                    <i class="bi bi-search me-1"></i>Filtern
+                    <i class="bi bi-search me-1"></i><?= te('Filtern') ?>
                 </button>
                 <a href="/signinlog" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-x-circle me-1"></i>Zurücksetzen
+                    <i class="bi bi-x-circle me-1"></i><?= te('Zurücksetzen') ?>
                 </a>
                 <a href="/signinlog/export<?= $exportParams ? '?' . $e($exportParams) : '' ?>"
                    class="btn btn-outline-success btn-sm ms-auto">
-                    <i class="bi bi-download me-1"></i>CSV-Export
+                    <i class="bi bi-download me-1"></i><?= te('CSV-Export') ?>
                 </a>
             </div>
         </form>
@@ -161,11 +161,11 @@ $exportParams = http_build_query(array_filter([
     <div class="col-md-6">
         <div class="content-card h-100">
             <div class="card-header-custom">
-                <span><i class="bi bi-grid me-2"></i>Top Apps</span>
+                <span><i class="bi bi-grid me-2"></i><?= te('Top Apps') ?></span>
             </div>
             <div class="card-body-custom p-0">
                 <?php if (empty($stats['top_apps'])): ?>
-                    <div class="empty-state py-3"><span class="text-muted small">Keine Daten</span></div>
+                    <div class="empty-state py-3"><span class="text-muted small"><?= te('Keine Daten') ?></span></div>
                 <?php else: ?>
                     <?php $maxApp = max($stats['top_apps']); ?>
                     <table class="data-table" style="margin-bottom:0;">
@@ -195,11 +195,11 @@ $exportParams = http_build_query(array_filter([
     <div class="col-md-6">
         <div class="content-card h-100">
             <div class="card-header-custom">
-                <span><i class="bi bi-globe me-2"></i>Top Länder</span>
+                <span><i class="bi bi-globe me-2"></i><?= te('Top Länder') ?></span>
             </div>
             <div class="card-body-custom p-0">
                 <?php if (empty($stats['top_countries'])): ?>
-                    <div class="empty-state py-3"><span class="text-muted small">Keine Daten</span></div>
+                    <div class="empty-state py-3"><span class="text-muted small"><?= te('Keine Daten') ?></span></div>
                 <?php else: ?>
                     <?php $maxCountry = max($stats['top_countries']); ?>
                     <table class="data-table" style="margin-bottom:0;">
@@ -230,11 +230,11 @@ $exportParams = http_build_query(array_filter([
 <!-- Sign-in Table -->
 <div class="content-card">
     <div class="table-toolbar">
-        <input type="text" id="signinSearch" class="search-box" placeholder="Tabelle durchsuchen…">
+        <input type="text" id="signinSearch" class="search-box" placeholder="<?= te('Tabelle durchsuchen…') ?>">
         <span class="ms-auto text-muted small">
-            <?= count($logs) ?> Einträge
+            <?= te(':n Einträge', ['n' => count($logs)]) ?>
             <?php if (count($logs) >= 200): ?>
-                <span class="badge-warning ms-1">Limit: 200</span>
+                <span class="badge-warning ms-1"><?= te('Limit: 200') ?></span>
             <?php endif; ?>
         </span>
     </div>
@@ -253,8 +253,8 @@ $exportParams = http_build_query(array_filter([
             <div class="empty-state">
                 <i class="bi bi-<?= $hasActiveFilter ? 'search' : 'journal-x' ?>"></i>
                 <?php if ($hasActiveFilter): ?>
-                    <p>Keine Ergebnisse für diese Filter<br>
-                    <a href="/signinlog" class="text-muted small">Filter zurücksetzen</a></p>
+                    <p><?= te('Keine Ergebnisse für diese Filter') ?><br>
+                    <a href="/signinlog" class="text-muted small"><?= te('Filter zurücksetzen') ?></a></p>
                 <?php elseif (!empty($diag)): ?>
                     <p class="fw-semibold" style="color:#b45309;"><?= $e($diag['short']) ?></p>
                     <p style="font-size:13px;color:#6b7280;max-width:560px;margin:0 auto;">
@@ -262,11 +262,11 @@ $exportParams = http_build_query(array_filter([
                     </p>
                     <?php if (!empty($diag['fix_url'])): ?>
                         <a href="<?= $e($diag['fix_url']) ?>" class="btn btn-sm btn-outline-secondary mt-3">
-                            <i class="bi bi-arrow-right-circle me-1"></i>Zur Lösung
+                            <i class="bi bi-arrow-right-circle me-1"></i><?= te('Zur Lösung') ?>
                         </a>
                     <?php endif; ?>
                 <?php else: ?>
-                    <p>Keine Anmeldedaten im gewählten Zeitraum</p>
+                    <p><?= te('Keine Anmeldedaten im gewählten Zeitraum') ?></p>
                 <?php endif; ?>
             </div>
         </div>
@@ -275,13 +275,13 @@ $exportParams = http_build_query(array_filter([
             <table class="data-table" id="signinTable">
                 <thead>
                     <tr>
-                        <th>Datum/Uhrzeit</th>
-                        <th>Benutzer</th>
+                        <th><?= te('Datum/Uhrzeit') ?></th>
+                        <th><?= te('Benutzer') ?></th>
                         <th>App</th>
-                        <th>IP / Standort</th>
-                        <th>Gerät (OS)</th>
-                        <th>Ergebnis</th>
-                        <th>Risiko</th>
+                        <th><?= te('IP / Standort') ?></th>
+                        <th><?= te('Gerät (OS)') ?></th>
+                        <th><?= te('Ergebnis') ?></th>
+                        <th><?= te('Risiko') ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -321,9 +321,9 @@ $exportParams = http_build_query(array_filter([
                         <td style="font-size:12px;color:#6b7280;"><?= $os ? $e($os) : '–' ?></td>
                         <td>
                             <?php if ($success): ?>
-                                <span class="badge-enabled">Erfolgreich</span>
+                                <span class="badge-enabled"><?= te('Erfolgreich') ?></span>
                             <?php else: ?>
-                                <span class="badge-disabled">Fehlgeschlagen</span>
+                                <span class="badge-disabled"><?= te('Fehlgeschlagen') ?></span>
                                 <?php if ($truncatedReason): ?>
                                     <div style="font-size:10px;color:#9ca3af;margin-top:2px;"
                                          title="<?= $e($failureReason) ?>">
@@ -332,16 +332,16 @@ $exportParams = http_build_query(array_filter([
                                 <?php endif; ?>
                             <?php endif; ?>
                             <?php if ($caStatus === 'failure'): ?>
-                                <span class="badge-danger ms-1" style="font-size:10px;">CA-Fehler</span>
+                                <span class="badge-danger ms-1" style="font-size:10px;"><?= te('CA-Fehler') ?></span>
                             <?php endif; ?>
                         </td>
                         <td>
                             <?php if ($risk === 'high'): ?>
-                                <span class="badge-danger">Hoch</span>
+                                <span class="badge-danger"><?= te('Hoch') ?></span>
                             <?php elseif ($risk === 'medium'): ?>
-                                <span class="badge-warning">Mittel</span>
+                                <span class="badge-warning"><?= te('Mittel') ?></span>
                             <?php elseif ($risk === 'low'): ?>
-                                <span class="badge-info">Niedrig</span>
+                                <span class="badge-info"><?= te('Niedrig') ?></span>
                             <?php else: ?>
                                 <span class="text-muted" style="font-size:12px;">–</span>
                             <?php endif; ?>
@@ -355,7 +355,7 @@ $exportParams = http_build_query(array_filter([
             <div class="card-body-custom pt-2 pb-2">
                 <p class="text-muted small mb-0">
                     <i class="bi bi-info-circle me-1"></i>
-                    Es werden maximal 200 Einträge angezeigt. Verwenden Sie engere Filter oder den CSV-Export für vollständige Daten.
+                    <?= te('Es werden maximal 200 Einträge angezeigt. Verwenden Sie engere Filter oder den CSV-Export für vollständige Daten.') ?>
                 </p>
             </div>
         <?php endif; ?>

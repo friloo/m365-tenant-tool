@@ -1,8 +1,8 @@
 <?php
 $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 $yn = fn(bool $b) => $b
-    ? '<span class="badge bg-success">ja</span>'
-    : '<span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">nein</span>';
+    ? '<span class="badge bg-success">' . te('ja') . '</span>'
+    : '<span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">' . te('nein') . '</span>';
 $fmt = [\App\Modules\PimSettings\PimSettingsService::class, 'formatDuration'];
 
 // Roles where weak activation rules matter most (highly privileged).
