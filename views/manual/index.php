@@ -1138,57 +1138,57 @@
 
 <!-- Berechtigungen ───────────────────────────────────────── -->
 <div class="man-section" id="permissions">
-    <h2><i class="bi bi-shield-check text-primary"></i> Erforderliche Graph-Berechtigungen</h2>
-    <p>Alle Berechtigungen sind <strong>Anwendungsberechtigungen</strong> (Application Permissions), keine delegierten Berechtigungen. Sie werden in der Azure App-Registrierung unter <em>API-Berechtigungen → Microsoft Graph → Anwendungsberechtigungen</em> erteilt und erfordern <strong>Administrator-Zustimmung</strong>.</p>
+    <h2><i class="bi bi-shield-check text-primary"></i> <?= te('Erforderliche Graph-Berechtigungen') ?></h2>
+    <p><?= te('Alle Berechtigungen sind <strong>Anwendungsberechtigungen</strong> (Application Permissions), keine delegierten Berechtigungen. Sie werden in der Azure App-Registrierung unter <em>API-Berechtigungen → Microsoft Graph → Anwendungsberechtigungen</em> erteilt und erfordern <strong>Administrator-Zustimmung</strong>.') ?></p>
 
-    <h3>Mindest-Berechtigungen (Lesen)</h3>
+    <h3><?= te('Mindest-Berechtigungen (Lesen)') ?></h3>
     <ul>
-        <li><span class="perm-tag">User.Read.All</span> — Benutzer, MFA, Offboarding, Inaktive Konten</li>
-        <li><span class="perm-tag">Group.Read.All</span> — Gruppen & Teams</li>
-        <li><span class="perm-tag">Organization.Read.All</span> — Tenant-Infos, Lizenzen</li>
-        <li><span class="perm-tag">AuditLog.Read.All</span> — Audit-Log, Sign-in-Log, Anmeldeverlauf</li>
-        <li><span class="perm-tag">Reports.Read.All</span> — OneDrive, Teams-Nutzung, Adoptions-Report</li>
-        <li><span class="perm-tag">Sites.Read.All</span> — SharePoint, Freigaben</li>
-        <li><span class="perm-tag">Policy.Read.All</span> — Sicherheitsrichtlinien, CA-Richtlinien</li>
-        <li><span class="perm-tag">Application.Read.All</span> — App-Registrierungen</li>
-        <li><span class="perm-tag">Mail.ReadBasic.All</span> — Postfächer, Mail-Flow</li>
-        <li><span class="perm-tag">DeviceManagementManagedDevices.Read.All</span> — Intune-Geräte</li>
-        <li><span class="perm-tag">ServiceMessage.Read.All</span> — Dienststatus, Message Center</li>
-        <li><span class="perm-tag">UserAuthenticationMethod.Read.All</span> — MFA-Methoden</li>
-        <li><span class="perm-tag">RoleManagement.Read.All</span> — Admin-Rollen</li>
-        <li><span class="perm-tag">IdentityRiskyUser.Read.All</span> — Risiko-Anmeldungen</li>
-        <li><span class="perm-tag">SecurityEvents.Read.All</span> — Secure Score, Defender</li>
-        <li><span class="perm-tag">SecurityAlert.ReadWrite.All</span> — Defender Alerts auflösen</li>
+        <li><span class="perm-tag">User.Read.All</span> — <?= te('Benutzer, MFA, Offboarding, Inaktive Konten') ?></li>
+        <li><span class="perm-tag">Group.Read.All</span> — <?= te('Gruppen & Teams') ?></li>
+        <li><span class="perm-tag">Organization.Read.All</span> — <?= te('Tenant-Infos, Lizenzen') ?></li>
+        <li><span class="perm-tag">AuditLog.Read.All</span> — <?= te('Audit-Log, Sign-in-Log, Anmeldeverlauf') ?></li>
+        <li><span class="perm-tag">Reports.Read.All</span> — <?= te('OneDrive, Teams-Nutzung, Adoptions-Report') ?></li>
+        <li><span class="perm-tag">Sites.Read.All</span> — <?= te('SharePoint, Freigaben') ?></li>
+        <li><span class="perm-tag">Policy.Read.All</span> — <?= te('Sicherheitsrichtlinien, CA-Richtlinien') ?></li>
+        <li><span class="perm-tag">Application.Read.All</span> — <?= te('App-Registrierungen') ?></li>
+        <li><span class="perm-tag">Mail.ReadBasic.All</span> — <?= te('Postfächer, Mail-Flow') ?></li>
+        <li><span class="perm-tag">DeviceManagementManagedDevices.Read.All</span> — <?= te('Intune-Geräte') ?></li>
+        <li><span class="perm-tag">ServiceMessage.Read.All</span> — <?= te('Dienststatus, Message Center') ?></li>
+        <li><span class="perm-tag">UserAuthenticationMethod.Read.All</span> — <?= te('MFA-Methoden') ?></li>
+        <li><span class="perm-tag">RoleManagement.Read.All</span> — <?= te('Admin-Rollen') ?></li>
+        <li><span class="perm-tag">IdentityRiskyUser.Read.All</span> — <?= te('Risiko-Anmeldungen') ?></li>
+        <li><span class="perm-tag">SecurityEvents.Read.All</span> — <?= te('Secure Score, Defender') ?></li>
+        <li><span class="perm-tag">SecurityAlert.ReadWrite.All</span> — <?= te('Defender Alerts auflösen') ?></li>
     </ul>
 
-    <h3>Für M365-Benutzer-Login (delegiert)</h3>
-    <p>Damit IT-Mitarbeiter sich mit ihrem Microsoft-Konto anmelden können, wird zusätzlich benötigt:</p>
+    <h3><?= te('Für M365-Benutzer-Login (delegiert)') ?></h3>
+    <p><?= te('Damit IT-Mitarbeiter sich mit ihrem Microsoft-Konto anmelden können, wird zusätzlich benötigt:') ?></p>
     <ul>
-        <li><span class="perm-tag">User.Read</span> — <strong>delegierte</strong> Berechtigung (nicht Application), ermöglicht das Auslesen von Name und UPN des angemeldeten Benutzers nach dem Login</li>
+        <li><span class="perm-tag">User.Read</span> — <?= te('<strong>delegierte</strong> Berechtigung (nicht Application), ermöglicht das Auslesen von Name und UPN des angemeldeten Benutzers nach dem Login') ?></li>
     </ul>
-    <p class="text-muted small">Diese Berechtigung wird unter <em>API-Berechtigungen → Delegierte Berechtigungen → Microsoft Graph → User.Read</em> hinzugefügt. Kein Admin-Consent nötig.</p>
+    <p class="text-muted small"><?= te('Diese Berechtigung wird unter <em>API-Berechtigungen → Delegierte Berechtigungen → Microsoft Graph → User.Read</em> hinzugefügt. Kein Admin-Consent nötig.') ?></p>
 
-    <h3>Zusätzliche Schreib-Berechtigungen</h3>
+    <h3><?= te('Zusätzliche Schreib-Berechtigungen') ?></h3>
     <ul>
-        <li><span class="perm-tag">User.ReadWrite.All</span> — Benutzer bearbeiten, deaktivieren, Offboarding</li>
-        <li><span class="perm-tag">UserAuthenticationMethod.ReadWrite.All</span> — MFA zurücksetzen</li>
-        <li><span class="perm-tag">Group.ReadWrite.All</span> + <span class="perm-tag">GroupMember.ReadWrite.All</span> — Gruppen verwalten</li>
-        <li><span class="perm-tag">Application.ReadWrite.All</span> — App-Secrets verwalten</li>
-        <li><span class="perm-tag">Files.ReadWrite.All</span> — Freigaben widerrufen</li>
-        <li><span class="perm-tag">MailboxSettings.ReadWrite</span> — Postfach-Einstellungen (Weiterleitung, AutoReply)</li>
-        <li><span class="perm-tag">Policy.ReadWrite.ConditionalAccess</span> — CA-Richtlinien umschalten</li>
-        <li><span class="perm-tag">RoleManagement.ReadWrite.Directory</span> — Admin-Rollen zuweisen</li>
-        <li><span class="perm-tag">IdentityRiskyUser.ReadWrite.All</span> — Risikobenutzer bestätigen/verwerfen</li>
-        <li><span class="perm-tag">DeviceManagementManagedDevices.PrivilegedOperations.All</span> — Intune Wipe/Retire</li>
-        <li><span class="perm-tag">Sites.ReadWrite.All</span> — Freigaberichtlinien ändern</li>
+        <li><span class="perm-tag">User.ReadWrite.All</span> — <?= te('Benutzer bearbeiten, deaktivieren, Offboarding') ?></li>
+        <li><span class="perm-tag">UserAuthenticationMethod.ReadWrite.All</span> — <?= te('MFA zurücksetzen') ?></li>
+        <li><span class="perm-tag">Group.ReadWrite.All</span> + <span class="perm-tag">GroupMember.ReadWrite.All</span> — <?= te('Gruppen verwalten') ?></li>
+        <li><span class="perm-tag">Application.ReadWrite.All</span> — <?= te('App-Secrets verwalten') ?></li>
+        <li><span class="perm-tag">Files.ReadWrite.All</span> — <?= te('Freigaben widerrufen') ?></li>
+        <li><span class="perm-tag">MailboxSettings.ReadWrite</span> — <?= te('Postfach-Einstellungen (Weiterleitung, AutoReply)') ?></li>
+        <li><span class="perm-tag">Policy.ReadWrite.ConditionalAccess</span> — <?= te('CA-Richtlinien umschalten') ?></li>
+        <li><span class="perm-tag">RoleManagement.ReadWrite.Directory</span> — <?= te('Admin-Rollen zuweisen') ?></li>
+        <li><span class="perm-tag">IdentityRiskyUser.ReadWrite.All</span> — <?= te('Risikobenutzer bestätigen/verwerfen') ?></li>
+        <li><span class="perm-tag">DeviceManagementManagedDevices.PrivilegedOperations.All</span> — <?= te('Intune Wipe/Retire') ?></li>
+        <li><span class="perm-tag">Sites.ReadWrite.All</span> — <?= te('Freigaberichtlinien ändern') ?></li>
     </ul>
 
-    <div class="tip-box"><i class="bi bi-lightbulb"></i>Unter <strong>Einstellungen → Berechtigungen prüfen</strong> siehst du immer, welche Berechtigungen aktuell erteilt sind und welche Module dadurch eingeschränkt sind.</div>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Unter <strong>Einstellungen → Berechtigungen prüfen</strong> siehst du immer, welche Berechtigungen aktuell erteilt sind und welche Module dadurch eingeschränkt sind.') ?></div>
 </div>
 
 <div class="man-section" id="setupwizard">
-    <h2><i class="bi bi-magic"></i> Einrichtungs-Assistent</h2>
-    <p>Beim ersten Login eines Admins erscheint automatisch der fünfstufige Einrichtungs-Assistent. Er prüft die Tenant-Verbindung, die App-Permissions, fragt Benachrichtigungs-Empfänger und Branding ab, und schlägt am Ende ein passendes Compliance-Profil vor. Der Assistent kann jederzeit erneut über <strong>Administration → Einrichtungs-Assistent</strong> aufgerufen werden.</p>
+    <h2><i class="bi bi-magic"></i> <?= te('Einrichtungs-Assistent') ?></h2>
+    <p><?= te('Beim ersten Login eines Admins erscheint automatisch der fünfstufige Einrichtungs-Assistent. Er prüft die Tenant-Verbindung, die App-Permissions, fragt Benachrichtigungs-Empfänger und Branding ab, und schlägt am Ende ein passendes Compliance-Profil vor. Der Assistent kann jederzeit erneut über <strong>Administration → Einrichtungs-Assistent</strong> aufgerufen werden.') ?></p>
 </div>
 
 <div class="man-section" id="complianceprofiles">

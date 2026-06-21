@@ -195,7 +195,6 @@ return [
     'Öffnen'                                            => 'Open',
     'Exchange Online – Dienststatus'                   => 'Exchange Online – Service status',
     'Abgerufen:'                                        => 'Retrieved:',
-    'Uhr'                                               => '',
     'Exchange Online meldet aktuell keinen Normalbetrieb. Prüfen Sie die'
         => 'Exchange Online is not currently reporting normal operation. Check the',
     'für Details.'                                      => 'for details.',
