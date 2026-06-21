@@ -5,12 +5,12 @@ use App\Core\Csrf;
 <div class="content-card mb-3">
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-2">
         <div>
-            <h1 class="mb-1"><i class="bi bi-key text-primary"></i> API-Schlüssel <?= \App\Core\Help::tip('rest_api') ?></h1>
-            <p class="text-muted mb-0">API-Keys für externe Werkzeuge (PowerBI, Grafana, n8n, eigene Skripte) verwalten.</p>
+            <h1 class="mb-1"><i class="bi bi-key text-primary"></i> <?= te('API-Schlüssel') ?> <?= \App\Core\Help::tip('rest_api') ?></h1>
+            <p class="text-muted mb-0"><?= te('API-Keys für externe Werkzeuge (PowerBI, Grafana, n8n, eigene Skripte) verwalten.') ?></p>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-            <a href="/api/docs" class="btn btn-outline-primary"><i class="bi bi-book"></i> API-Dokumentation</a>
-            <a href="/api/openapi.json" target="_blank" class="btn btn-outline-secondary"><i class="bi bi-filetype-json"></i> OpenAPI-Spec</a>
+            <a href="/api/docs" class="btn btn-outline-primary"><i class="bi bi-book"></i> <?= te('API-Dokumentation') ?></a>
+            <a href="/api/openapi.json" target="_blank" class="btn btn-outline-secondary"><i class="bi bi-filetype-json"></i> <?= te('OpenAPI-Spec') ?></a>
         </div>
     </div>
 
@@ -23,8 +23,8 @@ use App\Core\Csrf;
     <div class="content-card mb-3" style="border-left: 4px solid #f59e0b;">
         <div class="d-flex justify-content-between align-items-start mb-2 gap-3">
             <div>
-                <h5 class="mb-1 text-warning"><i class="bi bi-exclamation-triangle-fill"></i> Neuer API-Key &mdash; jetzt kopieren!</h5>
-                <p class="small text-muted mb-0">Wird <strong>nur einmal</strong> angezeigt und kann anschließend nicht mehr rekonstruiert werden.</p>
+                <h5 class="mb-1 text-warning"><i class="bi bi-exclamation-triangle-fill"></i> <?= te('Neuer API-Key — jetzt kopieren!') ?></h5>
+                <p class="small text-muted mb-0"><?= t('Wird <strong>nur einmal</strong> angezeigt und kann anschließend nicht mehr rekonstruiert werden.') ?></p>
             </div>
             <span class="badge bg-warning text-dark align-self-center"><?= View::escape($fresh['name']) ?></span>
         </div>
@@ -33,11 +33,11 @@ use App\Core\Csrf;
                    style="background:#fffbeb; border-color:#fbbf24; font-size:13px;"
                    value="<?= View::escape($fresh['key']) ?>">
             <button type="button" class="btn btn-warning" id="copyFreshBtn">
-                <i class="bi bi-clipboard"></i> Kopieren
+                <i class="bi bi-clipboard"></i> <?= te('Kopieren') ?>
             </button>
         </div>
         <p class="small text-muted mt-2 mb-0">
-            Beispiel-Aufruf: <code>curl -H "X-Api-Key: <?= View::escape($fresh['key']) ?>" https://<?= View::escape($_SERVER['HTTP_HOST'] ?? 'localhost') ?>/api/v1/dashboard/metrics</code>
+            <?= te('Beispiel-Aufruf:') ?> <code>curl -H "X-Api-Key: <?= View::escape($fresh['key']) ?>" https://<?= View::escape($_SERVER['HTTP_HOST'] ?? 'localhost') ?>/api/v1/dashboard/metrics</code>
         </p>
     </div>
     <script>

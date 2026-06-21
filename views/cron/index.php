@@ -2,28 +2,28 @@
 
 <?php
 function cronIntervalLabel(int $minutes): string {
-    if ($minutes === 1)    return 'Jede Minute';
-    if ($minutes < 60)     return "Alle {$minutes} Min.";
-    if ($minutes === 60)   return 'Stündlich';
-    if ($minutes < 1440)   return 'Alle ' . ($minutes / 60) . ' Std.';
-    if ($minutes === 1440) return 'Täglich';
-    return 'Alle ' . round($minutes / 1440) . ' Tage';
+    if ($minutes === 1)    return t('Jede Minute');
+    if ($minutes < 60)     return t('Alle :n Min.', ['n' => $minutes]);
+    if ($minutes === 60)   return t('Stündlich');
+    if ($minutes < 1440)   return t('Alle :n Std.', ['n' => $minutes / 60]);
+    if ($minutes === 1440) return t('Täglich');
+    return t('Alle :n Tage', ['n' => round($minutes / 1440)]);
 }
 function cronAgo(?string $dt): string {
     if (!$dt) return '–';
     $diff = time() - strtotime($dt);
-    if ($diff < 60)   return 'Gerade eben';
-    if ($diff < 3600) return 'Vor ' . floor($diff / 60) . ' Min.';
-    if ($diff < 86400) return 'Vor ' . floor($diff / 3600) . ' Std.';
+    if ($diff < 60)   return t('Gerade eben');
+    if ($diff < 3600) return t('Vor :n Min.', ['n' => floor($diff / 60)]);
+    if ($diff < 86400) return t('Vor :n Std.', ['n' => floor($diff / 3600)]);
     return date('d.m.Y H:i', strtotime($dt));
 }
 function cronIn(?string $dt): string {
     if (!$dt) return '–';
     $diff = strtotime($dt) - time();
-    if ($diff <= 0)   return 'Überfällig';
-    if ($diff < 60)   return 'In < 1 Min.';
-    if ($diff < 3600) return 'In ' . ceil($diff / 60) . ' Min.';
-    return 'In ' . ceil($diff / 3600) . ' Std.';
+    if ($diff <= 0)   return t('Überfällig');
+    if ($diff < 60)   return t('In < 1 Min.');
+    if ($diff < 3600) return t('In :n Min.', ['n' => ceil($diff / 60)]);
+    return t('In :n Std.', ['n' => ceil($diff / 3600)]);
 }
 ?>
 
@@ -31,13 +31,12 @@ function cronIn(?string $dt): string {
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-terminal text-primary"></i>
-        <h6>Cron-Job einrichten</h6>
-        <span class="ms-auto badge-info badge-pill">Einmalig auf dem Server</span>
+        <h6><?= te('Cron-Job einrichten') ?></h6>
+        <span class="ms-auto badge-info badge-pill"><?= te('Einmalig auf dem Server') ?></span>
     </div>
     <div class="card-body-custom">
         <p class="text-muted small mb-3">
-            Füge folgenden Eintrag in die <strong>crontab des Webserver-Benutzers</strong> (<code>www-data</code>) ein.
-            Der Cron läuft jede Minute und steuert alle Aufgaben intern über die konfigurierten Intervalle.
+            <?= te('Füge folgenden Eintrag in die') ?> <strong><?= te('crontab des Webserver-Benutzers') ?></strong> (<code>www-data</code>) <?= te('ein. Der Cron läuft jede Minute und steuert alle Aufgaben intern über die konfigurierten Intervalle.') ?>
         </p>
         <div class="d-flex align-items-center gap-2 mb-3">
             <code class="flex-1 d-block p-3 rounded" id="cronCmd"
@@ -45,13 +44,13 @@ function cronIn(?string $dt): string {
                 * * * * * php <?= $e(BASE_PATH) ?>/run-cron.php >> /var/log/m365-cron.log 2>&1
             </code>
             <button class="btn btn-sm btn-outline-secondary flex-shrink-0"
-                    onclick="navigator.clipboard.writeText(document.getElementById('cronCmd').textContent.trim()); showToast('Kopiert!')">
+                    onclick="navigator.clipboard.writeText(document.getElementById('cronCmd').textContent.trim()); showToast('<?= te('Kopiert!') ?>')">
                 <i class="bi bi-clipboard"></i>
             </button>
         </div>
         <p class="text-muted small mb-0">
             <i class="bi bi-info-circle me-1"></i>
-            Bearbeiten mit: <code>crontab -u www-data -e</code>
+            <?= te('Bearbeiten mit:') ?> <code>crontab -u www-data -e</code>
         </p>
     </div>
 </div>
@@ -60,9 +59,9 @@ function cronIn(?string $dt): string {
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Ausstehend</div>
+            <div class="metric-label"><?= te('Ausstehend') ?></div>
             <div class="metric-value"><?= number_format($queueStats['pending']) ?></div>
-            <div class="metric-sub">Warteschlange</div>
+            <div class="metric-sub"><?= te('Warteschlange') ?></div>
         </div>
     </div>
     <div class="col-sm-3">

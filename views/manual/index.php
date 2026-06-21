@@ -827,21 +827,21 @@
      AUSFÜHRLICHE PHISHING-SIMULATIONS-ANLEITUNG
      ═══════════════════════════════════════════════════════════ -->
 <div class="man-section" id="phishing-anleitung">
-    <h2><i class="bi bi-book-half text-primary"></i> Anleitung: Phishing-Simulationen mit Microsoft aufsetzen</h2>
-    <p>Schritt-für-Schritt-Anleitung, wie Sie mit Microsoft Defender Attack Simulation Training eine kontrollierte Phishing-Kampagne in Ihrem Tenant durchführen — von der Vorbereitung über die Durchführung bis zur Nachbereitung.</p>
+    <h2><i class="bi bi-book-half text-primary"></i> <?= te('Anleitung: Phishing-Simulationen mit Microsoft aufsetzen') ?></h2>
+    <p><?= te('Schritt-für-Schritt-Anleitung, wie Sie mit Microsoft Defender Attack Simulation Training eine kontrollierte Phishing-Kampagne in Ihrem Tenant durchführen — von der Vorbereitung über die Durchführung bis zur Nachbereitung.') ?></p>
 
-    <h3>1. Voraussetzungen</h3>
+    <h3><?= te('1. Voraussetzungen') ?></h3>
     <ul>
-        <li><strong>Lizenz:</strong> Microsoft Defender for Office 365 <em>Plan 2</em> (in <code>Microsoft 365 E5</code> und <code>Microsoft 365 A5</code> enthalten) oder als Add-on buchbar.</li>
-        <li><strong>Rolle:</strong> Sie benötigen eine der folgenden Microsoft-Entra-Rollen:
+        <li><strong><?= te('Lizenz:') ?></strong> <?= te('Microsoft Defender for Office 365 <em>Plan 2</em> (in <code>Microsoft 365 E5</code> und <code>Microsoft 365 A5</code> enthalten) oder als Add-on buchbar.') ?></li>
+        <li><strong><?= te('Rolle:') ?></strong> <?= te('Sie benötigen eine der folgenden Microsoft-Entra-Rollen:') ?>
             <ul>
-                <li><em>Globaler Administrator</em></li>
-                <li><em>Sicherheits-Administrator</em></li>
-                <li><em>Attack-Simulation-Administrator</em> (empfohlene Mindest­rolle)</li>
+                <li><em><?= te('Globaler Administrator') ?></em></li>
+                <li><em><?= te('Sicherheits-Administrator') ?></em></li>
+                <li><em><?= te('Attack-Simulation-Administrator') ?></em> <?= te('(empfohlene Mindest­rolle)') ?></li>
             </ul>
         </li>
-        <li><strong>Postfach-Verzeichnis:</strong> Defender Attack Simulator nutzt die normale Tenant-Verzeichnis-Liste, also sind alle aktiven Mailboxen automatisch verfügbar.</li>
-        <li><strong>Vorgespräche:</strong> Betriebs­rat und Daten­schutz­beauftragten <strong>vor</strong> der ersten Simulation einbinden — in Deutschland ist eine Phishing-Simulation eine Mitarbeiter-Schulungs­maßnahme, die u. U. mitbestimmungs­pflichtig ist (§ 87 Abs. 1 Nr. 6 BetrVG).</li>
+        <li><strong><?= te('Postfach-Verzeichnis:') ?></strong> <?= te('Defender Attack Simulator nutzt die normale Tenant-Verzeichnis-Liste, also sind alle aktiven Mailboxen automatisch verfügbar.') ?></li>
+        <li><strong><?= te('Vorgespräche:') ?></strong> <?= te('Betriebs­rat und Daten­schutz­beauftragten <strong>vor</strong> der ersten Simulation einbinden — in Deutschland ist eine Phishing-Simulation eine Mitarbeiter-Schulungs­maßnahme, die u. U. mitbestimmungs­pflichtig ist (§ 87 Abs. 1 Nr. 6 BetrVG).') ?></li>
     </ul>
 
     <h3>2. Vorbereitung &amp; Kommunikation</h3>

@@ -393,36 +393,36 @@ $readinessIcon = match($score['readiness']) {
 
     <!-- Migration Checklist -->
     <div class="card mb-4 shadow-sm">
-      <div class="card-header fw-semibold"><i class="bi bi-clipboard2-check me-2"></i>Migrations-Checkliste</div>
+      <div class="card-header fw-semibold"><i class="bi bi-clipboard2-check me-2"></i><?= te('Migrations-Checkliste') ?></div>
       <ul class="list-group list-group-flush" id="migrationChecklist">
         <?php
         $checklist = [
-            ['label' => 'Exchange Hybrid Configuration Wizard ausgeführt',
-             'hint'  => 'Verbindet on-prem Exchange mit Exchange Online (HCW). Erforderlich für Hybrid-Migration.'],
-            ['label' => 'Exchange Online Postfach-Migrationsbatch erstellt',
-             'hint'  => 'In Exchange Admin Center → Migration → Neuer Batch (z. B. Remote Move).'],
-            ['label' => 'MRS Proxy auf on-prem Exchange aktiv',
-             'hint'  => 'Mailbox Replication Service Proxy muss auf dem on-prem CAS/MBX aktiviert sein.'],
-            ['label' => 'Testpostfach migriert und überprüft',
-             'hint'  => 'Migriere zunächst ein Testpostfach; prüfe E-Mail-Empfang, Kalender und OAB.'],
-            ['label' => 'Outlook Anywhere / MAPI-over-HTTP konfiguriert',
-             'hint'  => 'Stellt sicher, dass Outlook-Clients weiterhin auf on-prem Exchange zugreifen können während der Migrationsphase.'],
-            ['label' => 'Outlook-Profile der Benutzer nach Migration erneuert',
-             'hint'  => 'Autodiscover leitet Outlook nach MX-Umschaltung automatisch um; ggf. Profil neu erstellen.'],
-            ['label' => 'Shared Mailboxes / Room Mailboxes migriert',
-             'hint'  => 'Ressourcenpostfächer separat prüfen und ggf. in Exchange Online neu anlegen.'],
-            ['label' => 'E-Mail-Archiv geprüft (In-Place Archive / PST)',
-             'hint'  => 'PST-Dateien können über das Microsoft 365 Import Tool hochgeladen werden.'],
-            ['label' => 'MX-Eintrag auf Exchange Online umgestellt',
-             'hint'  => 'Erst nach Abschluss der Migration umstellen, damit keine E-Mails verloren gehen.'],
-            ['label' => 'Autodiscover CNAME auf outlook.com umgestellt',
-             'hint'  => 'Erst nach der Migration, damit Outlook-Clients das Exchange-Online-Postfach finden.'],
-            ['label' => 'DKIM in Exchange Online aktiviert',
-             'hint'  => 'Admin Center → Sicherheit → E-Mail-Authentifizierung → DKIM; CNAME-Einträge im DNS anlegen.'],
-            ['label' => 'DMARC-Policy auf quarantine/reject erhöht',
-             'hint'  => 'Nach erfolgreicher DKIM/SPF-Aktivierung Richtlinie verschärfen.'],
-            ['label' => 'on-prem Exchange außer Betrieb genommen (wenn gewünscht)',
-             'hint'  => 'Erst wenn alle Postfächer online sind und DNS umgestellt ist.'],
+            ['label' => t('Exchange Hybrid Configuration Wizard ausgeführt'),
+             'hint'  => t('Verbindet on-prem Exchange mit Exchange Online (HCW). Erforderlich für Hybrid-Migration.')],
+            ['label' => t('Exchange Online Postfach-Migrationsbatch erstellt'),
+             'hint'  => t('In Exchange Admin Center → Migration → Neuer Batch (z. B. Remote Move).')],
+            ['label' => t('MRS Proxy auf on-prem Exchange aktiv'),
+             'hint'  => t('Mailbox Replication Service Proxy muss auf dem on-prem CAS/MBX aktiviert sein.')],
+            ['label' => t('Testpostfach migriert und überprüft'),
+             'hint'  => t('Migriere zunächst ein Testpostfach; prüfe E-Mail-Empfang, Kalender und OAB.')],
+            ['label' => t('Outlook Anywhere / MAPI-over-HTTP konfiguriert'),
+             'hint'  => t('Stellt sicher, dass Outlook-Clients weiterhin auf on-prem Exchange zugreifen können während der Migrationsphase.')],
+            ['label' => t('Outlook-Profile der Benutzer nach Migration erneuert'),
+             'hint'  => t('Autodiscover leitet Outlook nach MX-Umschaltung automatisch um; ggf. Profil neu erstellen.')],
+            ['label' => t('Shared Mailboxes / Room Mailboxes migriert'),
+             'hint'  => t('Ressourcenpostfächer separat prüfen und ggf. in Exchange Online neu anlegen.')],
+            ['label' => t('E-Mail-Archiv geprüft (In-Place Archive / PST)'),
+             'hint'  => t('PST-Dateien können über das Microsoft 365 Import Tool hochgeladen werden.')],
+            ['label' => t('MX-Eintrag auf Exchange Online umgestellt'),
+             'hint'  => t('Erst nach Abschluss der Migration umstellen, damit keine E-Mails verloren gehen.')],
+            ['label' => t('Autodiscover CNAME auf outlook.com umgestellt'),
+             'hint'  => t('Erst nach der Migration, damit Outlook-Clients das Exchange-Online-Postfach finden.')],
+            ['label' => t('DKIM in Exchange Online aktiviert'),
+             'hint'  => t('Admin Center → Sicherheit → E-Mail-Authentifizierung → DKIM; CNAME-Einträge im DNS anlegen.')],
+            ['label' => t('DMARC-Policy auf quarantine/reject erhöht'),
+             'hint'  => t('Nach erfolgreicher DKIM/SPF-Aktivierung Richtlinie verschärfen.')],
+            ['label' => t('on-prem Exchange außer Betrieb genommen (wenn gewünscht)'),
+             'hint'  => t('Erst wenn alle Postfächer online sind und DNS umgestellt ist.')],
         ];
         foreach ($checklist as $i => $item):
         ?>
@@ -440,7 +440,7 @@ $readinessIcon = match($score['readiness']) {
         <?php endforeach ?>
       </ul>
       <div class="card-footer text-muted small">
-        <i class="bi bi-info-circle me-1"></i>Checkboxen werden lokal im Browser gespeichert.
+        <i class="bi bi-info-circle me-1"></i><?= te('Checkboxen werden lokal im Browser gespeichert.') ?>
       </div>
     </div>
 

@@ -210,22 +210,22 @@ document.getElementById('btnCheck')?.addEventListener('click', async function() 
             area.innerHTML = '<div class="alert alert-danger">' + data.error + '</div>';
         } else if (data.has_update) {
             area.innerHTML = `<div class="alert alert-warning">
-                <strong>Update verfügbar:</strong> ${data.latest_sha?.substring(0,7)} — ${data.latest_commit?.message || ''}
-                <br><small>Von: ${data.latest_commit?.author || ''} am ${data.latest_commit?.date || ''} · ${data.versions_behind || ''} Version(en) zurück</small>
+                <strong><?= t('Update verfügbar:') ?></strong> ${data.latest_sha?.substring(0,7)} — ${data.latest_commit?.message || ''}
+                <br><small><?= t('Von:') ?> ${data.latest_commit?.author || ''} <?= t('am') ?> ${data.latest_commit?.date || ''} · ${data.versions_behind || ''} <?= t('Version(en) zurück') ?></small>
                 ${data.changelog ? '<hr><pre style="font-size:11px;max-height:150px;overflow-y:auto;">' + data.changelog + '</pre>' : ''}
             </div>
             <button class="btn btn-danger" id="btnInstall">
-                <i class="bi bi-cloud-download me-1"></i>Update auf ${data.latest_sha?.substring(0,7)} installieren
+                <i class="bi bi-cloud-download me-1"></i><?= t('Update auf') ?> ${data.latest_sha?.substring(0,7)} <?= t('installieren') ?>
             </button>`;
             document.getElementById('btnInstall')?.addEventListener('click', startInstall);
         } else {
-            area.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle me-2"></i>Keine Updates verfügbar. Du bist auf dem neuesten Stand.</div>';
+            area.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle me-2"></i>' + <?= json_encode(t('Keine Updates verfügbar. Du bist auf dem neuesten Stand.'), JSON_UNESCAPED_UNICODE) ?> + '</div>';
         }
     } catch(e) {
-        document.getElementById('checkResultContent').innerHTML = '<div class="alert alert-danger">Fehler: ' + e.message + '</div>';
+        document.getElementById('checkResultContent').innerHTML = '<div class="alert alert-danger">' + <?= json_encode(t('Fehler:'), JSON_UNESCAPED_UNICODE) ?> + ' ' + e.message + '</div>';
     }
     this.disabled = false;
-    this.innerHTML = '<i class="bi bi-search me-1"></i>Auf Updates prüfen';
+    this.innerHTML = '<i class="bi bi-search me-1"></i>' + <?= json_encode(t('Auf Updates prüfen'), JSON_UNESCAPED_UNICODE) ?>;
 });
 
 // Install update
