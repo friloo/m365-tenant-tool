@@ -50,21 +50,21 @@ if (!empty($dmarcIssues)):
 
 <div class="content-card">
     <div class="table-toolbar">
-        <input type="text" id="dhSearch" class="search-box" placeholder="Domain suchen…">
+        <input type="text" id="dhSearch" class="search-box" placeholder="<?= te('Domain suchen…') ?>">
         <a href="/domainhealth?refresh=1" class="btn btn-sm btn-outline-secondary ms-auto">
-            <i class="bi bi-arrow-clockwise me-1"></i> Aktualisieren
+            <i class="bi bi-arrow-clockwise me-1"></i> <?= te('Aktualisieren') ?>
         </a>
     </div>
     <div class="table-responsive">
         <table class="data-table" id="dhTable">
             <thead>
                 <tr>
-                    <th>Domain</th>
-                    <th>Standard</th>
+                    <th><?= te('Domain') ?></th>
+                    <th><?= te('Standard') ?></th>
                     <th>SPF</th>
                     <th>DKIM</th>
                     <th>DMARC</th>
-                    <th>Schutzlevel</th>
+                    <th><?= te('Schutzlevel') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -81,7 +81,7 @@ if (!empty($dmarcIssues)):
                     <td class="fw-medium"><?= $e($d['id'] ?? '') ?></td>
                     <td>
                         <?php if ($d['isDefault'] ?? false): ?>
-                            <span class="badge-info">Standard</span>
+                            <span class="badge-info"><?= te('Standard') ?></span>
                         <?php else: ?>
                             <span class="badge-neutral">–</span>
                         <?php endif; ?>
@@ -90,14 +90,14 @@ if (!empty($dmarcIssues)):
                         <?php if ($spf === 'pass'): ?>
                             <span class="badge-ok">SPF</span>
                         <?php else: ?>
-                            <span class="badge-disabled">Fehlt</span>
+                            <span class="badge-disabled"><?= te('Fehlt') ?></span>
                         <?php endif; ?>
                     </td>
                     <td>
                         <?php if ($dkim === 'pass'): ?>
                             <span class="badge-ok">DKIM</span>
                         <?php else: ?>
-                            <span class="badge-disabled">Fehlt</span>
+                            <span class="badge-disabled"><?= te('Fehlt') ?></span>
                         <?php endif; ?>
                     </td>
                     <td>

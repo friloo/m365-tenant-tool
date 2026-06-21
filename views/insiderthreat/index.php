@@ -30,7 +30,7 @@
     </div>
     <div class="col-sm-6 col-lg-4">
         <div class="metric-card" style="border-left:4px solid <?= $report['high_risk_users'] > 0 ? '#dc2626' : '#16a34a' ?>;">
-            <div class="metric-label"><i class="bi bi-shield-fill-exclamation me-1"></i>High-Risk (Score ≥ 50)</div>
+            <div class="metric-label"><i class="bi bi-shield-fill-exclamation me-1"></i><?= te('High-Risk (Score ≥ 50)') ?></div>
             <div class="metric-value" style="color:<?= $report['high_risk_users'] > 0 ? '#dc2626' : '#16a34a' ?>;">
                 <?= number_format($report['high_risk_users']) ?>
             </div>
@@ -38,8 +38,8 @@
     </div>
     <div class="col-sm-12 col-lg-4">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-calendar-range me-1"></i>Zeitraum</div>
-            <div class="metric-value" style="font-size:22px;">Letzte <?= $days ?> Tage</div>
+            <div class="metric-label"><i class="bi bi-calendar-range me-1"></i><?= te('Zeitraum') ?></div>
+            <div class="metric-value" style="font-size:22px;"><?= te('Letzte :n Tage', ['n' => $days]) ?></div>
         </div>
     </div>
 </div>
@@ -47,11 +47,11 @@
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-list-stars text-primary"></i>
-        <h6>Top-50 User nach Risk-Score</h6>
+        <h6><?= te('Top-50 User nach Risk-Score') ?></h6>
     </div>
     <div class="card-body-custom p-0">
         <?php if (empty($report['users'])): ?>
-            <div class="text-muted small p-4 text-center">Keine User-Aktivität im Zeitraum.</div>
+            <div class="text-muted small p-4 text-center"><?= te('Keine User-Aktivität im Zeitraum.') ?></div>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="data-table">
@@ -59,8 +59,8 @@
                         <th>UPN</th>
                         <th class="text-end">Score</th>
                         <th class="text-end">Sign-ins</th>
-                        <th class="text-end">Länder</th>
-                        <th>Signale</th>
+                        <th class="text-end"><?= te('Länder') ?></th>
+                        <th><?= te('Signale') ?></th>
                     </tr></thead>
                     <tbody>
                     <?php foreach ($report['users'] as $u):
@@ -76,7 +76,7 @@
                             <td class="text-end"><?= number_format($u['country_count']) ?></td>
                             <td>
                                 <?php if (empty($u['signals'])): ?>
-                                    <span class="text-muted small">unauffällig</span>
+                                    <span class="text-muted small"><?= te('unauffällig') ?></span>
                                 <?php else: foreach ($u['signals'] as $s): ?>
                                     <span class="badge bg-warning text-dark me-1 mb-1"><?= $e($s) ?></span>
                                 <?php endforeach; endif; ?>

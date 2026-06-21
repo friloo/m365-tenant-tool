@@ -7,14 +7,14 @@
             <i class="bi bi-shield-lock-fill" style="color:#fff;font-size:18px;"></i>
         </div>
         <div>
-            <h5 class="mb-0 fw-bold">Zwei-Faktor-Authentifizierung (TOTP)</h5>
-            <p class="text-muted small mb-0">Schützt den Admin-Login mit einem zeitbasierten Einmalcode (RFC 6238).</p>
+            <h5 class="mb-0 fw-bold"><?= te('Zwei-Faktor-Authentifizierung (TOTP)') ?></h5>
+            <p class="text-muted small mb-0"><?= te('Schützt den Admin-Login mit einem zeitbasierten Einmalcode (RFC 6238).') ?></p>
         </div>
         <div class="ms-auto">
             <?php if ($enabled): ?>
-                <span class="badge bg-success fs-6 px-3 py-2"><i class="bi bi-check-circle me-1"></i>Aktiv</span>
+                <span class="badge bg-success fs-6 px-3 py-2"><i class="bi bi-check-circle me-1"></i><?= te('Aktiv') ?></span>
             <?php else: ?>
-                <span class="badge bg-secondary fs-6 px-3 py-2"><i class="bi bi-x-circle me-1"></i>Deaktiviert</span>
+                <span class="badge bg-secondary fs-6 px-3 py-2"><i class="bi bi-x-circle me-1"></i><?= te('Deaktiviert') ?></span>
             <?php endif; ?>
         </div>
     </div>
@@ -29,8 +29,8 @@
     <?php if (!empty($recoveryCodes)): ?>
     <!-- Recovery codes — shown ONCE after setup/regen -->
     <div class="alert alert-warning border-warning mb-4">
-        <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle me-1"></i>Wiederherstellungscodes — jetzt speichern!</h6>
-        <p class="small mb-3">Diese Codes werden nur <strong>einmal</strong> angezeigt. Speichere sie sicher (z.B. Passwort-Manager). Jeder Code kann nur einmal verwendet werden.</p>
+        <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle me-1"></i><?= te('Wiederherstellungscodes — jetzt speichern!') ?></h6>
+        <p class="small mb-3"><?= t('Diese Codes werden nur <strong>einmal</strong> angezeigt. Speichere sie sicher (z.B. Passwort-Manager). Jeder Code kann nur einmal verwendet werden.') ?></p>
         <div class="row g-2 mb-3">
             <?php foreach ($recoveryCodes as $rc): ?>
                 <div class="col-6 col-md-3">
@@ -40,9 +40,9 @@
                 </div>
             <?php endforeach; ?>
         </div>
-        <button onclick="navigator.clipboard.writeText(<?= $e(json_encode(implode("\n", $recoveryCodes))) ?>).then(()=>this.textContent='✓ Kopiert')"
+        <button onclick="navigator.clipboard.writeText(<?= $e(json_encode(implode("\n", $recoveryCodes))) ?>).then(()=>this.textContent=<?= $e(json_encode('✓ ' . t('Kopiert'))) ?>)"
                 class="btn btn-sm btn-warning">
-            <i class="bi bi-clipboard me-1"></i>Alle Codes kopieren
+            <i class="bi bi-clipboard me-1"></i><?= te('Alle Codes kopieren') ?>
         </button>
     </div>
     <?php endif; ?>
@@ -52,20 +52,20 @@
     <div class="row g-4">
         <div class="col-md-6">
             <div class="p-3 bg-success bg-opacity-10 border border-success-subtle rounded">
-                <h6 class="fw-bold text-success mb-2"><i class="bi bi-check-circle me-1"></i>2FA ist aktiv</h6>
-                <p class="small text-muted mb-0">Der Admin-Login ist mit TOTP gesichert. Beim Anmelden wird dein Authenticator-Code abgefragt.</p>
+                <h6 class="fw-bold text-success mb-2"><i class="bi bi-check-circle me-1"></i><?= te('2FA ist aktiv') ?></h6>
+                <p class="small text-muted mb-0"><?= te('Der Admin-Login ist mit TOTP gesichert. Beim Anmelden wird dein Authenticator-Code abgefragt.') ?></p>
             </div>
             <p class="small text-muted mt-2">
-                Noch <strong><?= (int)$codesLeft ?></strong> Wiederherstellungscode(s) verfügbar.
+                <?= t('Noch :n Wiederherstellungscode(s) verfügbar.', ['n' => '<strong>' . (int)$codesLeft . '</strong>']) ?>
                 <?php if ($codesLeft <= 2): ?>
-                    <span class="text-warning fw-bold"> — bitte neue generieren.</span>
+                    <span class="text-warning fw-bold"> <?= te('— bitte neue generieren.') ?></span>
                 <?php endif; ?>
             </p>
             <form method="post" action="/settings/2fa/regen-codes" class="mt-3"
-                  onsubmit="return confirm('Alle bestehenden Wiederherstellungscodes werden ungültig. Fortfahren?')">
+                  onsubmit="return confirm('<?= t('Alle bestehenden Wiederherstellungscodes werden ungültig. Fortfahren?') ?>')">
                 <?= \App\Core\Csrf::field() ?>
                 <button type="submit" class="btn btn-sm btn-outline-secondary">
-                    <i class="bi bi-arrow-repeat me-1"></i>Neue Wiederherstellungscodes generieren
+                    <i class="bi bi-arrow-repeat me-1"></i><?= te('Neue Wiederherstellungscodes generieren') ?>
                 </button>
             </form>
         </div>

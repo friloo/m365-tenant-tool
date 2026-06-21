@@ -57,7 +57,7 @@
                             <?php else: ?>
                                 <span class="badge bg-warning text-dark"><?= te('Nein') ?></span>
                             <?php endif; ?></td>
-                            <td><?= $f['isDefault'] ? '<span class="badge bg-primary">Standard</span>' : '–' ?></td>
+                            <td><?= $f['isDefault'] ? '<span class="badge bg-primary">' . te('Standard') . '</span>' : '–' ?></td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
@@ -68,5 +68,5 @@
 </div>
 
 <a href="https://entra.microsoft.com/#view/Microsoft_AAD_IAM/IdentityProvidersListBlade" target="_blank" rel="noopener" class="btn btn-outline-primary">
-    <i class="bi bi-box-arrow-up-right me-1"></i>In Entra konfigurieren
+    <i class="bi bi-box-arrow-up-right me-1"></i><?= te('In Entra konfigurieren') ?>
 </a>

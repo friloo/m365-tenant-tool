@@ -17,16 +17,16 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Admin-Rollen aktiv</div>
+            <div class="metric-label"><?= te('Admin-Rollen aktiv') ?></div>
             <div class="metric-value"><?= count($byRole) ?></div>
-            <div class="metric-sub">Rollen mit Zuweisung</div>
+            <div class="metric-sub"><?= te('Rollen mit Zuweisung') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Benutzer mit Adminrechten</div>
+            <div class="metric-label"><?= te('Benutzer mit Adminrechten') ?></div>
             <div class="metric-value"><?= $totalAdmins ?></div>
-            <div class="metric-sub">Eindeutige Principals</div>
+            <div class="metric-sub"><?= te('Eindeutige Principals') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
@@ -35,7 +35,7 @@
             <div class="metric-value" style="color:<?= $globalAdminCount > 3 ? '#dc2626' : ($globalAdminCount > 0 ? '#f59e0b' : '#111827') ?>;">
                 <?= $globalAdminCount ?>
             </div>
-            <div class="metric-sub"><?= $globalAdminCount > 3 ? 'Zu viele — Sicherheitsrisiko' : 'Accounts' ?></div>
+            <div class="metric-sub"><?= $globalAdminCount > 3 ? te('Zu viele — Sicherheitsrisiko') : te('Accounts') ?></div>
         </div>
     </div>
     <div class="col-sm-3">

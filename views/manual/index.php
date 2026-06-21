@@ -572,19 +572,19 @@
 
 <!-- Break-Glass-Accounts ────────────────────────────────── -->
 <div class="man-section" id="breakglass">
-    <h2><i class="bi bi-key-fill text-primary"></i> Break-Glass-Accounts</h2>
-    <p>Notfall-Administratorkonten sind die letzte Eskalationsstufe, wenn alle anderen Admin-Wege versagen — etwa wenn eine fehlerhafte Conditional-Access-Policy alle anderen Admins aussperrt, oder bei einem MFA-Ausfall. Microsoft empfiehlt mindestens <strong>zwei</strong> solcher Konten.</p>
-    <h3>Konfiguration</h3>
-    <p>Im Tool werden die UPNs der Break-Glass-Konten als Liste hinterlegt (kommagetrennt oder ein UPN pro Zeile). Für jeden Eintrag prüft das Tool automatisch:</p>
+    <h2><i class="bi bi-key-fill text-primary"></i> <?= te('Break-Glass-Accounts') ?></h2>
+    <p><?= te('Notfall-Administratorkonten sind die letzte Eskalationsstufe, wenn alle anderen Admin-Wege versagen — etwa wenn eine fehlerhafte Conditional-Access-Policy alle anderen Admins aussperrt, oder bei einem MFA-Ausfall. Microsoft empfiehlt mindestens <strong>zwei</strong> solcher Konten.') ?></p>
+    <h3><?= te('Konfiguration') ?></h3>
+    <p><?= te('Im Tool werden die UPNs der Break-Glass-Konten als Liste hinterlegt (kommagetrennt oder ein UPN pro Zeile). Für jeden Eintrag prüft das Tool automatisch:') ?></p>
     <ul>
-        <li><strong>Existiert das Konto im Tenant?</strong> Wenn nicht → kritisches Issue.</li>
-        <li><strong>Ist es aktiviert?</strong> Deaktivierte Notfall­konten sind unbrauchbar.</li>
-        <li><strong>Ist es dauerhaft als Global Administrator zugewiesen?</strong> PIM-Eligible reicht nicht — eine Aktivierung verlangt MFA, das im Notfall vielleicht nicht funktioniert.</li>
-        <li><strong>Hat das Konto eine MFA-Methode registriert?</strong> Empfohlen ist ein FIDO2-Hardware-Key, der im Tresor liegt.</li>
-        <li><strong>Aus welchen CA-Policies ist es ausgeschlossen?</strong> Wenn aus keiner — Sperre droht. Wenn aus allen — Risiko bei kompromittiertem Passwort.</li>
-        <li><strong>Wann war der letzte Login?</strong> Break-Glass-Konten sollten mindestens halbjährlich getestet werden, sonst weiß niemand, ob sie im Notfall funktionieren.</li>
+        <li><strong><?= te('Existiert das Konto im Tenant?') ?></strong> <?= te('Wenn nicht → kritisches Issue.') ?></li>
+        <li><strong><?= te('Ist es aktiviert?') ?></strong> <?= te('Deaktivierte Notfall­konten sind unbrauchbar.') ?></li>
+        <li><strong><?= te('Ist es dauerhaft als Global Administrator zugewiesen?') ?></strong> <?= te('PIM-Eligible reicht nicht — eine Aktivierung verlangt MFA, das im Notfall vielleicht nicht funktioniert.') ?></li>
+        <li><strong><?= te('Hat das Konto eine MFA-Methode registriert?') ?></strong> <?= te('Empfohlen ist ein FIDO2-Hardware-Key, der im Tresor liegt.') ?></li>
+        <li><strong><?= te('Aus welchen CA-Policies ist es ausgeschlossen?') ?></strong> <?= te('Wenn aus keiner — Sperre droht. Wenn aus allen — Risiko bei kompromittiertem Passwort.') ?></li>
+        <li><strong><?= te('Wann war der letzte Login?') ?></strong> <?= te('Break-Glass-Konten sollten mindestens halbjährlich getestet werden, sonst weiß niemand, ob sie im Notfall funktionieren.') ?></li>
     </ul>
-    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i>Microsoft empfiehlt für Break-Glass-Konten <strong>reine Cloud-Identitäten</strong> (nicht aus AD synchronisiert), <strong>komplexe Passwörter</strong> (mindestens 16 Zeichen, im Tresor verwahrt), und eine <strong>physische Ablage</strong> der Recovery-Methode (FIDO2-Key in zwei Standorten).</div>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><?= te('Microsoft empfiehlt für Break-Glass-Konten <strong>reine Cloud-Identitäten</strong> (nicht aus AD synchronisiert), <strong>komplexe Passwörter</strong> (mindestens 16 Zeichen, im Tresor verwahrt), und eine <strong>physische Ablage</strong> der Recovery-Methode (FIDO2-Key in zwei Standorten).') ?></div>
     <p><span class="perm-tag">User.Read.All</span> <span class="perm-tag">Policy.Read.All</span> <span class="perm-tag">RoleManagement.Read.Directory</span></p>
 </div>
 

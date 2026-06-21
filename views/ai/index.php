@@ -395,29 +395,29 @@ $sevOrder = ['critical', 'high', 'medium', 'low'];
             <div class="alert alert-info mb-3" style="font-size:12px;">
                 <i class="bi bi-shield-check me-1"></i>
                 <strong><?= te('Datenschutz bestätigt:') ?></strong>
-                <?= te('Die folgende Tabelle zeigt exakt, welche Daten an :provider übertragen wurden. Es handelt sich ausschließlich um Zahlen und Prozentwerte — keine Benutzernamen, keine Tenant-ID, keine Domainnamen.', ['provider' => $e($provider)]) ?>
+                <?= te('Die folgende Tabelle zeigt exakt, welche Daten an :provider übertragen wurden. Es handelt sich ausschließlich um Zahlen und Prozentwerte — keine Benutzernamen, keine Tenant-ID, keine Domainnamen.', ['provider' => $provider]) ?>
             </div>
             <div class="alert alert-success mb-3" style="font-size:12px;">
                 <i class="bi bi-lock me-1"></i>
-                <strong>Hinweis:</strong>
-                Keine Compliance-Daten (BSI/NIS-2) werden an die KI übertragen — diese Zuordnung erfolgt lokal im Tool.
+                <strong><?= te('Hinweis:') ?></strong>
+                <?= te('Keine Compliance-Daten (BSI/NIS-2) werden an die KI übertragen — diese Zuordnung erfolgt lokal im Tool.') ?>
             </div>
 
             <table class="table table-sm" style="font-size:13px;">
                 <thead class="table-light">
                     <tr>
-                        <th>Metrik</th>
-                        <th>Wert</th>
+                        <th><?= te('Metrik') ?></th>
+                        <th><?= te('Wert') ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!empty($ctx['security_posture'])): $sp = $ctx['security_posture']; ?>
                     <tr><td colspan="2" class="fw-semibold text-muted small" style="padding-top:10px;background:#f9fafb;">
-                        <i class="bi bi-shield-fill-check me-1 text-primary"></i>Sicherheitsprüfungen
+                        <i class="bi bi-shield-fill-check me-1 text-primary"></i><?= te('Sicherheitsprüfungen') ?>
                     </td></tr>
                     <tr>
-                        <td class="text-muted">Bestanden / Gesamt</td>
-                        <td><?= (int)($sp['passed'] ?? 0) ?> / <?= (int)($sp['total'] ?? 0) ?> Checks</td>
+                        <td class="text-muted"><?= te('Bestanden / Gesamt') ?></td>
+                        <td><?= (int)($sp['passed'] ?? 0) ?> / <?= (int)($sp['total'] ?? 0) ?> <?= te('Checks') ?></td>
                     </tr>
                     <?php endif; ?>
 

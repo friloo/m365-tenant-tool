@@ -50,13 +50,13 @@
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Genehmigt</div>
+            <div class="metric-label"><?= te('Genehmigt') ?></div>
             <div class="metric-value" style="color:#16a34a"><?= (int)$review['approve_count'] ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Widerrufen</div>
+            <div class="metric-label"><?= te('Widerrufen') ?></div>
             <div class="metric-value" style="color:<?= (int)$review['revoke_count'] > 0 ? '#dc2626' : '#111827' ?>">
                 <?= (int)$review['revoke_count'] ?>
             </div>
@@ -67,14 +67,14 @@
 <!-- Info banner -->
 <div class="alert alert-warning py-2 mb-3" style="font-size:13px;">
     <i class="bi bi-exclamation-triangle me-1"></i>
-    <strong>Hinweis:</strong> Widerrufen deaktiviert das Konto in Microsoft 365.
-    Diese Aktion kann durch einen Administrator wieder rückgängig gemacht werden.
+    <strong><?= te('Hinweis:') ?></strong> <?= te('Widerrufen deaktiviert das Konto in Microsoft 365.
+    Diese Aktion kann durch einen Administrator wieder rückgängig gemacht werden.') ?>
 </div>
 
 <?php if ($isClosed): ?>
     <div class="alert alert-success py-2 mb-3" style="font-size:13px;">
         <i class="bi bi-check2-circle me-1"></i>
-        Diese Prüfung wurde abgeschlossen. Entscheidungen können nicht mehr geändert werden.
+        <?= te('Diese Prüfung wurde abgeschlossen. Entscheidungen können nicht mehr geändert werden.') ?>
     </div>
 <?php endif; ?>
 
@@ -85,23 +85,23 @@
         <?= \App\Core\Csrf::field() ?>
         <input type="hidden" name="decision" value="approve">
         <button type="submit" class="btn btn-sm btn-outline-success">
-            <i class="bi bi-check-all me-1"></i> Alle ausstehenden genehmigen
+            <i class="bi bi-check-all me-1"></i> <?= te('Alle ausstehenden genehmigen') ?>
         </button>
     </form>
     <form method="post" action="/accessreview/<?= $reviewId ?>/bulk" class="mb-0">
         <?= \App\Core\Csrf::field() ?>
         <input type="hidden" name="decision" value="revoke">
         <button type="submit" class="btn btn-sm btn-outline-danger"
-                onclick="return confirm('Alle ausstehenden Einträge widerrufen?')">
-            <i class="bi bi-x-circle me-1"></i> Alle ausstehenden widerrufen
+                onclick="return confirm('<?= t('Alle ausstehenden Einträge widerrufen?') ?>')">
+            <i class="bi bi-x-circle me-1"></i> <?= te('Alle ausstehenden widerrufen') ?>
         </button>
     </form>
     <?php if (LocalAuth::isAdmin()): ?>
     <form method="post" action="/accessreview/<?= $reviewId ?>/apply" class="mb-0 ms-auto">
         <?= \App\Core\Csrf::field() ?>
         <button type="submit" class="btn btn-sm btn-danger"
-                onclick="return confirm('Entscheidungen anwenden und Prüfung abschließen?\n\nAlle als „Widerrufen" markierten Konten werden deaktiviert. Diese Aktion kann nicht rückgängig gemacht werden.')">
-            <i class="bi bi-play-fill me-1"></i> Entscheidungen anwenden &amp; abschließen
+                onclick="return confirm('<?= t('Entscheidungen anwenden und Prüfung abschließen?\n\nAlle als „Widerrufen" markierten Konten werden deaktiviert. Diese Aktion kann nicht rückgängig gemacht werden.') ?>')">
+            <i class="bi bi-play-fill me-1"></i> <?= te('Entscheidungen anwenden &amp; abschließen') ?>
         </button>
     </form>
     <?php endif; ?>
@@ -111,10 +111,10 @@
 <!-- Filter Buttons -->
 <div class="d-flex gap-2 mb-3 flex-wrap">
     <button class="btn btn-sm btn-outline-secondary filter-btn active" data-filter="all">
-        Alle <span class="badge bg-secondary ms-1"><?= (int)$review['item_count'] ?></span>
+        <?= te('Alle') ?> <span class="badge bg-secondary ms-1"><?= (int)$review['item_count'] ?></span>
     </button>
     <button class="btn btn-sm btn-outline-warning filter-btn" data-filter="pending">
-        Ausstehend <span class="badge bg-warning text-dark ms-1"><?= (int)$review['pending_count'] ?></span>
+        <?= te('Ausstehend') ?> <span class="badge bg-warning text-dark ms-1"><?= (int)$review['pending_count'] ?></span>
     </button>
     <button class="btn btn-sm btn-outline-success filter-btn" data-filter="approve">
         Genehmigt <span class="badge bg-success ms-1"><?= (int)$review['approve_count'] ?></span>
