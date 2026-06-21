@@ -310,8 +310,7 @@ $hasSpError = isset($sp['_error']);
                             </table>
                             <p class="text-muted small mt-3 mb-0">
                                 <i class="bi bi-info-circle me-1"></i>
-                                <?= te('Erweiterte Teams-Einstellungen (Gäste, externe Channels) werden über') ?>
-                                <?= te('das') ?> <a href="https://admin.teams.microsoft.com" target="_blank">Teams Admin Center</a> <?= te('verwaltet.') ?>
+                                <?= t('Erweiterte Teams-Einstellungen (Gäste, externe Channels) werden über das :link verwaltet.', ['link' => '<a href="https://admin.teams.microsoft.com" target="_blank">Teams Admin Center</a>']) ?>
                                 <?= te('Die Graph API bietet hier nur lesenden Zugriff.') ?>
                             </p>
                         <?php endif; ?>
