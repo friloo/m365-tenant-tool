@@ -133,6 +133,26 @@ Cron & Automatisierung, Einstellungen (App/SMTP/Branding/KI …), Benutzer-Zugan
 API-Schlüssel + API-Dokumentation, Updates, App-Audit-Log, 2FA, Berechtigungs-Audit
 (Einstellungen → Berechtigungen).
 
+### 4.7 Konfiguration & Governance
+
+| Funktion | Zweck |
+|---|---|
+| **Konfigurations-Center** (`/action-center`) | Startpunkt der Tenant-Konfiguration: Sicherheits-Score, Einrichtungs-Checkliste und priorisierte „nächste Schritte" auf einer Seite. Der Score wird vom Cron `cache_warm` vorberechnet (30-Min-Cache), die Seite lädt daher sofort. |
+| **Aktionsfreigaben / Vier-Augen-Prinzip** (`/approvals`) | Optional unter Einstellungen → Datenschutz aktivierbar. Kritische Aktionen (Geräte-Retire/Wipe, Konto deaktivieren, MFA-Reset) müssen von einem zweiten Admin freigegeben werden. Anfragen gelten 24 h, keine Selbst-Freigabe; alles im Audit-Log. |
+| **Konfiguration sichern & übertragen** | Einstellungen → Allgemein: Export der operativen Einstellungen als JSON (Backup / Zweit-Tenant). **Secrets werden nie exportiert**; beim Import nur bekannte, nicht-sensible Schlüssel. |
+| **Konfigurations-Drift** | Auf *Audit-Diff* eine Baseline festlegen; Cron `config_drift_check` vergleicht täglich den neuesten Snapshot und warnt (In-App + Alert-Webhook) bei sicherheitsrelevanten Abweichungen. |
+| **Alert-Webhook (Teams/SIEM)** | Einstellungen → Benachrichtigungen: Warnungen ab gewählter Stufe zusätzlich an Microsoft-Teams-Webhook (MessageCard) oder generisches JSON-Ziel (SIEM/Sentinel/Slack). Test-Button inklusive. |
+| **Daten-Retention (DSGVO)** | Einstellungen → Datenschutz: lokale Verlaufs-/PII-Daten älter als die Aufbewahrungsfrist werden täglich vom Cron `local_data_retention` gelöscht (0 = unbegrenzt). Plus Sofort-Bereinigung und unwiderrufliches „Alle lokalen Tenant-Daten löschen" — Konfiguration, Tool-Zugänge und API-Schlüssel bleiben stets erhalten. |
+| **Secret-Ablauf-Warnung** | Cron `app_secret_expiry` warnt rechtzeitig, bevor Client-Secret/Zertifikat der eigenen App-Registrierung abläuft. |
+
+> **Sprache:** Das Tool lässt sich komplett zwischen **Deutsch und Englisch** umschalten
+> (oben in der Kopfzeile bzw. Einstellungen). Die Auswahl gilt für die gesamte Oberfläche.
+
+> **Erweiterte Module („Mehr"):** Nischen-/Beta-Module (Token-Lifetime, Cross-Tenant-Access,
+> Identity Provider Trust, MFA-Fatigue, Insider-Threat, Phishing-Sim, eDiscovery, Customer
+> Lockbox) liegen in der jeweiligen Hub-Tableiste im **„Mehr"-Dropdown** — Hauptleiste bleibt
+> aufgeräumt, alles bleibt erreichbar.
+
 ---
 
 ## 5 · REST-API (für BI/Automatisierung)

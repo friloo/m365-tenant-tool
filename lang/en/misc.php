@@ -1154,4 +1154,58 @@ return [
     'Online-Hilfe (?-Bubbles)' => 'Online help (?-bubbles)',
     'An vielen Stellen findest du kleine <code>?</code>-Symbole neben Labels und Überschriften. Beim Hovern erscheint eine deutschsprachige Erklärung — der gesamte Katalog (~35 Begriffe) wird zentral in <code>src/Core/Help.php</code> gepflegt und kann mit <code>\App\Core\Help::tip(\'key\')</code> in jeder View aufgerufen werden.'
         => 'In many places you will find small <code>?</code> icons next to labels and headings. On hover, an explanation appears — the entire catalog (~35 terms) is maintained centrally in <code>src/Core/Help.php</code> and can be invoked with <code>\App\Core\Help::tip(\'key\')</code> in any view.',
+
+    // ── manual: TOC + section titles (config & governance) ───────────────────
+    'Konfiguration & Governance' => 'Configuration & Governance',
+    'Aktionsfreigaben (Vier-Augen)' => 'Action Approvals (Four-Eyes)',
+    'Aktionsfreigaben (Vier-Augen-Prinzip)' => 'Action Approvals (Four-Eyes Principle)',
+    'Alert-Webhook (Teams/SIEM)' => 'Alert webhook (Teams/SIEM)',
+    'Datenschutz & Daten-Retention' => 'Data Protection & Data Retention',
+    'Erweiterte Module („Mehr")' => 'Advanced modules (“More”)',
+    'Konfiguration sichern & übertragen' => 'Back up & transfer configuration',
+    'Konfigurations-Drift' => 'Configuration drift',
+
+    // ── manual: Konfigurations-Center ───────────────────────────────────────
+    'Das Konfigurations-Center (oben in der Seitenleiste) ist der Startpunkt für die Tenant-Konfiguration und bündelt drei Dinge auf einer Seite: einen Sicherheits-Score, eine Einrichtungs-Checkliste und die wichtigsten nächsten Schritte.'
+        => 'The Configuration Center (top of the sidebar) is the starting point for tenant configuration and bundles three things on one page: a security score, a setup checklist and the most important next steps.',
+    'Einrichtungs-Checkliste: Microsoft-365-Verbindung, Einrichtungs-Assistent, Compliance-Profil, Alarm-E-Mail, Backup-Status, Drift-Baseline und Admin-2FA.'
+        => 'Setup checklist: Microsoft 365 connection, setup wizard, compliance profile, alert e-mail, backup status, drift baseline and admin 2FA.',
+    'Empfohlene Schritte: die offenen Findings der Security Posture nach Priorität sortiert, jeweils mit Direktlink zur Behebung.'
+        => 'Recommended steps: the open Security Posture findings sorted by priority, each with a direct link to remediation.',
+    'Der Score wird im Hintergrund vom <code>cache_warm</code>-Cron berechnet und 30 Minuten zwischengespeichert — die Seite lädt daher sofort. Ist noch kein Wert vorhanden, lässt er sich mit „Jetzt berechnen" einmalig erzeugen.'
+        => 'The score is computed in the background by the <code>cache_warm</code> cron and cached for 30 minutes — so the page loads instantly. If no value exists yet, it can be generated once via “Calculate now”.',
+
+    // ── manual: Aktionsfreigaben (Vier-Augen) ───────────────────────────────
+    'Optional aktivierbar unter Einstellungen → Datenschutz. Ist das Vier-Augen-Prinzip aktiv, müssen besonders kritische Aktionen von einem zweiten Administrator freigegeben werden: Gerät zurücksetzen (Retire) oder löschen (Wipe), Konto deaktivieren und MFA-Methoden zurücksetzen.'
+        => 'Optionally enabled under Settings → Data protection. When the four-eyes principle is active, particularly critical actions must be approved by a second administrator: retire or wipe a device, disable an account and reset MFA methods.',
+    'Ablauf: Administrator A löst die Aktion aus — sie wird blockiert und als Anfrage eingereicht. Administrator B gibt sie unter „Aktionsfreigaben" frei (die eigene Anfrage kann man nicht selbst freigeben). Danach löst A dieselbe Aktion erneut aus, und sie wird ausgeführt.'
+        => 'Workflow: Administrator A triggers the action — it is blocked and submitted as a request. Administrator B approves it under “Action Approvals” (you cannot approve your own request). Administrator A then triggers the same action again and it is executed.',
+    'Freigaben gelten 24 Stunden; jede Anfrage, Freigabe und Ausführung wird im Audit-Log protokolliert. Bei deaktiviertem Vier-Augen-Prinzip laufen alle Aktionen wie gewohnt sofort.'
+        => 'Approvals are valid for 24 hours; every request, approval and execution is recorded in the audit log. With the four-eyes principle disabled, all actions run immediately as usual.',
+
+    // ── manual: Konfiguration sichern & übertragen ──────────────────────────
+    'Unter Einstellungen → Allgemein. Exportiert die operativen Einstellungen als JSON-Datei — als Backup oder um einen weiteren Tenant identisch aufzusetzen.'
+        => 'Under Settings → General. Exports the operational settings as a JSON file — as a backup or to set up another tenant identically.',
+    'Aus Sicherheitsgründen werden <strong>niemals Secrets exportiert</strong> (Passwörter, Client-Secret, API-Keys, SMTP-Passwort, Tenant-/App-IDs). Beim Import werden ausschließlich bekannte, nicht-sensible Einstellungen übernommen; alles andere wird ignoriert.'
+        => 'For security reasons <strong>secrets are never exported</strong> (passwords, client secret, API keys, SMTP password, tenant/app IDs). On import, only known, non-sensitive settings are applied; everything else is ignored.',
+
+    // ── manual: Konfigurations-Drift ────────────────────────────────────────
+    'Auf der Seite <strong>Audit-Diff</strong> lässt sich ein Snapshot als <em>Baseline</em> festlegen. Der tägliche Cron-Job <code>config_drift_check</code> vergleicht den neuesten Snapshot mit dieser Baseline und warnt bei Abweichungen sicherheitsrelevanter Einstellungen — als In-App-Benachrichtigung und (falls konfiguriert) über den Alert-Webhook, mit Direktlink zum Diff.'
+        => 'On the <strong>Audit Diff</strong> page a snapshot can be set as a <em>baseline</em>. The daily cron job <code>config_drift_check</code> compares the latest snapshot with this baseline and warns about deviations in security-relevant settings — as an in-app notification and (if configured) via the alert webhook, with a direct link to the diff.',
+
+    // ── manual: Alert-Webhook ───────────────────────────────────────────────
+    'Unter Einstellungen → Benachrichtigungen. Sicherheits-Warnungen ab der gewählten Stufe (Warnung oder Kritisch) werden zusätzlich an einen externen Endpunkt gesendet: einen Microsoft-Teams-Webhook (als MessageCard) oder ein generisches JSON-Ziel (SIEM/Sentinel/Slack-kompatibel). Ein Test-Button prüft die Verbindung.'
+        => 'Under Settings → Notifications. Security alerts at or above the selected level (warning or critical) are additionally sent to an external endpoint: a Microsoft Teams webhook (as a MessageCard) or a generic JSON target (SIEM/Sentinel/Slack-compatible). A test button checks the connection.',
+
+    // ── manual: Datenschutz & Daten-Retention ───────────────────────────────
+    'Unter Einstellungen → Datenschutz. Lokal gespeicherte Verlaufs- und PII-Daten (Audit-Log, Sign-ins, Freigaben, Snapshots, Drosselungs-Logs) älter als die konfigurierte Aufbewahrungsfrist werden täglich vom Cron-Job <code>local_data_retention</code> gelöscht (0 = unbegrenzt).'
+        => 'Under Settings → Data protection. Locally stored history and PII data (audit log, sign-ins, approvals, snapshots, throttling logs) older than the configured retention period are deleted daily by the cron job <code>local_data_retention</code> (0 = unlimited).',
+    'Zusätzlich gibt es eine Sofort-Bereinigung sowie ein unwiderrufliches <strong>„Alle lokalen Tenant-Daten löschen"</strong> (mit getippter Bestätigung). Konfiguration, Tool-Benutzerzugänge und API-Schlüssel bleiben dabei immer erhalten.'
+        => 'In addition there is an instant cleanup as well as an irreversible <strong>“Delete all local tenant data”</strong> (with typed confirmation). Configuration, tool user accounts and API keys are always preserved.',
+    'Der tägliche Selbstcheck <code>app_secret_expiry</code> warnt außerdem rechtzeitig, bevor das Client-Secret oder Zertifikat der eigenen App-Registrierung abläuft — andernfalls verliert das Tool den Graph-Zugriff.'
+        => 'The daily self-check <code>app_secret_expiry</code> also warns in good time before the client secret or certificate of the tool’s own app registration expires — otherwise the tool would lose Graph access.',
+
+    // ── manual: Erweiterte Module („Mehr") ──────────────────────────────────
+    'Nischige und Beta-Module (z. B. Token-Lifetime, Cross-Tenant-Access, Identity Provider Trust, MFA-Fatigue, Insider-Threat, Phishing-Simulationen, eDiscovery, Customer Lockbox) liegen in der jeweiligen Hub-Tableiste standardmäßig im „Mehr"-Dropdown. So bleibt die Hauptleiste auf die Kern-Module fokussiert, alles bleibt aber jederzeit erreichbar.'
+        => 'Niche and beta modules (e.g. Token Lifetime, Cross-Tenant Access, Identity Provider Trust, MFA Fatigue, Insider Threat, Phishing Simulations, eDiscovery, Customer Lockbox) are placed in the respective hub tab bar’s “More” dropdown by default. This keeps the main bar focused on the core modules while everything remains accessible at all times.',
 ];
