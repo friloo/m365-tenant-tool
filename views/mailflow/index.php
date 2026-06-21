@@ -324,7 +324,7 @@ echo \App\Core\Ui::externalCard(
         ["Set-HostedOutboundSpamFilterPolicy -Identity Default -AutoForwardingMode Off", t('Externe Auto-Weiterleitung tenant-weit blockieren')],
         ["New-SafeLinksPolicy -Name \"SafeLinks Std\" `\n  -EnableSafeLinksForEmail \$true -EnableSafeLinksForTeams \$true `\n  -EnableSafeLinksForOffice \$true -ScanUrls \$true -DeliverMessageAfterScan \$true\n\nNew-SafeLinksRule -Name \"SafeLinks Std\" -SafeLinksPolicy \"SafeLinks Std\" `\n  -RecipientDomainIs (Get-AcceptedDomain).Name", t('Safe Links aktivieren')],
         ["New-SafeAttachmentPolicy -Name \"SafeAtt Std\" -Enable \$true -Action Block\n\nNew-SafeAttachmentRule -Name \"SafeAtt Std\" -SafeAttachmentPolicy \"SafeAtt Std\" `\n  -RecipientDomainIs (Get-AcceptedDomain).Name", t('Safe Attachments aktivieren')],
-        ["Set-ExternalInOutlook -Enabled \$true", t('„External\"-Tag in Outlook aktivieren')],
+        ["Set-ExternalInOutlook -Enabled \$true", t('„External"-Tag in Outlook aktivieren')],
     ],
     'shield-shaded'
 );

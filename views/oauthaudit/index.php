@@ -115,7 +115,7 @@
                             <td class="text-muted small">
                                 <?php if ($a['last_sign_in']): ?>
                                     <?= $e(date('d.m.Y', strtotime($a['last_sign_in']))) ?>
-                                    <div class="text-muted small"><?= te('vor') ?> <?= (int)$a['days_since_signin'] ?> <?= te('Tagen') ?></div>
+                                    <div class="text-muted small"><?= te('vor :n Tagen', ['n' => (int)$a['days_since_signin']]) ?></div>
                                 <?php else: ?>
                                     <span class="text-warning"><?= te('nie / kein Report') ?></span>
                                 <?php endif; ?>
