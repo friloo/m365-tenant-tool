@@ -20,19 +20,28 @@ class ActionCenterController
     {
         LocalAuth::require();
 
-        if (isset($_GET['refresh'])) {
+        $forceCompute = isset($_GET['refresh']);
+        if ($forceCompute) {
             app_graph()->getCache()->flush();
         }
 
         $score = ['percent' => null, 'passed' => 0, 'warned' => 0, 'failed' => 0, 'unknown' => 0, 'total' => 0];
         $recommendations = [];
         $postureError = false;
+        $postureReady = true;
 
         try {
-            $service         = app_service(SecurityPostureService::class);
-            $checks          = $service->runChecks();
-            $score           = $service->getScore($checks);
-            $recommendations = $service->getRecommendations($checks);
+            $service = app_service(SecurityPostureService::class);
+            // Normal page loads only READ the cache — they never block on the
+            // slow (~35-check) computation. ?refresh recomputes on demand; the
+            // cache-warm cron keeps it fresh in the background.
+            $checks = $forceCompute ? $service->runChecksCached() : $service->cachedChecks();
+            if ($checks === null) {
+                $postureReady = false;
+            } else {
+                $score           = $service->getScore($checks);
+                $recommendations = $service->getRecommendations($checks);
+            }
         } catch (\Throwable) {
             $postureError = true;
         }
@@ -42,6 +51,7 @@ class ActionCenterController
             'score'           => $score,
             'recommendations' => $recommendations,
             'postureError'    => $postureError,
+            'postureReady'    => $postureReady,
             'setup'           => $this->setupChecklist(),
         ]);
     }

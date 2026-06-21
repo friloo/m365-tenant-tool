@@ -33,6 +33,9 @@ $setupTotal = count($setup);
                 </div>
                 <?php if ($postureError): ?>
                     <div class="text-muted small mt-2"><?= te('Score nicht verfügbar — Microsoft-365-Verbindung prüfen.') ?></div>
+                <?php elseif (empty($postureReady)): ?>
+                    <div class="text-muted small mt-2"><?= te('Noch nicht berechnet — wird im Hintergrund erstellt.') ?></div>
+                    <a href="/action-center?refresh=1" class="btn btn-sm btn-primary mt-3"><i class="bi bi-arrow-clockwise me-1"></i><?= te('Jetzt berechnen') ?></a>
                 <?php else: ?>
                     <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
                         <span class="badge bg-success"><?= (int)$score['passed'] ?> <?= te('bestanden') ?></span>
@@ -85,6 +88,12 @@ $setupTotal = count($setup);
     <div class="card-body-custom">
         <?php if ($postureError): ?>
             <div class="text-muted text-center py-4"><?= te('Empfehlungen nicht verfügbar — bitte zuerst die Microsoft-365-Verbindung in den Einstellungen konfigurieren.') ?></div>
+        <?php elseif (empty($postureReady)): ?>
+            <div class="text-center py-4">
+                <div class="spinner-border text-secondary" role="status" style="width:1.5rem;height:1.5rem;"></div>
+                <div class="mt-2 text-muted"><?= te('Die Sicherheitsanalyse wird im Hintergrund berechnet (Cache-Warm-Job) und erscheint in Kürze. Du kannst sie auch sofort berechnen:') ?></div>
+                <a href="/action-center?refresh=1" class="btn btn-sm btn-primary mt-2"><i class="bi bi-arrow-clockwise me-1"></i><?= te('Jetzt berechnen') ?></a>
+            </div>
         <?php elseif (empty($recommendations)): ?>
             <div class="text-center py-4">
                 <i class="bi bi-check-circle text-success" style="font-size:2rem;"></i>

@@ -16,7 +16,7 @@ class SecurityPostureController
         }
 
         $service         = app_service(SecurityPostureService::class);
-        $checks          = $service->runChecks();
+        $checks          = $service->runChecksCached();
         $score           = $service->getScore($checks);
         $recommendations = $service->getRecommendations($checks);
 
