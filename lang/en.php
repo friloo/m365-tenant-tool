@@ -244,6 +244,10 @@ return [
     // Statuses / values
     'Aktiv'            => 'Active',
     'Inaktiv'          => 'Inactive',
+    // Canonical resolutions for terms defined inconsistently across module
+    // files (central map wins on merge, so these are authoritative):
+    'Tagen'            => 'days',      // input suffix "X Tagen" → "X days" (not "days ago")
+    'Widerrufen'       => 'Revoked',   // dominant use is a status; revoke buttons read "Revoked"
     'Aktiviert'        => 'Enabled',
     'Deaktiviert'      => 'Disabled',
     'Ja'               => 'Yes',
