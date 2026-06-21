@@ -18,7 +18,7 @@ foreach ($apps as $app) {
 <?php if (!empty($soonExpiring)): ?>
     <div class="alert alert-danger mb-4">
         <i class="bi bi-clock-fill me-2"></i>
-        <strong><?= count($soonExpiring) ?> App<?= count($soonExpiring) !== 1 ? 's' : '' ?> mit ablaufenden Secrets (< 30 Tage):</strong>
+        <strong><?= count($soonExpiring) ?> App<?= count($soonExpiring) !== 1 ? 's' : '' ?> <?= te('mit ablaufenden Secrets (< 30 Tage):') ?></strong>
         <?= implode(', ', array_map($e, $soonExpiring)) ?>
     </div>
 <?php endif; ?>
@@ -26,8 +26,8 @@ foreach ($apps as $app) {
 <?php if (!empty($highRiskApps)): ?>
     <div class="alert alert-danger mb-4">
         <i class="bi bi-shield-exclamation me-2"></i>
-        <strong><?= count($highRiskApps) ?> App<?= count($highRiskApps) !== 1 ? 's' : '' ?> mit hohem Risiko erkannt</strong> —
-        Diese Apps besitzen weitreichende Berechtigungen und sollten überprüft werden.
+        <strong><?= count($highRiskApps) ?> App<?= count($highRiskApps) !== 1 ? 's' : '' ?> <?= te('mit hohem Risiko erkannt') ?></strong> —
+        <?= te('Diese Apps besitzen weitreichende Berechtigungen und sollten überprüft werden.') ?>
     </div>
 <?php endif; ?>
 
@@ -35,35 +35,35 @@ foreach ($apps as $app) {
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">App-Registrierungen</div>
+            <div class="metric-label"><?= te('App-Registrierungen') ?></div>
             <div class="metric-value"><?= count($apps) ?></div>
-            <div class="metric-sub">Eigene Apps im Tenant</div>
+            <div class="metric-sub"><?= te('Eigene Apps im Tenant') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Hohes Risiko</div>
+            <div class="metric-label"><?= te('Hohes Risiko') ?></div>
             <div class="metric-value" style="color:<?= count($highRiskApps) > 0 ? '#dc2626' : '#16a34a' ?>;">
                 <?= count($highRiskApps) ?>
                 <?php if (count($highRiskApps) > 0): ?>
                     <span class="badge-danger ms-1" style="font-size:11px;">!</span>
                 <?php endif; ?>
             </div>
-            <div class="metric-sub">Sensitive Berechtigungen</div>
+            <div class="metric-sub"><?= te('Sensitive Berechtigungen') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Neu (letzte 30 Tage)</div>
+            <div class="metric-label"><?= te('Neu (letzte 30 Tage)') ?></div>
             <div class="metric-value" style="color:<?= $recentAppsCount > 0 ? '#f59e0b' : '#111827' ?>;">
                 <?= $recentAppsCount ?>
             </div>
-            <div class="metric-sub">Kürzlich registriert</div>
+            <div class="metric-sub"><?= te('Kürzlich registriert') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Enterprise Apps</div>
+            <div class="metric-label"><?= te('Enterprise Apps') ?></div>
             <div class="metric-value"><?= count($servicePrincipals) ?></div>
             <div class="metric-sub">Service Principals</div>
         </div>
@@ -76,7 +76,7 @@ foreach ($apps as $app) {
         <button class="nav-link active" id="apps-tab" data-bs-toggle="tab" data-bs-target="#apps-panel"
                 type="button" role="tab">
             <i class="bi bi-code-square me-1"></i>
-            App-Registrierungen
+            <?= te('App-Registrierungen') ?>
             <span class="badge bg-secondary ms-1"><?= count($apps) ?></span>
         </button>
     </li>
@@ -84,7 +84,7 @@ foreach ($apps as $app) {
         <button class="nav-link" id="sp-tab" data-bs-toggle="tab" data-bs-target="#sp-panel"
                 type="button" role="tab">
             <i class="bi bi-building me-1"></i>
-            Enterprise Apps
+            <?= te('Enterprise Apps') ?>
             <span class="badge bg-secondary ms-1"><?= count($servicePrincipals) ?></span>
         </button>
     </li>
@@ -96,19 +96,19 @@ foreach ($apps as $app) {
     <div class="tab-pane fade show active" id="apps-panel" role="tabpanel">
         <div class="content-card">
             <div class="table-toolbar">
-                <input type="text" id="appsSearch" class="search-box" placeholder="App suchen…">
+                <input type="text" id="appsSearch" class="search-box" placeholder="<?= te('App suchen…') ?>">
             </div>
             <div class="table-responsive">
                 <table class="data-table" id="appsTable">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>App-ID</th>
-                            <th>Erstellt</th>
-                            <th>Zielgruppe</th>
-                            <th>Berechtigungen</th>
-                            <th>Secrets</th>
-                            <th>Risiko</th>
+                            <th><?= te('Name') ?></th>
+                            <th><?= te('App-ID') ?></th>
+                            <th><?= te('Erstellt') ?></th>
+                            <th><?= te('Zielgruppe') ?></th>
+                            <th><?= te('Berechtigungen') ?></th>
+                            <th><?= te('Secrets') ?></th>
+                            <th><?= te('Risiko') ?></th>
                         </tr>
                     </thead>
                     <tbody>

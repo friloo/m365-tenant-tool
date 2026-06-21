@@ -17,26 +17,24 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
         <i class="bi bi-exclamation-triangle-fill" style="color:#dc2626;font-size:20px;flex-shrink:0;margin-top:2px;"></i>
         <div style="flex:1;">
             <div class="fw-semibold mb-1" style="color:#991b1b;">
-                Microsoft Graph antwortet mit HTTP <?= (int)$apiError['status'] ?> — Daten können nicht geladen werden.
+                <?= te('Microsoft Graph antwortet mit HTTP :status — Daten können nicht geladen werden.', ['status' => (int)$apiError['status']]) ?>
             </div>
             <div class="small mb-2" style="color:#7f1d1d;">
                 <code><?= $e($apiError['code'] ?: 'Error') ?></code>: <?= $e($apiError['message']) ?>
             </div>
             <div class="small" style="color:#7f1d1d;">
-                Mögliche Ursachen:
+                <?= te('Mögliche Ursachen:') ?>
                 <ul class="mb-2 mt-1">
-                    <li><strong>Berechtigung fehlt:</strong> Der Endpunkt benötigt
+                    <li><strong><?= te('Berechtigung fehlt:') ?></strong> <?= te('Der Endpunkt benötigt') ?>
                         <code>AuditLog.Read.All</code> + <code>Reports.Read.All</code>
-                        als <em>Anwendungs</em>-Berechtigung mit Admin-Consent.</li>
-                    <li><strong>Token ist veraltet:</strong> Nach dem Hinzufügen neuer Berechtigungen muss der
-                        gecachte Access-Token erneuert werden. Klicke auf
-                        <a href="?refresh=1"><strong>Aktualisieren</strong></a> — das leert auch den Token-Cache.</li>
-                    <li><strong>Azure AD Premium-Lizenz fehlt:</strong> Der Bericht
-                        <code>userRegistrationDetails</code> setzt mindestens eine
-                        <strong>Azure AD / Entra ID P1 oder P2</strong>-Lizenz im Tenant voraus.
-                        Ohne P1/P2 liefert die API HTTP 403 selbst mit vollständigen Berechtigungen.</li>
+                        <?= t('als <em>Anwendungs</em>-Berechtigung mit Admin-Consent.') ?></li>
+                    <li><strong><?= te('Token ist veraltet:') ?></strong> <?= te('Nach dem Hinzufügen neuer Berechtigungen muss der gecachte Access-Token erneuert werden. Klicke auf') ?>
+                        <a href="?refresh=1"><strong><?= te('Aktualisieren') ?></strong></a> <?= te('— das leert auch den Token-Cache.') ?></li>
+                    <li><strong><?= te('Azure AD Premium-Lizenz fehlt:') ?></strong> <?= te('Der Bericht') ?>
+                        <code>userRegistrationDetails</code> <?= te('setzt mindestens eine') ?>
+                        <strong>Azure AD / Entra ID P1 oder P2</strong><?= te('-Lizenz im Tenant voraus. Ohne P1/P2 liefert die API HTTP 403 selbst mit vollständigen Berechtigungen.') ?></li>
                 </ul>
-                Vollständige Endpunkt-URL: <code><?= $e($apiError['url']) ?></code>
+                <?= te('Vollständige Endpunkt-URL:') ?> <code><?= $e($apiError['url']) ?></code>
             </div>
         </div>
     </div>
@@ -46,21 +44,17 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
     <div class="d-flex align-items-start gap-3">
         <i class="bi bi-info-circle-fill" style="color:#d97706;font-size:20px;flex-shrink:0;margin-top:2px;"></i>
         <div style="flex:1;">
-            <div class="fw-semibold mb-1" style="color:#92400e;">Keine Daten verfügbar</div>
+            <div class="fw-semibold mb-1" style="color:#92400e;"><?= te('Keine Daten verfügbar') ?></div>
             <div class="small" style="color:#78350f;">
-                Microsoft Graph hat den Aufruf akzeptiert, aber eine leere Antwort geliefert. Mögliche Ursachen:
+                <?= te('Microsoft Graph hat den Aufruf akzeptiert, aber eine leere Antwort geliefert. Mögliche Ursachen:') ?>
                 <ul class="mb-2 mt-1">
-                    <li><strong>Cache noch veraltet:</strong> Klicke auf <a href="?refresh=1"><strong>Aktualisieren</strong></a>
-                        um Token und Cache neu zu laden.</li>
-                    <li><strong>Berichtsdaten noch nicht verfügbar:</strong> Der Bericht
-                        <code>credentialUserRegistrationDetails</code> kann im Tenant einige Stunden
-                        brauchen, bevor er nach der ersten Aktivierung Daten liefert.</li>
-                    <li><strong>Entra ID P1/P2-Lizenz:</strong> Der Bericht setzt mindestens eine
-                        <strong>Entra ID P1 oder P2</strong>-Lizenz im Tenant voraus.</li>
-                    <li><strong>Berichtsverschleierung aktiv:</strong> Wenn im Microsoft 365 Admin Center
-                        unter <em>Einstellungen → Dienste → Berichte</em> die Option
-                        „Anonymisierte Benutzerberichte" aktiviert ist, sind Berichte für Apps gesperrt.
-                        Diese Einstellung muss deaktiviert sein.</li>
+                    <li><strong><?= te('Cache noch veraltet:') ?></strong> <?= te('Klicke auf') ?> <a href="?refresh=1"><strong><?= te('Aktualisieren') ?></strong></a>
+                        <?= te('um Token und Cache neu zu laden.') ?></li>
+                    <li><strong><?= te('Berichtsdaten noch nicht verfügbar:') ?></strong> <?= te('Der Bericht') ?>
+                        <code>credentialUserRegistrationDetails</code> <?= te('kann im Tenant einige Stunden brauchen, bevor er nach der ersten Aktivierung Daten liefert.') ?></li>
+                    <li><strong><?= te('Entra ID P1/P2-Lizenz:') ?></strong> <?= te('Der Bericht setzt mindestens eine') ?>
+                        <strong>Entra ID P1 oder P2</strong><?= te('-Lizenz im Tenant voraus.') ?></li>
+                    <li><strong><?= te('Berichtsverschleierung aktiv:') ?></strong> <?= t('Wenn im Microsoft 365 Admin Center unter <em>Einstellungen → Dienste → Berichte</em> die Option „Anonymisierte Benutzerberichte" aktiviert ist, sind Berichte für Apps gesperrt. Diese Einstellung muss deaktiviert sein.') ?></li>
                 </ul>
             </div>
         </div>
@@ -72,32 +66,32 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Gesamt</div>
+            <div class="metric-label"><?= te('Gesamt') ?></div>
             <div class="metric-value"><?= number_format($total) ?></div>
-            <div class="metric-sub">Benutzer analysiert</div>
+            <div class="metric-sub"><?= te('Benutzer analysiert') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">MFA registriert</div>
+            <div class="metric-label"><?= te('MFA registriert') ?></div>
             <div class="metric-value" style="color:#16a34a;"><?= number_format($mfaRegistered) ?></div>
-            <div class="metric-sub"><?= $total > 0 ? round(($mfaRegistered / $total) * 100) : 0 ?>% der Benutzer</div>
+            <div class="metric-sub"><?= te(':pct% der Benutzer', ['pct' => $total > 0 ? round(($mfaRegistered / $total) * 100) : 0]) ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Kein MFA</div>
+            <div class="metric-label"><?= te('Kein MFA') ?></div>
             <div class="metric-value" style="color:<?= $noMfa > 0 ? '#dc2626' : '#16a34a' ?>;">
                 <?= number_format($noMfa) ?>
             </div>
-            <div class="metric-sub"><?= $total > 0 ? round(($noMfa / $total) * 100) : 0 ?>% ohne MFA</div>
+            <div class="metric-sub"><?= te(':pct% ohne MFA', ['pct' => $total > 0 ? round(($noMfa / $total) * 100) : 0]) ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">MFA-fähig</div>
+            <div class="metric-label"><?= te('MFA-fähig') ?></div>
             <div class="metric-value"><?= number_format($mfaCapable) ?></div>
-            <div class="metric-sub"><?= $total > 0 ? round(($mfaCapable / $total) * 100) : 0 ?>% der Benutzer</div>
+            <div class="metric-sub"><?= te(':pct% der Benutzer', ['pct' => $total > 0 ? round(($mfaCapable / $total) * 100) : 0]) ?></div>
         </div>
     </div>
 </div>
@@ -109,13 +103,13 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
     <div class="col-md-6">
         <div class="content-card" style="height:100%;">
             <div class="card-header-custom">
-                <i class="bi bi-bar-chart-horizontal me-2"></i>Methoden-Verteilung
+                <i class="bi bi-bar-chart-horizontal me-2"></i><?= te('Methoden-Verteilung') ?>
             </div>
             <div class="card-body-custom">
                 <?php if (empty($byMethod)): ?>
                     <div class="empty-state">
                         <i class="bi bi-shield-x"></i>
-                        <p>Keine Methoden-Daten verfügbar</p>
+                        <p><?= te('Keine Methoden-Daten verfügbar') ?></p>
                     </div>
                 <?php else: ?>
                     <?php foreach ($byMethod as $key => $count):
@@ -144,17 +138,17 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
     <div class="col-md-6">
         <div class="content-card" style="height:100%;">
             <div class="card-header-custom">
-                <i class="bi bi-shield-check me-2"></i>Standard-Methode
+                <i class="bi bi-shield-check me-2"></i><?= te('Standard-Methode') ?>
             </div>
             <div class="card-body-custom">
                 <?php if (empty($byDefault)): ?>
                     <div class="empty-state">
                         <i class="bi bi-shield-x"></i>
-                        <p>Keine Standard-Methoden-Daten verfügbar</p>
+                        <p><?= te('Keine Standard-Methoden-Daten verfügbar') ?></p>
                     </div>
                 <?php else: ?>
                     <?php foreach ($byDefault as $key => $count):
-                        $label = $labels[$key] ?? ($key !== '' ? $key : 'Keine Angabe');
+                        $label = $labels[$key] ?? ($key !== '' ? $key : t('Keine Angabe'));
                         $pct   = $maxDefault > 0 ? round(($count / $maxDefault) * 100) : 0;
                     ?>
                     <div class="mb-3">
@@ -180,16 +174,16 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
 <!-- User table -->
 <div class="content-card">
     <div class="table-toolbar">
-        <input type="text" id="mfaSearch" class="search-box" placeholder="Benutzer suchen…">
+        <input type="text" id="mfaSearch" class="search-box" placeholder="<?= te('Benutzer suchen…') ?>">
         <select id="mfaFilter" class="form-select form-select-sm ms-2" style="max-width:280px;"
                 onchange="filterMfaTable()">
-            <option value="">Alle (<?= $total ?>)</option>
-            <optgroup label="MFA-Status">
-                <option value="mfa-yes">MFA registriert (<?= $mfaRegistered ?>)</option>
-                <option value="no-mfa">Kein MFA (<?= $noMfa ?>)</option>
+            <option value=""><?= te('Alle') ?> (<?= $total ?>)</option>
+            <optgroup label="<?= te('MFA-Status') ?>">
+                <option value="mfa-yes"><?= te('MFA registriert') ?> (<?= $mfaRegistered ?>)</option>
+                <option value="no-mfa"><?= te('Kein MFA') ?> (<?= $noMfa ?>)</option>
             </optgroup>
             <?php if (!empty($byMethod)): ?>
-            <optgroup label="Nach Methode">
+            <optgroup label="<?= te('Nach Methode') ?>">
                 <?php
                 $presentMethods = array_keys($byMethod);
                 sort($presentMethods);
@@ -203,7 +197,7 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
             <?php endif; ?>
         </select>
         <a href="?refresh=1" class="btn btn-sm btn-outline-secondary ms-2">
-            <i class="bi bi-arrow-clockwise"></i> Aktualisieren
+            <i class="bi bi-arrow-clockwise"></i> <?= te('Aktualisieren') ?>
         </a>
     </div>
 
@@ -212,11 +206,11 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
             <thead>
                 <tr>
                     <th style="width:40px;"></th>
-                    <th>Name</th>
-                    <th>UPN</th>
-                    <th>MFA-Status</th>
-                    <th>Registrierte Methoden</th>
-                    <th>Standard-Methode</th>
+                    <th><?= te('Name') ?></th>
+                    <th><?= te('UPN') ?></th>
+                    <th><?= te('MFA-Status') ?></th>
+                    <th><?= te('Registrierte Methoden') ?></th>
+                    <th><?= te('Standard-Methode') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -254,9 +248,9 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
                     <td style="font-size:12px;color:#6b7280;"><?= $e($upn) ?></td>
                     <td>
                         <?php if ($isMfaRegistered): ?>
-                            <span class="badge-enabled"><i class="bi bi-shield-check"></i> Registriert</span>
+                            <span class="badge-enabled"><i class="bi bi-shield-check"></i> <?= te('Registriert') ?></span>
                         <?php else: ?>
-                            <span class="badge-danger"><i class="bi bi-shield-x"></i> Kein MFA</span>
+                            <span class="badge-danger"><i class="bi bi-shield-x"></i> <?= te('Kein MFA') ?></span>
                         <?php endif; ?>
                     </td>
                     <td style="font-size:12px;">
@@ -286,7 +280,7 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
                         <td colspan="6">
                             <div class="empty-state">
                                 <i class="bi bi-shield-exclamation"></i>
-                                <p>Keine Benutzer-Daten verfügbar</p>
+                                <p><?= te('Keine Benutzer-Daten verfügbar') ?></p>
                             </div>
                         </td>
                     </tr>

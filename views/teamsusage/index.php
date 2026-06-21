@@ -1,5 +1,5 @@
 <?php use App\Core\View; $e = fn($v) => View::escape($v); ?>
-<?php \App\Core\View::partial('partials/module_tabs', ['tabs' => [['label'=>'Übersicht','href'=>'/teamspolicies','icon'=>'collection'],['label'=>'Nutzung','href'=>'/teamsusage','icon'=>'camera-video'],['label'=>'Governance','href'=>'/teamsgovernance','icon'=>'people-fill'],]]); ?>
+<?php \App\Core\View::partial('partials/module_tabs', ['tabs' => [['label'=>t('Übersicht'),'href'=>'/teamspolicies','icon'=>'collection'],['label'=>t('Nutzung'),'href'=>'/teamsusage','icon'=>'camera-video'],['label'=>t('Governance'),'href'=>'/teamsgovernance','icon'=>'people-fill'],]]); ?>
 
 
 <meta http-equiv="refresh" content="3600">
@@ -11,13 +11,13 @@
         if (!empty($diag ?? null)) {
             $diagStyle = 'empty';
             $diagIcon  = 'microsoft-teams';
-            $diagTitle = 'Keine Teams-Nutzungsdaten verfügbar';
+            $diagTitle = t('Keine Teams-Nutzungsdaten verfügbar');
             include BASE_PATH . '/views/partials/graph_diagnostic.php';
         } else { ?>
             <div class="empty-state">
                 <i class="bi bi-microsoft-teams text-muted" style="font-size:2.5rem;"></i>
-                <p class="mt-3 mb-1 fw-medium">Keine Teams-Nutzungsdaten verfügbar</p>
-                <p class="text-muted small">Im gewählten Zeitraum wurde keine Teams-Aktivität erfasst.</p>
+                <p class="mt-3 mb-1 fw-medium"><?= te('Keine Teams-Nutzungsdaten verfügbar') ?></p>
+                <p class="text-muted small"><?= te('Im gewählten Zeitraum wurde keine Teams-Aktivität erfasst.') ?></p>
             </div>
         <?php } ?>
     </div>
@@ -28,16 +28,16 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Gesamt Nutzer</div>
+            <div class="metric-label"><?= te('Gesamt Nutzer') ?></div>
             <div class="metric-value"><?= number_format($stats['total']) ?></div>
-            <div class="metric-sub">im Report erfasst</div>
+            <div class="metric-sub"><?= te('im Report erfasst') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Aktiv (letzte 30 Tage)</div>
+            <div class="metric-label"><?= te('Aktiv (letzte 30 Tage)') ?></div>
             <div class="metric-value" style="color:#16a34a;"><?= number_format($stats['active']) ?></div>
-            <div class="metric-sub">mind. eine Aktivität</div>
+            <div class="metric-sub"><?= te('mind. eine Aktivität') ?></div>
         </div>
     </div>
     <div class="col-sm-3">

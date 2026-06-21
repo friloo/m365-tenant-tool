@@ -4,11 +4,11 @@ $e = fn($v) => View::escape($v);
 
 // Widget config: names map to IDs
 $_widgets = [
-    'dash-w-metrics1'  => 'Verzeichnis & Identität',
-    'dash-w-metrics2'  => 'Sicherheit & Geräte',
-    'dash-w-charts'    => 'Charts & Sicherheitsstatus',
-    'dash-w-infopanels'=> 'Info-Panels',
-    'dash-w-quicklinks'=> 'Schnellzugriff',
+    'dash-w-metrics1'  => t('Verzeichnis & Identität'),
+    'dash-w-metrics2'  => t('Sicherheit & Geräte'),
+    'dash-w-charts'    => t('Charts & Sicherheitsstatus'),
+    'dash-w-infopanels'=> t('Info-Panels'),
+    'dash-w-quicklinks'=> t('Schnellzugriff'),
 ];
 
 $n = fn($v) => $v !== null ? number_format((int)$v) : '<span class="text-muted small">–</span>';
@@ -25,18 +25,18 @@ $ext = $extended ?? [];
 <!-- Widget config button -->
 <div class="d-flex justify-content-end mb-2">
     <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#widgetConfig">
-        <i class="bi bi-layout-three-columns me-1"></i> Widgets
+        <i class="bi bi-layout-three-columns me-1"></i> <?= te('Widgets') ?>
     </button>
 </div>
 
 <!-- Offcanvas: widget visibility config -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="widgetConfig" style="width:280px;">
     <div class="offcanvas-header">
-        <h6 class="offcanvas-title"><i class="bi bi-layout-three-columns me-2"></i>Dashboard-Widgets</h6>
+        <h6 class="offcanvas-title"><i class="bi bi-layout-three-columns me-2"></i><?= te('Dashboard-Widgets') ?></h6>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
     <div class="offcanvas-body">
-        <p class="text-muted" style="font-size:12px;">Einstellungen werden im Browser gespeichert.</p>
+        <p class="text-muted" style="font-size:12px;"><?= te('Einstellungen werden im Browser gespeichert.') ?></p>
         <?php foreach ($_widgets as $id => $label): ?>
         <div class="form-check form-switch mb-3">
             <input class="form-check-input widget-toggle" type="checkbox" id="wt-<?= $id ?>" data-widget="<?= $id ?>" checked>
@@ -44,7 +44,7 @@ $ext = $extended ?? [];
         </div>
         <?php endforeach; ?>
         <button class="btn btn-sm btn-outline-secondary w-100 mt-2" onclick="resetWidgets()">
-            <i class="bi bi-arrow-counterclockwise me-1"></i> Zurücksetzen
+            <i class="bi bi-arrow-counterclockwise me-1"></i> <?= te('Zurücksetzen') ?>
         </button>
     </div>
 </div>
@@ -58,9 +58,9 @@ $ext = $extended ?? [];
                 <i class="bi bi-people-fill" style="color:#2563eb;"></i>
             </div>
             <div>
-                <div class="metric-label">Benutzer gesamt <?= \App\Core\Help::tip('graph_api') ?></div>
+                <div class="metric-label"><?= te('Benutzer gesamt') ?> <?= \App\Core\Help::tip('graph_api') ?></div>
                 <div class="metric-value"><?= $n($metrics['total_users']) ?> <?= \App\Modules\Dashboard\MetricHistoryService::sparkline('total_users') ?></div>
-                <div class="metric-sub"><?= $n($metrics['enabled_users']) ?> aktiv</div>
+                <div class="metric-sub"><?= $n($metrics['enabled_users']) ?> <?= te('aktiv') ?></div>
             </div>
         </div>
         </a>
@@ -72,9 +72,9 @@ $ext = $extended ?? [];
                 <i class="bi bi-award-fill" style="color:#16a34a;"></i>
             </div>
             <div>
-                <div class="metric-label">Lizenz-Produkte</div>
+                <div class="metric-label"><?= te('Lizenz-Produkte') ?></div>
                 <div class="metric-value"><?= $n($metrics['license_products']) ?></div>
-                <div class="metric-sub">Abonnierte SKUs</div>
+                <div class="metric-sub"><?= te('Abonnierte SKUs') ?></div>
             </div>
         </div>
         </a>
@@ -86,14 +86,14 @@ $ext = $extended ?? [];
                 <i class="bi bi-shield-check" style="color:#7c3aed;"></i>
             </div>
             <div>
-                <div class="metric-label">MFA-Abdeckung</div>
+                <div class="metric-label"><?= te('MFA-Abdeckung') ?></div>
                 <div class="metric-value" style="color:<?= $mfaColor ?>">
                     <?= $mfaPct !== null ? $mfaPct . '%' : '<span class="text-muted fs-6">–</span>' ?>
                 </div>
                 <div class="metric-sub">
                     <?= $security['mfa_registered'] !== null
                         ? ($n($security['mfa_registered']) . ' / ' . $n($security['mfa_total']))
-                        : 'Keine Daten' ?>
+                        : te('Keine Daten') ?>
                 </div>
             </div>
         </div>
@@ -112,8 +112,8 @@ $ext = $extended ?? [];
                 </div>
                 <div class="metric-sub">
                     <?php if ($caEnabled !== null): ?>
-                        aktive Richtlinien<?= ($security['ca_report_only'] ?? 0) > 0 ? ' · ' . $n($security['ca_report_only']) . ' report-only' : '' ?>
-                    <?php else: ?>Keine Daten<?php endif ?>
+                        <?= te('aktive Richtlinien') ?><?= ($security['ca_report_only'] ?? 0) > 0 ? ' · ' . $n($security['ca_report_only']) . ' report-only' : '' ?>
+                    <?php else: ?><?= te('Keine Daten') ?><?php endif ?>
                 </div>
             </div>
         </div>
@@ -130,14 +130,14 @@ $ext = $extended ?? [];
                 <i class="bi bi-phone-fill" style="color:#ca8a04;"></i>
             </div>
             <div>
-                <div class="metric-label">Geräte <?= \App\Core\Help::tip('device_compliance') ?></div>
+                <div class="metric-label"><?= te('Geräte') ?> <?= \App\Core\Help::tip('device_compliance') ?></div>
                 <div class="metric-value"><?= $n($metrics['total_devices']) ?> <?= \App\Modules\Dashboard\MetricHistoryService::sparkline('total_devices') ?></div>
                 <div class="metric-sub">
                     <?php if ($nonComp > 0): ?>
-                        <span style="color:#dc2626;"><?= $n($nonComp) ?> nicht konform</span>
+                        <span style="color:#dc2626;"><?= $n($nonComp) ?> <?= te('nicht konform') ?></span>
                     <?php elseif ($nonComp === 0): ?>
-                        <span style="color:#16a34a;">Alle konform</span>
-                    <?php else: ?>Intune verwaltet<?php endif ?>
+                        <span style="color:#16a34a;"><?= te('Alle konform') ?></span>
+                    <?php else: ?><?= te('Intune verwaltet') ?><?php endif ?>
                 </div>
             </div>
         </div>
@@ -150,11 +150,11 @@ $ext = $extended ?? [];
                 <i class="bi bi-exclamation-triangle-fill" style="color:#dc2626;"></i>
             </div>
             <div>
-                <div class="metric-label">Risikobenutzer</div>
+                <div class="metric-label"><?= te('Risikobenutzer') ?></div>
                 <div class="metric-value" style="color:<?= ($metrics['risky_users'] ?? 0) > 0 ? '#dc2626' : '#111827' ?>">
                     <?= $n($metrics['risky_users']) ?> <?= \App\Modules\Dashboard\MetricHistoryService::sparkline('risky_users', 7, '#dc2626') ?>
                 </div>
-                <div class="metric-sub">Aktive Risiken</div>
+                <div class="metric-sub"><?= te('Aktive Risiken') ?></div>
             </div>
         </div>
         </a>
@@ -166,11 +166,11 @@ $ext = $extended ?? [];
                 <i class="bi bi-bell-fill" style="color:#dc2626;"></i>
             </div>
             <div>
-                <div class="metric-label">Defender Alerts</div>
+                <div class="metric-label"><?= te('Defender Alerts') ?></div>
                 <div class="metric-value" style="color:<?= ($alerts ?? 0) > 0 ? '#dc2626' : '#16a34a' ?>">
                     <?= $alerts !== null ? $n($alerts) : '<span class="text-muted fs-6">–</span>' ?>
                 </div>
-                <div class="metric-sub">Offen / In Bearbeitung</div>
+                <div class="metric-sub"><?= te('Offen / In Bearbeitung') ?></div>
             </div>
         </div>
         </a>
@@ -182,10 +182,10 @@ $ext = $extended ?? [];
                 <i class="bi bi-diagram-3-fill" style="color:#059669;"></i>
             </div>
             <div>
-                <div class="metric-label">Gruppen & Teams</div>
+                <div class="metric-label"><?= te('Gruppen & Teams') ?></div>
                 <div class="metric-value"><?= $n($metrics['total_groups']) ?> <?= \App\Modules\Dashboard\MetricHistoryService::sparkline('total_groups') ?></div>
                 <div class="metric-sub">
-                    <?= $ext['teams_count'] !== null ? $n($ext['teams_count']) . ' Teams' : 'Im Verzeichnis' ?>
+                    <?= $ext['teams_count'] !== null ? $n($ext['teams_count']) . ' Teams' : te('Im Verzeichnis') ?>
                 </div>
             </div>
         </div>
@@ -199,11 +199,11 @@ $ext = $extended ?? [];
         <div class="content-card">
             <div class="card-header-custom">
                 <i class="bi bi-bar-chart-fill text-primary"></i>
-                <h6>Lizenz-Nutzung</h6>
+                <h6><?= te('Lizenz-Nutzung') ?></h6>
             </div>
             <div class="card-body-custom">
                 <?php if (empty($licenses)): ?>
-                    <p class="text-muted text-center py-3">Keine Lizenzdaten verfügbar</p>
+                    <p class="text-muted text-center py-3"><?= te('Keine Lizenzdaten verfügbar') ?></p>
                 <?php else: ?>
                     <?php foreach ($licenses as $sku): ?>
                     <div class="mb-3">
@@ -229,37 +229,37 @@ $ext = $extended ?? [];
         <div class="content-card h-100">
             <div class="card-header-custom">
                 <i class="bi bi-shield-fill-check text-success"></i>
-                <h6>Sicherheitsstatus</h6>
+                <h6><?= te('Sicherheitsstatus') ?></h6>
             </div>
             <div class="card-body-custom p-0">
                 <?php
                 $secureScorePct = ($ext['secure_score'] !== null && $ext['secure_score_max'] > 0)
                     ? round(($ext['secure_score'] / $ext['secure_score_max']) * 100) : null;
                 $secItems = [
-                    ['label' => 'MFA-Abdeckung',           'href' => '/mfamethods',
+                    ['label' => t('MFA-Abdeckung'),           'href' => '/mfamethods',
                      'ok'    => $mfaPct >= 80,              'warn' => $mfaPct !== null && $mfaPct >= 50 && $mfaPct < 80,
                      'val'   => $mfaPct !== null ? $mfaPct . '%' : '–',
-                     'hint'  => $mfaPct !== null ? ($mfaPct >= 80 ? 'Gut' : ($mfaPct >= 50 ? 'Ausbaufähig' : 'Kritisch')) : 'Keine Daten'],
-                    ['label' => 'Conditional Access',       'href' => '/conditionalaccess',
+                     'hint'  => $mfaPct !== null ? ($mfaPct >= 80 ? t('Gut') : ($mfaPct >= 50 ? t('Ausbaufähig') : t('Kritisch'))) : t('Keine Daten')],
+                    ['label' => t('Conditional Access'),       'href' => '/conditionalaccess',
                      'ok'    => $caEnabled >= 3,            'warn' => $caEnabled > 0 && $caEnabled < 3,
-                     'val'   => $caEnabled !== null ? $caEnabled . ' aktiv' : '–',
-                     'hint'  => $caEnabled !== null ? ($caEnabled === 0 ? 'Keine Richtlinien!' : ($caEnabled < 3 ? 'Wenige' : 'Konfiguriert')) : 'Keine Daten'],
-                    ['label' => 'Risikobenutzer',           'href' => '/riskysignins',
+                     'val'   => $caEnabled !== null ? $caEnabled . ' ' . t('aktiv') : '–',
+                     'hint'  => $caEnabled !== null ? ($caEnabled === 0 ? t('Keine Richtlinien!') : ($caEnabled < 3 ? t('Wenige') : t('Konfiguriert'))) : t('Keine Daten')],
+                    ['label' => t('Risikobenutzer'),           'href' => '/riskysignins',
                      'ok'    => ($metrics['risky_users'] ?? 0) === 0, 'warn' => false,
                      'val'   => $n($metrics['risky_users']),
-                     'hint'  => ($metrics['risky_users'] ?? 0) === 0 ? 'Keine Risiken' : 'Prüfen'],
-                    ['label' => 'Nicht konforme Geräte',    'href' => '/devices',
+                     'hint'  => ($metrics['risky_users'] ?? 0) === 0 ? t('Keine Risiken') : t('Prüfen')],
+                    ['label' => t('Nicht konforme Geräte'),    'href' => '/devices',
                      'ok'    => $nonComp === 0,             'warn' => $nonComp > 0 && $nonComp <= 5,
                      'val'   => $nonComp !== null ? $n($nonComp) : '–',
-                     'hint'  => $nonComp === null ? 'Keine Daten' : ($nonComp === 0 ? 'Alle konform' : 'Prüfen')],
-                    ['label' => 'Offene Defender Alerts',   'href' => '/defenderalerts',
+                     'hint'  => $nonComp === null ? t('Keine Daten') : ($nonComp === 0 ? t('Alle konform') : t('Prüfen'))],
+                    ['label' => t('Offene Defender Alerts'),   'href' => '/defenderalerts',
                      'ok'    => $alerts === 0,              'warn' => $alerts > 0 && $alerts <= 3,
                      'val'   => $alerts !== null ? $n($alerts) : '–',
-                     'hint'  => $alerts === null ? 'Keine Daten' : ($alerts === 0 ? 'Keine offen' : 'Prüfen')],
-                    ['label' => 'Secure Score',             'href' => '/securescore',
+                     'hint'  => $alerts === null ? t('Keine Daten') : ($alerts === 0 ? t('Keine offen') : t('Prüfen'))],
+                    ['label' => t('Secure Score'),             'href' => '/securescore',
                      'ok'    => $secureScorePct >= 60,      'warn' => $secureScorePct !== null && $secureScorePct >= 40 && $secureScorePct < 60,
                      'val'   => $ext['secure_score'] !== null ? ($ext['secure_score'] . ' / ' . $ext['secure_score_max']) : '–',
-                     'hint'  => $secureScorePct !== null ? $secureScorePct . '%' : 'Keine Daten'],
+                     'hint'  => $secureScorePct !== null ? $secureScorePct . '%' : t('Keine Daten')],
                 ];
                 foreach ($secItems as $item):
                     $noData = ($item['val'] === '–' || str_contains((string)$item['val'], 'text-muted'));
@@ -275,7 +275,7 @@ $ext = $extended ?? [];
                 <?php endforeach ?>
                 <div class="px-3 pt-3 pb-2">
                     <a href="/securityposture" class="btn btn-sm btn-outline-secondary w-100">
-                        <i class="bi bi-shield-fill-check me-1"></i>Security Posture öffnen
+                        <i class="bi bi-shield-fill-check me-1"></i><?= te('Security Posture öffnen') ?>
                     </a>
                 </div>
             </div>
@@ -291,20 +291,20 @@ $ext = $extended ?? [];
         <div class="content-card h-100">
             <div class="card-header-custom">
                 <i class="bi bi-person-lines-fill text-primary"></i>
-                <h6>Verzeichnis &amp; Identitäten</h6>
+                <h6><?= te('Verzeichnis & Identitäten') ?></h6>
             </div>
             <div class="card-body-custom p-0">
                 <?php
                 $dirItems = [
-                    ['label' => 'Gastbenutzer',       'href' => '/guestusers',   'val' => $ext['guests'],           'warn' => ($ext['guests'] ?? 0) > 20],
-                    ['label' => 'Admin-Zuweisungen',  'href' => '/adminroles',   'val' => $ext['admin_assignments'],'warn' => ($ext['admin_assignments'] ?? 0) > 20],
-                    ['label' => 'Teams im Tenant',    'href' => '/teamspolicies','val' => $ext['teams_count'],      'warn' => false],
-                    ['label' => 'Gruppen gesamt',     'href' => '/groups',       'val' => $metrics['total_groups'], 'warn' => false],
-                    ['label' => 'Inaktive Konten',    'href' => '/staleaccounts','val' => null,                     'warn' => false],
+                    ['label' => t('Gastbenutzer'),       'href' => '/guestusers',   'val' => $ext['guests'],           'warn' => ($ext['guests'] ?? 0) > 20],
+                    ['label' => t('Admin-Zuweisungen'),  'href' => '/adminroles',   'val' => $ext['admin_assignments'],'warn' => ($ext['admin_assignments'] ?? 0) > 20],
+                    ['label' => t('Teams im Tenant'),    'href' => '/teamspolicies','val' => $ext['teams_count'],      'warn' => false],
+                    ['label' => t('Gruppen gesamt'),     'href' => '/groups',       'val' => $metrics['total_groups'], 'warn' => false],
+                    ['label' => t('Inaktive Konten'),    'href' => '/staleaccounts','val' => null,                     'warn' => false],
                 ];
                 foreach ($dirItems as $item):
                     $color   = ($item['val'] !== null && $item['warn']) ? '#ca8a04' : null;
-                    $display = $item['val'] !== null ? number_format((int)$item['val']) : '<span class="text-muted small">→ öffnen</span>';
+                    $display = $item['val'] !== null ? number_format((int)$item['val']) : '<span class="text-muted small">→ ' . te('öffnen') . '</span>';
                 ?>
                 <a href="<?= $item['href'] ?>" class="list-group-item list-group-item-action py-2 px-3 d-flex align-items-center border-0 border-bottom">
                     <span class="flex-grow-1 text-muted" style="font-size:13px;"><?= $item['label'] ?></span>
@@ -312,9 +312,9 @@ $ext = $extended ?? [];
                 </a>
                 <?php endforeach ?>
                 <div class="px-3 py-2 d-flex gap-2 flex-wrap">
-                    <a href="/users"      class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;">Benutzer</a>
-                    <a href="/guestusers" class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;">Gäste</a>
-                    <a href="/adminroles" class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;">Admin-Rollen</a>
+                    <a href="/users"      class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;"><?= te('Benutzer') ?></a>
+                    <a href="/guestusers" class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;"><?= te('Gäste') ?></a>
+                    <a href="/adminroles" class="btn btn-xs btn-outline-secondary" style="font-size:11px;padding:2px 8px;"><?= te('Admin-Rollen') ?></a>
                 </div>
             </div>
         </div>

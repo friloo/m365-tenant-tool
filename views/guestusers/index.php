@@ -10,13 +10,13 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Gäste gesamt</div>
+            <div class="metric-label"><?= te('Gäste gesamt') ?></div>
             <div class="metric-value"><?= $stats['total'] ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Ausstehende Einladung</div>
+            <div class="metric-label"><?= te('Ausstehende Einladung') ?></div>
             <div class="metric-value" style="color:<?= $stats['pending'] > 0 ? '#f59e0b' : '#111827' ?>">
                 <?= $stats['pending'] ?>
             </div>
@@ -24,7 +24,7 @@
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Inaktiv > 90 Tage</div>
+            <div class="metric-label"><?= te('Inaktiv > 90 Tage') ?></div>
             <div class="metric-value" style="color:<?= $stats['inactive_90d'] > 0 ? '#dc2626' : '#111827' ?>">
                 <?= $stats['inactive_90d'] ?>
             </div>
@@ -32,7 +32,7 @@
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Nie angemeldet</div>
+            <div class="metric-label"><?= te('Nie angemeldet') ?></div>
             <div class="metric-value" style="color:<?= $stats['never_signed_in'] > 0 ? '#dc2626' : '#111827' ?>">
                 <?= $stats['never_signed_in'] ?>
             </div>
@@ -43,19 +43,19 @@
 <?php if ($stats['inactive_90d'] > 0 || $stats['never_signed_in'] > 0): ?>
     <div class="alert alert-warning mb-4">
         <i class="bi bi-exclamation-triangle me-2"></i>
-        <strong><?= $stats['inactive_90d'] + $stats['never_signed_in'] ?> inaktive Gastbenutzer</strong> —
-        Diese sollten überprüft und ggf. entfernt werden.
+        <strong><?= te(':n inaktive Gastbenutzer', ['n' => $stats['inactive_90d'] + $stats['never_signed_in']]) ?></strong> —
+        <?= te('Diese sollten überprüft und ggf. entfernt werden.') ?>
     </div>
 <?php endif; ?>
 
 <div class="content-card">
     <div class="table-toolbar">
-        <input type="text" id="guestSearch" class="search-box" placeholder="Gast suchen…">
+        <input type="text" id="guestSearch" class="search-box" placeholder="<?= te('Gast suchen…') ?>">
         <select id="stateFilter" class="form-select form-select-sm ms-2" style="max-width:180px;" onchange="filterGuests()">
-            <option value="">Alle</option>
-            <option value="pending">Ausstehend</option>
-            <option value="inactive">Inaktiv > 90 Tage</option>
-            <option value="never">Nie angemeldet</option>
+            <option value=""><?= te('Alle') ?></option>
+            <option value="pending"><?= te('Ausstehend') ?></option>
+            <option value="inactive"><?= te('Inaktiv > 90 Tage') ?></option>
+            <option value="never"><?= te('Nie angemeldet') ?></option>
         </select>
         <a href="/guestusers/export" class="btn btn-sm btn-outline-secondary ms-auto">
             <i class="bi bi-download me-1"></i> CSV
@@ -64,7 +64,7 @@
     <div class="table-responsive">
         <table class="data-table" id="guestTable">
             <thead>
-                <tr><th>Name</th><th>E-Mail</th><th>Einladung</th><th>Letzter Login</th><th>Status</th><th></th></tr>
+                <tr><th><?= te('Name') ?></th><th><?= te('E-Mail') ?></th><th><?= te('Einladung') ?></th><th><?= te('Letzter Login') ?></th><th><?= te('Status') ?></th><th></th></tr>
             </thead>
             <tbody>
                 <?php
@@ -82,9 +82,9 @@
                     <td style="font-size:12px;color:#6b7280;"><?= $e($g['mail'] ?? $g['userPrincipalName'] ?? '') ?></td>
                     <td>
                         <?php if ($isPending): ?>
-                            <span class="badge-warning">Ausstehend</span>
+                            <span class="badge-warning"><?= te('Ausstehend') ?></span>
                         <?php else: ?>
-                            <span class="badge-enabled">Akzeptiert</span>
+                            <span class="badge-enabled"><?= te('Akzeptiert') ?></span>
                         <?php endif; ?>
                     </td>
                     <td style="font-size:12px;">
@@ -94,31 +94,31 @@
                                 <span class="badge-disabled ms-1"><?= $daysAgo ?>d</span>
                             <?php endif; ?>
                         <?php else: ?>
-                            <span class="badge-warning">Nie</span>
+                            <span class="badge-warning"><?= te('Nie') ?></span>
                         <?php endif; ?>
                     </td>
                     <td>
                         <?php if ($g['accountEnabled'] ?? true): ?>
-                            <span class="badge-enabled">Aktiv</span>
+                            <span class="badge-enabled"><?= te('Aktiv') ?></span>
                         <?php else: ?>
-                            <span class="badge-disabled">Deaktiviert</span>
+                            <span class="badge-disabled"><?= te('Deaktiviert') ?></span>
                         <?php endif; ?>
                     </td>
                     <td>
                         <div class="d-flex gap-1">
                             <?php if ($g['accountEnabled'] ?? true): ?>
                                 <form method="post" action="/guestusers/<?= $e($g['id']) ?>/disable"
-                                      onsubmit="return confirm('Gastbenutzer deaktivieren?')" class="mb-0">
+                                      onsubmit="return confirm(<?= $e(json_encode(t('Gastbenutzer deaktivieren?'), JSON_UNESCAPED_UNICODE)) ?>)" class="mb-0">
                                     <?= \App\Core\Csrf::field() ?>
-                                    <button type="submit" class="btn btn-xs btn-outline-warning py-0 px-2" style="font-size:11px;" title="Deaktivieren">
+                                    <button type="submit" class="btn btn-xs btn-outline-warning py-0 px-2" style="font-size:11px;" title="<?= te('Deaktivieren') ?>">
                                         <i class="bi bi-person-x"></i>
                                     </button>
                                 </form>
                             <?php endif; ?>
                             <form method="post" action="/guestusers/<?= $e($g['id']) ?>/remove"
-                                  onsubmit="return confirm('Gastbenutzer wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')" class="mb-0">
+                                  onsubmit="return confirm(<?= $e(json_encode(t('Gastbenutzer wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.'), JSON_UNESCAPED_UNICODE)) ?>)" class="mb-0">
                                 <?= \App\Core\Csrf::field() ?>
-                                <button type="submit" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size:11px;" title="Löschen">
+                                <button type="submit" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size:11px;" title="<?= te('Löschen') ?>">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </form>
@@ -127,7 +127,7 @@
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($guests)): ?>
-                    <tr><td colspan="6" class="text-center text-muted py-4">Keine Gastbenutzer gefunden</td></tr>
+                    <tr><td colspan="6" class="text-center text-muted py-4"><?= te('Keine Gastbenutzer gefunden') ?></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

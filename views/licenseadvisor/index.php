@@ -12,12 +12,12 @@ $criteriaIcons = [
     'intune'          => 'bi-phone',
 ];
 $criteriaDesc = [
-    'exchange_online' => 'Postfach, Kalender und E-Mail-Funktionen über Exchange Online.',
-    'office_desktop'  => 'Installierbare Office-Apps (Word, Excel, PowerPoint, …).',
-    'teams'           => 'Microsoft Teams für Chat, Meetings und Zusammenarbeit.',
-    'sharepoint'      => 'SharePoint Online – Intranets, Dokumentenbibliotheken.',
-    'onedrive'        => 'OneDrive for Business – persönlicher Cloud-Speicher.',
-    'intune'          => 'Intune / Mobile Device Management für Geräteverwaltung.',
+    'exchange_online' => t('Postfach, Kalender und E-Mail-Funktionen über Exchange Online.'),
+    'office_desktop'  => t('Installierbare Office-Apps (Word, Excel, PowerPoint, …).'),
+    'teams'           => t('Microsoft Teams für Chat, Meetings und Zusammenarbeit.'),
+    'sharepoint'      => t('SharePoint Online – Intranets, Dokumentenbibliotheken.'),
+    'onedrive'        => t('OneDrive for Business – persönlicher Cloud-Speicher.'),
+    'intune'          => t('Intune / Mobile Device Management für Geräteverwaltung.'),
 ];
 
 $covered       = $analysis['covered']         ?? [];

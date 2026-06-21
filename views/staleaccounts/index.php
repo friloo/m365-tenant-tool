@@ -9,25 +9,25 @@
 
 <!-- Days filter -->
 <div class="d-flex align-items-center gap-2 mb-4">
-    <label for="staleDaysSelect" style="font-size:13px;font-weight:500;white-space:nowrap;">Inaktiv seit mehr als:</label>
+    <label for="staleDaysSelect" style="font-size:13px;font-weight:500;white-space:nowrap;"><?= te('Inaktiv seit mehr als:') ?></label>
     <form method="GET" action="/staleaccounts" class="d-flex align-items-center gap-2">
         <select name="stale_days" id="staleDaysSelect" class="form-select form-select-sm" style="width:auto;"
                 onchange="this.form.submit()">
             <?php foreach ([30, 60, 90, 120, 180] as $d): ?>
-                <option value="<?= $d ?>" <?= $d === $days ? 'selected' : '' ?>><?= $d ?> Tage</option>
+                <option value="<?= $d ?>" <?= $d === $days ? 'selected' : '' ?>><?= te(':n Tage', ['n' => $d]) ?></option>
             <?php endforeach; ?>
         </select>
     </form>
     <a href="/staleaccounts/export?stale_days=<?= $days ?>" class="btn btn-sm btn-outline-secondary ms-auto">
-        <i class="bi bi-download me-1"></i>CSV Export
+        <i class="bi bi-download me-1"></i><?= te('CSV Export') ?>
     </a>
 </div>
 
 <?php if ($stats['withLicenses'] > 0): ?>
     <div class="alert alert-warning mb-4">
         <i class="bi bi-currency-dollar me-2"></i>
-        <strong><?= $stats['withLicenses'] ?> Benutzer mit Lizenzen sind seit &gt;<?= $days ?> Tagen inaktiv</strong> —
-        geschätzte <?= $stats['costRisk'] ?> Lizenz-Einheiten könnten freigegeben werden.
+        <strong><?= te(':n Benutzer mit Lizenzen sind seit >:days Tagen inaktiv', ['n' => $stats['withLicenses'], 'days' => $days]) ?></strong> —
+        <?= te('geschätzte :n Lizenz-Einheiten könnten freigegeben werden.', ['n' => $stats['costRisk']]) ?>
     </div>
 <?php endif; ?>
 
@@ -35,38 +35,38 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Inaktive Konten</div>
+            <div class="metric-label"><?= te('Inaktive Konten') ?></div>
             <div class="metric-value" style="color:<?= $stats['total'] > 0 ? '#d97706' : '#111827' ?>;">
                 <?= $stats['total'] ?>
             </div>
-            <div class="metric-sub">Seit &gt;<?= $days ?> Tagen</div>
+            <div class="metric-sub"><?= te('Seit >:n Tagen', ['n' => $days]) ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Mit Lizenzen</div>
+            <div class="metric-label"><?= te('Mit Lizenzen') ?></div>
             <div class="metric-value" style="color:<?= $stats['withLicenses'] > 0 ? '#dc2626' : '#16a34a' ?>;">
                 <?= $stats['withLicenses'] ?>
             </div>
-            <div class="metric-sub">Verschwendetes Budget</div>
+            <div class="metric-sub"><?= te('Verschwendetes Budget') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Nie angemeldet</div>
+            <div class="metric-label"><?= te('Nie angemeldet') ?></div>
             <div class="metric-value" style="color:<?= $stats['neverSignedIn'] > 0 ? '#d97706' : '#111827' ?>;">
                 <?= $stats['neverSignedIn'] ?>
             </div>
-            <div class="metric-sub">Kein Login-Verlauf</div>
+            <div class="metric-sub"><?= te('Kein Login-Verlauf') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Kostenrisiko</div>
+            <div class="metric-label"><?= te('Kostenrisiko') ?></div>
             <div class="metric-value" style="color:<?= $stats['costRisk'] > 0 ? '#dc2626' : '#16a34a' ?>;">
                 <?= $stats['costRisk'] ?>
             </div>
-            <div class="metric-sub">Lizenzeinheiten freigab.</div>
+            <div class="metric-sub"><?= te('Lizenzeinheiten freigab.') ?></div>
         </div>
     </div>
 </div>
@@ -77,7 +77,7 @@
         <button class="nav-link active" id="stale-tab" data-bs-toggle="tab" data-bs-target="#stale-panel"
                 type="button" role="tab">
             <i class="bi bi-person-slash me-1"></i>
-            Inaktive Konten
+            <?= te('Inaktive Konten') ?>
             <span class="badge bg-secondary ms-1"><?= $stats['total'] ?></span>
         </button>
     </li>
@@ -85,7 +85,7 @@
         <button class="nav-link" id="log-tab" data-bs-toggle="tab" data-bs-target="#log-panel"
                 type="button" role="tab">
             <i class="bi bi-journal-text me-1"></i>
-            Protokoll
+            <?= te('Protokoll') ?>
             <span class="badge bg-secondary ms-1"><?= count($log) ?></span>
         </button>
     </li>
@@ -97,21 +97,21 @@
     <div class="tab-pane fade show active" id="stale-panel" role="tabpanel">
         <div class="content-card">
             <div class="table-toolbar">
-                <input type="text" id="staleSearch" class="search-box" placeholder="Benutzer suchen…">
+                <input type="text" id="staleSearch" class="search-box" placeholder="<?= te('Benutzer suchen…') ?>">
             </div>
             <div class="table-responsive">
                 <table class="data-table" id="staleTable">
                     <thead>
                         <tr>
                             <th style="width:40px;"></th>
-                            <th>Name</th>
-                            <th>UPN</th>
-                            <th>Abteilung</th>
-                            <th>Inaktiv (Tage)</th>
-                            <th>Lizenzen</th>
-                            <th>Letzter Login</th>
+                            <th><?= te('Name') ?></th>
+                            <th><?= te('UPN') ?></th>
+                            <th><?= te('Abteilung') ?></th>
+                            <th><?= te('Inaktiv (Tage)') ?></th>
+                            <th><?= te('Lizenzen') ?></th>
+                            <th><?= te('Letzter Login') ?></th>
                             <?php if (LocalAuth::isAdmin()): ?>
-                                <th>Aktion</th>
+                                <th><?= te('Aktion') ?></th>
                             <?php endif; ?>
                         </tr>
                     </thead>

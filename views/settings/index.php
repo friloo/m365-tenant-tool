@@ -63,17 +63,17 @@
             <?= \App\Core\Csrf::field() ?>
 
         <nav class="settings-tabs" role="tablist">
-            <button type="button" data-tab-target="allgemein"        class="active"><i class="bi bi-sliders"></i>Allgemein</button>
-            <button type="button" data-tab-target="benachrichtigungen"><i class="bi bi-bell"></i>Benachrichtigungen</button>
-            <button type="button" data-tab-target="governance"      ><i class="bi bi-shield-check"></i>Governance</button>
-            <button type="button" data-tab-target="ki"              ><i class="bi bi-robot"></i>KI &amp; Lizenzen</button>
+            <button type="button" data-tab-target="allgemein"        class="active"><i class="bi bi-sliders"></i><?= te('Allgemein') ?></button>
+            <button type="button" data-tab-target="benachrichtigungen"><i class="bi bi-bell"></i><?= te('Benachrichtigungen') ?></button>
+            <button type="button" data-tab-target="governance"      ><i class="bi bi-shield-check"></i><?= te('Governance') ?></button>
+            <button type="button" data-tab-target="ki"              ><i class="bi bi-robot"></i><?= te('KI & Lizenzen') ?></button>
         </nav>
 
         <!-- KI-Sicherheitsberater -->
         <div class="content-card mb-4" data-tab="ki" id="ai-advisor">
             <div class="card-header-custom">
                 <i class="bi bi-robot text-primary"></i>
-                <h6>KI-Sicherheitsberater</h6>
+                <h6><?= te('KI-Sicherheitsberater') ?></h6>
             </div>
             <div class="card-body-custom">
                 <div class="row g-3">
@@ -84,61 +84,61 @@
                                    <?= ($s['ai_enabled'] ?? '0') === '1' ? 'checked' : '' ?>
                                    onchange="document.getElementById('aiOptions').style.display=this.checked?'block':'none'">
                             <label class="form-check-label fw-semibold" for="aiEnabled">
-                                KI-Sicherheitsanalyse aktivieren
+                                <?= te('KI-Sicherheitsanalyse aktivieren') ?>
                             </label>
                         </div>
                         <div class="text-muted small mt-1">
                             <i class="bi bi-shield-check me-1 text-success"></i>
-                            Es werden ausschließlich anonymisierte Metriken (Zahlen, Prozentsätze) übertragen — niemals Benutzernamen, UPNs, Tenant-ID oder Domainnamen.
+                            <?= te('Es werden ausschließlich anonymisierte Metriken (Zahlen, Prozentsätze) übertragen — niemals Benutzernamen, UPNs, Tenant-ID oder Domainnamen.') ?>
                         </div>
                     </div>
 
                     <div id="aiOptions" <?= ($s['ai_enabled'] ?? '0') !== '1' ? 'style="display:none"' : '' ?>>
                         <div class="row g-3 mt-0">
                             <div class="col-md-3">
-                                <label class="form-label fw-medium">Anbieter</label>
+                                <label class="form-label fw-medium"><?= te('Anbieter') ?></label>
                                 <select name="ai_provider" id="aiProvider" class="form-select" onchange="updateAiDefaults()">
                                     <option value="openai"   <?= ($s['ai_provider'] ?? '') === 'openai'   ? 'selected' : '' ?>>OpenAI</option>
                                     <option value="deepseek" <?= ($s['ai_provider'] ?? '') === 'deepseek' ? 'selected' : '' ?>>DeepSeek</option>
-                                    <option value="ollama"   <?= ($s['ai_provider'] ?? '') === 'ollama'   ? 'selected' : '' ?>>Ollama (lokal)</option>
+                                    <option value="ollama"   <?= ($s['ai_provider'] ?? '') === 'ollama'   ? 'selected' : '' ?>><?= te('Ollama (lokal)') ?></option>
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label fw-medium">Modell</label>
+                                <label class="form-label fw-medium"><?= te('Modell') ?></label>
                                 <input type="text" name="ai_model" id="aiModel" class="form-control"
                                        value="<?= htmlspecialchars($s['ai_model'] ?? '') ?>"
                                        placeholder="gpt-4o-mini">
-                                <div class="form-text" id="aiModelHint">Leer = Standard des Anbieters</div>
+                                <div class="form-text" id="aiModelHint"><?= te('Leer = Standard des Anbieters') ?></div>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-medium">API-Key</label>
                                 <input type="password" name="ai_api_key" class="form-control"
-                                       placeholder="Leer = keine Änderung" autocomplete="new-password">
-                                <div class="form-text">Wird verschlüsselt gespeichert</div>
+                                       placeholder="<?= te('Leer = keine Änderung') ?>" autocomplete="new-password">
+                                <div class="form-text"><?= te('Wird verschlüsselt gespeichert') ?></div>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label fw-medium">Cache-Dauer</label>
+                                <label class="form-label fw-medium"><?= te('Cache-Dauer') ?></label>
                                 <select name="ai_cache_hours" class="form-select">
-                                    <?php foreach ([1 => '1 Std.', 4 => '4 Std.', 12 => '12 Std.', 24 => '24 Std.', 48 => '48 Std.'] as $h => $l): ?>
+                                    <?php foreach ([1 => t('1 Std.'), 4 => t('4 Std.'), 12 => t('12 Std.'), 24 => t('24 Std.'), 48 => t('48 Std.')] as $h => $l): ?>
                                         <option value="<?= $h ?>" <?= (int)($s['ai_cache_hours'] ?? 24) === $h ? 'selected' : '' ?>><?= $l ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="col-md-6" id="aiBaseUrlRow">
-                                <label class="form-label fw-medium">Basis-URL <span class="text-muted">(optional)</span></label>
+                                <label class="form-label fw-medium"><?= te('Basis-URL') ?> <span class="text-muted">(<?= te('optional') ?>)</span></label>
                                 <input type="url" name="ai_base_url" class="form-control"
                                        value="<?= htmlspecialchars($s['ai_base_url'] ?? '') ?>"
                                        placeholder="http://localhost:11434">
-                                <div class="form-text" id="aiBaseUrlHint">Für Ollama oder eigene OpenAI-kompatible Endpunkte</div>
+                                <div class="form-text" id="aiBaseUrlHint"><?= te('Für Ollama oder eigene OpenAI-kompatible Endpunkte') ?></div>
                             </div>
                             <div class="col-md-6 d-flex align-items-end gap-2">
                                 <a href="/ai" class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-robot me-1"></i> Zum KI-Berater
+                                    <i class="bi bi-robot me-1"></i> <?= te('Zum KI-Berater') ?>
                                 </a>
                                 <button type="button" class="btn btn-outline-secondary btn-sm"
                                         data-bs-toggle="modal" data-bs-target="#aiProtocolModal"
                                         onclick="loadAiProtocol()">
-                                    <i class="bi bi-file-earmark-text me-1"></i> Protokoll anzeigen
+                                    <i class="bi bi-file-earmark-text me-1"></i> <?= te('Protokoll anzeigen') ?>
                                 </button>
                             </div>
                         </div>
@@ -154,25 +154,23 @@
               <div class="modal-header">
                 <h5 class="modal-title">
                   <i class="bi bi-file-earmark-text me-2 text-primary"></i>
-                  KI-Protokoll &mdash; zuletzt gesendete Daten
+                  <?= te('KI-Protokoll — zuletzt gesendete Daten') ?>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
               </div>
               <div class="modal-body">
                 <div class="alert alert-success small mb-3">
                   <i class="bi bi-shield-check me-1"></i>
-                  <strong>Datenschutz:</strong> Es werden ausschließlich aggregierte, anonymisierte Metriken
-                  (Zahlen, Prozentsätze) übertragen. Keine UPNs, keine Namen, keine Tenant-ID, keine Domains,
-                  keine SKU-Bezeichnungen, keine Geräte-Namen.
+                  <strong><?= te('Datenschutz:') ?></strong> <?= te('Es werden ausschließlich aggregierte, anonymisierte Metriken (Zahlen, Prozentsätze) übertragen. Keine UPNs, keine Namen, keine Tenant-ID, keine Domains, keine SKU-Bezeichnungen, keine Geräte-Namen.') ?>
                 </div>
                 <div id="aiProtocolBody">
                   <div class="text-center py-4 text-muted">
-                    <div class="spinner-border spinner-border-sm me-2"></div>Lade Protokoll&hellip;
+                    <div class="spinner-border spinner-border-sm me-2"></div><?= te('Lade Protokoll…') ?>
                   </div>
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= te('Schließen') ?></button>
               </div>
             </div>
           </div>

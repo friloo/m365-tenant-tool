@@ -17,32 +17,32 @@ $fmtBytes = function (int $bytes): string {
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Postfächer gesamt</div>
+            <div class="metric-label"><?= te('Postfächer gesamt') ?></div>
             <div class="metric-value"><?= number_format($stats['total']) ?></div>
-            <div class="metric-sub">aktive Postfächer</div>
+            <div class="metric-sub"><?= te('aktive Postfächer') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Gesamter Speicher</div>
+            <div class="metric-label"><?= te('Gesamter Speicher') ?></div>
             <div class="metric-value" style="font-size:1.6rem;"><?= $fmtBytes($stats['totalBytes']) ?></div>
-            <div class="metric-sub">Ø <?= $fmtBytes($stats['avgBytes']) ?> pro Postfach</div>
+            <div class="metric-sub"><?= te('Ø :size pro Postfach', ['size' => $fmtBytes($stats['avgBytes'])]) ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Postfächer &gt; 50 GB</div>
+            <div class="metric-label"><?= te('Postfächer &gt; 50 GB') ?></div>
             <div class="metric-value" style="color:<?= $stats['over50GB'] > 0 ? '#d97706' : '#111827' ?>;">
                 <?= number_format($stats['over50GB']) ?>
             </div>
-            <div class="metric-sub">nahe Quota-Limit</div>
+            <div class="metric-sub"><?= te('nahe Quota-Limit') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Nie genutzt (&lt; 1 GB)</div>
+            <div class="metric-label"><?= te('Nie genutzt (&lt; 1 GB)') ?></div>
             <div class="metric-value"><?= number_format($stats['under1GB']) ?></div>
-            <div class="metric-sub">sehr kleiner Speicher</div>
+            <div class="metric-sub"><?= te('sehr kleiner Speicher') ?></div>
         </div>
     </div>
 </div>
@@ -55,13 +55,13 @@ $fmtBytes = function (int $bytes): string {
         if (!empty($diag)) {
             $diagStyle = 'empty';
             $diagIcon  = 'envelope-x';
-            $diagTitle = 'Keine Postfachdaten verfügbar';
+            $diagTitle = t('Keine Postfachdaten verfügbar');
             include BASE_PATH . '/views/partials/graph_diagnostic.php';
         } else { ?>
             <div class="empty-state">
                 <i class="bi bi-envelope-x text-muted" style="font-size:2.5rem;"></i>
-                <p class="mt-3 mb-1 fw-medium">Keine Postfachdaten verfügbar</p>
-                <p class="text-muted small">Es wurden keine Postfächer im Tenant gefunden.</p>
+                <p class="mt-3 mb-1 fw-medium"><?= te('Keine Postfachdaten verfügbar') ?></p>
+                <p class="text-muted small"><?= te('Es wurden keine Postfächer im Tenant gefunden.') ?></p>
             </div>
         <?php } ?>
     </div>
@@ -71,15 +71,15 @@ $fmtBytes = function (int $bytes): string {
 <!-- Table card -->
 <div class="content-card">
     <div class="table-toolbar">
-        <input type="text" id="mbSearch" class="search-box" placeholder="Postfach suchen…">
+        <input type="text" id="mbSearch" class="search-box" placeholder="<?= te('Postfach suchen…') ?>">
         <?php if (\App\Auth\LocalAuth::isAdmin()): ?>
         <button type="button" class="btn btn-sm btn-primary ms-2"
                 data-bs-toggle="modal" data-bs-target="#createSharedMailboxModal">
-            <i class="bi bi-plus-circle me-1"></i>Shared Mailbox anlegen
+            <i class="bi bi-plus-circle me-1"></i><?= te('Shared Mailbox anlegen') ?>
         </button>
         <?php endif; ?>
         <a href="/mailboxes/export" class="btn btn-sm btn-outline-secondary ms-auto">
-            <i class="bi bi-download"></i> CSV Export
+            <i class="bi bi-download"></i> <?= te('CSV Export') ?>
         </a>
     </div>
 
@@ -87,14 +87,14 @@ $fmtBytes = function (int $bytes): string {
         <table class="data-table" id="mbTable">
             <thead>
                 <tr>
-                    <th>Anzeigename</th>
-                    <th>UPN</th>
-                    <th class="text-end">Größe</th>
-                    <th class="text-end">Elemente</th>
-                    <th class="text-end">Gel. Elemente</th>
-                    <th class="text-end">Gel. Größe</th>
-                    <th>Weiterleitung</th>
-                    <th>Speicherauslastung</th>
+                    <th><?= te('Anzeigename') ?></th>
+                    <th><?= te('UPN') ?></th>
+                    <th class="text-end"><?= te('Größe') ?></th>
+                    <th class="text-end"><?= te('Elemente') ?></th>
+                    <th class="text-end"><?= te('Gel. Elemente') ?></th>
+                    <th class="text-end"><?= te('Gel. Größe') ?></th>
+                    <th><?= te('Weiterleitung') ?></th>
+                    <th><?= te('Speicherauslastung') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -120,7 +120,7 @@ $fmtBytes = function (int $bytes): string {
                                 <?= $e($u['displayName']) ?>
                             <?php endif; ?>
                             <?php if ($u['isDeleted']): ?>
-                                <span class="badge-neutral ms-1">Gelöscht</span>
+                                <span class="badge-neutral ms-1"><?= te('Gelöscht') ?></span>
                             <?php endif; ?>
                         </td>
                         <td style="font-size:12px;color:#6b7280;">
@@ -147,7 +147,7 @@ $fmtBytes = function (int $bytes): string {
                         <td style="font-size:12px;">
                             <?php if ($fwdAddr !== ''): ?>
                                 <span class="badge-warning badge-pill" title="<?= $e($fwdAddr) ?>">
-                                    <i class="bi bi-forward-fill me-1"></i>Weiterleitung aktiv &rarr; <?= $e($fwdAddr) ?>
+                                    <i class="bi bi-forward-fill me-1"></i><?= t('Weiterleitung aktiv &rarr; :addr', ['addr' => $e($fwdAddr)]) ?>
                                 </span>
                             <?php else: ?>
                                 <span class="text-muted">—</span>
@@ -177,35 +177,35 @@ $fmtBytes = function (int $bytes): string {
                 <?= \App\Core\Csrf::field() ?>
                 <div class="modal-header">
                     <h5 class="modal-title" id="createSharedMailboxModalLabel">
-                        <i class="bi bi-envelope-plus me-2 text-primary"></i>Shared Mailbox anlegen
+                        <i class="bi bi-envelope-plus me-2 text-primary"></i><?= te('Shared Mailbox anlegen') ?>
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?= te('Schließen') ?>"></button>
                 </div>
                 <div class="modal-body">
 
                     <div class="mb-3">
                         <label for="smb_display_name" class="form-label form-label-sm fw-medium">
-                            Anzeigename <span class="text-danger">*</span>
+                            <?= te('Anzeigename') ?> <span class="text-danger">*</span>
                         </label>
                         <input type="text" class="form-control form-control-sm"
                                id="smb_display_name" name="display_name"
-                               required placeholder="z.B. Buchhaltung">
+                               required placeholder="<?= te('z.B. Buchhaltung') ?>">
                     </div>
 
                     <div class="mb-3">
                         <label for="smb_alias" class="form-label form-label-sm fw-medium">
-                            Alias <span class="text-danger">*</span>
+                            <?= te('Alias') ?> <span class="text-danger">*</span>
                         </label>
                         <input type="text" class="form-control form-control-sm"
                                id="smb_alias" name="alias"
-                               required placeholder="z.B. buchhaltung"
+                               required placeholder="<?= te('z.B. buchhaltung') ?>"
                                pattern="[a-z0-9\-]+"
-                               title="Nur Kleinbuchstaben, Ziffern und Bindestriche">
+                               title="<?= te('Nur Kleinbuchstaben, Ziffern und Bindestriche') ?>">
                     </div>
 
                     <div class="mb-3">
                         <label for="smb_domain" class="form-label form-label-sm fw-medium">
-                            Domain <span class="text-danger">*</span>
+                            <?= te('Domain') ?> <span class="text-danger">*</span>
                         </label>
                         <input type="text" class="form-control form-control-sm"
                                id="smb_domain" name="domain"
@@ -215,24 +215,23 @@ $fmtBytes = function (int $bytes): string {
                     <div class="mb-3">
                         <p class="text-muted small mb-0">
                             <i class="bi bi-arrow-right-circle me-1"></i>
-                            Ergebnis-Adresse:
+                            <?= te('Ergebnis-Adresse:') ?>
                             <strong id="smb_preview" class="text-primary">—</strong>
                         </p>
                     </div>
 
                     <div class="alert alert-warning py-2 px-3 mb-0" style="font-size:12px;">
                         <i class="bi bi-info-circle me-1"></i>
-                        Das Konto wird ohne interaktiven Login-Zugriff angelegt
-                        (<code>accountEnabled=false</code>). Exchange Online stellt das
-                        Postfach innerhalb weniger Minuten bereit.
+                        <?= te('Das Konto wird ohne interaktiven Login-Zugriff angelegt') ?>
+                        (<code>accountEnabled=false</code>). <?= te('Exchange Online stellt das Postfach innerhalb weniger Minuten bereit.') ?>
                     </div>
 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-outline-secondary"
-                            data-bs-dismiss="modal">Abbrechen</button>
+                            data-bs-dismiss="modal"><?= te('Abbrechen') ?></button>
                     <button type="submit" class="btn btn-sm btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i>Anlegen
+                        <i class="bi bi-plus-circle me-1"></i><?= te('Anlegen') ?>
                     </button>
                 </div>
             </form>

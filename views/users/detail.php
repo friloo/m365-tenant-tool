@@ -1,7 +1,7 @@
 <?php use App\Core\View; use App\Auth\LocalAuth; use App\Core\Config; $e = fn($v) => View::escape($v); ?>
 
 <div class="mb-3">
-    <a href="/users" class="text-muted text-decoration-none small">← Zurück zu Benutzer</a>
+    <a href="/users" class="text-muted text-decoration-none small">← <?= te('Zurück zu Benutzer') ?></a>
 </div>
 
 <?php if (!empty($flash)): ?>
@@ -28,19 +28,19 @@ if ($lastPwChange) {
 }
 
 if ($neverExpires) {
-    $pwExpiryLabel = 'Läuft nicht ab';
+    $pwExpiryLabel = t('Läuft nicht ab');
     $pwExpiryClass = 'text-muted';
 } elseif ($lastPwChange) {
     $expiryTs   = strtotime($lastPwChange) + ($expiryDays * 86400);
     $daysLeft   = (int) ceil(($expiryTs - time()) / 86400);
     if ($daysLeft <= 0) {
-        $pwExpiryLabel = 'Abgelaufen';
+        $pwExpiryLabel = t('Abgelaufen');
         $pwExpiryClass = 'text-danger fw-semibold';
     } elseif ($daysLeft <= 14) {
-        $pwExpiryLabel = "Läuft in {$daysLeft} Tag(en) ab";
+        $pwExpiryLabel = t('Läuft in :n Tag(en) ab', ['n' => $daysLeft]);
         $pwExpiryClass = 'text-danger fw-semibold';
     } elseif ($daysLeft <= 30) {
-        $pwExpiryLabel = "Läuft in {$daysLeft} Tag(en) ab";
+        $pwExpiryLabel = t('Läuft in :n Tag(en) ab', ['n' => $daysLeft]);
         $pwExpiryClass = 'text-warning fw-semibold';
     } else {
         $pwExpiryLabel = date('d.m.Y', $expiryTs);
@@ -65,14 +65,14 @@ if ($neverExpires) {
                 <div class="mt-3 mb-2">
                     <?php $enabled = $user['accountEnabled'] ?? true; ?>
                     <?php if ($enabled): ?>
-                        <span class="badge-enabled">Aktiv</span>
+                        <span class="badge-enabled"><?= te('Aktiv') ?></span>
                     <?php else: ?>
-                        <span class="badge-disabled">Deaktiviert</span>
+                        <span class="badge-disabled"><?= te('Deaktiviert') ?></span>
                     <?php endif; ?>
                 </div>
                 <div class="mt-2">
                     <a href="/users/<?= $e($user['id']) ?>/edit" class="btn btn-sm btn-outline-primary">
-                        <i class="bi bi-pencil me-1"></i>Bearbeiten
+                        <i class="bi bi-pencil me-1"></i><?= te('Bearbeiten') ?>
                     </a>
                 </div>
             </div>
@@ -83,7 +83,7 @@ if ($neverExpires) {
                     <?php foreach (['E-Mail' => $user['mail'] ?? null, 'Abteilung' => $user['department'] ?? null, 'Telefon' => $user['mobilePhone'] ?? null, 'Standort' => $user['usageLocation'] ?? null, 'Erstellt' => isset($user['createdDateTime']) ? date('d.m.Y', strtotime($user['createdDateTime'])) : null] as $label => $val):
                         if (!$val) continue; ?>
                         <tr>
-                            <td class="text-muted small"><?= $label ?></td>
+                            <td class="text-muted small"><?= te($label) ?></td>
                             <td class="small fw-medium"><?= $e($val) ?></td>
                         </tr>
                     <?php endforeach; ?>
@@ -91,16 +91,16 @@ if ($neverExpires) {
                     <!-- Password info row -->
                     <?php if ($pwDateFormatted || $pwExpiryLabel): ?>
                         <tr>
-                            <td class="text-muted small">Passwort geändert</td>
+                            <td class="text-muted small"><?= te('Passwort geändert') ?></td>
                             <td class="small fw-medium"><?= $e($pwDateFormatted ?? '–') ?></td>
                         </tr>
                         <?php if ($pwExpiryLabel): ?>
                         <tr>
-                            <td class="text-muted small">Passwort-Ablauf</td>
+                            <td class="text-muted small"><?= te('Passwort-Ablauf') ?></td>
                             <td class="small <?= $pwExpiryClass ?>">
                                 <?= $e($pwExpiryLabel) ?>
                                 <?php if ($onPremSync): ?>
-                                    <br><span class="text-muted" style="font-size:10px;">Reset nur im lokalen AD möglich</span>
+                                    <br><span class="text-muted" style="font-size:10px;"><?= te('Reset nur im lokalen AD möglich') ?></span>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -111,32 +111,32 @@ if ($neverExpires) {
 
             <!-- Actions -->
             <div class="card-body-custom border-top">
-                <h6 class="small text-muted text-uppercase mb-3">Aktionen</h6>
+                <h6 class="small text-muted text-uppercase mb-3"><?= te('Aktionen') ?></h6>
                 <div class="d-grid gap-2">
                     <!-- Toggle enable/disable -->
                     <form method="post" action="/users/<?= $e($user['id']) ?>/toggle-enabled"
-                          onsubmit="return confirm('Benutzer wirklich <?= $enabled ? 'deaktivieren' : 'aktivieren' ?>?')">
+                          onsubmit="return confirm(<?= $e(json_encode($enabled ? t('Benutzer wirklich deaktivieren?') : t('Benutzer wirklich aktivieren?'), JSON_UNESCAPED_UNICODE)) ?>)">
                         <?= \App\Core\Csrf::field() ?>
                         <button type="submit" class="btn btn-sm w-100 <?= $enabled ? 'btn-outline-warning' : 'btn-outline-success' ?>">
                             <i class="bi bi-<?= $enabled ? 'person-x' : 'person-check' ?> me-1"></i>
-                            <?= $enabled ? 'Benutzer deaktivieren' : 'Benutzer aktivieren' ?>
+                            <?= $enabled ? te('Benutzer deaktivieren') : te('Benutzer aktivieren') ?>
                         </button>
                     </form>
                     <!-- MFA Reset -->
                     <form method="post" action="/users/<?= $e($user['id']) ?>/reset-mfa"
-                          onsubmit="return confirm('MFA-Methoden für diesen Benutzer wirklich zurücksetzen? Der Benutzer muss MFA neu registrieren.')">
+                          onsubmit="return confirm(<?= $e(json_encode(t('MFA-Methoden für diesen Benutzer wirklich zurücksetzen? Der Benutzer muss MFA neu registrieren.'), JSON_UNESCAPED_UNICODE)) ?>)">
                         <?= \App\Core\Csrf::field() ?>
                         <button type="submit" class="btn btn-sm btn-outline-danger w-100">
-                            <i class="bi bi-shield-x me-1"></i> MFA zurücksetzen
+                            <i class="bi bi-shield-x me-1"></i> <?= te('MFA zurücksetzen') ?>
                         </button>
                     </form>
                     <?php if (\App\Auth\LocalAuth::isAdmin()): ?>
                     <!-- Passwort-Reset (Admin) -->
                     <form method="post" action="/users/<?= $e($user['id']) ?>/reset-password" class="mt-2"
-                          onsubmit="return confirm('Ein neues temporäres Passwort erzeugen? Der Benutzer muss es bei der nächsten Anmeldung ändern. Das Passwort wird einmalig angezeigt.')">
+                          onsubmit="return confirm(<?= $e(json_encode(t('Ein neues temporäres Passwort erzeugen? Der Benutzer muss es bei der nächsten Anmeldung ändern. Das Passwort wird einmalig angezeigt.'), JSON_UNESCAPED_UNICODE)) ?>)">
                         <?= \App\Core\Csrf::field() ?>
                         <button type="submit" class="btn btn-sm btn-outline-warning w-100">
-                            <i class="bi bi-key me-1"></i> Passwort zurücksetzen
+                            <i class="bi bi-key me-1"></i> <?= te('Passwort zurücksetzen') ?>
                         </button>
                     </form>
                     <?php endif; ?>
@@ -152,7 +152,7 @@ if ($neverExpires) {
         <div class="content-card mb-3">
             <div class="card-header-custom">
                 <i class="bi bi-award text-success"></i>
-                <h6>Lizenzen (<?= count($user['assignedLicenses'] ?? []) ?>)</h6>
+                <h6><?= te('Lizenzen') ?> (<?= count($user['assignedLicenses'] ?? []) ?>)</h6>
             </div>
             <div class="card-body-custom">
                 <?php
@@ -169,18 +169,18 @@ if ($neverExpires) {
                             <div class="d-flex align-items-center justify-content-between mb-2 p-2 rounded" style="background:#f9fafb;">
                                 <span class="small fw-medium"><?= $e($skuNameMap[$lic['skuId']] ?? $lic['skuId']) ?></span>
                                 <form method="post" action="/users/<?= $e($user['id']) ?>/remove-license"
-                                      onsubmit="return confirm('Lizenz entfernen?')" class="mb-0">
+                                      onsubmit="return confirm(<?= $e(json_encode(t('Lizenz entfernen?'), JSON_UNESCAPED_UNICODE)) ?>)" class="mb-0">
                                     <?= \App\Core\Csrf::field() ?>
                                     <input type="hidden" name="sku_id" value="<?= $e($lic['skuId']) ?>">
                                     <button type="submit" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size:11px;">
-                                        <i class="bi bi-x"></i> Entfernen
+                                        <i class="bi bi-x"></i> <?= te('Entfernen') ?>
                                     </button>
                                 </form>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 <?php else: ?>
-                    <p class="text-muted small mb-3">Keine Lizenzen zugewiesen.</p>
+                    <p class="text-muted small mb-3"><?= te('Keine Lizenzen zugewiesen.') ?></p>
                 <?php endif; ?>
 
                 <!-- Assign license -->
@@ -189,19 +189,19 @@ if ($neverExpires) {
                     <form method="post" action="/users/<?= $e($user['id']) ?>/assign-license" class="d-flex gap-2">
                         <?= \App\Core\Csrf::field() ?>
                         <select name="sku_id" class="form-select form-select-sm">
-                            <option value="">Lizenz auswählen…</option>
+                            <option value=""><?= te('Lizenz auswählen…') ?></option>
                             <?php foreach ($availableSkus as $sku): ?>
                                 <option value="<?= $e($sku['skuId']) ?>">
-                                    <?= $e($sku['name']) ?> (<?= $sku['available'] ?> verfügbar)
+                                    <?= $e($sku['name']) ?> (<?= $sku['available'] ?> <?= te('verfügbar') ?>)
                                 </option>
                             <?php endforeach; ?>
                         </select>
                         <button type="submit" class="btn btn-sm btn-primary text-nowrap">
-                            <i class="bi bi-plus me-1"></i>Zuweisen
+                            <i class="bi bi-plus me-1"></i><?= te('Zuweisen') ?>
                         </button>
                     </form>
                 <?php else: ?>
-                    <p class="text-muted small mb-0">Alle verfügbaren Lizenzen bereits zugewiesen.</p>
+                    <p class="text-muted small mb-0"><?= te('Alle verfügbaren Lizenzen bereits zugewiesen.') ?></p>
                 <?php endif; ?>
             </div>
         </div>
@@ -211,12 +211,12 @@ if ($neverExpires) {
             <ul class="nav nav-tabs px-3 pt-2" id="userDetailTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="tab-groups" data-bs-toggle="tab" data-bs-target="#pane-groups" type="button" role="tab">
-                        <i class="bi bi-diagram-3 me-1"></i>Gruppen (<?= count($groups) ?>)
+                        <i class="bi bi-diagram-3 me-1"></i><?= te('Gruppen') ?> (<?= count($groups) ?>)
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="tab-signins" data-bs-toggle="tab" data-bs-target="#pane-signins" type="button" role="tab">
-                        <i class="bi bi-clock-history me-1"></i>Anmeldungen
+                        <i class="bi bi-clock-history me-1"></i><?= te('Anmeldungen') ?>
                     </button>
                 </li>
             </ul>
@@ -226,7 +226,7 @@ if ($neverExpires) {
                 <div class="tab-pane fade show active" id="pane-groups" role="tabpanel">
                     <div class="table-responsive">
                         <table class="data-table">
-                            <thead><tr><th>Gruppe</th><th>Typ</th></tr></thead>
+                            <thead><tr><th><?= te('Gruppe') ?></th><th><?= te('Typ') ?></th></tr></thead>
                             <tbody>
                                 <?php foreach ($groups as $g): ?>
                                     <tr>
@@ -244,7 +244,7 @@ if ($neverExpires) {
                                     </tr>
                                 <?php endforeach; ?>
                                 <?php if (empty($groups)): ?>
-                                    <tr><td colspan="2" class="text-center text-muted">Keine Mitgliedschaften</td></tr>
+                                    <tr><td colspan="2" class="text-center text-muted"><?= te('Keine Mitgliedschaften') ?></td></tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>
@@ -256,19 +256,19 @@ if ($neverExpires) {
                     <?php if (empty($signIns)): ?>
                         <div class="empty-state p-4 text-center">
                             <i class="bi bi-clock-history fs-2 text-muted mb-2 d-block"></i>
-                            <p class="text-muted mb-0">Keine Anmeldedaten in den letzten 30 Tagen oder die Berechtigung <code>AuditLog.Read.All</code> fehlt. Genaue Diagnose unter <a href="/signinlog?user=<?= urlencode($user['id'] ?? '') ?>">Anmeldeprotokoll</a>.</p>
+                            <p class="text-muted mb-0"><?= te('Keine Anmeldedaten in den letzten 30 Tagen oder die Berechtigung') ?> <code>AuditLog.Read.All</code> <?= te('fehlt. Genaue Diagnose unter') ?> <a href="/signinlog?user=<?= urlencode($user['id'] ?? '') ?>"><?= te('Anmeldeprotokoll') ?></a>.</p>
                         </div>
                     <?php else: ?>
                         <div class="table-responsive">
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th>Datum/Uhrzeit</th>
-                                        <th>App</th>
-                                        <th>IP-Adresse</th>
-                                        <th>Standort</th>
-                                        <th>Gerät (OS)</th>
-                                        <th>Ergebnis</th>
+                                        <th><?= te('Datum/Uhrzeit') ?></th>
+                                        <th><?= te('App') ?></th>
+                                        <th><?= te('IP-Adresse') ?></th>
+                                        <th><?= te('Standort') ?></th>
+                                        <th><?= te('Gerät (OS)') ?></th>
+                                        <th><?= te('Ergebnis') ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -292,9 +292,9 @@ if ($neverExpires) {
                                             <td class="small"><?= $e($os) ?></td>
                                             <td>
                                                 <?php if ($success): ?>
-                                                    <span class="badge-success">Erfolgreich</span>
+                                                    <span class="badge-success"><?= te('Erfolgreich') ?></span>
                                                 <?php else: ?>
-                                                    <span class="badge-danger">Fehlgeschlagen</span>
+                                                    <span class="badge-danger"><?= te('Fehlgeschlagen') ?></span>
                                                 <?php endif; ?>
                                             </td>
                                         </tr>
@@ -313,13 +313,13 @@ if ($neverExpires) {
             <div class="card-header-custom" style="background: linear-gradient(135deg, #fff5f5 0%, #fff0e6 100%); border-bottom: 1px solid #ffd5cc;">
                 <i class="bi bi-box-arrow-right text-danger"></i>
                 <div>
-                    <h6 class="mb-0 text-danger">Cloud-Cleanup (nach AD-Deaktivierung)</h6>
-                    <p class="text-muted small mb-0">Führe diese Schritte aus, nachdem du den Benutzer im lokalen AD deaktiviert hast.</p>
+                    <h6 class="mb-0 text-danger"><?= te('Cloud-Cleanup (nach AD-Deaktivierung)') ?></h6>
+                    <p class="text-muted small mb-0"><?= te('Führe diese Schritte aus, nachdem du den Benutzer im lokalen AD deaktiviert hast.') ?></p>
                 </div>
             </div>
             <div class="card-body-custom">
                 <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#offboardingModal">
-                    <i class="bi bi-box-arrow-right me-1"></i>Cloud-Cleanup starten…
+                    <i class="bi bi-box-arrow-right me-1"></i><?= te('Cloud-Cleanup starten…') ?>
                 </button>
             </div>
         </div>
@@ -328,7 +328,7 @@ if ($neverExpires) {
         <div class="content-card">
             <div class="card-header-custom">
                 <i class="bi bi-sticky text-warning"></i>
-                <h6>Interne Notizen</h6>
+                <h6><?= te('Interne Notizen') ?></h6>
             </div>
             <div class="card-body-custom">
                 <?php if (!empty($notes)): ?>
@@ -343,7 +343,7 @@ if ($neverExpires) {
                                 </div>
                                 <?php if (LocalAuth::role() === 'admin'): ?>
                                     <form method="post" action="/users/<?= $e($user['id']) ?>/notes/<?= (int)$n['id'] ?>"
-                                          onsubmit="return confirm('Notiz wirklich löschen?')" class="ms-2 mb-0 flex-shrink-0">
+                                          onsubmit="return confirm(<?= $e(json_encode(t('Notiz wirklich löschen?'), JSON_UNESCAPED_UNICODE)) ?>)" class="ms-2 mb-0 flex-shrink-0">
                                         <?= \App\Core\Csrf::field() ?>
                                         <input type="hidden" name="_method" value="DELETE">
                                         <button type="submit" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size:11px;">
@@ -355,7 +355,7 @@ if ($neverExpires) {
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
-                    <p class="text-muted small mb-3">Noch keine Notizen vorhanden.</p>
+                    <p class="text-muted small mb-3"><?= te('Noch keine Notizen vorhanden.') ?></p>
                 <?php endif; ?>
 
                 <?php if (LocalAuth::role() === 'admin'): ?>
@@ -363,10 +363,10 @@ if ($neverExpires) {
                         <?= \App\Core\Csrf::field() ?>
                         <div class="mb-2">
                             <textarea name="note" class="form-control form-control-sm" rows="3"
-                                      placeholder="Interne Notiz eingeben…" required></textarea>
+                                      placeholder="<?= te('Interne Notiz eingeben…') ?>" required></textarea>
                         </div>
                         <button type="submit" class="btn btn-sm btn-primary">
-                            <i class="bi bi-plus me-1"></i>Notiz hinzufügen
+                            <i class="bi bi-plus me-1"></i><?= te('Notiz hinzufügen') ?>
                         </button>
                     </form>
                 <?php endif; ?>
@@ -383,22 +383,22 @@ if ($neverExpires) {
         <div class="modal-content">
             <div class="modal-header border-bottom-0" style="background:#fff5f5;">
                 <h5 class="modal-title text-danger" id="offboardingModalLabel">
-                    <i class="bi bi-box-arrow-right me-2"></i>Cloud-Cleanup für <?= $e($user['displayName'] ?? '') ?>
+                    <i class="bi bi-box-arrow-right me-2"></i><?= te('Cloud-Cleanup für') ?> <?= $e($user['displayName'] ?? '') ?>
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?= te('Schließen') ?>"></button>
             </div>
             <form method="post" action="/users/<?= $e($user['id']) ?>/offboarding">
                 <?= \App\Core\Csrf::field() ?>
                 <div class="modal-body">
-                    <p class="text-muted small mb-3">Wähle die Aktionen, die ausgeführt werden sollen. Bereits abgeschlossene Schritte können übersprungen werden.</p>
+                    <p class="text-muted small mb-3"><?= te('Wähle die Aktionen, die ausgeführt werden sollen. Bereits abgeschlossene Schritte können übersprungen werden.') ?></p>
 
                     <!-- Revoke sessions -->
                     <div class="form-check mb-3 p-3 rounded" style="background:#f9fafb;">
                         <input class="form-check-input" type="checkbox" name="revoke_sessions" value="1" id="cb_revoke" checked>
                         <label class="form-check-label fw-medium" for="cb_revoke">
-                            <i class="bi bi-stop-circle text-danger me-1"></i>Alle aktiven Sitzungen sofort beenden
+                            <i class="bi bi-stop-circle text-danger me-1"></i><?= te('Alle aktiven Sitzungen sofort beenden') ?>
                         </label>
-                        <div class="text-muted small mt-1">Meldet den Benutzer sofort von allen Geräten und Apps ab.</div>
+                        <div class="text-muted small mt-1"><?= te('Meldet den Benutzer sofort von allen Geräten und Apps ab.') ?></div>
                     </div>
 
                     <!-- Remove licenses -->
@@ -406,10 +406,10 @@ if ($neverExpires) {
                         <input class="form-check-input" type="checkbox" name="remove_licenses" value="1" id="cb_licenses"
                                <?= $licenseCount > 0 ? 'checked' : '' ?>>
                         <label class="form-check-label fw-medium" for="cb_licenses">
-                            <i class="bi bi-award text-warning me-1"></i>Alle Lizenzen entziehen
-                            <span class="badge-secondary ms-1"><?= $licenseCount ?> Lizenz<?= $licenseCount !== 1 ? 'en' : '' ?></span>
+                            <i class="bi bi-award text-warning me-1"></i><?= te('Alle Lizenzen entziehen') ?>
+                            <span class="badge-secondary ms-1"><?= $licenseCount ?> <?= $licenseCount !== 1 ? te('Lizenzen') : te('Lizenz') ?></span>
                         </label>
-                        <div class="text-muted small mt-1">Entfernt alle zugewiesenen Microsoft 365-Lizenzen.</div>
+                        <div class="text-muted small mt-1"><?= te('Entfernt alle zugewiesenen Microsoft 365-Lizenzen.') ?></div>
                     </div>
 
                     <!-- E-Mail forwarding -->
@@ -418,14 +418,14 @@ if ($neverExpires) {
                             <input class="form-check-input" type="checkbox" name="set_forwarding" value="1" id="cb_forward"
                                    onchange="document.getElementById('forward_to_wrap').style.display=this.checked?'block':'none'">
                             <label class="form-check-label fw-medium" for="cb_forward">
-                                <i class="bi bi-envelope-forward text-info me-1"></i>E-Mail-Weiterleitung setzen
+                                <i class="bi bi-envelope-forward text-info me-1"></i><?= te('E-Mail-Weiterleitung setzen') ?>
                             </label>
                         </div>
                         <div id="forward_to_wrap" style="display:none;">
                             <input type="email" class="form-control form-control-sm" name="forward_to"
                                    placeholder="weiterleitung@firma.de">
                             <div class="text-muted small mt-1">
-                                <i class="bi bi-info-circle me-1"></i>Erfordert <code>MailboxSettings.ReadWrite</code>-Berechtigung.
+                                <i class="bi bi-info-circle me-1"></i><?= te('Erfordert') ?> <code>MailboxSettings.ReadWrite</code><?= te('-Berechtigung.') ?>
                             </div>
                         </div>
                     </div>
@@ -436,20 +436,20 @@ if ($neverExpires) {
                             <input class="form-check-input" type="checkbox" name="set_ooo" value="1" id="cb_ooo"
                                    onchange="document.getElementById('ooo_wrap').style.display=this.checked?'block':'none'">
                             <label class="form-check-label fw-medium" for="cb_ooo">
-                                <i class="bi bi-chat-left-text text-secondary me-1"></i>Abwesenheitsnotiz aktivieren
+                                <i class="bi bi-chat-left-text text-secondary me-1"></i><?= te('Abwesenheitsnotiz aktivieren') ?>
                             </label>
                         </div>
                         <div id="ooo_wrap" style="display:none;">
                             <textarea class="form-control form-control-sm" name="ooo_message" rows="3"
-                                      placeholder="Der Mitarbeiter hat das Unternehmen verlassen..."></textarea>
+                                      placeholder="<?= te('Der Mitarbeiter hat das Unternehmen verlassen...') ?>"></textarea>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer" style="background:#fff5f5;">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><?= te('Abbrechen') ?></button>
                     <button type="submit" class="btn btn-danger"
-                            onclick="return confirm('Cloud-Cleanup wirklich ausführen? Diese Aktion kann nicht rückgängig gemacht werden.')">
-                        <i class="bi bi-box-arrow-right me-1"></i>Cloud-Cleanup ausführen
+                            onclick="return confirm(<?= $e(json_encode(t('Cloud-Cleanup wirklich ausführen? Diese Aktion kann nicht rückgängig gemacht werden.'), JSON_UNESCAPED_UNICODE)) ?>)">
+                        <i class="bi bi-box-arrow-right me-1"></i><?= te('Cloud-Cleanup ausführen') ?>
                     </button>
                 </div>
             </form>

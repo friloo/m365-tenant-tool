@@ -2,7 +2,7 @@
 
 <div class="mb-3">
     <a href="/mailboxes" class="text-muted text-decoration-none small">
-        <i class="bi bi-arrow-left me-1"></i>Zurück zu Postfächer
+        <i class="bi bi-arrow-left me-1"></i><?= te('Zurück zu Postfächer') ?>
     </a>
 </div>
 
@@ -17,8 +17,8 @@
         <i class="bi bi-exclamation-triangle me-2"></i><?= $e($error) ?>
         <?php if (str_contains($error ?? '', 'MailboxSettings.ReadWrite')): ?>
             <br><small class="mt-1 d-block">
-                Bitte erteilen Sie in der Azure App-Registrierung die Berechtigung
-                <strong>MailboxSettings.ReadWrite</strong> (Application) und genehmigen Sie sie als Administrator.
+                <?= te('Bitte erteilen Sie in der Azure App-Registrierung die Berechtigung') ?>
+                <strong>MailboxSettings.ReadWrite</strong> (Application) <?= te('und genehmigen Sie sie als Administrator.') ?>
             </small>
         <?php endif; ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -57,9 +57,9 @@ $tz          = $detail['timeZone'] ?? '';
                 <?php endif; ?>
                 <div class="mt-3">
                     <?php if ($enabled): ?>
-                        <span class="badge-enabled">Aktiv</span>
+                        <span class="badge-enabled"><?= te('Aktiv') ?></span>
                     <?php else: ?>
-                        <span class="badge-disabled">Deaktiviert</span>
+                        <span class="badge-disabled"><?= te('Deaktiviert') ?></span>
                     <?php endif; ?>
                 </div>
             </div>

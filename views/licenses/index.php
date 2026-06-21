@@ -6,33 +6,33 @@ $totalLicenses = array_sum(array_column($skus, 'total'));
 <div class="row g-3 mb-4">
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Produkte</div>
+            <div class="metric-label"><?= te('Produkte') ?></div>
             <div class="metric-value"><?= count($skus) ?></div>
         </div>
     </div>
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Lizenzen gesamt</div>
+            <div class="metric-label"><?= te('Lizenzen gesamt') ?></div>
             <div class="metric-value"><?= number_format($totalLicenses) ?></div>
         </div>
     </div>
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">In Verwendung</div>
+            <div class="metric-label"><?= te('In Verwendung') ?></div>
             <div class="metric-value"><?= number_format($totalConsumed) ?></div>
-            <div class="metric-sub"><?= $totalLicenses > 0 ? round(($totalConsumed/$totalLicenses)*100) : 0 ?>% belegt</div>
+            <div class="metric-sub"><?= $totalLicenses > 0 ? round(($totalConsumed/$totalLicenses)*100) : 0 ?>% <?= te('belegt') ?></div>
         </div>
     </div>
 </div>
 
 <div class="content-card">
     <div class="table-toolbar">
-        <input type="text" id="licSearch" class="search-box" placeholder="Lizenz suchen…">
+        <input type="text" id="licSearch" class="search-box" placeholder="<?= te('Lizenz suchen…') ?>">
     </div>
     <div class="table-responsive">
         <table class="data-table" id="licTable">
             <thead>
-                <tr><th>Produkt</th><th>SKU</th><th>Genutzt</th><th>Gesamt</th><th>Verfügbar</th><th>Nutzung</th></tr>
+                <tr><th><?= te('Produkt') ?></th><th>SKU</th><th><?= te('Genutzt') ?></th><th><?= te('Gesamt') ?></th><th><?= te('Verfügbar') ?></th><th><?= te('Nutzung') ?></th></tr>
             </thead>
             <tbody>
                 <?php foreach ($skus as $sku): ?>
@@ -62,7 +62,7 @@ $totalLicenses = array_sum(array_column($skus, 'total'));
                     </tr>
                 <?php endforeach; ?>
                 <?php if (empty($skus)): ?>
-                    <tr><td colspan="6" class="text-center text-muted py-4">Keine Lizenzen gefunden</td></tr>
+                    <tr><td colspan="6" class="text-center text-muted py-4"><?= te('Keine Lizenzen gefunden') ?></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

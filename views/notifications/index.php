@@ -2,11 +2,11 @@
 use App\Core\View;
 ?>
 <div class="content-card">
-    <h1 class="mb-3"><i class="bi bi-bell"></i> Benachrichtigungen <?= \App\Core\Help::tip('notifications') ?></h1>
-    <p class="text-muted small mb-4">Alle Ereignisse aus diesem Tenant (jüngste zuerst). Werden 90 Tage aufbewahrt und automatisch durch den Cron getrimmt.</p>
+    <h1 class="mb-3"><i class="bi bi-bell"></i> <?= te('Benachrichtigungen') ?> <?= \App\Core\Help::tip('notifications') ?></h1>
+    <p class="text-muted small mb-4"><?= te('Alle Ereignisse aus diesem Tenant (jüngste zuerst). Werden 90 Tage aufbewahrt und automatisch durch den Cron getrimmt.') ?></p>
 
     <?php if (empty($notifications)): ?>
-        <div class="alert alert-light text-center text-muted py-5"><i class="bi bi-inbox" style="font-size:36px"></i><br>Keine Benachrichtigungen</div>
+        <div class="alert alert-light text-center text-muted py-5"><i class="bi bi-inbox" style="font-size:36px"></i><br><?= te('Keine Benachrichtigungen') ?></div>
     <?php else: ?>
         <div class="list-group">
             <?php foreach ($notifications as $n): ?>

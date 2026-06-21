@@ -5,19 +5,19 @@ $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 <?php if ($lastError): ?>
 <div class="alert alert-warning">
   <i class="bi bi-exclamation-triangle-fill me-2"></i>
-  <?= $e($lastError['message'] ?? 'Fehler beim Abruf') ?> —
-  Benötigte Berechtigung: <code>InformationProtectionPolicy.Read.All</code>
+  <?= $e($lastError['message'] ?? t('Fehler beim Abruf')) ?> —
+  <?= te('Benötigte Berechtigung:') ?> <code>InformationProtectionPolicy.Read.All</code>
 </div>
 <?php endif ?>
 
 <div class="d-flex justify-content-end mb-3">
-  <a href="?refresh=1" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-clockwise"></i> Neu laden</a>
+  <a href="?refresh=1" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-clockwise"></i> <?= te('Neu laden') ?></a>
 </div>
 
 <!-- Policy settings -->
 <?php if (!empty($settings)): ?>
 <div class="card shadow-sm mb-4">
-  <div class="card-header fw-semibold"><i class="bi bi-gear me-2"></i>Richtlinieneinstellungen</div>
+  <div class="card-header fw-semibold"><i class="bi bi-gear me-2"></i><?= te('Richtlinieneinstellungen') ?></div>
   <div class="card-body small">
     <div class="row g-3">
       <?php foreach ($settings as $key => $val): ?>
@@ -26,9 +26,9 @@ $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
         <div class="fw-semibold text-muted"><?= $e(preg_replace('/([A-Z])/', ' $1', ucfirst($key))) ?></div>
         <div>
           <?php if (is_bool($val)): ?>
-            <span class="badge bg-<?= $val ? 'success' : 'secondary' ?>"><?= $val ? 'Ja' : 'Nein' ?></span>
+            <span class="badge bg-<?= $val ? 'success' : 'secondary' ?>"><?= $val ? te('Ja') : te('Nein') ?></span>
           <?php elseif (is_array($val)): ?>
-            <span class="text-muted"><?= count($val) ?> Einträge</span>
+            <span class="text-muted"><?= te(':n Einträge', ['n' => count($val)]) ?></span>
           <?php else: ?>
             <?= $e((string)$val) ?>
           <?php endif ?>
@@ -46,12 +46,12 @@ $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
   <div class="card-body text-center py-5">
     <i class="bi bi-tag text-muted" style="font-size:3rem"></i>
     <p class="mt-3 text-muted">
-      Keine Vertraulichkeitsbezeichnungen gefunden.<br>
-      <span class="small">Entweder sind keine konfiguriert, oder die Berechtigung <code>InformationProtectionPolicy.Read.All</code> fehlt.</span>
+      <?= te('Keine Vertraulichkeitsbezeichnungen gefunden.') ?><br>
+      <span class="small"><?= te('Entweder sind keine konfiguriert, oder die Berechtigung :perm fehlt.', ['perm' => '__PERM__']) ?></span>
     </p>
     <a href="https://compliance.microsoft.com/informationprotection" target="_blank" rel="noopener noreferrer"
        class="btn btn-outline-primary btn-sm mt-2">
-      <i class="bi bi-box-arrow-up-right me-1"></i>Microsoft Purview öffnen
+      <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Microsoft Purview öffnen') ?>
     </a>
   </div>
 </div>
