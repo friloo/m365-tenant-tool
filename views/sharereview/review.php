@@ -1,10 +1,10 @@
 <?php require __DIR__ . '/_brand.php'; ?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="<?= \App\Core\View::escape(\App\Core\I18n::locale()) ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Freigabe bestätigen — <?= htmlspecialchars($brandAppName) ?></title>
+    <title><?= te('Freigabe bestätigen') ?> — <?= htmlspecialchars($brandAppName) ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -290,8 +290,8 @@
 
 <?php if (!empty($isDemo)): ?>
 <div class="demo-bar">
-    <i class="bi bi-eye me-2"></i>VORSCHAU — So sehen Benutzer diese Seite nach Erhalt der Review-E-Mail
-    <a href="/settings">← Einstellungen</a>
+    <i class="bi bi-eye me-2"></i><?= te('VORSCHAU — So sehen Benutzer diese Seite nach Erhalt der Review-E-Mail') ?>
+    <a href="/settings">← <?= te('Einstellungen') ?></a>
 </div>
 <?php endif; ?>
 
@@ -320,21 +320,21 @@
 
         <?php if (!empty($share)): ?>
 
-        <h1 class="page-title">Freigabe-Überprüfung</h1>
+        <h1 class="page-title"><?= te('Freigabe-Überprüfung') ?></h1>
         <p class="page-lead">
-            Sie haben eine Datei oder einen Ordner freigegeben, die regelmäßig überprüft werden muss.
-            Bitte bestätigen Sie, ob diese Freigabe noch benötigt wird.
+            <?= te('Sie haben eine Datei oder einen Ordner freigegeben, die regelmäßig überprüft werden muss. '
+            . 'Bitte bestätigen Sie, ob diese Freigabe noch benötigt wird.') ?>
         </p>
 
         <div class="info-block">
             <div class="info-row">
                 <div class="info-icon"><i class="bi bi-file-earmark-text"></i></div>
                 <div class="info-content">
-                    <div class="info-label">Datei / Ordner</div>
+                    <div class="info-label"><?= te('Datei / Ordner') ?></div>
                     <div class="info-value">
                         <?= htmlspecialchars($share['item_name'] ?? '—') ?>
                         <?php if (!empty($share['item_url'])): ?>
-                            <a href="<?= htmlspecialchars($share['item_url']) ?>" target="_blank" rel="noopener" title="Datei öffnen">
+                            <a href="<?= htmlspecialchars($share['item_url']) ?>" target="_blank" rel="noopener" title="<?= te('Datei öffnen') ?>">
                                 <i class="bi bi-box-arrow-up-right"></i>
                             </a>
                         <?php endif; ?>
@@ -344,14 +344,14 @@
             <div class="info-row">
                 <div class="info-icon"><i class="bi bi-building"></i></div>
                 <div class="info-content">
-                    <div class="info-label">Speicherort</div>
+                    <div class="info-label"><?= te('Speicherort') ?></div>
                     <div class="info-value"><?= htmlspecialchars($share['site_name'] ?? '—') ?></div>
                 </div>
             </div>
             <div class="info-row">
                 <div class="info-icon"><i class="bi bi-share"></i></div>
                 <div class="info-content">
-                    <div class="info-label">Freigabe-Typ</div>
+                    <div class="info-label"><?= te('Freigabe-Typ') ?></div>
                     <div class="info-value">
                         <?php
                         $scopeClass = match($share['share_scope'] ?? '') {
@@ -367,9 +367,9 @@
                             default        => 'question-circle',
                         };
                         $scopeLabel = match($share['share_scope'] ?? '') {
-                            'anonymous'    => 'Öffentlich (Anyone-Link)',
-                            'users'        => 'Externe Benutzer',
-                            'organization' => 'Gesamte Organisation',
+                            'anonymous'    => te('Öffentlich (Anyone-Link)'),
+                            'users'        => te('Externe Benutzer'),
+                            'organization' => te('Gesamte Organisation'),
                             default        => htmlspecialchars($share['share_scope'] ?? ''),
                         };
                         ?>
@@ -383,7 +383,7 @@
             <div class="info-row">
                 <div class="info-icon"><i class="bi bi-calendar-check"></i></div>
                 <div class="info-content">
-                    <div class="info-label">Freigabe seit</div>
+                    <div class="info-label"><?= te('Freigabe seit') ?></div>
                     <div class="info-value">
                         <?= $share['first_detected']
                             ? htmlspecialchars(date('d.m.Y', strtotime($share['first_detected'])))
@@ -397,9 +397,9 @@
         <div class="deadline-block">
             <div class="deadline-icon"><i class="bi bi-hourglass-split"></i></div>
             <div class="info-content">
-                <div class="deadline-label">Automatischer Widerruf am</div>
+                <div class="deadline-label"><?= te('Automatischer Widerruf am') ?></div>
                 <div class="deadline-date"><?= htmlspecialchars(date('d.m.Y', strtotime($share['auto_revoke_at']))) ?></div>
-                <div class="deadline-note">Bitte bestätigen Sie rechtzeitig, um die Freigabe zu erhalten.</div>
+                <div class="deadline-note"><?= te('Bitte bestätigen Sie rechtzeitig, um die Freigabe zu erhalten.') ?></div>
             </div>
         </div>
         <?php endif; ?>
@@ -408,28 +408,28 @@
             <?= \App\Core\Csrf::field() ?>
             <div class="field-wrap">
                 <label class="field-label">
-                    Begründung <span>*</span>
+                    <?= te('Begründung') ?> <span>*</span>
                 </label>
                 <textarea name="reason" class="field-input" rows="3" required minlength="5"
-                    placeholder="z.B. Wird für die Zusammenarbeit mit Partner XY bis Ende Q2 benötigt."
+                    placeholder="<?= te('z.B. Wird für die Zusammenarbeit mit Partner XY bis Ende Q2 benötigt.') ?>"
                 ></textarea>
-                <div class="field-hint">Mindestens 5 Zeichen. Ihre Begründung wird protokolliert.</div>
+                <div class="field-hint"><?= te('Mindestens 5 Zeichen. Ihre Begründung wird protokolliert.') ?></div>
             </div>
 
             <div class="submit-row">
-                <button type="submit" class="btn-confirm" <?= !empty($isDemo) ? 'disabled title="Demo — Formular kann nicht abgeschickt werden"' : '' ?>>
+                <button type="submit" class="btn-confirm" <?= !empty($isDemo) ? 'disabled title="' . te('Demo — Formular kann nicht abgeschickt werden') . '"' : '' ?>>
                     <i class="bi bi-check-circle-fill"></i>
-                    Freigabe bestätigen
+                    <?= te('Freigabe bestätigen') ?>
                 </button>
                 <span class="extend-note">
-                    Verlängerung um <?= (int)($share['review_interval_days'] ?? 30) ?> Tage
+                    <?= te('Verlängerung um :n Tage', ['n' => (int)($share['review_interval_days'] ?? 30)]) ?>
                 </span>
             </div>
         </form>
 
         <?php else: ?>
         <div style="background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:14px 18px;font-size:14px;color:#854d0e;">
-            <i class="bi bi-exclamation-circle me-2"></i>Freigabe-Daten konnten nicht geladen werden.
+            <i class="bi bi-exclamation-circle me-2"></i><?= te('Freigabe-Daten konnten nicht geladen werden.') ?>
         </div>
         <?php endif; ?>
 
@@ -438,9 +438,9 @@
         <p class="footer-note">
             <i class="bi bi-shield-lock-fill"></i>
             <span>
-                Dieser Link ist personalisiert und kann nur einmal verwendet werden. Sie benötigen kein Passwort.
+                <?= te('Dieser Link ist personalisiert und kann nur einmal verwendet werden. Sie benötigen kein Passwort.') ?>
                 <?php if ($brandSupportEmail): ?>
-                    &nbsp;·&nbsp; Bei Fragen:
+                    &nbsp;·&nbsp; <?= te('Bei Fragen:') ?>
                     <a href="mailto:<?= htmlspecialchars($brandSupportEmail) ?>"><?= htmlspecialchars($brandSupportEmail) ?></a>
                 <?php endif; ?>
             </span>

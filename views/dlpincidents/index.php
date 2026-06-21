@@ -4,12 +4,12 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <div class="text-muted small">
-        Vorfälle, bei denen DLP-Regeln oder Sensitivity-Labels griffen — der eigentliche Compliance-Audit (Art. 5 + 32 DSGVO).
+        <?= te('Vorfälle, bei denen DLP-Regeln oder Sensitivity-Labels griffen — der eigentliche Compliance-Audit (Art. 5 + 32 DSGVO).') ?>
     </div>
     <div class="btn-group btn-group-sm" role="group">
         <?php foreach ([7, 30, 90] as $d): ?>
             <a href="?days=<?= $d ?>" class="btn <?= $days === $d ? 'btn-primary' : 'btn-outline-primary' ?>">
-                Letzte <?= $d ?> Tage
+                <?= te('Letzte :n Tage', ['n' => $d]) ?>
             </a>
         <?php endforeach; ?>
     </div>
@@ -19,23 +19,23 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card" style="border-left:4px solid <?= $summary['total'] > 0 ? '#dc2626' : '#16a34a' ?>;">
-            <div class="metric-label"><i class="bi bi-exclamation-triangle me-1"></i>Vorfälle gesamt</div>
+            <div class="metric-label"><i class="bi bi-exclamation-triangle me-1"></i><?= te('Vorfälle gesamt') ?></div>
             <div class="metric-value"><?= number_format($summary['total']) ?></div>
-            <div class="metric-sub">in den letzten <?= $days ?> Tagen</div>
+            <div class="metric-sub"><?= te('in den letzten :n Tagen', ['n' => $days]) ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-people me-1"></i>Beteiligte User</div>
+            <div class="metric-label"><i class="bi bi-people me-1"></i><?= te('Beteiligte User') ?></div>
             <div class="metric-value"><?= number_format($summary['unique_actors']) ?></div>
-            <div class="metric-sub">unique</div>
+            <div class="metric-sub"><?= te('unique') ?></div>
         </div>
     </div>
     <div class="col-sm-12 col-lg-6">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-bar-chart me-1"></i>Trend (Vorfälle/Tag)</div>
+            <div class="metric-label"><i class="bi bi-bar-chart me-1"></i><?= te('Trend (Vorfälle/Tag)') ?></div>
             <?php if (empty($summary['daily_trend'])): ?>
-                <div class="metric-value" style="font-size:18px;color:#9ca3af;">Keine Daten</div>
+                <div class="metric-value" style="font-size:18px;color:#9ca3af;"><?= te('Keine Daten') ?></div>
             <?php else:
                 $vals = array_values($summary['daily_trend']);
                 $max  = max($vals);
@@ -58,7 +58,7 @@
 <div class="row g-3 mb-4">
     <div class="col-lg-6">
         <div class="content-card h-100">
-            <div class="card-header-custom"><i class="bi bi-person-fill text-warning"></i><h6>Top User mit DLP-Treffern</h6></div>
+            <div class="card-header-custom"><i class="bi bi-person-fill text-warning"></i><h6><?= te('Top User mit DLP-Treffern') ?></h6></div>
             <div class="card-body-custom p-0">
                 <table class="table table-sm mb-0">
                     <tbody>
@@ -75,7 +75,7 @@
     </div>
     <div class="col-lg-6">
         <div class="content-card h-100">
-            <div class="card-header-custom"><i class="bi bi-activity text-info"></i><h6>Top Aktivitäten</h6></div>
+            <div class="card-header-custom"><i class="bi bi-activity text-info"></i><h6><?= te('Top Aktivitäten') ?></h6></div>
             <div class="card-body-custom p-0">
                 <table class="table table-sm mb-0">
                     <tbody>
@@ -97,24 +97,24 @@
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-clock-history text-secondary"></i>
-        <h6>Vorfälle im Detail</h6>
+        <h6><?= te('Vorfälle im Detail') ?></h6>
     </div>
     <div class="card-body-custom p-0">
         <?php if (empty($incidents)): ?>
             <div class="text-muted small p-4 text-center">
                 <i class="bi bi-check-circle text-success me-1"></i>
-                Keine DLP-Vorfälle im gewählten Zeitraum.
-                <br><small>Falls hier nichts steht, obwohl DLP-Policies aktiv sind: prüfen Sie in Microsoft Purview, ob die Policies im "enforce" und nicht im "test" Modus laufen.</small>
+                <?= te('Keine DLP-Vorfälle im gewählten Zeitraum.') ?>
+                <br><small><?= te('Falls hier nichts steht, obwohl DLP-Policies aktiv sind: prüfen Sie in Microsoft Purview, ob die Policies im "enforce" und nicht im "test" Modus laufen.') ?></small>
             </div>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="data-table">
                     <thead><tr>
-                        <th>Wann</th>
-                        <th>Auslöser</th>
-                        <th>Aktivität</th>
-                        <th>Ziel</th>
-                        <th>Resultat</th>
+                        <th><?= te('Wann') ?></th>
+                        <th><?= te('Auslöser') ?></th>
+                        <th><?= te('Aktivität') ?></th>
+                        <th><?= te('Ziel') ?></th>
+                        <th><?= te('Resultat') ?></th>
                     </tr></thead>
                     <tbody>
                     <?php foreach ($incidents as $i): ?>

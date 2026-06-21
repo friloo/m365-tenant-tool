@@ -5,10 +5,7 @@
 <div class="alert alert-info d-flex gap-3 mb-3">
     <i class="bi bi-shield-fill-check flex-shrink-0 mt-1" style="font-size:1.4rem;color:#0078d4;"></i>
     <div>
-        <strong>Phishing-resistente MFA</strong> ist seit 2024 Microsofts offizielle Empfehlung
-        (FIDO2, Windows Hello, Certificate-Based, Hardware OATH). SMS-OTP und Voice-Call gelten
-        als unsicher gegen Adversary-in-the-Middle-Angriffe. Selbst Microsoft Authenticator-Push
-        ist nicht vollständig phishing-resistent — nur FIDO2 und Zertifikate sind es.
+        <strong><?= te('Phishing-resistente MFA') ?></strong> <?= te('ist seit 2024 Microsofts offizielle Empfehlung (FIDO2, Windows Hello, Certificate-Based, Hardware OATH). SMS-OTP und Voice-Call gelten als unsicher gegen Adversary-in-the-Middle-Angriffe. Selbst Microsoft Authenticator-Push ist nicht vollständig phishing-resistent — nur FIDO2 und Zertifikate sind es.') ?>
     </div>
 </div>
 
@@ -16,36 +13,36 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card" style="border-left:4px solid <?= $report['phishing_resistant_pct'] >= 50 ? '#16a34a' : '#dc2626' ?>;">
-            <div class="metric-label"><i class="bi bi-shield-fill-check me-1"></i>Phishing-resistent</div>
+            <div class="metric-label"><i class="bi bi-shield-fill-check me-1"></i><?= te('Phishing-resistent') ?></div>
             <div class="metric-value" style="color:<?= $report['phishing_resistant_pct'] >= 50 ? '#16a34a' : '#dc2626' ?>;">
                 <?= $report['phishing_resistant_pct'] ?>%
             </div>
-            <div class="metric-sub"><?= number_format($report['phishing_resistant']) ?> von <?= number_format($report['total']) ?> Usern</div>
+            <div class="metric-sub"><?= number_format($report['phishing_resistant']) ?> <?= te('von') ?> <?= number_format($report['total']) ?> <?= te('Usern') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-phone me-1"></i>Nur Software-MFA</div>
+            <div class="metric-label"><i class="bi bi-phone me-1"></i><?= te('Nur Software-MFA') ?></div>
             <div class="metric-value"><?= number_format($report['software_mfa']) ?></div>
-            <div class="metric-sub">Authenticator / TOTP</div>
+            <div class="metric-sub"><?= te('Authenticator / TOTP') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card" style="border-left:4px solid <?= $report['weak_only'] > 0 ? '#dc2626' : '#16a34a' ?>;">
-            <div class="metric-label"><i class="bi bi-exclamation-octagon me-1"></i>Nur schwache MFA</div>
+            <div class="metric-label"><i class="bi bi-exclamation-octagon me-1"></i><?= te('Nur schwache MFA') ?></div>
             <div class="metric-value" style="color:<?= $report['weak_only'] > 0 ? '#dc2626' : '#16a34a' ?>;">
                 <?= number_format($report['weak_only']) ?>
             </div>
-            <div class="metric-sub">SMS / Voice / E-Mail-OTP</div>
+            <div class="metric-sub"><?= te('SMS / Voice / E-Mail-OTP') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card" style="border-left:4px solid <?= $report['no_mfa'] > 0 ? '#dc2626' : '#16a34a' ?>;">
-            <div class="metric-label"><i class="bi bi-shield-x me-1"></i>Keine MFA</div>
+            <div class="metric-label"><i class="bi bi-shield-x me-1"></i><?= te('Keine MFA') ?></div>
             <div class="metric-value" style="color:<?= $report['no_mfa'] > 0 ? '#dc2626' : '#16a34a' ?>;">
                 <?= number_format($report['no_mfa']) ?>
             </div>
-            <div class="metric-sub">nur Passwort</div>
+            <div class="metric-sub"><?= te('nur Passwort') ?></div>
         </div>
     </div>
 </div>
@@ -53,7 +50,7 @@
 <!-- ── Method Breakdown ──────────────────────────────────────────────── -->
 <?php if (!empty($report['method_breakdown'])): ?>
 <div class="content-card mb-4">
-    <div class="card-header-custom"><i class="bi bi-bar-chart-fill text-primary"></i><h6>Methoden-Verteilung</h6></div>
+    <div class="card-header-custom"><i class="bi bi-bar-chart-fill text-primary"></i><h6><?= te('Methoden-Verteilung') ?></h6></div>
     <div class="card-body-custom">
         <?php $max = max($report['method_breakdown']); ?>
         <?php foreach ($report['method_breakdown'] as $method => $count):
@@ -85,12 +82,12 @@
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-exclamation-triangle-fill text-danger"></i>
-        <h6>User mit ausschließlich schwacher MFA</h6>
+        <h6><?= te('User mit ausschließlich schwacher MFA') ?></h6>
     </div>
     <div class="card-body-custom p-0">
         <div class="table-responsive">
             <table class="data-table">
-                <thead><tr><th>UPN</th><th>Registrierte Methoden</th></tr></thead>
+                <thead><tr><th>UPN</th><th><?= te('Registrierte Methoden') ?></th></tr></thead>
                 <tbody>
                 <?php foreach ($report['weak_users'] as $u): ?>
                     <tr>
@@ -111,16 +108,16 @@
 
 <!-- ── Tenant-Auth-Strength-Policies ─────────────────────────────────── -->
 <div class="content-card mb-4">
-    <div class="card-header-custom"><i class="bi bi-sliders text-info"></i><h6>Authentication-Strength-Policies</h6></div>
+    <div class="card-header-custom"><i class="bi bi-sliders text-info"></i><h6><?= te('Authentication-Strength-Policies') ?></h6></div>
     <div class="card-body-custom p-0">
         <?php if (empty($policies)): ?>
             <div class="text-muted small p-4 text-center">
-                Nur Microsoft-Default-Policies aktiv. Custom-Strength-Policies können in Entra → Authentifizierungsmethoden → Authentifizierungsstärken konfiguriert werden.
+                <?= te('Nur Microsoft-Default-Policies aktiv. Custom-Strength-Policies können in Entra → Authentifizierungsmethoden → Authentifizierungsstärken konfiguriert werden.') ?>
             </div>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="data-table">
-                    <thead><tr><th>Name</th><th>Typ</th><th>Erlaubte Methoden</th></tr></thead>
+                    <thead><tr><th><?= te('Name') ?></th><th><?= te('Typ') ?></th><th><?= te('Erlaubte Methoden') ?></th></tr></thead>
                     <tbody>
                     <?php foreach ($policies as $p): ?>
                         <tr>

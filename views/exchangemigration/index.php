@@ -9,9 +9,9 @@ $domains = $report['domains'];
 $score   = $report['score'];
 
 $statusConfig = [
-    'ok'      => ['class' => 'success',  'icon' => 'check-circle-fill',  'badge' => 'Bereit'],
-    'warning' => ['class' => 'warning',  'icon' => 'exclamation-triangle-fill', 'badge' => 'Achtung'],
-    'missing' => ['class' => 'danger',   'icon' => 'x-circle-fill',      'badge' => 'Fehlt'],
+    'ok'      => ['class' => 'success',  'icon' => 'check-circle-fill',  'badge' => t('Bereit')],
+    'warning' => ['class' => 'warning',  'icon' => 'exclamation-triangle-fill', 'badge' => t('Achtung')],
+    'missing' => ['class' => 'danger',   'icon' => 'x-circle-fill',      'badge' => t('Fehlt')],
 ];
 
 $statusIcon = function(string $status) use ($statusConfig): string {
@@ -54,12 +54,12 @@ $readinessIcon = match($score['readiness']) {
             <div class="progress-bar bg-<?= $readinessClass ?>" style="width:<?= $score['percent'] ?>%"></div>
           </div>
           <?php if ($org['displayName']): ?>
-          <div class="text-muted small mt-2">Tenant: <strong><?= $e($org['displayName']) ?></strong></div>
+          <div class="text-muted small mt-2"><?= te('Tenant:') ?> <strong><?= $e($org['displayName']) ?></strong></div>
           <?php endif ?>
         </div>
         <div class="text-end">
           <a href="?refresh=1" class="btn btn-outline-secondary btn-sm">
-            <i class="bi bi-arrow-clockwise"></i> Neu prüfen
+            <i class="bi bi-arrow-clockwise"></i> <?= te('Neu prüfen') ?>
           </a>
         </div>
       </div>
@@ -76,20 +76,19 @@ $readinessIcon = match($score['readiness']) {
     <?php if (empty($domains)): ?>
     <div class="card mb-4 border-danger">
       <div class="card-header fw-semibold text-danger-emphasis bg-danger-subtle">
-        <i class="bi bi-x-circle-fill me-2"></i>Keine Custom-Domain gefunden
+        <i class="bi bi-x-circle-fill me-2"></i><?= te('Keine Custom-Domain gefunden') ?>
       </div>
       <div class="card-body">
         <p class="mb-2">
-          Es wurden keine verifizierten Custom-Domains gefunden — nur <code>*.onmicrosoft.com</code>.
-          Für Exchange Online benötigst du mindestens eine eigene Domain (z.B. <code>deinefirma.de</code>).
+          <?= te('Es wurden keine verifizierten Custom-Domains gefunden — nur') ?> <code>*.onmicrosoft.com</code>.
+          <?= te('Für Exchange Online benötigst du mindestens eine eigene Domain (z.B.') ?> <code>deinefirma.de</code>).
         </p>
         <p class="text-muted small mb-3">
-          <strong>Was zu tun ist:</strong> Domain im Microsoft 365 Admin Center hinzufügen,
-          den angezeigten TXT-Eintrag bei deinem DNS-Provider eintragen, dann verifizieren.
+          <strong><?= te('Was zu tun ist:') ?></strong> <?= te('Domain im Microsoft 365 Admin Center hinzufügen, den angezeigten TXT-Eintrag bei deinem DNS-Provider eintragen, dann verifizieren.') ?>
         </p>
         <a href="https://admin.microsoft.com/AdminPortal/Home#/Domains" target="_blank" rel="noopener noreferrer"
            class="btn btn-primary btn-sm">
-          <i class="bi bi-box-arrow-up-right me-1"></i>Domains im Admin Center öffnen
+          <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Domains im Admin Center öffnen') ?>
         </a>
       </div>
     </div>
@@ -98,15 +97,15 @@ $readinessIcon = match($score['readiness']) {
     <div class="card mb-4 shadow-sm">
       <div class="card-header d-flex align-items-center gap-2 fw-semibold">
         <i class="bi bi-globe2"></i>
-        DNS-Prüfung für <code><?= $e($dc['domain']) ?></code>
+        <?= te('DNS-Prüfung für') ?> <code><?= $e($dc['domain']) ?></code>
       </div>
       <div class="table-responsive">
         <table class="table table-hover mb-0 align-middle">
           <thead class="table-light">
             <tr>
               <th style="width:30px"></th>
-              <th style="width:130px">Prüfung</th>
-              <th>Ergebnis / Hinweis</th>
+              <th style="width:130px"><?= te('Prüfung') ?></th>
+              <th><?= te('Ergebnis / Hinweis') ?></th>
               <th style="width:110px"></th>
             </tr>
           </thead>
@@ -116,7 +115,7 @@ $readinessIcon = match($score['readiness']) {
             <?php $mx = $dc['mx']; ?>
             <tr>
               <td class="text-center"><?= $statusIcon($mx['status']) ?></td>
-              <td class="fw-semibold">MX-Eintrag</td>
+              <td class="fw-semibold"><?= te('MX-Eintrag') ?></td>
               <td>
                 <?= $e($mx['label']) ?>
                 <?php if (!empty($mx['records'])): ?>
@@ -128,13 +127,13 @@ $readinessIcon = match($score['readiness']) {
                 <?php endif ?>
                 <?php if ($mx['status'] !== 'ok'): ?>
                 <div class="text-muted small mt-1">
-                  Erwartet: <code>*.mail.protection.outlook.com</code> —
-                  <strong>Achtung:</strong> Erst nach Abschluss der Migration umstellen!
+                  <?= te('Erwartet:') ?> <code>*.mail.protection.outlook.com</code> —
+                  <strong><?= te('Achtung:') ?></strong> <?= te('Erst nach Abschluss der Migration umstellen!') ?>
                 </div>
                 <div class="mt-2">
                   <a href="https://admin.microsoft.com/AdminPortal/Home#/Domains" target="_blank" rel="noopener noreferrer"
                      class="btn btn-outline-primary btn-sm">
-                    <i class="bi bi-box-arrow-up-right me-1"></i>Admin Center → Domains (MX-Wert anzeigen)
+                    <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Admin Center → Domains (MX-Wert anzeigen)') ?>
                   </a>
                 </div>
                 <?php endif ?>
@@ -154,12 +153,12 @@ $readinessIcon = match($score['readiness']) {
                 <?php endif ?>
                 <?php if ($spf['status'] !== 'ok'): ?>
                 <div class="text-muted small mt-1">
-                  Empfehlung: <code>v=spf1 include:spf.protection.outlook.com -all</code>
+                  <?= te('Empfehlung:') ?> <code>v=spf1 include:spf.protection.outlook.com -all</code>
                 </div>
                 <div class="mt-2">
                   <a href="https://admin.microsoft.com/AdminPortal/Home#/Domains" target="_blank" rel="noopener noreferrer"
                      class="btn btn-outline-primary btn-sm">
-                    <i class="bi bi-box-arrow-up-right me-1"></i>Admin Center → Domains (DNS-Einträge prüfen)
+                    <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Admin Center → Domains (DNS-Einträge prüfen)') ?>
                   </a>
                 </div>
                 <?php endif ?>
@@ -179,25 +178,24 @@ $readinessIcon = match($score['readiness']) {
                   <code><?= $e($sel) ?>._domainkey</code>:
                   <?php if ($info['found']): ?>
                     → <code><?= $e($info['target']) ?></code>
-                    <?= $info['o365'] ? '<span class="text-success">(Exchange Online ✓)</span>' : '<span class="text-warning">(nicht Exchange Online)</span>' ?>
+                    <?= $info['o365'] ? '<span class="text-success">' . t('(Exchange Online ✓)') . '</span>' : '<span class="text-warning">' . t('(nicht Exchange Online)') . '</span>' ?>
                   <?php else: ?>
-                    <span class="text-danger">nicht gefunden</span>
+                    <span class="text-danger"><?= te('nicht gefunden') ?></span>
                   <?php endif ?>
                 </div>
                 <?php endforeach ?>
                 <?php if ($dkim['status'] !== 'ok'): ?>
                 <div class="text-muted small mt-1">
-                  DKIM in Exchange Online aktivieren: Admin Center → E-Mail-Sicherheit → DKIM.
-                  Danach die generierten CNAME-Einträge im DNS anlegen.
+                  <?= te('DKIM in Exchange Online aktivieren: Admin Center → E-Mail-Sicherheit → DKIM. Danach die generierten CNAME-Einträge im DNS anlegen.') ?>
                 </div>
                 <div class="mt-2 d-flex gap-2 flex-wrap">
                   <a href="https://admin.exchange.microsoft.com/#/dkimsettings" target="_blank" rel="noopener noreferrer"
                      class="btn btn-outline-primary btn-sm">
-                    <i class="bi bi-box-arrow-up-right me-1"></i>Exchange Admin → DKIM aktivieren
+                    <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Exchange Admin → DKIM aktivieren') ?>
                   </a>
                   <a href="https://admin.microsoft.com/AdminPortal/Home#/Domains" target="_blank" rel="noopener noreferrer"
                      class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-box-arrow-up-right me-1"></i>Admin Center → Domains (CNAME eintragen)
+                    <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Admin Center → Domains (CNAME eintragen)') ?>
                   </a>
                 </div>
                 <?php endif ?>
@@ -217,19 +215,19 @@ $readinessIcon = match($score['readiness']) {
                 <?php endif ?>
                 <?php if ($dmarc['status'] === 'missing'): ?>
                 <div class="text-muted small mt-1">
-                  Empfehlung: TXT-Eintrag <code>_dmarc.<?= $e($dc['domain']) ?></code> mit<br>
+                  <?= te('Empfehlung: TXT-Eintrag') ?> <code>_dmarc.<?= $e($dc['domain']) ?></code> <?= te('mit') ?><br>
                   <code>v=DMARC1; p=quarantine; rua=mailto:dmarc@<?= $e($dc['domain']) ?></code>
                 </div>
                 <div class="mt-2">
                   <a href="https://mxtoolbox.com/dmarc/<?= $e($dc['domain']) ?>" target="_blank" rel="noopener noreferrer"
                      class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-tools me-1"></i>DMARC-Generator (MXToolbox)
+                    <i class="bi bi-tools me-1"></i><?= te('DMARC-Generator (MXToolbox)') ?>
                   </a>
                 </div>
                 <?php elseif (($dmarc['policy'] ?? 'none') === 'none'): ?>
                 <div class="text-muted small mt-1">
-                  DMARC ist vorhanden, aber <code>p=none</code> hat keine durchsetzende Wirkung.
-                  Empfohlen: <code>p=quarantine</code> oder <code>p=reject</code> nach Testphase.
+                  <?= te('DMARC ist vorhanden, aber') ?> <code>p=none</code> <?= te('hat keine durchsetzende Wirkung.') ?>
+                  <?= te('Empfohlen:') ?> <code>p=quarantine</code> <?= te('oder') ?> <code>p=reject</code> <?= te('nach Testphase.') ?>
                 </div>
                 <?php endif ?>
               </td>
@@ -245,19 +243,19 @@ $readinessIcon = match($score['readiness']) {
                 <?= $e($ad['label']) ?>
                 <?php if (($ad['target'] ?? null) && ($ad['type'] ?? null)): ?>
                 <div class="text-muted small mt-1">
-                  Typ: <code><?= $e($ad['type']) ?></code> → <code><?= $e($ad['target']) ?></code>
+                  <?= te('Typ:') ?> <code><?= $e($ad['type']) ?></code> → <code><?= $e($ad['target']) ?></code>
                 </div>
                 <?php endif ?>
                 <?php if ($ad['status'] !== 'ok'): ?>
                 <div class="text-muted small mt-1">
-                  Empfehlung: CNAME <code>autodiscover.<?= $e($dc['domain']) ?></code>
+                  <?= te('Empfehlung: CNAME') ?> <code>autodiscover.<?= $e($dc['domain']) ?></code>
                   → <code>autodiscover.outlook.com</code>
-                  (erst nach Migration umstellen, damit Outlook-Clients noch auf on-prem zeigen).
+                  <?= te('(erst nach Migration umstellen, damit Outlook-Clients noch auf on-prem zeigen).') ?>
                 </div>
                 <div class="mt-2">
                   <a href="https://admin.microsoft.com/AdminPortal/Home#/Domains" target="_blank" rel="noopener noreferrer"
                      class="btn btn-outline-primary btn-sm">
-                    <i class="bi bi-box-arrow-up-right me-1"></i>Admin Center → Domains (Autodiscover CNAME)
+                    <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Admin Center → Domains (Autodiscover CNAME)') ?>
                   </a>
                 </div>
                 <?php endif ?>
@@ -274,29 +272,29 @@ $readinessIcon = match($score['readiness']) {
 
     <!-- License Coverage -->
     <div class="card mb-4 shadow-sm">
-      <div class="card-header fw-semibold"><i class="bi bi-award me-2"></i>Lizenz-Abdeckung Exchange Online</div>
+      <div class="card-header fw-semibold"><i class="bi bi-award me-2"></i><?= te('Lizenz-Abdeckung Exchange Online') ?></div>
       <div class="card-body">
         <?php if ($license['licensedUsers'] === 0 && $license['totalUsers'] === 0): ?>
-          <div class="text-muted">Keine Lizenzdaten verfügbar.</div>
+          <div class="text-muted"><?= te('Keine Lizenzdaten verfügbar.') ?></div>
         <?php else: ?>
         <div class="row g-3 mb-3">
           <div class="col-sm-4">
             <div class="p-3 bg-light rounded text-center">
               <div class="fs-2 fw-bold text-primary"><?= $license['licensedUsers'] ?></div>
-              <div class="small text-muted">Benutzer mit Exchange Online</div>
+              <div class="small text-muted"><?= te('Benutzer mit Exchange Online') ?></div>
             </div>
           </div>
           <div class="col-sm-4">
             <div class="p-3 bg-light rounded text-center">
               <div class="fs-2 fw-bold"><?= $license['totalUsers'] ?></div>
-              <div class="small text-muted">Aktive Mitglieder gesamt</div>
+              <div class="small text-muted"><?= te('Aktive Mitglieder gesamt') ?></div>
             </div>
           </div>
           <div class="col-sm-4">
             <div class="p-3 bg-light rounded text-center">
               <?php $covClass = $license['coveragePercent'] >= 100 ? 'success' : ($license['coveragePercent'] >= 80 ? 'warning' : 'danger'); ?>
               <div class="fs-2 fw-bold text-<?= $covClass ?>"><?= $license['coveragePercent'] ?>%</div>
-              <div class="small text-muted">Abdeckung</div>
+              <div class="small text-muted"><?= te('Abdeckung') ?></div>
             </div>
           </div>
         </div>
@@ -304,7 +302,7 @@ $readinessIcon = match($score['readiness']) {
         <?php if (!empty($license['skus'])): ?>
         <table class="table table-sm table-bordered mb-0">
           <thead class="table-light">
-            <tr><th>SKU</th><th class="text-end">Bereitgestellt</th><th class="text-end">Belegt</th></tr>
+            <tr><th>SKU</th><th class="text-end"><?= te('Bereitgestellt') ?></th><th class="text-end"><?= te('Belegt') ?></th></tr>
           </thead>
           <tbody>
             <?php foreach ($license['skus'] as $sku): ?>
@@ -321,9 +319,8 @@ $readinessIcon = match($score['readiness']) {
         <?php if ($license['coveragePercent'] < 100 && $license['totalUsers'] > 0): ?>
         <div class="alert alert-warning mt-3 mb-0 small">
           <i class="bi bi-exclamation-triangle-fill me-1"></i>
-          <?= $license['totalUsers'] - $license['licensedUsers'] ?> Benutzer haben keine Exchange-Online-Lizenz
-          und können nach der Migration keine Postfächer erhalten.
-          Lizenzen zuweisen oder prüfen, ob diese Benutzer kein Postfach benötigen.
+          <?= te(':n Benutzer haben keine Exchange-Online-Lizenz und können nach der Migration keine Postfächer erhalten.', ['n' => $license['totalUsers'] - $license['licensedUsers']]) ?>
+          <?= te('Lizenzen zuweisen oder prüfen, ob diese Benutzer kein Postfach benötigen.') ?>
         </div>
         <?php endif ?>
         <?php endif ?>
@@ -337,7 +334,7 @@ $readinessIcon = match($score['readiness']) {
 
     <!-- Hybrid / AAD Connect -->
     <div class="card mb-4 shadow-sm">
-      <div class="card-header fw-semibold"><i class="bi bi-arrow-left-right me-2"></i>Hybrid-Status (AAD Connect)</div>
+      <div class="card-header fw-semibold"><i class="bi bi-arrow-left-right me-2"></i><?= te('Hybrid-Status (AAD Connect)') ?></div>
       <div class="card-body">
         <?php
         $syncEnabled  = $org['onPremisesSyncEnabled'] ?? false;
@@ -346,21 +343,21 @@ $readinessIcon = match($score['readiness']) {
         ?>
         <ul class="list-group list-group-flush">
           <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-            <span>AAD Connect / Entra Sync aktiv</span>
+            <span><?= te('AAD Connect / Entra Sync aktiv') ?></span>
             <?php if ($syncEnabled): ?>
-              <span class="badge bg-info">Ja</span>
+              <span class="badge bg-info"><?= te('Ja') ?></span>
             <?php else: ?>
-              <span class="badge bg-secondary">Nein / unbekannt</span>
+              <span class="badge bg-secondary"><?= te('Nein / unbekannt') ?></span>
             <?php endif ?>
           </li>
           <?php if ($lastSync): ?>
           <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-            <span>Letzter Sync</span>
+            <span><?= te('Letzter Sync') ?></span>
             <span class="text-muted small"><?= $e(date('d.m.Y H:i', strtotime($lastSync))) ?></span>
           </li>
           <?php endif ?>
           <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-            <span>On-Prem-synchronisierte Benutzer</span>
+            <span><?= te('On-Prem-synchronisierte Benutzer') ?></span>
             <span class="fw-bold"><?= $syncedUsers ?></span>
           </li>
         </ul>
@@ -368,15 +365,13 @@ $readinessIcon = match($score['readiness']) {
         <?php if ($syncEnabled && $syncedUsers > 0): ?>
         <div class="alert alert-info mt-3 mb-0 small">
           <i class="bi bi-info-circle-fill me-1"></i>
-          Du betreibst eine Hybrid-Umgebung. Exchange Online kann parallel zu Exchange on-prem genutzt werden
-          (Hybrid-Konfiguration empfohlen). Stelle sicher, dass das <strong>Exchange Hybrid Agent</strong>
-          installiert ist, bevor du Postfächer migrierst.
+          <?= te('Du betreibst eine Hybrid-Umgebung. Exchange Online kann parallel zu Exchange on-prem genutzt werden (Hybrid-Konfiguration empfohlen). Stelle sicher, dass das') ?> <strong>Exchange Hybrid Agent</strong>
+          <?= te('installiert ist, bevor du Postfächer migrierst.') ?>
         </div>
         <?php elseif (!$syncEnabled): ?>
         <div class="alert alert-secondary mt-3 mb-0 small">
           <i class="bi bi-info-circle me-1"></i>
-          Kein Verzeichnis-Sync erkannt — Cloud-Only-Identitäten oder Sync nicht via Entra konfiguriert.
-          Bei Migration von on-prem AD empfiehlt sich Entra Connect Sync.
+          <?= te('Kein Verzeichnis-Sync erkannt — Cloud-Only-Identitäten oder Sync nicht via Entra konfiguriert. Bei Migration von on-prem AD empfiehlt sich Entra Connect Sync.') ?>
         </div>
         <?php endif ?>
       </div>
@@ -386,7 +381,7 @@ $readinessIcon = match($score['readiness']) {
     <?php if (!empty($score['issues'])): ?>
     <div class="card mb-4 shadow-sm border-warning">
       <div class="card-header fw-semibold text-warning-emphasis bg-warning-subtle">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>Offene Punkte (<?= count($score['issues']) ?>)
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><?= te('Offene Punkte') ?> (<?= count($score['issues']) ?>)
       </div>
       <ul class="list-group list-group-flush">
         <?php foreach ($score['issues'] as $issue): ?>
@@ -398,36 +393,36 @@ $readinessIcon = match($score['readiness']) {
 
     <!-- Migration Checklist -->
     <div class="card mb-4 shadow-sm">
-      <div class="card-header fw-semibold"><i class="bi bi-clipboard2-check me-2"></i>Migrations-Checkliste</div>
+      <div class="card-header fw-semibold"><i class="bi bi-clipboard2-check me-2"></i><?= te('Migrations-Checkliste') ?></div>
       <ul class="list-group list-group-flush" id="migrationChecklist">
         <?php
         $checklist = [
-            ['label' => 'Exchange Hybrid Configuration Wizard ausgeführt',
-             'hint'  => 'Verbindet on-prem Exchange mit Exchange Online (HCW). Erforderlich für Hybrid-Migration.'],
-            ['label' => 'Exchange Online Postfach-Migrationsbatch erstellt',
-             'hint'  => 'In Exchange Admin Center → Migration → Neuer Batch (z. B. Remote Move).'],
-            ['label' => 'MRS Proxy auf on-prem Exchange aktiv',
-             'hint'  => 'Mailbox Replication Service Proxy muss auf dem on-prem CAS/MBX aktiviert sein.'],
-            ['label' => 'Testpostfach migriert und überprüft',
-             'hint'  => 'Migriere zunächst ein Testpostfach; prüfe E-Mail-Empfang, Kalender und OAB.'],
-            ['label' => 'Outlook Anywhere / MAPI-over-HTTP konfiguriert',
-             'hint'  => 'Stellt sicher, dass Outlook-Clients weiterhin auf on-prem Exchange zugreifen können während der Migrationsphase.'],
-            ['label' => 'Outlook-Profile der Benutzer nach Migration erneuert',
-             'hint'  => 'Autodiscover leitet Outlook nach MX-Umschaltung automatisch um; ggf. Profil neu erstellen.'],
-            ['label' => 'Shared Mailboxes / Room Mailboxes migriert',
-             'hint'  => 'Ressourcenpostfächer separat prüfen und ggf. in Exchange Online neu anlegen.'],
-            ['label' => 'E-Mail-Archiv geprüft (In-Place Archive / PST)',
-             'hint'  => 'PST-Dateien können über das Microsoft 365 Import Tool hochgeladen werden.'],
-            ['label' => 'MX-Eintrag auf Exchange Online umgestellt',
-             'hint'  => 'Erst nach Abschluss der Migration umstellen, damit keine E-Mails verloren gehen.'],
-            ['label' => 'Autodiscover CNAME auf outlook.com umgestellt',
-             'hint'  => 'Erst nach der Migration, damit Outlook-Clients das Exchange-Online-Postfach finden.'],
-            ['label' => 'DKIM in Exchange Online aktiviert',
-             'hint'  => 'Admin Center → Sicherheit → E-Mail-Authentifizierung → DKIM; CNAME-Einträge im DNS anlegen.'],
-            ['label' => 'DMARC-Policy auf quarantine/reject erhöht',
-             'hint'  => 'Nach erfolgreicher DKIM/SPF-Aktivierung Richtlinie verschärfen.'],
-            ['label' => 'on-prem Exchange außer Betrieb genommen (wenn gewünscht)',
-             'hint'  => 'Erst wenn alle Postfächer online sind und DNS umgestellt ist.'],
+            ['label' => t('Exchange Hybrid Configuration Wizard ausgeführt'),
+             'hint'  => t('Verbindet on-prem Exchange mit Exchange Online (HCW). Erforderlich für Hybrid-Migration.')],
+            ['label' => t('Exchange Online Postfach-Migrationsbatch erstellt'),
+             'hint'  => t('In Exchange Admin Center → Migration → Neuer Batch (z. B. Remote Move).')],
+            ['label' => t('MRS Proxy auf on-prem Exchange aktiv'),
+             'hint'  => t('Mailbox Replication Service Proxy muss auf dem on-prem CAS/MBX aktiviert sein.')],
+            ['label' => t('Testpostfach migriert und überprüft'),
+             'hint'  => t('Migriere zunächst ein Testpostfach; prüfe E-Mail-Empfang, Kalender und OAB.')],
+            ['label' => t('Outlook Anywhere / MAPI-over-HTTP konfiguriert'),
+             'hint'  => t('Stellt sicher, dass Outlook-Clients weiterhin auf on-prem Exchange zugreifen können während der Migrationsphase.')],
+            ['label' => t('Outlook-Profile der Benutzer nach Migration erneuert'),
+             'hint'  => t('Autodiscover leitet Outlook nach MX-Umschaltung automatisch um; ggf. Profil neu erstellen.')],
+            ['label' => t('Shared Mailboxes / Room Mailboxes migriert'),
+             'hint'  => t('Ressourcenpostfächer separat prüfen und ggf. in Exchange Online neu anlegen.')],
+            ['label' => t('E-Mail-Archiv geprüft (In-Place Archive / PST)'),
+             'hint'  => t('PST-Dateien können über das Microsoft 365 Import Tool hochgeladen werden.')],
+            ['label' => t('MX-Eintrag auf Exchange Online umgestellt'),
+             'hint'  => t('Erst nach Abschluss der Migration umstellen, damit keine E-Mails verloren gehen.')],
+            ['label' => t('Autodiscover CNAME auf outlook.com umgestellt'),
+             'hint'  => t('Erst nach der Migration, damit Outlook-Clients das Exchange-Online-Postfach finden.')],
+            ['label' => t('DKIM in Exchange Online aktiviert'),
+             'hint'  => t('Admin Center → Sicherheit → E-Mail-Authentifizierung → DKIM; CNAME-Einträge im DNS anlegen.')],
+            ['label' => t('DMARC-Policy auf quarantine/reject erhöht'),
+             'hint'  => t('Nach erfolgreicher DKIM/SPF-Aktivierung Richtlinie verschärfen.')],
+            ['label' => t('on-prem Exchange außer Betrieb genommen (wenn gewünscht)'),
+             'hint'  => t('Erst wenn alle Postfächer online sind und DNS umgestellt ist.')],
         ];
         foreach ($checklist as $i => $item):
         ?>
@@ -445,18 +440,18 @@ $readinessIcon = match($score['readiness']) {
         <?php endforeach ?>
       </ul>
       <div class="card-footer text-muted small">
-        <i class="bi bi-info-circle me-1"></i>Checkboxen werden lokal im Browser gespeichert.
+        <i class="bi bi-info-circle me-1"></i><?= te('Checkboxen werden lokal im Browser gespeichert.') ?>
       </div>
     </div>
 
     <!-- Helpful Links -->
     <div class="card mb-4 shadow-sm">
-      <div class="card-header fw-semibold"><i class="bi bi-box-arrow-up-right me-2"></i>Weiterführende Links</div>
+      <div class="card-header fw-semibold"><i class="bi bi-box-arrow-up-right me-2"></i><?= te('Weiterführende Links') ?></div>
       <div class="card-body p-0">
         <ul class="list-group list-group-flush small">
           <li class="list-group-item">
             <a href="https://admin.exchange.microsoft.com/#/migration" target="_blank" rel="noopener noreferrer">
-              <i class="bi bi-envelope me-1"></i> Exchange Admin Center – Migration
+              <i class="bi bi-envelope me-1"></i> <?= te('Exchange Admin Center – Migration') ?>
             </a>
           </li>
           <li class="list-group-item">

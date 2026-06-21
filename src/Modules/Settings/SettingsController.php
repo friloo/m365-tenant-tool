@@ -24,6 +24,7 @@ class SettingsController
             'app_name'           => $config->get('app_name', 'M365 Tenant Tool'),
             'cache_ttl'          => $config->get('cache_ttl', '15'),
             'timezone'           => $config->get('timezone', 'Europe/Berlin'),
+            'default_language'   => $config->get('default_language', \App\Core\I18n::SOURCE),
             'alert_email_to'     => $config->get('alert_email_to', ''),
             'alert_email_from'   => $config->get('alert_email_from', ''),
             'smtp_host'          => $config->get('smtp_host', ''),
@@ -87,6 +88,8 @@ class SettingsController
             $config->set('app_name',            trim($_POST['app_name'] ?? 'M365 Tenant Tool'));
             $config->set('cache_ttl',            (string)(int)($_POST['cache_ttl'] ?? 15));
             $config->set('timezone',             trim($_POST['timezone'] ?? 'Europe/Berlin'));
+            $lang = trim($_POST['default_language'] ?? \App\Core\I18n::SOURCE);
+            $config->set('default_language',     \App\Core\I18n::isSupported($lang) ? $lang : \App\Core\I18n::SOURCE);
             $config->set('alert_email_to',       trim($_POST['alert_email_to'] ?? ''));
             $config->set('alert_email_from',     trim($_POST['alert_email_from'] ?? ''));
             $config->set('smtp_host',            trim($_POST['smtp_host'] ?? ''));

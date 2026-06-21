@@ -23,21 +23,21 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
                 <div>
-                    <h6 class="mb-0 fw-semibold"><i class="bi bi-microsoft me-2 text-primary"></i>M365-Benutzer mit Tool-Zugriff</h6>
+                    <h6 class="mb-0 fw-semibold"><i class="bi bi-microsoft me-2 text-primary"></i><?= te('M365-Benutzer mit Tool-Zugriff') ?></h6>
                     <p class="text-muted small mb-0 mt-1">
-                        Benutzer melden sich mit ihrem Microsoft-Konto an. UPN = Azure-Anmeldeadresse (z.B. user@firma.de).
+                        <?= te('Benutzer melden sich mit ihrem Microsoft-Konto an. UPN = Azure-Anmeldeadresse (z.B. user@firma.de).') ?>
                     </p>
                 </div>
                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                    <i class="bi bi-person-plus me-1"></i>Benutzer hinzufügen
+                    <i class="bi bi-person-plus me-1"></i><?= te('Benutzer hinzufügen') ?>
                 </button>
             </div>
             <div class="card-body p-0">
                 <?php if (empty($users)): ?>
                     <div class="text-center text-muted py-5">
                         <i class="bi bi-people" style="font-size:2.5rem;opacity:.3;"></i>
-                        <p class="mt-3 mb-0">Noch keine Benutzer konfiguriert.</p>
-                        <p class="small">Fügen Sie M365-Benutzer hinzu, damit diese sich anmelden können.</p>
+                        <p class="mt-3 mb-0"><?= te('Noch keine Benutzer konfiguriert.') ?></p>
+                        <p class="small"><?= te('Fügen Sie M365-Benutzer hinzu, damit diese sich anmelden können.') ?></p>
                     </div>
                 <?php else: ?>
                     <div class="table-responsive">
@@ -45,11 +45,11 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                             <thead class="table-light">
                                 <tr>
                                     <th>UPN / E-Mail</th>
-                                    <th>Anzeigename</th>
-                                    <th>Rolle</th>
-                                    <th>Status</th>
-                                    <th>Letzter Login</th>
-                                    <th class="text-end">Aktionen</th>
+                                    <th><?= te('Anzeigename') ?></th>
+                                    <th><?= te('Rolle') ?></th>
+                                    <th><?= te('Status') ?></th>
+                                    <th><?= te('Letzter Login') ?></th>
+                                    <th class="text-end"><?= te('Aktionen') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -58,8 +58,8 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                                     <td>
                                         <span class="fw-medium"><?= htmlspecialchars($u['upn']) ?></span>
                                         <?php if (!$u['azure_object_id']): ?>
-                                            <span class="badge bg-warning text-dark ms-1" title="Noch kein Login — wird beim ersten Anmelden verknüpft">
-                                                <i class="bi bi-clock"></i> ausstehend
+                                            <span class="badge bg-warning text-dark ms-1" title="<?= te('Noch kein Login — wird beim ersten Anmelden verknüpft') ?>">
+                                                <i class="bi bi-clock"></i> <?= te('ausstehend') ?>
                                             </span>
                                         <?php endif; ?>
                                     </td>
@@ -73,9 +73,9 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                                     </td>
                                     <td>
                                         <?php if ($u['is_active']): ?>
-                                            <span class="badge bg-success rounded-pill"><i class="bi bi-check2 me-1"></i>Aktiv</span>
+                                            <span class="badge bg-success rounded-pill"><i class="bi bi-check2 me-1"></i><?= te('Aktiv') ?></span>
                                         <?php else: ?>
-                                            <span class="badge bg-secondary rounded-pill"><i class="bi bi-dash me-1"></i>Deaktiviert</span>
+                                            <span class="badge bg-secondary rounded-pill"><i class="bi bi-dash me-1"></i><?= te('Deaktiviert') ?></span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-muted small">
@@ -85,13 +85,13 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                                         <button class="btn btn-sm btn-outline-secondary"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#editModal<?= (int)$u['id'] ?>"
-                                                title="Bearbeiten">
+                                                title="<?= te('Bearbeiten') ?>">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <button class="btn btn-sm btn-outline-danger ms-1"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#delModal<?= (int)$u['id'] ?>"
-                                                title="Entfernen">
+                                                title="<?= te('Entfernen') ?>">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </td>
@@ -109,12 +109,11 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
     <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white py-3">
-                <h6 class="mb-0 fw-semibold"><i class="bi bi-info-circle me-2 text-info"></i>Azure App-Konfiguration</h6>
+                <h6 class="mb-0 fw-semibold"><i class="bi bi-info-circle me-2 text-info"></i><?= te('Azure App-Konfiguration') ?></h6>
             </div>
             <div class="card-body">
                 <p class="text-muted small mb-2">
-                    Damit M365-Benutzer sich anmelden können, muss in Ihrer Azure App-Registrierung eine
-                    <strong>Redirect-URI</strong> hinterlegt sein. Tragen Sie folgende URI ein:
+                    <?= t('Damit M365-Benutzer sich anmelden können, muss in Ihrer Azure App-Registrierung eine <strong>Redirect-URI</strong> hinterlegt sein. Tragen Sie folgende URI ein:') ?>
                 </p>
                 <div class="input-group input-group-sm">
                     <input type="text" class="form-control font-monospace" id="redirectUriField"
@@ -126,8 +125,8 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                     "><i class="bi bi-clipboard"></i></button>
                 </div>
                 <p class="text-muted small mt-2 mb-0">
-                    Pfad in Azure: <strong>App-Registrierungen → Ihre App → Authentifizierung → Redirect-URIs</strong><br>
-                    Außerdem benötigt die App die delegierte Berechtigung <code>User.Read</code>.
+                    <?= t('Pfad in Azure: <strong>App-Registrierungen → Ihre App → Authentifizierung → Redirect-URIs</strong>') ?><br>
+                    <?= t('Außerdem benötigt die App die delegierte Berechtigung <code>User.Read</code>.') ?>
                 </p>
             </div>
         </div>
@@ -137,7 +136,7 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
     <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white py-3">
-                <h6 class="mb-0 fw-semibold"><i class="bi bi-shield-check me-2 text-success"></i>Rollen</h6>
+                <h6 class="mb-0 fw-semibold"><i class="bi bi-shield-check me-2 text-success"></i><?= te('Rollen') ?></h6>
             </div>
             <div class="card-body">
                 <div class="row g-3">
@@ -145,13 +144,13 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                         <div class="p-3 rounded-3 border">
                             <div class="d-flex align-items-center gap-2 mb-2">
                                 <span class="badge bg-primary rounded-pill">Operator</span>
-                                <span class="fw-medium">Standard-IT-Mitarbeiter</span>
+                                <span class="fw-medium"><?= te('Standard-IT-Mitarbeiter') ?></span>
                             </div>
                             <ul class="text-muted small mb-0 ps-3">
-                                <li>Alle Monitoring-Module lesen</li>
-                                <li>Scans ausführen, Erinnerungen senden</li>
-                                <li>Freigaben manuell widerrufen</li>
-                                <li>Kein Zugriff auf Einstellungen &amp; Updates</li>
+                                <li><?= te('Alle Monitoring-Module lesen') ?></li>
+                                <li><?= te('Scans ausführen, Erinnerungen senden') ?></li>
+                                <li><?= te('Freigaben manuell widerrufen') ?></li>
+                                <li><?= te('Kein Zugriff auf Einstellungen & Updates') ?></li>
                             </ul>
                         </div>
                     </div>
@@ -159,13 +158,13 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                         <div class="p-3 rounded-3 border">
                             <div class="d-flex align-items-center gap-2 mb-2">
                                 <span class="badge bg-danger rounded-pill">Administrator</span>
-                                <span class="fw-medium">Vollzugriff</span>
+                                <span class="fw-medium"><?= te('Vollzugriff') ?></span>
                             </div>
                             <ul class="text-muted small mb-0 ps-3">
-                                <li>Alle Operator-Rechte</li>
-                                <li>Einstellungen bearbeiten</li>
-                                <li>Benutzer verwalten</li>
-                                <li>Updates einspielen</li>
+                                <li><?= te('Alle Operator-Rechte') ?></li>
+                                <li><?= te('Einstellungen bearbeiten') ?></li>
+                                <li><?= te('Benutzer verwalten') ?></li>
+                                <li><?= te('Updates einspielen') ?></li>
                             </ul>
                         </div>
                     </div>
@@ -181,7 +180,7 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Benutzer hinzufügen</h5>
+                <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i><?= te('Benutzer hinzufügen') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="post" action="/settings/users" id="addUserForm">
@@ -189,14 +188,14 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                 <div class="modal-body">
                     <!-- Tenant user picker -->
                     <div class="mb-3" id="searchWrap">
-                        <label class="form-label fw-medium">Benutzer suchen <span class="text-danger">*</span></label>
+                        <label class="form-label fw-medium"><?= te('Benutzer suchen') ?> <span class="text-danger">*</span></label>
                         <div class="position-relative">
                             <span class="position-absolute top-50 translate-middle-y ms-3" style="pointer-events:none; color:#9ca3af;">
                                 <i class="bi bi-search" id="searchIcon"></i>
                                 <span id="searchSpinner" class="spinner-border spinner-border-sm d-none" style="width:.85rem;height:.85rem;"></span>
                             </span>
                             <input type="text" id="userSearchInput" class="form-control ps-5"
-                                   placeholder="Name oder E-Mail eingeben…" autocomplete="off">
+                                   placeholder="<?= te('Name oder E-Mail eingeben…') ?>" autocomplete="off">
                             <div id="userSearchDropdown"
                                  class="dropdown-menu w-100 shadow-sm py-1 d-none"
                                  style="max-height:220px; overflow-y:auto; margin-top:2px;">
@@ -216,7 +215,7 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                         <div class="mt-2">
                             <button type="button" class="btn btn-link btn-sm p-0 text-muted" id="toggleManual"
                                     style="font-size:12px;">
-                                <i class="bi bi-keyboard me-1"></i>UPN manuell eingeben
+                                <i class="bi bi-keyboard me-1"></i><?= te('UPN manuell eingeben') ?>
                             </button>
                         </div>
                     </div>
@@ -228,7 +227,7 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                                placeholder="max.muster@firma.de">
                         <button type="button" class="btn btn-link btn-sm p-0 text-muted mt-1" id="toggleSearch"
                                 style="font-size:12px;">
-                            <i class="bi bi-search me-1"></i>Suche verwenden
+                            <i class="bi bi-search me-1"></i><?= te('Suche verwenden') ?>
                         </button>
                     </div>
 
@@ -236,17 +235,17 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                     <input type="hidden" name="upn" id="upnHidden">
 
                     <div class="mb-1">
-                        <label class="form-label fw-medium">Rolle</label>
+                        <label class="form-label fw-medium"><?= te('Rolle') ?></label>
                         <select name="role" class="form-select">
-                            <option value="operator" selected>Operator (empfohlen für IT-Mitarbeiter)</option>
+                            <option value="operator" selected><?= te('Operator (empfohlen für IT-Mitarbeiter)') ?></option>
                             <option value="admin">Administrator</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= te('Abbrechen') ?></button>
                     <button type="submit" class="btn btn-primary" id="addSubmitBtn" disabled>
-                        <i class="bi bi-check2 me-1"></i>Hinzufügen
+                        <i class="bi bi-check2 me-1"></i><?= te('Hinzufügen') ?>
                     </button>
                 </div>
             </form>
@@ -338,7 +337,7 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                 if (reqId !== activeRequest) return; // stale response
                 setBusy(false);
                 if (!ok || (body && body.error)) {
-                    renderError(body && body.error ? body.error : 'Suche fehlgeschlagen');
+                    renderError(body && body.error ? body.error : <?= json_encode(t('Suche fehlgeschlagen'), JSON_UNESCAPED_UNICODE) ?>);
                     return;
                 }
                 renderDropdown(Array.isArray(body) ? body : []);
@@ -346,7 +345,7 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
             .catch(err => {
                 if (reqId !== activeRequest) return;
                 setBusy(false);
-                renderError('Netzwerkfehler: ' + err.message);
+                renderError(<?= json_encode(t('Netzwerkfehler:'), JSON_UNESCAPED_UNICODE) ?> + ' ' + err.message);
             });
     }
 
@@ -363,7 +362,7 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
         if (!users.length) {
             const el = document.createElement('div');
             el.className = 'dropdown-item text-muted small pe-none';
-            el.innerHTML = '<i class="bi bi-search me-1"></i>Keine Benutzer gefunden';
+            el.innerHTML = '<i class="bi bi-search me-1"></i>' + <?= json_encode(t('Keine Benutzer gefunden'), JSON_UNESCAPED_UNICODE) ?>;
             dropdown.appendChild(el);
         } else {
             users.forEach(u => {
@@ -386,7 +385,7 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
         el.className = 'dropdown-item small pe-none';
         el.style.color = '#dc2626';
         el.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>' + esc(msg)
-            + '<div class="text-muted mt-1" style="font-size:11px;">Tipp: UPN manuell eingeben.</div>';
+            + '<div class="text-muted mt-1" style="font-size:11px;">' + <?= json_encode(t('Tipp: UPN manuell eingeben.'), JSON_UNESCAPED_UNICODE) ?> + '</div>';
         dropdown.appendChild(el);
         dropdown.classList.remove('d-none');
     }
@@ -420,7 +419,7 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Benutzer bearbeiten</h5>
+                <h5 class="modal-title"><?= te('Benutzer bearbeiten') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="post" action="/settings/users/<?= (int)$u['id'] ?>/update">
@@ -428,7 +427,7 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                 <div class="modal-body">
                     <p class="fw-medium mb-3"><?= htmlspecialchars($u['upn']) ?></p>
                     <div class="mb-3">
-                        <label class="form-label fw-medium">Rolle</label>
+                        <label class="form-label fw-medium"><?= te('Rolle') ?></label>
                         <select name="role" class="form-select">
                             <option value="operator" <?= $u['role'] === 'operator' ? 'selected' : '' ?>>Operator</option>
                             <option value="admin"    <?= $u['role'] === 'admin'    ? 'selected' : '' ?>>Administrator</option>
@@ -437,12 +436,12 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="is_active" id="active<?= (int)$u['id'] ?>"
                                <?= $u['is_active'] ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="active<?= (int)$u['id'] ?>">Zugriff aktiv</label>
+                        <label class="form-check-label" for="active<?= (int)$u['id'] ?>"><?= te('Zugriff aktiv') ?></label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-                    <button type="submit" class="btn btn-primary">Speichern</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= te('Abbrechen') ?></button>
+                    <button type="submit" class="btn btn-primary"><?= te('Speichern') ?></button>
                 </div>
             </form>
         </div>
@@ -453,18 +452,18 @@ $roleClass = fn(string $r) => $r === 'admin' ? 'badge bg-danger' : 'badge bg-pri
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title text-danger"><i class="bi bi-trash me-2"></i>Benutzer entfernen</h5>
+                <h5 class="modal-title text-danger"><i class="bi bi-trash me-2"></i><?= te('Benutzer entfernen') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Soll <strong><?= htmlspecialchars($u['upn']) ?></strong> wirklich entfernt werden?</p>
-                <p class="text-muted small mb-0">Der Benutzer verliert sofort den Zugriff.</p>
+                <p><?= t('Soll :upn wirklich entfernt werden?', ['upn' => '<strong>' . htmlspecialchars($u['upn']) . '</strong>']) ?></p>
+                <p class="text-muted small mb-0"><?= te('Der Benutzer verliert sofort den Zugriff.') ?></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= te('Abbrechen') ?></button>
                 <form method="post" action="/settings/users/<?= (int)$u['id'] ?>/delete">
                     <?= \App\Core\Csrf::field() ?>
-                    <button type="submit" class="btn btn-danger">Entfernen</button>
+                    <button type="submit" class="btn btn-danger"><?= te('Entfernen') ?></button>
                 </form>
             </div>
         </div>

@@ -10,21 +10,21 @@
 <div class="content-card">
     <div class="card-header-custom">
         <i class="bi bi-journal-check text-primary"></i>
-        <h6>App Audit-Log <span class="text-muted fw-normal">(letzte 200 Einträge)</span></h6>
+        <h6><?= te('App Audit-Log') ?> <span class="text-muted fw-normal"><?= te('(letzte 200 Einträge)') ?></span></h6>
     </div>
     <div class="card-body-custom p-0">
         <?php if (empty($rows)): ?>
-            <p class="text-muted p-3 mb-0">Noch keine Einträge vorhanden.</p>
+            <p class="text-muted p-3 mb-0"><?= te('Noch keine Einträge vorhanden.') ?></p>
         <?php else: ?>
         <div class="table-responsive">
             <table class="table table-sm table-hover mb-0" style="font-size:13px;">
                 <thead class="table-light">
                     <tr>
-                        <th>Zeitpunkt</th>
-                        <th>Benutzer</th>
-                        <th>Aktion</th>
-                        <th>Modul</th>
-                        <th>Detail</th>
+                        <th><?= te('Zeitpunkt') ?></th>
+                        <th><?= te('Benutzer') ?></th>
+                        <th><?= te('Aktion') ?></th>
+                        <th><?= te('Modul') ?></th>
+                        <th><?= te('Detail') ?></th>
                         <th>IP</th>
                     </tr>
                 </thead>

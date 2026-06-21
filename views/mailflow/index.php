@@ -5,15 +5,15 @@
 $statusMeta = function (string $status): array {
     return match ($status) {
         'serviceOperational', 'serviceDegradationMitigated'
-            => ['label' => 'Betrieb',              'color' => '#16a34a', 'badgeClass' => 'badge-enabled'],
+            => ['label' => t('Betrieb'),              'color' => '#16a34a', 'badgeClass' => 'badge-enabled'],
         'serviceDegradation'
-            => ['label' => 'Beeinträchtigt',       'color' => '#d97706', 'badgeClass' => 'badge-warning'],
+            => ['label' => t('Beeinträchtigt'),       'color' => '#d97706', 'badgeClass' => 'badge-warning'],
         'serviceInterruption'
-            => ['label' => 'Unterbrochen',         'color' => '#dc2626', 'badgeClass' => 'badge-danger'],
+            => ['label' => t('Unterbrochen'),         'color' => '#dc2626', 'badgeClass' => 'badge-danger'],
         'restoringService'
-            => ['label' => 'Wird wiederhergestellt', 'color' => '#2563eb', 'badgeClass' => 'badge-info'],
+            => ['label' => t('Wird wiederhergestellt'), 'color' => '#2563eb', 'badgeClass' => 'badge-info'],
         default
-            => ['label' => $status ?: 'Unbekannt', 'color' => '#9ca3af', 'badgeClass' => 'badge-neutral'],
+            => ['label' => $status ?: t('Unbekannt'), 'color' => '#9ca3af', 'badgeClass' => 'badge-neutral'],
     };
 };
 
@@ -27,16 +27,16 @@ $severityBadge = fn(string $s): string => match (strtolower($s)) {
 };
 
 $severityLabel = fn(string $s): string => match (strtolower($s)) {
-    'high'          => 'Kritisch',
-    'medium'        => 'Mittel',
-    'low'           => 'Niedrig',
-    'informational' => 'Info',
+    'high'          => t('Kritisch'),
+    'medium'        => t('Mittel'),
+    'low'           => t('Niedrig'),
+    'informational' => t('Info'),
     default         => $s,
 };
 
 // Derive Exchange Online status from health overview
 $exoStatus      = '';
-$exoStatusMeta  = ['label' => 'Unbekannt', 'color' => '#9ca3af', 'badgeClass' => 'badge-neutral'];
+$exoStatusMeta  = ['label' => t('Unbekannt'), 'color' => '#9ca3af', 'badgeClass' => 'badge-neutral'];
 $exoLastChecked = '';
 
 if (!empty($healthOverview)) {
@@ -52,15 +52,14 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
 
 <!-- Page subtitle -->
 <p class="text-muted mb-4" style="font-size:14px;">
-    Exchange Online Mailflow-Übersicht und Sicherheitseinstellungen
+    <?= te('Exchange Online Mailflow-Übersicht und Sicherheitseinstellungen') ?>
 </p>
 
 <!-- Info banner -->
 <div class="alert alert-info d-flex gap-2 mb-4" role="alert">
     <i class="bi bi-info-circle flex-shrink-0 mt-1"></i>
     <span>
-        Transportregeln und Anti-Spam-Richtlinien werden direkt in Exchange Online und Microsoft Defender
-        verwaltet. Diese Seite zeigt den aktuellen Status und verlinkt zu den entsprechenden Admin-Bereichen.
+        <?= te('Transportregeln und Anti-Spam-Richtlinien werden direkt in Exchange Online und Microsoft Defender verwaltet. Diese Seite zeigt den aktuellen Status und verlinkt zu den entsprechenden Admin-Bereichen.') ?>
     </span>
 </div>
 
@@ -70,18 +69,18 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
     <!-- Exchange Online Status -->
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label">Exchange Online Status</div>
+            <div class="metric-label"><?= te('Exchange Online Status') ?></div>
             <div class="metric-value" style="font-size:1.4rem;">
                 <?php if (!empty($exoStatusMeta)): ?>
                     <span class="<?= $e($exoStatusMeta['badgeClass']) ?>" style="font-size:13px;">
                         <?= $e($exoStatusMeta['label']) ?>
                     </span>
                 <?php else: ?>
-                    <span class="badge-neutral" style="font-size:13px;">Unbekannt</span>
+                    <span class="badge-neutral" style="font-size:13px;"><?= te('Unbekannt') ?></span>
                 <?php endif; ?>
             </div>
             <div class="metric-sub">
-                <?= $isOperational ? 'Kein bekanntes Problem' : ($exoStatus ? 'Prüfen Sie die Details' : 'Keine Daten') ?>
+                <?= $isOperational ? te('Kein bekanntes Problem') : ($exoStatus ? te('Prüfen Sie die Details') : te('Keine Daten')) ?>
             </div>
         </div>
     </div>
@@ -89,15 +88,15 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
     <!-- Active Issues -->
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label">Aktive Störungen</div>
+            <div class="metric-label"><?= te('Aktive Störungen') ?></div>
             <div class="metric-value" style="color:<?= $issueCount > 0 ? '#dc2626' : '#111827' ?>;">
                 <?= $issueCount ?>
             </div>
             <div class="metric-sub">
                 <?php if ($issueCount > 0): ?>
-                    <span class="badge-danger"><?= $issueCount ?> offen</span>
+                    <span class="badge-danger"><?= te(':n offen', ['n' => $issueCount]) ?></span>
                 <?php else: ?>
-                    <span class="badge-enabled">Keine Störungen</span>
+                    <span class="badge-enabled"><?= te('Keine Störungen') ?></span>
                 <?php endif; ?>
             </div>
         </div>
@@ -106,15 +105,15 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
     <!-- Defender Alerts -->
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label">Sicherheitswarnungen</div>
+            <div class="metric-label"><?= te('Sicherheitswarnungen') ?></div>
             <div class="metric-value" style="color:<?= $alertCount > 0 ? '#d97706' : '#111827' ?>;">
                 <?= $alertCount ?>
             </div>
             <div class="metric-sub">
                 <?php if ($alertCount > 0): ?>
-                    <span class="badge-warning"><?= $alertCount ?> aktiv</span>
+                    <span class="badge-warning"><?= te(':n aktiv', ['n' => $alertCount]) ?></span>
                 <?php else: ?>
-                    <span class="badge-enabled">Keine Warnungen</span>
+                    <span class="badge-enabled"><?= te('Keine Warnungen') ?></span>
                 <?php endif; ?>
             </div>
         </div>
@@ -123,9 +122,9 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
     <!-- Admin Areas (static) -->
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label">Verwaltungsbereiche</div>
+            <div class="metric-label"><?= te('Verwaltungsbereiche') ?></div>
             <div class="metric-value">8</div>
-            <div class="metric-sub">Direkte EAC- & Defender-Links</div>
+            <div class="metric-sub"><?= te('Direkte EAC- & Defender-Links') ?></div>
         </div>
     </div>
 
@@ -136,7 +135,7 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
 <div class="content-card mb-4" style="border-left: 4px solid #dc2626;">
     <div class="card-header-custom">
         <i class="bi bi-exclamation-octagon-fill text-danger"></i>
-        <h6>Exchange Online Störungen (<?= $issueCount ?>)</h6>
+        <h6><?= te('Exchange Online Störungen') ?> (<?= $issueCount ?>)</h6>
     </div>
     <div class="card-body-custom p-0">
         <?php foreach ($activeIssues as $issue):
@@ -155,7 +154,7 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
                 <span style="font-size:13px;font-weight:500;"><?= $e($issue['title'] ?? '–') ?></span>
             </div>
             <div class="d-flex gap-3 flex-wrap" style="font-size:11px;color:#6b7280;">
-                <span><i class="bi bi-clock me-1"></i>Beginn: <?= $e($started) ?></span>
+                <span><i class="bi bi-clock me-1"></i><?= te('Beginn:') ?> <?= $e($started) ?></span>
                 <?php if (!empty($issue['status'])): ?>
                     <span><i class="bi bi-circle-fill me-1" style="font-size:8px;"></i><?= $e($issue['status']) ?></span>
                 <?php endif; ?>
@@ -175,13 +174,13 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-shield-shaded text-primary"></i>
-        <h6>Defender für Office 365 – Aktive Warnungen</h6>
+        <h6><?= te('Defender für Office 365 – Aktive Warnungen') ?></h6>
     </div>
     <?php if (empty($defenderAlerts)): ?>
         <div class="card-body-custom">
             <div class="d-flex align-items-center gap-2 text-muted" style="font-size:13px;">
                 <i class="bi bi-check-circle text-success"></i>
-                Keine aktiven Sicherheitswarnungen von Defender für Office 365.
+                <?= te('Keine aktiven Sicherheitswarnungen von Defender für Office 365.') ?>
             </div>
         </div>
     <?php else: ?>
@@ -189,10 +188,10 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Titel</th>
-                        <th>Schweregrad</th>
-                        <th>Kategorie</th>
-                        <th>Erstellt am</th>
+                        <th><?= te('Titel') ?></th>
+                        <th><?= te('Schweregrad') ?></th>
+                        <th><?= te('Kategorie') ?></th>
+                        <th><?= te('Erstellt am') ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -236,11 +235,11 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-box-arrow-up-right text-secondary"></i>
-        <h6>Verwaltung in Exchange Online &amp; Microsoft Defender</h6>
+        <h6><?= te('Verwaltung in Exchange Online &amp; Microsoft Defender') ?></h6>
     </div>
     <div class="card-body-custom">
         <p class="text-muted mb-3" style="font-size:13px;">
-            Diese Funktionen werden außerhalb der Graph API verwaltet — direkter Zugriff auf die Verwaltungsoberflächen:
+            <?= te('Diese Funktionen werden außerhalb der Graph API verwaltet — direkter Zugriff auf die Verwaltungsoberflächen:') ?>
         </p>
         <div class="row g-3">
             <?php foreach ($adminLinks as $link): ?>
@@ -261,7 +260,7 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
                        rel="noopener noreferrer"
                        class="btn btn-sm btn-outline-primary"
                        style="font-size:11px;align-self:flex-start;">
-                        Öffnen <i class="bi bi-box-arrow-up-right ms-1"></i>
+                        <?= te('Öffnen') ?> <i class="bi bi-box-arrow-up-right ms-1"></i>
                     </a>
                 </div>
             </div>
@@ -276,7 +275,7 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
 <div class="content-card">
     <div class="card-header-custom">
         <i class="bi bi-envelope-check text-secondary"></i>
-        <h6>Exchange Online – Dienststatus</h6>
+        <h6><?= te('Exchange Online – Dienststatus') ?></h6>
     </div>
     <div class="card-body-custom">
         <div class="d-flex align-items-center gap-3 flex-wrap">
@@ -289,16 +288,16 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
                 </span>
             </div>
             <span class="text-muted ms-auto" style="font-size:11px;">
-                <i class="bi bi-clock me-1"></i>Abgerufen: <?= date('d.m.Y H:i') ?> Uhr
+                <i class="bi bi-clock me-1"></i><?= te('Abgerufen:') ?> <?= date('d.m.Y H:i') ?><?= \App\Core\I18n::locale() === 'de' ? ' Uhr' : '' ?>
             </span>
         </div>
         <?php if (!$isOperational && !empty($exoStatus)): ?>
             <div class="mt-2 alert alert-warning mb-0 py-2 px-3" style="font-size:12px;">
                 <i class="bi bi-exclamation-triangle me-1"></i>
-                Exchange Online meldet aktuell keinen Normalbetrieb. Prüfen Sie die
+                <?= te('Exchange Online meldet aktuell keinen Normalbetrieb. Prüfen Sie die') ?>
                 <a href="https://admin.microsoft.com/Adminportal/Home#/servicehealth" target="_blank" rel="noopener noreferrer">
                     Microsoft 365 Service Health
-                </a> für Details.
+                </a> <?= te('für Details.') ?>
             </div>
         <?php endif; ?>
     </div>
@@ -309,23 +308,23 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
 // ── Schutzrichtlinien konfigurieren (Defender for Office 365 / EOP) ──
 // Keine Microsoft-Graph-Write-API → Microsoft-Defender-Portal oder Exchange-Online-PowerShell.
 echo \App\Core\Ui::externalCard(
-    'Schutzrichtlinien konfigurieren (Defender for Office 365 / EOP)',
-    'Anti-Phishing, Anti-Spam, Anti-Malware, Safe Links/Attachments und Transport-Regeln lassen sich '
+    t('Schutzrichtlinien konfigurieren (Defender for Office 365 / EOP)'),
+    t('Anti-Phishing, Anti-Spam, Anti-Malware, Safe Links/Attachments und Transport-Regeln lassen sich '
     . '<strong>nicht über die Microsoft Graph API</strong> setzen. Konfiguration im '
-    . '<strong>Microsoft-Defender-Portal</strong> oder per <strong>Exchange-Online-PowerShell</strong>:',
+    . '<strong>Microsoft-Defender-Portal</strong> oder per <strong>Exchange-Online-PowerShell</strong>:'),
     [
-        ['https://security.microsoft.com/presetSecurityPolicies', 'Preset-Sicherheitsrichtlinien (Defender)'],
-        ['https://security.microsoft.com/antiphishing', 'Anti-Phishing (Defender)'],
-        ['https://security.microsoft.com/safelinksv2', 'Safe Links (Defender)'],
-        ['https://admin.exchange.microsoft.com/#/transportrules', 'Transport-Regeln (Exchange Admin)'],
+        ['https://security.microsoft.com/presetSecurityPolicies', t('Preset-Sicherheitsrichtlinien (Defender)')],
+        ['https://security.microsoft.com/antiphishing', t('Anti-Phishing (Defender)')],
+        ['https://security.microsoft.com/safelinksv2', t('Safe Links (Defender)')],
+        ['https://admin.exchange.microsoft.com/#/transportrules', t('Transport-Regeln (Exchange Admin)')],
     ],
     [
-        ["Connect-ExchangeOnline -UserPrincipalName admin@deine-domain.de", 'Mit Exchange Online PowerShell verbinden'],
-        ["Set-AntiPhishPolicy -Identity \"Office365 AntiPhish Default\" `\n  -EnableSpoofIntelligence \$true `\n  -EnableMailboxIntelligence \$true `\n  -EnableMailboxIntelligenceProtection \$true `\n  -EnableFirstContactSafetyTips \$true", 'Anti-Phishing härten'],
-        ["Set-HostedOutboundSpamFilterPolicy -Identity Default -AutoForwardingMode Off", 'Externe Auto-Weiterleitung tenant-weit blockieren'],
-        ["New-SafeLinksPolicy -Name \"SafeLinks Std\" `\n  -EnableSafeLinksForEmail \$true -EnableSafeLinksForTeams \$true `\n  -EnableSafeLinksForOffice \$true -ScanUrls \$true -DeliverMessageAfterScan \$true\n\nNew-SafeLinksRule -Name \"SafeLinks Std\" -SafeLinksPolicy \"SafeLinks Std\" `\n  -RecipientDomainIs (Get-AcceptedDomain).Name", 'Safe Links aktivieren'],
-        ["New-SafeAttachmentPolicy -Name \"SafeAtt Std\" -Enable \$true -Action Block\n\nNew-SafeAttachmentRule -Name \"SafeAtt Std\" -SafeAttachmentPolicy \"SafeAtt Std\" `\n  -RecipientDomainIs (Get-AcceptedDomain).Name", 'Safe Attachments aktivieren'],
-        ["Set-ExternalInOutlook -Enabled \$true", '„External\"-Tag in Outlook aktivieren'],
+        ["Connect-ExchangeOnline -UserPrincipalName admin@deine-domain.de", t('Mit Exchange Online PowerShell verbinden')],
+        ["Set-AntiPhishPolicy -Identity \"Office365 AntiPhish Default\" `\n  -EnableSpoofIntelligence \$true `\n  -EnableMailboxIntelligence \$true `\n  -EnableMailboxIntelligenceProtection \$true `\n  -EnableFirstContactSafetyTips \$true", t('Anti-Phishing härten')],
+        ["Set-HostedOutboundSpamFilterPolicy -Identity Default -AutoForwardingMode Off", t('Externe Auto-Weiterleitung tenant-weit blockieren')],
+        ["New-SafeLinksPolicy -Name \"SafeLinks Std\" `\n  -EnableSafeLinksForEmail \$true -EnableSafeLinksForTeams \$true `\n  -EnableSafeLinksForOffice \$true -ScanUrls \$true -DeliverMessageAfterScan \$true\n\nNew-SafeLinksRule -Name \"SafeLinks Std\" -SafeLinksPolicy \"SafeLinks Std\" `\n  -RecipientDomainIs (Get-AcceptedDomain).Name", t('Safe Links aktivieren')],
+        ["New-SafeAttachmentPolicy -Name \"SafeAtt Std\" -Enable \$true -Action Block\n\nNew-SafeAttachmentRule -Name \"SafeAtt Std\" -SafeAttachmentPolicy \"SafeAtt Std\" `\n  -RecipientDomainIs (Get-AcceptedDomain).Name", t('Safe Attachments aktivieren')],
+        ["Set-ExternalInOutlook -Enabled \$true", t('„External"-Tag in Outlook aktivieren')],
     ],
     'shield-shaded'
 );

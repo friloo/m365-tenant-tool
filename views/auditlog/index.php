@@ -3,12 +3,12 @@
 <!-- Date filter -->
 <form method="get" class="d-flex align-items-center gap-2 mb-4 flex-wrap">
     <input type="hidden" name="tab" value="<?= $e($tab) ?>">
-    <label class="fw-medium small">Von</label>
+    <label class="fw-medium small"><?= te('Von') ?></label>
     <input type="date" name="from" class="form-control form-control-sm" style="max-width:160px;" value="<?= $e($from) ?>">
-    <label class="fw-medium small">Bis</label>
+    <label class="fw-medium small"><?= te('Bis') ?></label>
     <input type="date" name="to" class="form-control form-control-sm" style="max-width:160px;" value="<?= $e($to) ?>">
     <button type="submit" class="btn btn-primary btn-sm">
-        <i class="bi bi-search me-1"></i> Laden
+        <i class="bi bi-search me-1"></i> <?= te('Laden') ?>
     </button>
     <a href="?from=<?= $e($from) ?>&to=<?= $e($to) ?>&tab=<?= $e($tab) ?>&export=1"
        class="btn btn-outline-secondary btn-sm ms-auto">
@@ -21,13 +21,13 @@
     <li class="nav-item">
         <a class="nav-link <?= $tab === 'directory' ? 'active' : '' ?>"
            href="?from=<?= $e($from) ?>&to=<?= $e($to) ?>&tab=directory">
-            <i class="bi bi-folder me-1"></i> Verzeichnis-Audit
+            <i class="bi bi-folder me-1"></i> <?= te('Verzeichnis-Audit') ?>
         </a>
     </li>
     <li class="nav-item">
         <a class="nav-link <?= $tab === 'signins' ? 'active' : '' ?>"
            href="?from=<?= $e($from) ?>&to=<?= $e($to) ?>&tab=signins">
-            <i class="bi bi-box-arrow-in-right me-1"></i> Anmeldungen
+            <i class="bi bi-box-arrow-in-right me-1"></i> <?= te('Anmeldungen') ?>
         </a>
     </li>
 </ul>
@@ -35,13 +35,13 @@
 <?php if ($tab === 'directory'): ?>
     <div class="content-card">
         <div class="table-toolbar">
-            <input type="text" id="auditSearch" class="search-box" placeholder="Suchen…">
-            <span class="ms-auto text-muted small"><?= count($directoryAudits) ?> Einträge</span>
+            <input type="text" id="auditSearch" class="search-box" placeholder="<?= te('Suchen…') ?>">
+            <span class="ms-auto text-muted small"><?= count($directoryAudits) ?> <?= te('Einträge') ?></span>
         </div>
         <div class="table-responsive">
             <table class="data-table" id="auditTable">
                 <thead>
-                    <tr><th>Zeitpunkt</th><th>Aktion</th><th>Kategorie</th><th>Ergebnis</th><th>Initiiert von</th><th>Ziel</th></tr>
+                    <tr><th><?= te('Zeitpunkt') ?></th><th><?= te('Aktion') ?></th><th><?= te('Kategorie') ?></th><th><?= te('Ergebnis') ?></th><th><?= te('Initiiert von') ?></th><th><?= te('Ziel') ?></th></tr>
                 </thead>
                 <tbody>
                     <?php foreach ($directoryAudits as $a): ?>
@@ -54,7 +54,7 @@
                             <td><span class="badge-neutral"><?= $e($a['category'] ?? '') ?></span></td>
                             <td>
                                 <?php $r = strtolower($a['result'] ?? ''); ?>
-                                <?= $r === 'success' ? '<span class="badge-enabled">OK</span>' : ($r === 'failure' ? '<span class="badge-disabled">Fehler</span>' : '<span class="badge-neutral">'.$e($r).'</span>') ?>
+                                <?= $r === 'success' ? '<span class="badge-enabled">OK</span>' : ($r === 'failure' ? '<span class="badge-disabled">'.te('Fehler').'</span>' : '<span class="badge-neutral">'.$e($r).'</span>') ?>
                             </td>
                             <td style="font-size:12px;color:#6b7280;"><?= $e($actor) ?></td>
                             <td style="font-size:12px;">
@@ -63,7 +63,7 @@
                         </tr>
                     <?php endforeach; ?>
                     <?php if (empty($directoryAudits)): ?>
-                        <tr><td colspan="6" class="text-center text-muted py-4">Keine Einträge im gewählten Zeitraum</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted py-4"><?= te('Keine Einträge im gewählten Zeitraum') ?></td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -74,13 +74,13 @@
 <?php else: ?>
     <div class="content-card">
         <div class="table-toolbar">
-            <input type="text" id="siSearch" class="search-box" placeholder="Suchen…">
-            <span class="ms-auto text-muted small"><?= count($signIns) ?> Einträge</span>
+            <input type="text" id="siSearch" class="search-box" placeholder="<?= te('Suchen…') ?>">
+            <span class="ms-auto text-muted small"><?= count($signIns) ?> <?= te('Einträge') ?></span>
         </div>
         <div class="table-responsive">
             <table class="data-table" id="siTable">
                 <thead>
-                    <tr><th>Zeitpunkt</th><th>Benutzer</th><th>App</th><th>IP</th><th>Status</th><th>Risiko</th><th>CA</th></tr>
+                    <tr><th><?= te('Zeitpunkt') ?></th><th><?= te('Benutzer') ?></th><th>App</th><th>IP</th><th><?= te('Status') ?></th><th><?= te('Risiko') ?></th><th>CA</th></tr>
                 </thead>
                 <tbody>
                     <?php foreach ($signIns as $s): ?>
@@ -92,7 +92,7 @@
                             <td style="font-size:12px;"><?= $e($s['userPrincipalName'] ?? '') ?></td>
                             <td style="font-size:12px;color:#6b7280;"><?= $e($s['appDisplayName'] ?? '') ?></td>
                             <td style="font-size:11px;color:#9ca3af;"><?= $e($s['ipAddress'] ?? '') ?></td>
-                            <td><?= $success ? '<span class="badge-enabled">OK</span>' : '<span class="badge-disabled">Fehler</span>' ?></td>
+                            <td><?= $success ? '<span class="badge-enabled">OK</span>' : '<span class="badge-disabled">'.te('Fehler').'</span>' ?></td>
                             <td>
                                 <?php $risk = strtolower($s['riskLevelDuringSignIn'] ?? 'none'); ?>
                                 <?php if ($risk !== 'none' && $risk !== ''): ?>
@@ -106,7 +106,7 @@
                         </tr>
                     <?php endforeach; ?>
                     <?php if (empty($signIns)): ?>
-                        <tr><td colspan="7" class="text-center text-muted py-4">Keine Einträge im gewählten Zeitraum</td></tr>
+                        <tr><td colspan="7" class="text-center text-muted py-4"><?= te('Keine Einträge im gewählten Zeitraum') ?></td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>

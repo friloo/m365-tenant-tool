@@ -6,15 +6,14 @@
 
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
-        <h1 class="h3 mb-1">Lizenzpreise konfigurieren</h1>
+        <h1 class="h3 mb-1"><?= te('Lizenzpreise konfigurieren') ?></h1>
         <p class="text-muted mb-0">
-            Überschreibe die Katalog-Standardpreise mit deinen tatsächlichen Partner- oder CSP-Preisen.
-            Leer lassen = Katalog-Standard verwenden.
+            <?= te('Überschreibe die Katalog-Standardpreise mit deinen tatsächlichen Partner- oder CSP-Preisen. Leer lassen = Katalog-Standard verwenden.') ?>
         </p>
     </div>
     <a href="https://www.microsoft.com/de-de/microsoft-365/business/compare-all-microsoft-365-business-products"
        target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-box-arrow-up-right me-1"></i>Microsoft Preisseite (DE)
+        <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Microsoft Preisseite (DE)') ?>
     </a>
 </div>
 
@@ -35,9 +34,7 @@
 <div class="alert alert-info d-flex align-items-start gap-2 mb-4">
     <i class="bi bi-info-circle-fill mt-1 flex-shrink-0"></i>
     <div>
-        Alle Preise sind <strong>Netto pro Nutzer/Monat</strong> (Jahresabonnement).
-        Katalog-Standardwerte stammen aus der Microsoft Deutschland Preisseite (Stand Mai 2025).
-        Konfigurierte Preise überschreiben die Standardwerte in Lizenz-Berater und Lizenzkosten.
+        <?= t('Alle Preise sind <strong>Netto pro Nutzer/Monat</strong> (Jahresabonnement). Katalog-Standardwerte stammen aus der Microsoft Deutschland Preisseite (Stand Mai 2025). Konfigurierte Preise überschreiben die Standardwerte in Lizenz-Berater und Lizenzkosten.') ?>
     </div>
 </div>
 
@@ -61,8 +58,8 @@ ksort($tiers);
                 <tr>
                     <th>SKU</th>
                     <th>Part Number</th>
-                    <th style="width:200px">Preis Standard (€)</th>
-                    <th style="width:200px">Preis NPO (€)</th>
+                    <th style="width:200px"><?= te('Preis Standard (€)') ?></th>
+                    <th style="width:200px"><?= te('Preis NPO (€)') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -81,7 +78,7 @@ ksort($tiers);
                                placeholder="<?= $p['default_eur'] !== null ? number_format($p['default_eur'], 2, ',', '.') : '–' ?>">
                     </div>
                     <?php if ($p['default_eur'] !== null): ?>
-                    <small class="text-muted">Standard: <?= number_format($p['default_eur'], 2, ',', '.') ?> €</small>
+                    <small class="text-muted"><?= te('Standard:') ?> <?= number_format($p['default_eur'], 2, ',', '.') ?> €</small>
                     <?php endif; ?>
                 </td>
                 <td>
@@ -95,9 +92,9 @@ ksort($tiers);
                                placeholder="<?= $p['default_npo'] !== null ? number_format($p['default_npo'], 2, ',', '.') : '–' ?>">
                     </div>
                     <?php if ($p['default_npo'] !== null): ?>
-                    <small class="text-muted">Standard: <?= number_format($p['default_npo'], 2, ',', '.') ?> €</small>
+                    <small class="text-muted"><?= te('Standard:') ?> <?= number_format($p['default_npo'], 2, ',', '.') ?> €</small>
                     <?php elseif ($p['default_npo'] === null): ?>
-                    <small class="text-muted">Kein NPO-Preis bekannt</small>
+                    <small class="text-muted"><?= te('Kein NPO-Preis bekannt') ?></small>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -110,13 +107,13 @@ ksort($tiers);
 
 <div class="d-flex gap-2 mb-5">
     <button type="submit" class="btn btn-primary">
-        <i class="bi bi-check-lg me-1"></i>Preise speichern
+        <i class="bi bi-check-lg me-1"></i><?= te('Preise speichern') ?>
     </button>
     <button type="reset" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-counterclockwise me-1"></i>Zurücksetzen
+        <i class="bi bi-arrow-counterclockwise me-1"></i><?= te('Zurücksetzen') ?>
     </button>
     <a href="/settings" class="btn btn-outline-secondary ms-auto">
-        Zurück zu Einstellungen
+        <?= te('Zurück zu Einstellungen') ?>
     </a>
 </div>
 

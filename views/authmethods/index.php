@@ -3,16 +3,16 @@ $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 
 $stateBadge = function (string $state): string {
     return match ($state) {
-        'enabled'  => '<span class="badge bg-success">aktiviert</span>',
-        'disabled' => '<span class="badge bg-secondary">deaktiviert</span>',
-        default    => '<span class="badge bg-light text-dark border">Standard</span>',
+        'enabled'  => '<span class="badge bg-success">' . te('aktiviert') . '</span>',
+        'disabled' => '<span class="badge bg-secondary">' . te('deaktiviert') . '</span>',
+        default    => '<span class="badge bg-light text-dark border">' . te('Standard') . '</span>',
     };
 };
 $recBadge = function (string $rec): string {
     return match ($rec) {
-        'enabled'  => '<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">empfohlen: an</span>',
-        'disabled' => '<span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">empfohlen: aus</span>',
-        default    => '<span class="badge bg-light text-dark border">situativ</span>',
+        'enabled'  => '<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">' . te('empfohlen: an') . '</span>',
+        'disabled' => '<span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">' . te('empfohlen: aus') . '</span>',
+        default    => '<span class="badge bg-light text-dark border">' . te('situativ') . '</span>',
     };
 };
 ?>
@@ -35,10 +35,8 @@ $recBadge = function (string $rec): string {
 <div class="alert alert-info d-flex align-items-start gap-2">
   <i class="bi bi-info-circle-fill mt-1"></i>
   <div>
-    Steuert tenant-weit, welche Authentifizierungsmethoden Nutzer registrieren/verwenden dürfen
-    (<code>/policies/authenticationMethodsPolicy</code>). Empfehlung nach CIS M365 / Microsoft:
-    phishing-resistente Methoden (FIDO2, Authenticator) aktivieren, schwache (SMS, Sprachanruf,
-    E-Mail-OTP) als MFA deaktivieren. Änderungen wirken <strong>sofort tenant-weit</strong>.
+    <?= te('Steuert tenant-weit, welche Authentifizierungsmethoden Nutzer registrieren/verwenden dürfen') ?>
+    (<code>/policies/authenticationMethodsPolicy</code>). <?= te('Empfehlung nach CIS M365 / Microsoft: phishing-resistente Methoden (FIDO2, Authenticator) aktivieren, schwache (SMS, Sprachanruf, E-Mail-OTP) als MFA deaktivieren. Änderungen wirken') ?> <strong><?= te('sofort tenant-weit') ?></strong>.
   </div>
 </div>
 
@@ -47,16 +45,16 @@ $recBadge = function (string $rec): string {
     <table class="table align-middle mb-0">
       <thead>
         <tr>
-          <th>Methode</th>
-          <th>Status</th>
-          <th>Empfehlung</th>
-          <th>Hinweis</th>
-          <?php if ($isAdmin ?? false): ?><th class="text-end">Aktion</th><?php endif ?>
+          <th><?= te('Methode') ?></th>
+          <th><?= te('Status') ?></th>
+          <th><?= te('Empfehlung') ?></th>
+          <th><?= te('Hinweis') ?></th>
+          <?php if ($isAdmin ?? false): ?><th class="text-end"><?= te('Aktion') ?></th><?php endif ?>
         </tr>
       </thead>
       <tbody>
         <?php if (empty($methods)): ?>
-          <tr><td colspan="5" class="text-muted text-center py-4">Keine Methoden gelesen — Berechtigung <code>Policy.Read.All</code> prüfen.</td></tr>
+          <tr><td colspan="5" class="text-muted text-center py-4"><?= te('Keine Methoden gelesen — Berechtigung') ?> <code>Policy.Read.All</code> <?= te('prüfen.') ?></td></tr>
         <?php endif ?>
         <?php foreach ($methods as $m): ?>
           <tr>
@@ -68,11 +66,11 @@ $recBadge = function (string $rec): string {
             <td class="text-end">
               <?php $target = $m['state'] === 'enabled' ? 'disabled' : 'enabled'; ?>
               <form method="post" action="/authmethods/<?= $e(rawurlencode($m['id'])) ?>/set-state" class="d-inline"
-                    onsubmit="return confirm('Methode <?= $e($m['label']) ?> auf \'<?= $e($target) ?>\' setzen? Wirkt sofort tenant-weit.');">
+                    onsubmit="return confirm('<?= $e(t('Methode')) ?> <?= $e($m['label']) ?> <?= $e(t('auf')) ?> \'<?= $e($target) ?>\' <?= $e(t('setzen? Wirkt sofort tenant-weit.')) ?>');">
                 <?= \App\Core\Csrf::field() ?>
                 <input type="hidden" name="state" value="<?= $e($target) ?>">
                 <button type="submit" class="btn btn-sm <?= $target === 'enabled' ? 'btn-outline-success' : 'btn-outline-secondary' ?>">
-                  <?= $target === 'enabled' ? 'Aktivieren' : 'Deaktivieren' ?>
+                  <?= $target === 'enabled' ? te('Aktivieren') : te('Deaktivieren') ?>
                 </button>
               </form>
             </td>
@@ -85,7 +83,7 @@ $recBadge = function (string $rec): string {
 </div>
 
 <p class="small text-muted">
-  Schreiben erfordert die Graph-Berechtigung <code>Policy.ReadWrite.AuthenticationMethod</code>.
-  Feinkonfiguration (z. B. Zielgruppen je Methode, Number-Matching-Details) im
-  <a href="https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade" target="_blank" rel="noopener">Entra-Portal</a>.
+  <?= te('Schreiben erfordert die Graph-Berechtigung') ?> <code>Policy.ReadWrite.AuthenticationMethod</code>.
+  <?= te('Feinkonfiguration (z. B. Zielgruppen je Methode, Number-Matching-Details) im') ?>
+  <a href="https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade" target="_blank" rel="noopener"><?= te('Entra-Portal') ?></a>.
 </p>

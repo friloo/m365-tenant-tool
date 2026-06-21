@@ -11,14 +11,14 @@ $stepState = function (array $step) use ($progress): string {
 <div class="content-card mb-3 no-print">
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
-            <h1 class="mb-1"><i class="bi bi-compass text-primary"></i> Tenant-Härtungs-Leitfaden</h1>
-            <p class="text-muted mb-0">Best-Practice-Schritt-für-Schritt für einen sicheren Microsoft-365-Tenant. Du kannst Schritte abhaken, überspringen, jederzeit zurückkehren. Der Fortschritt wird im Tool gespeichert.</p>
+            <h1 class="mb-1"><i class="bi bi-compass text-primary"></i> <?= te('Tenant-Härtungs-Leitfaden') ?></h1>
+            <p class="text-muted mb-0"><?= te('Best-Practice-Schritt-für-Schritt für einen sicheren Microsoft-365-Tenant. Du kannst Schritte abhaken, überspringen, jederzeit zurückkehren. Der Fortschritt wird im Tool gespeichert.') ?></p>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-            <button onclick="window.print()" class="btn btn-outline-secondary"><i class="bi bi-printer"></i> Drucken / PDF</button>
-            <form method="post" action="/bestpractice/reset" class="d-inline" onsubmit="return confirm('Allen Fortschritt zurücksetzen?');">
+            <button onclick="window.print()" class="btn btn-outline-secondary"><i class="bi bi-printer"></i> <?= te('Drucken / PDF') ?></button>
+            <form method="post" action="/bestpractice/reset" class="d-inline" onsubmit="return confirm('<?= t('Allen Fortschritt zurücksetzen?') ?>');">
                 <?= Csrf::field() ?>
-                <button class="btn btn-outline-danger" type="submit"><i class="bi bi-arrow-counterclockwise"></i> Zurücksetzen</button>
+                <button class="btn btn-outline-danger" type="submit"><i class="bi bi-arrow-counterclockwise"></i> <?= te('Zurücksetzen') ?></button>
             </form>
         </div>
     </div>
@@ -31,12 +31,12 @@ $stepState = function (array $step) use ($progress): string {
 <!-- ── Gesamt-Fortschritt ───────────────────────────────────── -->
 <div class="content-card mb-3">
     <div class="d-flex justify-content-between align-items-baseline mb-2">
-        <h5 class="mb-0">Gesamtfortschritt</h5>
+        <h5 class="mb-0"><?= te('Gesamtfortschritt') ?></h5>
         <div class="text-muted small">
-            <strong class="text-success"><?= (int)$summary['done'] ?></strong> erledigt ·
-            <strong class="text-secondary"><?= (int)$summary['skipped'] ?></strong> übersprungen ·
-            <strong class="text-warning"><?= (int)$summary['open'] ?></strong> offen ·
-            <strong><?= (int)$summary['total'] ?></strong> insgesamt
+            <strong class="text-success"><?= (int)$summary['done'] ?></strong> <?= te('erledigt') ?> ·
+            <strong class="text-secondary"><?= (int)$summary['skipped'] ?></strong> <?= te('übersprungen') ?> ·
+            <strong class="text-warning"><?= (int)$summary['open'] ?></strong> <?= te('offen') ?> ·
+            <strong><?= (int)$summary['total'] ?></strong> <?= te('insgesamt') ?>
         </div>
     </div>
     <div class="progress" style="height: 12px; border-radius:8px;">
@@ -47,7 +47,7 @@ $stepState = function (array $step) use ($progress): string {
         </div>
     </div>
     <?php if (!empty($summary['auto_detected'])): ?>
-        <p class="small text-muted mt-2 mb-0"><i class="bi bi-magic"></i> <?= (int)$summary['auto_detected'] ?> Schritte automatisch als erledigt erkannt (z. B. Setup-Wizard, Compliance-Profil, Backup-Konfiguration).</p>
+        <p class="small text-muted mt-2 mb-0"><i class="bi bi-magic"></i> <?= (int)$summary['auto_detected'] ?> <?= te('Schritte automatisch als erledigt erkannt (z. B. Setup-Wizard, Compliance-Profil, Backup-Konfiguration).') ?></p>
     <?php endif; ?>
 </div>
 
@@ -83,10 +83,10 @@ $stepState = function (array $step) use ($progress): string {
             <?php foreach ($phase['steps'] as $step):
                 $state = $stepState($step);
                 $stateBadge = match ($state) {
-                    'done'    => '<span class="badge bg-success"><i class="bi bi-check-lg"></i> erledigt</span>',
-                    'auto'    => '<span class="badge bg-info text-dark" title="Vom Tool automatisch erkannt"><i class="bi bi-magic"></i> auto-erkannt</span>',
-                    'skipped' => '<span class="badge bg-secondary"><i class="bi bi-skip-forward"></i> übersprungen</span>',
-                    default   => '<span class="badge bg-warning text-dark"><i class="bi bi-circle"></i> offen</span>',
+                    'done'    => '<span class="badge bg-success"><i class="bi bi-check-lg"></i> ' . te('erledigt') . '</span>',
+                    'auto'    => '<span class="badge bg-info text-dark" title="' . te('Vom Tool automatisch erkannt') . '"><i class="bi bi-magic"></i> ' . te('auto-erkannt') . '</span>',
+                    'skipped' => '<span class="badge bg-secondary"><i class="bi bi-skip-forward"></i> ' . te('übersprungen') . '</span>',
+                    default   => '<span class="badge bg-warning text-dark"><i class="bi bi-circle"></i> ' . te('offen') . '</span>',
                 };
                 $rowStyle = match ($state) {
                     'done', 'auto' => 'background:#f0fdf4;',
@@ -105,17 +105,17 @@ $stepState = function (array $step) use ($progress): string {
                             <?= View::escape($step['title']) ?>
                         </h5>
                         <div class="d-flex gap-2 align-items-center">
-                            <span class="badge bg-light text-dark border" title="Geschätzter Zeitaufwand">
+                            <span class="badge bg-light text-dark border" title="<?= te('Geschätzter Zeitaufwand') ?>">
                                 <i class="bi bi-clock"></i> ~<?= (int)$step['time'] ?> min
                             </span>
                             <?= $stateBadge ?>
                         </div>
                     </div>
 
-                    <p class="mb-2"><strong>Warum:</strong> <?= View::escape($step['why']) ?></p>
+                    <p class="mb-2"><strong><?= te('Warum:') ?></strong> <?= View::escape($step['why']) ?></p>
 
                     <?php if (!empty($step['how'])): ?>
-                        <p class="mb-1"><strong>So gehst du vor:</strong></p>
+                        <p class="mb-1"><strong><?= te('So gehst du vor:') ?></strong></p>
                         <ul class="mb-3">
                             <?php foreach ($step['how'] as $h): ?>
                                 <li><?= View::escape($h) ?></li>
@@ -134,7 +134,7 @@ $stepState = function (array $step) use ($progress): string {
                                     <input type="hidden" name="step_id" value="<?= View::escape($step['id']) ?>">
                                     <input type="hidden" name="state" value="done">
                                     <input type="hidden" name="anchor" value="<?= View::escape($step['id']) ?>">
-                                    <button class="btn btn-sm btn-outline-success" type="submit"><i class="bi bi-check-lg"></i> Erledigt</button>
+                                    <button class="btn btn-sm btn-outline-success" type="submit"><i class="bi bi-check-lg"></i> <?= te('Erledigt') ?></button>
                                 </form>
                             <?php endif; ?>
                             <?php if ($state !== 'skipped'): ?>
@@ -143,7 +143,7 @@ $stepState = function (array $step) use ($progress): string {
                                     <input type="hidden" name="step_id" value="<?= View::escape($step['id']) ?>">
                                     <input type="hidden" name="state" value="skipped">
                                     <input type="hidden" name="anchor" value="<?= View::escape($step['id']) ?>">
-                                    <button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-skip-forward"></i> Überspringen</button>
+                                    <button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-skip-forward"></i> <?= te('Überspringen') ?></button>
                                 </form>
                             <?php endif; ?>
                             <?php if ($state !== 'open' && $state !== 'auto'): ?>
@@ -152,7 +152,7 @@ $stepState = function (array $step) use ($progress): string {
                                     <input type="hidden" name="step_id" value="<?= View::escape($step['id']) ?>">
                                     <input type="hidden" name="state" value="open">
                                     <input type="hidden" name="anchor" value="<?= View::escape($step['id']) ?>">
-                                    <button class="btn btn-sm btn-link text-muted" type="submit"><i class="bi bi-arrow-counterclockwise"></i> wieder öffnen</button>
+                                    <button class="btn btn-sm btn-link text-muted" type="submit"><i class="bi bi-arrow-counterclockwise"></i> <?= te('wieder öffnen') ?></button>
                                 </form>
                             <?php endif; ?>
                         </div>
@@ -165,23 +165,23 @@ $stepState = function (array $step) use ($progress): string {
 
 <!-- Quick-Sprung für „nur 5 / nur 30 Minuten" -->
 <div class="content-card no-print">
-    <h5><i class="bi bi-stopwatch"></i> Kurzfristige Varianten</h5>
+    <h5><i class="bi bi-stopwatch"></i> <?= te('Kurzfristige Varianten') ?></h5>
     <div class="row g-3">
         <div class="col-md-6">
             <div class="border rounded p-3 h-100">
                 <h6>🏃 5 Minuten</h6>
                 <ol class="mb-0 small">
-                    <li><a href="#p1-setup">Einrichtungs-Assistent</a></li>
-                    <li><a href="#p2-profile">Compliance-Profil anwenden</a></li>
-                    <li><a href="#p3-breakglass">Break-Glass-Account</a></li>
+                    <li><a href="#p1-setup"><?= te('Einrichtungs-Assistent') ?></a></li>
+                    <li><a href="#p2-profile"><?= te('Compliance-Profil anwenden') ?></a></li>
+                    <li><a href="#p3-breakglass"><?= te('Break-Glass-Account') ?></a></li>
                 </ol>
             </div>
         </div>
         <div class="col-md-6">
             <div class="border rounded p-3 h-100">
                 <h6>⏱️ 30 Minuten</h6>
-                <p class="small mb-1">Phase 1 + 2 + 3 — deckt bereits ~80 % des realistischen Angriffsvektors (Identität) ab.</p>
-                <a href="#phase1" class="btn btn-sm btn-outline-primary">Bei Phase 1 starten</a>
+                <p class="small mb-1"><?= te('Phase 1 + 2 + 3 — deckt bereits ~80 % des realistischen Angriffsvektors (Identität) ab.') ?></p>
+                <a href="#phase1" class="btn btn-sm btn-outline-primary"><?= te('Bei Phase 1 starten') ?></a>
             </div>
         </div>
     </div>

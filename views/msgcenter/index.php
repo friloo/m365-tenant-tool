@@ -13,20 +13,20 @@
 </style>
 
 <!-- Page subtitle -->
-<p class="text-muted mb-4">Microsoft 365 Dienstmeldungen und Änderungsankündigungen</p>
+<p class="text-muted mb-4"><?= te('Microsoft 365 Dienstmeldungen und Änderungsankündigungen') ?></p>
 
 <!-- Metric Cards -->
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-chat-square-text me-1"></i>Gesamt</div>
+            <div class="metric-label"><i class="bi bi-chat-square-text me-1"></i><?= te('Gesamt') ?></div>
             <div class="metric-value"><?= $e($stats['total']) ?></div>
-            <div class="metric-sub">Nachrichten</div>
+            <div class="metric-sub"><?= te('Nachrichten') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-envelope-open me-1"></i>Ungelesen</div>
+            <div class="metric-label"><i class="bi bi-envelope-open me-1"></i><?= te('Ungelesen') ?></div>
             <div class="metric-value">
                 <?php if ($stats['unread'] > 0): ?>
                     <span class="badge-warning badge-pill"><?= $e($stats['unread']) ?></span>
@@ -34,7 +34,7 @@
                     <?= $e($stats['unread']) ?>
                 <?php endif; ?>
             </div>
-            <div class="metric-sub">Ungelesene Nachrichten</div>
+            <div class="metric-sub"><?= te('Ungelesene Nachrichten') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
@@ -47,14 +47,14 @@
                     <?= $e($stats['major']) ?>
                 <?php endif; ?>
             </div>
-            <div class="metric-sub">Wichtige Änderungen</div>
+            <div class="metric-sub"><?= te('Wichtige Änderungen') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-shield-exclamation me-1"></i>Kritisch/Hoch</div>
+            <div class="metric-label"><i class="bi bi-shield-exclamation me-1"></i><?= te('Kritisch/Hoch') ?></div>
             <div class="metric-value"><?= $e($stats['high_severity']) ?></div>
-            <div class="metric-sub">Hohe Schwere</div>
+            <div class="metric-sub"><?= te('Hohe Schwere') ?></div>
         </div>
     </div>
 </div>
@@ -65,15 +65,15 @@
         <form method="get" action="/msgcenter" class="row g-2 align-items-end">
             <!-- Category -->
             <div class="col-sm-6 col-md-3">
-                <label class="form-label small fw-medium mb-1">Kategorie</label>
+                <label class="form-label small fw-medium mb-1"><?= te('Kategorie') ?></label>
                 <select name="category" class="form-select form-select-sm">
-                    <option value="">Alle Kategorien</option>
+                    <option value=""><?= te('Alle Kategorien') ?></option>
                     <?php
                     $categoryLabels = [
-                        'stayInformed'      => 'Zur Information',
-                        'planForChange'     => 'Änderung planen',
-                        'preventOrFixIssue' => 'Problem beheben',
-                        'adaptYourWork'     => 'Anpassung erforderlich',
+                        'stayInformed'      => t('Zur Information'),
+                        'planForChange'     => t('Änderung planen'),
+                        'preventOrFixIssue' => t('Problem beheben'),
+                        'adaptYourWork'     => t('Anpassung erforderlich'),
                     ];
                     foreach ($categories as $cat):
                         $label = $categoryLabels[$cat] ?? $cat;
@@ -86,14 +86,14 @@
 
             <!-- Severity -->
             <div class="col-sm-6 col-md-2">
-                <label class="form-label small fw-medium mb-1">Schwere</label>
+                <label class="form-label small fw-medium mb-1"><?= te('Schwere') ?></label>
                 <select name="severity" class="form-select form-select-sm">
-                    <option value="">Alle</option>
+                    <option value=""><?= te('Alle') ?></option>
                     <?php
                     $severityLabels = [
-                        'critical' => 'Kritisch',
-                        'high'     => 'Hoch',
-                        'normal'   => 'Normal',
+                        'critical' => t('Kritisch'),
+                        'high'     => t('Hoch'),
+                        'normal'   => t('Normal'),
                     ];
                     foreach ($severityLabels as $val => $label):
                         $sel = ($filters['severity'] === $val) ? 'selected' : '';
@@ -105,9 +105,9 @@
 
             <!-- Service -->
             <div class="col-sm-6 col-md-3">
-                <label class="form-label small fw-medium mb-1">Dienst</label>
+                <label class="form-label small fw-medium mb-1"><?= te('Dienst') ?></label>
                 <select name="service" class="form-select form-select-sm">
-                    <option value="">Alle Dienste</option>
+                    <option value=""><?= te('Alle Dienste') ?></option>
                     <?php foreach ($services as $svc):
                         $sel = ($filters['service'] === $svc) ? 'selected' : '';
                     ?>
@@ -121,16 +121,16 @@
                 <div class="form-check mb-1">
                     <input class="form-check-input" type="checkbox" name="unread" value="1" id="chkUnread"
                         <?= ($filters['unread'] === '1') ? 'checked' : '' ?>>
-                    <label class="form-check-label small" for="chkUnread">Nur ungelesene</label>
+                    <label class="form-check-label small" for="chkUnread"><?= te('Nur ungelesene') ?></label>
                 </div>
             </div>
 
             <!-- Buttons -->
             <div class="col-sm-12 col-md-2 d-flex gap-2 align-items-end">
                 <button type="submit" class="btn btn-sm btn-primary">
-                    <i class="bi bi-funnel me-1"></i>Filtern
+                    <i class="bi bi-funnel me-1"></i><?= te('Filtern') ?>
                 </button>
-                <a href="/msgcenter" class="btn btn-sm btn-outline-secondary">Zurücksetzen</a>
+                <a href="/msgcenter" class="btn btn-sm btn-outline-secondary"><?= te('Zurücksetzen') ?></a>
             </div>
         </form>
     </div>
@@ -140,9 +140,9 @@
 <div class="content-card">
     <div class="card-header-custom">
         <i class="bi bi-chat-square-text text-primary"></i>
-        <h6>Nachrichten (<?= count($messages) ?>)</h6>
+        <h6><?= te('Nachrichten') ?> (<?= count($messages) ?>)</h6>
         <a href="/msgcenter?refresh=1" class="ms-auto btn btn-sm btn-outline-secondary">
-            <i class="bi bi-arrow-clockwise me-1"></i>Aktualisieren
+            <i class="bi bi-arrow-clockwise me-1"></i><?= te('Aktualisieren') ?>
         </a>
     </div>
 
@@ -150,13 +150,13 @@
         <div class="card-body-custom">
             <div class="empty-state">
                 <i class="bi bi-chat-square-text text-muted" style="font-size:2.5rem;"></i>
-                <p class="mt-3 mb-1 fw-medium">Keine Nachrichten gefunden</p>
+                <p class="mt-3 mb-1 fw-medium"><?= te('Keine Nachrichten gefunden') ?></p>
                 <p class="text-muted small">
                     <?php if (array_filter($filters)): ?>
-                        Keine Nachrichten entsprechen den gewählten Filtern.
-                        <a href="/msgcenter">Filter zurücksetzen</a>
+                        <?= te('Keine Nachrichten entsprechen den gewählten Filtern.') ?>
+                        <a href="/msgcenter"><?= te('Filter zurücksetzen') ?></a>
                     <?php else: ?>
-                        Es sind keine Message-Center-Nachrichten verfügbar.
+                        <?= te('Es sind keine Message-Center-Nachrichten verfügbar.') ?>
                     <?php endif; ?>
                 </p>
             </div>
@@ -173,9 +173,9 @@
                 default    => 'badge-secondary',
             };
             $sevLabel = match ($severity) {
-                'critical' => 'Kritisch',
-                'high'     => 'Hoch',
-                'normal'   => 'Normal',
+                'critical' => t('Kritisch'),
+                'high'     => t('Hoch'),
+                'normal'   => t('Normal'),
                 default    => $severity,
             };
             $startDate     = !empty($message['startDateTime'])
@@ -186,7 +186,7 @@
         <div class="msg-item">
             <div class="msg-header">
                 <?php if (!$isRead): ?>
-                    <span class="msg-unread-dot" title="Ungelesen"></span>
+                    <span class="msg-unread-dot" title="<?= te('Ungelesen') ?>"></span>
                 <?php else: ?>
                     <span style="width:8px;height:8px;flex-shrink:0;"></span>
                 <?php endif; ?>
@@ -218,7 +218,7 @@
                 <a href="https://admin.microsoft.com/Adminportal/Home#/MessageCenter"
                    target="_blank" rel="noopener noreferrer"
                    class="btn btn-sm btn-outline-primary">
-                    <i class="bi bi-box-arrow-up-right me-1"></i>Im Admin Center öffnen
+                    <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Im Admin Center öffnen') ?>
                 </a>
             </div>
         </div>

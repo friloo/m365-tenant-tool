@@ -35,11 +35,11 @@ function navItem(string $icon, string $label, string $route, string $current, ar
 
 $activeHub = Navigation::activeHubKey($currentPath);
 ?>
-<?php navItem('speedometer2', 'Dashboard', '', $currentPath, $allRoutes); ?>
-<?php navItem('star', 'Favoriten', 'favorites', $currentPath, $allRoutes); ?>
-<?php navItem('grid-1x2', 'Modul-Übersicht', 'overview', $currentPath, $allRoutes); ?>
+<?php navItem('speedometer2', t('Dashboard'), '', $currentPath, $allRoutes); ?>
+<?php navItem('star', t('Favoriten'), 'favorites', $currentPath, $allRoutes); ?>
+<?php navItem('grid-1x2', t('Modul-Übersicht'), 'overview', $currentPath, $allRoutes); ?>
 
-<div class="sidebar-hub-label">Bereiche</div>
+<div class="sidebar-hub-label"><?= te('Bereiche') ?></div>
 <?php foreach (Navigation::hubs() as $hub): ?>
     <?php
     $landing = Navigation::hubLandingRoute($hub['key'], $isAdmin);
@@ -52,5 +52,5 @@ $activeHub = Navigation::activeHubKey($currentPath);
     </a>
 <?php endforeach; ?>
 
-<div class="sidebar-hub-label">Hilfe</div>
-<?php navItem('book', 'Handbuch', 'manual', $currentPath, $allRoutes); ?>
+<div class="sidebar-hub-label"><?= te('Hilfe') ?></div>
+<?php navItem('book', t('Handbuch'), 'manual', $currentPath, $allRoutes); ?>

@@ -11,7 +11,7 @@
 <div class="row g-3 mb-4">
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Offene Prüfungen</div>
+            <div class="metric-label"><?= te('Offene Prüfungen') ?></div>
             <div class="metric-value" style="color:<?= $openCount > 0 ? '#d97706' : '#16a34a' ?>">
                 <?= (int)$openCount ?>
             </div>
@@ -19,13 +19,13 @@
     </div>
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Prüfungen gesamt</div>
+            <div class="metric-label"><?= te('Prüfungen gesamt') ?></div>
             <div class="metric-value"><?= count($reviews) ?></div>
         </div>
     </div>
     <div class="col-sm-4">
         <div class="metric-card">
-            <div class="metric-label">Gäste (letzte Prüfung)</div>
+            <div class="metric-label"><?= te('Gäste (letzte Prüfung)') ?></div>
             <div class="metric-value"><?= (int)$totalGuests ?></div>
         </div>
     </div>
@@ -34,22 +34,22 @@
 <!-- Reviews Table -->
 <div class="content-card">
     <div class="table-toolbar">
-        <h2 class="card-title mb-0" style="font-size:15px;font-weight:600;">Zugriffsprüfungen</h2>
+        <h2 class="card-title mb-0" style="font-size:15px;font-weight:600;"><?= te('Zugriffsprüfungen') ?></h2>
         <button class="btn btn-sm btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#newReviewModal">
-            <i class="bi bi-plus-circle me-1"></i> Neue Prüfung starten
+            <i class="bi bi-plus-circle me-1"></i> <?= te('Neue Prüfung starten') ?>
         </button>
     </div>
     <div class="table-responsive">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Titel</th>
-                    <th>Typ</th>
-                    <th>Status</th>
-                    <th>Erstellt am</th>
-                    <th>Erstellt von</th>
+                    <th><?= te('Titel') ?></th>
+                    <th><?= te('Typ') ?></th>
+                    <th><?= te('Status') ?></th>
+                    <th><?= te('Erstellt am') ?></th>
+                    <th><?= te('Erstellt von') ?></th>
                     <th>Items</th>
-                    <th>Ausstehend</th>
+                    <th><?= te('Ausstehend') ?></th>
                     <th></th>
                 </tr>
             </thead>
@@ -60,9 +60,9 @@
                     <td><span class="badge bg-secondary" style="font-size:11px;"><?= $e($r['type']) ?></span></td>
                     <td>
                         <?php if ($r['status'] === 'open'): ?>
-                            <span class="badge-warning">Offen</span>
+                            <span class="badge-warning"><?= te('Offen') ?></span>
                         <?php else: ?>
-                            <span class="badge-enabled">Abgeschlossen</span>
+                            <span class="badge-enabled"><?= te('Abgeschlossen') ?></span>
                         <?php endif; ?>
                     </td>
                     <td style="font-size:12px;color:#6b7280;">
@@ -79,13 +79,13 @@
                     </td>
                     <td>
                         <a href="/accessreview/<?= (int)$r['id'] ?>" class="btn btn-xs btn-outline-primary py-0 px-2" style="font-size:11px;">
-                            <i class="bi bi-eye"></i> Öffnen
+                            <i class="bi bi-eye"></i> <?= te('Öffnen') ?>
                         </a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($reviews)): ?>
-                    <tr><td colspan="8" class="text-center text-muted py-4">Noch keine Prüfungen vorhanden</td></tr>
+                    <tr><td colspan="8" class="text-center text-muted py-4"><?= te('Noch keine Prüfungen vorhanden') ?></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -99,26 +99,26 @@
             <form method="post" action="/accessreview">
                 <?= \App\Core\Csrf::field() ?>
                 <div class="modal-header">
-                    <h5 class="modal-title" id="newReviewModalLabel"><i class="bi bi-clipboard-check me-2"></i>Neue Prüfung starten</h5>
+                    <h5 class="modal-title" id="newReviewModalLabel"><i class="bi bi-clipboard-check me-2"></i><?= te('Neue Prüfung starten') ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="reviewTitle" class="form-label fw-medium">Titel der Prüfung</label>
+                        <label for="reviewTitle" class="form-label fw-medium"><?= te('Titel der Prüfung') ?></label>
                         <input type="text" id="reviewTitle" name="title" class="form-control"
-                               value="Gastbenutzer-Review <?= date('d.m.Y') ?>"
-                               placeholder="Gastbenutzer-Review <?= date('d.m.Y') ?>" required>
-                        <div class="form-text">Alle aktuellen Gastbenutzer werden als Prüfungseinträge geladen.</div>
+                               value="<?= te('Gastbenutzer-Review') ?> <?= date('d.m.Y') ?>"
+                               placeholder="<?= te('Gastbenutzer-Review') ?> <?= date('d.m.Y') ?>" required>
+                        <div class="form-text"><?= te('Alle aktuellen Gastbenutzer werden als Prüfungseinträge geladen.') ?></div>
                     </div>
                     <div class="alert alert-info py-2 mb-0" style="font-size:13px;">
                         <i class="bi bi-info-circle me-1"></i>
-                        Dieser Vorgang fragt alle Gastbenutzer live aus Microsoft 365 ab und kann einige Sekunden dauern.
+                        <?= te('Dieser Vorgang fragt alle Gastbenutzer live aus Microsoft 365 ab und kann einige Sekunden dauern.') ?>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= te('Abbrechen') ?></button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-play-circle me-1"></i> Prüfung starten
+                        <i class="bi bi-play-circle me-1"></i> <?= te('Prüfung starten') ?>
                     </button>
                 </div>
             </form>

@@ -12,12 +12,12 @@ $criteriaIcons = [
     'intune'          => 'bi-phone',
 ];
 $criteriaDesc = [
-    'exchange_online' => 'Postfach, Kalender und E-Mail-Funktionen über Exchange Online.',
-    'office_desktop'  => 'Installierbare Office-Apps (Word, Excel, PowerPoint, …).',
-    'teams'           => 'Microsoft Teams für Chat, Meetings und Zusammenarbeit.',
-    'sharepoint'      => 'SharePoint Online – Intranets, Dokumentenbibliotheken.',
-    'onedrive'        => 'OneDrive for Business – persönlicher Cloud-Speicher.',
-    'intune'          => 'Intune / Mobile Device Management für Geräteverwaltung.',
+    'exchange_online' => t('Postfach, Kalender und E-Mail-Funktionen über Exchange Online.'),
+    'office_desktop'  => t('Installierbare Office-Apps (Word, Excel, PowerPoint, …).'),
+    'teams'           => t('Microsoft Teams für Chat, Meetings und Zusammenarbeit.'),
+    'sharepoint'      => t('SharePoint Online – Intranets, Dokumentenbibliotheken.'),
+    'onedrive'        => t('OneDrive for Business – persönlicher Cloud-Speicher.'),
+    'intune'          => t('Intune / Mobile Device Management für Geräteverwaltung.'),
 ];
 
 $covered       = $analysis['covered']         ?? [];
@@ -47,11 +47,11 @@ $priceMode    = $priceMode    ?? 'npo';
 $showCatalog  = $showCatalog  ?? false;
 $matchingCatalog = $matchingCatalog ?? [];
 $priceKey     = $priceMode === 'standard' ? 'price_eur' : 'price_npo_eur';
-$priceLabel   = $priceMode === 'standard' ? 'Listenpreis (Netto)' : 'NPO-Preis (Netto)';
+$priceLabel   = $priceMode === 'standard' ? t('Listenpreis (Netto)') : t('NPO-Preis (Netto)');
 
 $fmtPrice = function ($val) {
     if ($val === null) return '<span class="text-muted">–</span>';
-    if ((float)$val === 0.0) return '<span class="badge-success badge-pill" style="font-size:11px;">kostenlos*</span>';
+    if ((float)$val === 0.0) return '<span class="badge-success badge-pill" style="font-size:11px;">' . te('kostenlos*') . '</span>';
     return number_format((float)$val, 2, ',', '.') . ' €';
 };
 ?>
@@ -72,7 +72,7 @@ $fmtPrice = function ($val) {
 <?php if (empty($activeCriteria)): ?>
     <div class="alert alert-info d-flex align-items-center gap-2 mb-4">
         <i class="bi bi-info-circle-fill fs-5"></i>
-        <span>Wähle mindestens ein Kriterium aus um die Analyse zu starten.</span>
+        <span><?= te('Wähle mindestens ein Kriterium aus um die Analyse zu starten.') ?></span>
     </div>
 <?php endif; ?>
 
@@ -82,13 +82,11 @@ $fmtPrice = function ($val) {
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-sliders text-primary"></i>
-        <h6>Kriterien konfigurieren</h6>
+        <h6><?= te('Kriterien konfigurieren') ?></h6>
     </div>
     <div class="card-body-custom">
         <p class="text-muted small mb-3">
-            Aktiviere die Features, die <strong>alle</strong> Benutzer nach der Exchange-Online-Migration
-            benötigen. Der Advisor zeigt dann, welche Lizenzpläne diese Kombination abdecken und
-            welche Benutzer noch nicht abgedeckt sind.
+            <?= t('Aktiviere die Features, die <strong>alle</strong> Benutzer nach der Exchange-Online-Migration benötigen. Der Advisor zeigt dann, welche Lizenzpläne diese Kombination abdecken und welche Benutzer noch nicht abgedeckt sind.') ?>
         </p>
         <form method="post" action="/licenseadvisor/save-criteria">
             <?= \App\Core\Csrf::field() ?>
@@ -121,7 +119,7 @@ $fmtPrice = function ($val) {
                 <?php endforeach; ?>
             </div>
             <button type="submit" class="btn btn-primary px-4">
-                <i class="bi bi-check2 me-1"></i> Kriterien speichern &amp; analysieren
+                <i class="bi bi-check2 me-1"></i> <?= te('Kriterien speichern & analysieren') ?>
             </button>
         </form>
     </div>
@@ -135,33 +133,33 @@ $fmtPrice = function ($val) {
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label">Gesamt (aktive Nutzer)</div>
+            <div class="metric-label"><?= te('Gesamt (aktive Nutzer)') ?></div>
             <div class="metric-value"><?= number_format($totalEnabled) ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label">Abgedeckt</div>
+            <div class="metric-label"><?= te('Abgedeckt') ?></div>
             <div class="metric-value" style="color:#16a34a;"><?= number_format($coveredCount) ?></div>
-            <div class="metric-sub"><?= $totalEnabled > 0 ? round(($coveredCount / $totalEnabled) * 100) : 0 ?>% der aktiven Nutzer</div>
+            <div class="metric-sub"><?= $totalEnabled > 0 ? round(($coveredCount / $totalEnabled) * 100) : 0 ?>% <?= te('der aktiven Nutzer') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label">Nicht abgedeckt</div>
+            <div class="metric-label"><?= te('Nicht abgedeckt') ?></div>
             <div class="metric-value" style="color:<?= $uncoveredCount > 0 ? '#dc2626' : '#16a34a' ?>;">
                 <?= number_format($uncoveredCount) ?>
             </div>
-            <div class="metric-sub">Fehlende Kriterien</div>
+            <div class="metric-sub"><?= te('Fehlende Kriterien') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label">Ohne Lizenz</div>
+            <div class="metric-label"><?= te('Ohne Lizenz') ?></div>
             <div class="metric-value" style="color:<?= $noLicenseCount > 0 ? '#d97706' : '#16a34a' ?>;">
                 <?= number_format($noLicenseCount) ?>
             </div>
-            <div class="metric-sub">Keine Lizenz zugewiesen</div>
+            <div class="metric-sub"><?= te('Keine Lizenz zugewiesen') ?></div>
         </div>
     </div>
 </div>
@@ -173,10 +171,10 @@ $fmtPrice = function ($val) {
     <div class="card-body-custom py-3">
         <form method="get" action="/licenseadvisor" class="d-flex flex-wrap align-items-center gap-3" style="font-size:13px;">
             <div class="d-flex align-items-center gap-2">
-                <span class="text-muted">Preise:</span>
+                <span class="text-muted"><?= te('Preise:') ?></span>
                 <select name="price_mode" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
-                    <option value="npo"      <?= $priceMode === 'npo'      ? 'selected' : '' ?>>NPO (Non-Profit)</option>
-                    <option value="standard" <?= $priceMode === 'standard' ? 'selected' : '' ?>>Standard (Listenpreis)</option>
+                    <option value="npo"      <?= $priceMode === 'npo'      ? 'selected' : '' ?>><?= te('NPO (Non-Profit)') ?></option>
+                    <option value="standard" <?= $priceMode === 'standard' ? 'selected' : '' ?>><?= te('Standard (Listenpreis)') ?></option>
                 </select>
             </div>
             <div class="form-check form-switch m-0">
@@ -184,11 +182,11 @@ $fmtPrice = function ($val) {
                        name="show_catalog" value="1" <?= $showCatalog ? 'checked' : '' ?>
                        onchange="this.form.submit()">
                 <label class="form-check-label" for="show_catalog_toggle">
-                    Auch nicht-gekaufte Lizenzen als Vorschlag anzeigen
+                    <?= te('Auch nicht-gekaufte Lizenzen als Vorschlag anzeigen') ?>
                 </label>
             </div>
             <span class="ms-auto text-muted" style="font-size:11px;">
-                Alle Preise <strong>netto</strong> (ohne 19 % MwSt.), pro Nutzer/Monat, Jahresabo, DE-Listenpreis. Stand Mai 2025 — bitte beim Microsoft-Partner verifizieren.
+                <?= t('Alle Preise <strong>netto</strong> (ohne 19 % MwSt.), pro Nutzer/Monat, Jahresabo, DE-Listenpreis. Stand Mai 2025 — bitte beim Microsoft-Partner verifizieren.') ?>
             </span>
         </form>
     </div>
@@ -200,9 +198,9 @@ $fmtPrice = function ($val) {
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-award text-primary"></i>
-        <h6>Passende Lizenzen im Tenant</h6>
+        <h6><?= te('Passende Lizenzen im Tenant') ?></h6>
         <span class="ms-auto text-muted" style="font-size:12px;">
-            Pläne, die <strong>alle</strong> gewählten Kriterien erfüllen
+            <?= t('Pläne, die <strong>alle</strong> gewählten Kriterien erfüllen') ?>
         </span>
     </div>
     <div class="card-body-custom p-0">
@@ -210,7 +208,7 @@ $fmtPrice = function ($val) {
             <div class="p-4">
                 <div class="alert alert-warning mb-0 d-flex align-items-center gap-2">
                     <i class="bi bi-exclamation-triangle-fill fs-5"></i>
-                    <span>Kein gekaufter Plan erfüllt alle gewählten Kriterien.</span>
+                    <span><?= te('Kein gekaufter Plan erfüllt alle gewählten Kriterien.') ?></span>
                 </div>
             </div>
         <?php else: ?>
@@ -218,9 +216,9 @@ $fmtPrice = function ($val) {
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Plan-Name</th>
-                            <th>Verfügbar</th>
-                            <th>Verbraucht</th>
+                            <th><?= te('Plan-Name') ?></th>
+                            <th><?= te('Verfügbar') ?></th>
+                            <th><?= te('Verbraucht') ?></th>
                             <th><?= $e($priceLabel) ?></th>
                             <th>Features</th>
                         </tr>
@@ -234,7 +232,7 @@ $fmtPrice = function ($val) {
                                             <div class="fw-medium d-flex align-items-center gap-2">
                                                 <?= $e($sku['name']) ?>
                                                 <?php if ($sku['skuId'] === $recommendedSkuId): ?>
-                                                    <span class="badge-success badge-pill">Empfohlen</span>
+                                                    <span class="badge-success badge-pill"><?= te('Empfohlen') ?></span>
                                                 <?php endif; ?>
                                             </div>
                                             <div style="font-size:11px;color:#9ca3af;font-family:monospace;">
@@ -282,9 +280,9 @@ $fmtPrice = function ($val) {
 <div class="content-card mb-4" style="border-left:3px solid #3b82f6;">
     <div class="card-header-custom">
         <i class="bi bi-lightbulb text-info"></i>
-        <h6>Alternative Lizenzen (nicht im Tenant)</h6>
+        <h6><?= te('Alternative Lizenzen (nicht im Tenant)') ?></h6>
         <span class="ms-auto text-muted" style="font-size:12px;">
-            Pläne, die ebenfalls alle Kriterien erfüllen würden
+            <?= te('Pläne, die ebenfalls alle Kriterien erfüllen würden') ?>
         </span>
     </div>
     <div class="card-body-custom p-0">
@@ -292,10 +290,10 @@ $fmtPrice = function ($val) {
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Plan-Name</th>
-                        <th>Tier</th>
+                        <th><?= te('Plan-Name') ?></th>
+                        <th><?= te('Tier') ?></th>
                         <th><?= $e($priceLabel) ?></th>
-                        <th>Kosten/Monat<br><small style="font-weight:normal;color:#9ca3af;">bei <?= number_format($coveredCount + $uncoveredCount) ?> Nutzer</small></th>
+                        <th><?= te('Kosten/Monat') ?><br><small style="font-weight:normal;color:#9ca3af;"><?= te('bei :n Nutzer', ['n' => number_format($coveredCount + $uncoveredCount)]) ?></small></th>
                         <th>Features</th>
                     </tr>
                 </thead>
@@ -328,7 +326,7 @@ $fmtPrice = function ($val) {
                                 <?php if ($monthlyCost === null): ?>
                                     <span class="text-muted">–</span>
                                 <?php elseif ($monthlyCost === 0.0): ?>
-                                    <span class="badge-success badge-pill" style="font-size:11px;">kostenlos*</span>
+                                    <span class="badge-success badge-pill" style="font-size:11px;"><?= te('kostenlos*') ?></span>
                                 <?php else: ?>
                                     <?= number_format($monthlyCost, 2, ',', '.') ?> €
                                 <?php endif; ?>
@@ -351,8 +349,7 @@ $fmtPrice = function ($val) {
             </table>
         </div>
         <div class="p-3" style="background:#f8fafc;border-top:1px solid #e5e7eb;font-size:11px;color:#6b7280;">
-            * "kostenlos" gilt typischerweise für die ersten 10 Nutzer im NPO-Programm. Bei Microsoft 365 Business Basic / Office 365 E1.
-            Netto-Listenpreise (ohne MwSt.), Stand Mai 2025. Partnerrabatte und CSP-Preise können abweichen. Bitte beim Microsoft-Partner verifizieren.
+            <?= te('* "kostenlos" gilt typischerweise für die ersten 10 Nutzer im NPO-Programm. Bei Microsoft 365 Business Basic / Office 365 E1. Netto-Listenpreise (ohne MwSt.), Stand Mai 2025. Partnerrabatte und CSP-Preise können abweichen. Bitte beim Microsoft-Partner verifizieren.') ?>
         </div>
     </div>
 </div>
@@ -361,7 +358,7 @@ $fmtPrice = function ($val) {
     <div class="card-body-custom">
         <div class="empty-state">
             <i class="bi bi-info-circle"></i>
-            <p>Keine weiteren Lizenzen im Katalog erfüllen alle gewählten Kriterien.</p>
+            <p><?= te('Keine weiteren Lizenzen im Katalog erfüllen alle gewählten Kriterien.') ?></p>
         </div>
     </div>
 </div>
@@ -376,11 +373,11 @@ $gapUsers = array_merge($uncovered, $noLicense);
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-person-x text-danger"></i>
-        <h6>Benutzer ohne Abdeckung</h6>
+        <h6><?= te('Benutzer ohne Abdeckung') ?></h6>
         <span class="badge-danger badge-pill ms-2"><?= count($gapUsers) ?></span>
         <?php if (!empty($gapUsers)): ?>
             <a href="/licenseadvisor/export" class="btn btn-sm btn-outline-secondary ms-auto">
-                <i class="bi bi-download me-1"></i>CSV Export
+                <i class="bi bi-download me-1"></i><?= te('CSV Export') ?>
             </a>
         <?php endif; ?>
     </div>
@@ -389,22 +386,22 @@ $gapUsers = array_merge($uncovered, $noLicense);
             <div class="p-4">
                 <div class="empty-state">
                     <i class="bi bi-person-check"></i>
-                    <p>Alle aktiven Benutzer erfüllen die gewählten Kriterien.</p>
+                    <p><?= te('Alle aktiven Benutzer erfüllen die gewählten Kriterien.') ?></p>
                 </div>
             </div>
         <?php else: ?>
             <div class="table-toolbar">
-                <input type="text" id="gapSearch" class="search-box" placeholder="Benutzer suchen…">
+                <input type="text" id="gapSearch" class="search-box" placeholder="<?= te('Benutzer suchen…') ?>">
             </div>
             <div class="table-responsive">
                 <table class="data-table" id="gapTable">
                     <thead>
                         <tr>
                             <th style="width:40px;"></th>
-                            <th>Name</th>
+                            <th><?= te('Name') ?></th>
                             <th>UPN</th>
-                            <th>Fehlende Kriterien</th>
-                            <th>Letzter Login</th>
+                            <th><?= te('Fehlende Kriterien') ?></th>
+                            <th><?= te('Letzter Login') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -432,7 +429,7 @@ $gapUsers = array_merge($uncovered, $noLicense);
                                 <td style="font-size:12px;color:#6b7280;"><?= $e($u['userPrincipalName'] ?? '') ?></td>
                                 <td>
                                     <?php if (empty($missing)): ?>
-                                        <span class="badge-warning badge-pill">Keine Lizenz</span>
+                                        <span class="badge-warning badge-pill"><?= te('Keine Lizenz') ?></span>
                                     <?php else: ?>
                                         <div class="d-flex flex-wrap gap-1">
                                             <?php foreach ($missing as $mk): ?>
@@ -464,24 +461,22 @@ $gapUsers = array_merge($uncovered, $noLicense);
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-piggy-bank text-warning"></i>
-        <h6>Einsparpotenzial</h6>
+        <h6><?= te('Einsparpotenzial') ?></h6>
         <span class="ms-auto text-muted" style="font-size:12px;">
-            Nutzer mit passender Lizenz, aber inaktiv &gt;90 Tage
+            <?= te('Nutzer mit passender Lizenz, aber inaktiv >90 Tage') ?>
         </span>
     </div>
     <div class="card-body-custom">
         <?php if (empty($inactive)): ?>
             <div class="empty-state">
                 <i class="bi bi-check-circle text-success"></i>
-                <p>Kein Einsparpotenzial gefunden – alle lizenzierten Nutzer sind aktiv.</p>
+                <p><?= te('Kein Einsparpotenzial gefunden – alle lizenzierten Nutzer sind aktiv.') ?></p>
             </div>
         <?php else: ?>
             <div class="alert alert-warning d-flex align-items-center gap-2 mb-3">
                 <i class="bi bi-currency-euro fs-5"></i>
                 <div>
-                    <strong><?= $inactiveCount ?> Benutzer</strong> haben eine passende Lizenz,
-                    aber haben sich seit mehr als 90 Tagen nicht angemeldet.
-                    Diese <?= $inactiveCount ?> Lizenzeinheiten könnten freigegeben werden.
+                    <?= t('<strong>:n Benutzer</strong> haben eine passende Lizenz, aber haben sich seit mehr als 90 Tagen nicht angemeldet. Diese :n Lizenzeinheiten könnten freigegeben werden.', ['n' => $inactiveCount]) ?>
                 </div>
             </div>
             <div class="table-responsive">
@@ -489,11 +484,11 @@ $gapUsers = array_merge($uncovered, $noLicense);
                     <thead>
                         <tr>
                             <th style="width:40px;"></th>
-                            <th>Name</th>
+                            <th><?= te('Name') ?></th>
                             <th>UPN</th>
-                            <th>Abteilung</th>
-                            <th>Letzter Login</th>
-                            <th>Inaktiv (Tage)</th>
+                            <th><?= te('Abteilung') ?></th>
+                            <th><?= te('Letzter Login') ?></th>
+                            <th><?= te('Inaktiv (Tage)') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -527,7 +522,7 @@ $gapUsers = array_merge($uncovered, $noLicense);
                                 </td>
                                 <td>
                                     <?php if ($daysInactive === null): ?>
-                                        <span class="badge-warning">Nie</span>
+                                        <span class="badge-warning"><?= te('Nie') ?></span>
                                     <?php else: ?>
                                         <span class="badge-<?= $daysInactive >= 180 ? 'danger' : 'warning' ?>">
                                             <?= $daysInactive ?>d

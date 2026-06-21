@@ -34,8 +34,8 @@ if ($tabs && count($tabs['items']) >= 2):
         <?php endforeach; ?>
     </div>
     <div class="hub-tabs-more" style="display:none;">
-        <button type="button" class="hub-tab hub-more-btn" aria-label="Weitere Module">
-            <i class="bi bi-three-dots"></i><span>Mehr</span><i class="bi bi-chevron-down hub-more-caret"></i>
+        <button type="button" class="hub-tab hub-more-btn" aria-label="<?= te('Weitere Module') ?>">
+            <i class="bi bi-three-dots"></i><span><?= te('Mehr') ?></span><i class="bi bi-chevron-down hub-more-caret"></i>
         </button>
         <div class="hub-more-menu" role="menu"></div>
     </div>

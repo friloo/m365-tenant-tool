@@ -2,7 +2,7 @@
 
 <div class="mb-3">
     <a href="/appregistrations" class="text-muted text-decoration-none small">
-        <i class="bi bi-arrow-left me-1"></i>Zurück zu App-Registrierungen
+        <i class="bi bi-arrow-left me-1"></i><?= te('Zurück zu App-Registrierungen') ?>
     </a>
 </div>
 
@@ -27,15 +27,15 @@ if (!empty($newSecret)):
         <div class="d-flex align-items-start gap-2">
             <i class="bi bi-key-fill text-success mt-1" style="font-size:1.2rem;"></i>
             <div class="flex-grow-1">
-                <strong>Neues Secret — nur einmal sichtbar!</strong>
+                <strong><?= te('Neues Secret — nur einmal sichtbar!') ?></strong>
                 <div class="mt-2 p-2 bg-white rounded border" style="font-family:monospace;">
                     <code id="newSecretValue" style="word-break:break-all;font-size:13px;"><?= $e($newSecret) ?></code>
                 </div>
             </div>
             <button type="button"
                     class="btn btn-sm btn-outline-success"
-                    onclick="navigator.clipboard.writeText(document.getElementById('newSecretValue').innerText).then(()=>{this.innerHTML='<i class=\'bi bi-check2\'></i> Kopiert';setTimeout(()=>{this.innerHTML='<i class=\'bi bi-clipboard\'></i> Kopieren'},2000)})">
-                <i class="bi bi-clipboard"></i> Kopieren
+                    onclick="navigator.clipboard.writeText(document.getElementById('newSecretValue').innerText).then(()=>{this.innerHTML='<i class=\'bi bi-check2\'></i> <?= t('Kopiert') ?>';setTimeout(()=>{this.innerHTML='<i class=\'bi bi-clipboard\'></i> <?= t('Kopieren') ?>'},2000)})">
+                <i class="bi bi-clipboard"></i> <?= te('Kopieren') ?>
             </button>
         </div>
     </div>
@@ -62,37 +62,37 @@ $nowTs           = time();
         <table class="table table-sm mb-0">
             <tbody>
                 <tr>
-                    <td class="text-muted small" style="width:180px;">Anzeigename</td>
+                    <td class="text-muted small" style="width:180px;"><?= te('Anzeigename') ?></td>
                     <td class="small fw-medium"><?= $e($displayName) ?></td>
                 </tr>
                 <tr>
-                    <td class="text-muted small">App-ID (Client-ID)</td>
+                    <td class="text-muted small"><?= te('App-ID (Client-ID)') ?></td>
                     <td>
                         <code id="appClientIdVal" style="font-size:12px;background:#f3f4f6;padding:2px 6px;border-radius:3px;"><?= $e($appClientId) ?></code>
                         <button type="button"
                                 class="btn btn-sm btn-link p-0 ms-2"
                                 style="font-size:11px;"
-                                onclick="navigator.clipboard.writeText('<?= $e($appClientId) ?>').then(()=>{this.innerHTML='Kopiert';setTimeout(()=>{this.innerHTML='Kopieren'},2000)})">
-                            Kopieren
+                                onclick="navigator.clipboard.writeText('<?= $e($appClientId) ?>').then(()=>{this.innerHTML='<?= t('Kopiert') ?>';setTimeout(()=>{this.innerHTML='<?= t('Kopieren') ?>'},2000)})">
+                            <?= te('Kopieren') ?>
                         </button>
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-muted small">Zielgruppe</td>
+                    <td class="text-muted small"><?= te('Zielgruppe') ?></td>
                     <td class="small">
                         <?php if ($signInAudience === 'AzureADMyOrg'): ?>
-                            <span class="badge-info">Nur Tenant</span>
+                            <span class="badge-info"><?= te('Nur Tenant') ?></span>
                         <?php elseif ($signInAudience === 'AzureADMultipleOrgs'): ?>
-                            <span class="badge-warning">Multi-Tenant</span>
+                            <span class="badge-warning"><?= te('Multi-Tenant') ?></span>
                         <?php elseif (str_contains($signInAudience, 'Personal')): ?>
-                            <span class="badge-warning">Persönlich</span>
+                            <span class="badge-warning"><?= te('Persönlich') ?></span>
                         <?php else: ?>
                             <span class="badge-secondary"><?= $e($signInAudience) ?></span>
                         <?php endif; ?>
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-muted small">Erstellt</td>
+                    <td class="text-muted small"><?= te('Erstellt') ?></td>
                     <td class="small"><?= $createdDateTime ? date('d.m.Y H:i', strtotime($createdDateTime)) : '–' ?></td>
                 </tr>
                 <?php if (!empty($detail['web']['redirectUris'])): ?>
@@ -119,7 +119,7 @@ $nowTs           = time();
         </div>
         <?php if (LocalAuth::isAdmin() && $appObjectId !== ''): ?>
             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addSecretModal">
-                <i class="bi bi-plus-circle me-1"></i>Neues Secret anlegen
+                <i class="bi bi-plus-circle me-1"></i><?= te('Neues Secret anlegen') ?>
             </button>
         <?php endif; ?>
     </div>
@@ -127,10 +127,10 @@ $nowTs           = time();
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Erstellt</th>
-                    <th>Läuft ab</th>
-                    <th>Status</th>
+                    <th><?= te('Name') ?></th>
+                    <th><?= te('Erstellt') ?></th>
+                    <th><?= te('Läuft ab') ?></th>
+                    <th><?= te('Status') ?></th>
                     <?php if (LocalAuth::isAdmin()): ?>
                         <th style="width:80px;"></th>
                     <?php endif; ?>
@@ -139,25 +139,25 @@ $nowTs           = time();
             <tbody>
                 <?php foreach ($passwordCreds as $cred):
                     $keyId     = $cred['keyId'] ?? '';
-                    $credName  = $cred['displayName'] ?? '(ohne Name)';
+                    $credName  = $cred['displayName'] ?? t('(ohne Name)');
                     $startTs   = !empty($cred['startDateTime']) ? strtotime($cred['startDateTime']) : null;
                     $endTs     = !empty($cred['endDateTime'])   ? strtotime($cred['endDateTime'])   : null;
                     $diff      = $endTs !== null ? ($endTs - $nowTs) : null;
                     if ($diff === null) {
                         $statusClass = 'badge-neutral';
-                        $statusLabel = 'Unbekannt';
+                        $statusLabel = te('Unbekannt');
                     } elseif ($diff <= 0) {
                         $statusClass = 'badge-danger';
-                        $statusLabel = 'Abgelaufen';
+                        $statusLabel = te('Abgelaufen');
                     } elseif ($diff < 30 * 86400) {
                         $statusClass = 'badge-danger';
-                        $statusLabel = '< 30 Tage';
+                        $statusLabel = te('< 30 Tage');
                     } elseif ($diff < 90 * 86400) {
                         $statusClass = 'badge-warning';
-                        $statusLabel = '< 90 Tage';
+                        $statusLabel = te('< 90 Tage');
                     } else {
                         $statusClass = 'badge-enabled';
-                        $statusLabel = 'Aktiv';
+                        $statusLabel = te('Aktiv');
                     }
                 ?>
                 <tr>
@@ -173,7 +173,7 @@ $nowTs           = time();
                         <td>
                             <form method="post"
                                   action="/appregistrations/<?= $e($appObjectId) ?>/delete-secret"
-                                  onsubmit="return confirm('Secret wirklich löschen? Apps die dieses Secret verwenden können sich nicht mehr anmelden.')"
+                                  onsubmit="return confirm('<?= te('Secret wirklich löschen? Apps die dieses Secret verwenden können sich nicht mehr anmelden.') ?>')"
                                   class="mb-0">
                                 <?= \App\Core\Csrf::field() ?>
                                 <input type="hidden" name="key_id" value="<?= $e($keyId) ?>">
@@ -190,7 +190,7 @@ $nowTs           = time();
                         <td colspan="<?= LocalAuth::isAdmin() ? '5' : '4' ?>">
                             <div class="empty-state">
                                 <i class="bi bi-key"></i>
-                                <p>Keine Client Secrets vorhanden</p>
+                                <p><?= te('Keine Client Secrets vorhanden') ?></p>
                             </div>
                         </td>
                     </tr>
@@ -204,20 +204,20 @@ $nowTs           = time();
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-patch-check text-secondary"></i>
-        <h6>Zertifikate (<?= count($keyCreds) ?>)</h6>
+        <h6><?= te('Zertifikate') ?> (<?= count($keyCreds) ?>)</h6>
     </div>
     <div class="table-responsive">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Fingerabdruck</th>
-                    <th>Läuft ab</th>
+                    <th><?= te('Name') ?></th>
+                    <th><?= te('Fingerabdruck') ?></th>
+                    <th><?= te('Läuft ab') ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($keyCreds as $cert):
-                    $certName  = $cert['displayName'] ?? '(ohne Name)';
+                    $certName  = $cert['displayName'] ?? t('(ohne Name)');
                     $thumb     = $cert['customKeyIdentifier'] ?? '';
                     $certEndTs = !empty($cert['endDateTime']) ? strtotime($cert['endDateTime']) : null;
                 ?>
@@ -240,7 +240,7 @@ $nowTs           = time();
                         <td colspan="3">
                             <div class="empty-state">
                                 <i class="bi bi-patch-check"></i>
-                                <p>Keine Zertifikate vorhanden</p>
+                                <p><?= te('Keine Zertifikate vorhanden') ?></p>
                             </div>
                         </td>
                     </tr>
@@ -259,41 +259,41 @@ $nowTs           = time();
                 <?= \App\Core\Csrf::field() ?>
                 <div class="modal-header">
                     <h5 class="modal-title" id="addSecretModalLabel">
-                        <i class="bi bi-key-fill me-2 text-warning"></i>Neues Client Secret anlegen
+                        <i class="bi bi-key-fill me-2 text-warning"></i><?= te('Neues Client Secret anlegen') ?>
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?= te('Schließen') ?>"></button>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-warning mb-3" style="font-size:13px;">
                         <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                        Der Secret-Wert wird <strong>nur einmal</strong> angezeigt. Kopiere ihn sofort nach dem Erstellen.
+                        <?= te('Der Secret-Wert wird') ?> <strong><?= te('nur einmal') ?></strong> <?= te('angezeigt. Kopiere ihn sofort nach dem Erstellen.') ?>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small fw-medium" for="secret_name">Name / Beschreibung</label>
+                        <label class="form-label small fw-medium" for="secret_name"><?= te('Name / Beschreibung') ?></label>
                         <input type="text"
                                id="secret_name"
                                name="secret_name"
                                class="form-control form-control-sm"
-                               value="Neues Secret <?= date('Y-m') ?>"
+                               value="<?= te('Neues Secret') ?> <?= date('Y-m') ?>"
                                maxlength="100"
                                required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small fw-medium" for="expiry_months">Gültigkeitsdauer</label>
+                        <label class="form-label small fw-medium" for="expiry_months"><?= te('Gültigkeitsdauer') ?></label>
                         <select id="expiry_months" name="expiry_months" class="form-select form-select-sm">
-                            <option value="1">1 Monat</option>
-                            <option value="3">3 Monate</option>
-                            <option value="6">6 Monate</option>
-                            <option value="12" selected>12 Monate</option>
-                            <option value="18">18 Monate</option>
-                            <option value="24">24 Monate</option>
+                            <option value="1"><?= te('1 Monat') ?></option>
+                            <option value="3"><?= te('3 Monate') ?></option>
+                            <option value="6"><?= te('6 Monate') ?></option>
+                            <option value="12" selected><?= te('12 Monate') ?></option>
+                            <option value="18"><?= te('18 Monate') ?></option>
+                            <option value="24"><?= te('24 Monate') ?></option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal"><?= te('Abbrechen') ?></button>
                     <button type="submit" class="btn btn-sm btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i>Secret erstellen
+                        <i class="bi bi-plus-circle me-1"></i><?= te('Secret erstellen') ?>
                     </button>
                 </div>
             </form>

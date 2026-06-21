@@ -8,7 +8,7 @@ function spFmtBytes(int $bytes): string {
 ?>
 
 <div class="mb-3">
-    <a href="/sharepoint" class="text-muted text-decoration-none small">← Zurück zu SharePoint</a>
+    <a href="/sharepoint" class="text-muted text-decoration-none small"><?= te('← Zurück zu SharePoint') ?></a>
 </div>
 
 <div class="content-card mb-3">
@@ -26,12 +26,12 @@ function spFmtBytes(int $bytes): string {
 <div class="content-card">
     <div class="card-header-custom">
         <i class="bi bi-folder2-open text-primary"></i>
-        <h6>Dokumentbibliotheken (<?= count($drives) ?>)</h6>
+        <h6><?= te('Dokumentbibliotheken (:n)', ['n' => count($drives)]) ?></h6>
     </div>
     <div class="table-responsive">
         <table class="data-table">
             <thead>
-                <tr><th>Name</th><th>Typ</th><th>Belegt</th><th>Gesamt</th></tr>
+                <tr><th><?= te('Name') ?></th><th><?= te('Typ') ?></th><th><?= te('Belegt') ?></th><th><?= te('Gesamt') ?></th></tr>
             </thead>
             <tbody>
                 <?php foreach ($drives as $d): ?>
@@ -43,7 +43,7 @@ function spFmtBytes(int $bytes): string {
                     </tr>
                 <?php endforeach; ?>
                 <?php if (empty($drives)): ?>
-                    <tr><td colspan="4" class="text-center text-muted py-3">Keine Bibliotheken</td></tr>
+                    <tr><td colspan="4" class="text-center text-muted py-3"><?= te('Keine Bibliotheken') ?></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

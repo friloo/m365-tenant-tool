@@ -9,7 +9,7 @@ $unknown    = $score['unknown'] ?? 0;
 $total      = $score['total']   ?? 0;
 
 $scoreColor = $pct >= 75 ? '#16a34a' : ($pct >= 50 ? '#d97706' : '#dc2626');
-$scoreLabel = $pct >= 75 ? 'Gut' : ($pct >= 50 ? 'Verbesserungsbedarf' : 'Kritisch');
+$scoreLabel = $pct >= 75 ? te('Gut') : ($pct >= 50 ? te('Verbesserungsbedarf') : te('Kritisch'));
 
 $categoryIcons = [
     'Identität & MFA'          => 'bi-person-lock',
@@ -21,10 +21,10 @@ $categoryIcons = [
 ];
 
 $priorityColors = [
-    'critical' => ['bg' => '#fef2f2', 'border' => '#fecaca', 'badge' => '#dc2626', 'label' => 'Kritisch'],
-    'high'     => ['bg' => '#fff7ed', 'border' => '#fed7aa', 'badge' => '#ea580c', 'label' => 'Hoch'],
-    'medium'   => ['bg' => '#fffbeb', 'border' => '#fde68a', 'badge' => '#d97706', 'label' => 'Mittel'],
-    'low'      => ['bg' => '#f0f9ff', 'border' => '#bae6fd', 'badge' => '#0284c7', 'label' => 'Niedrig'],
+    'critical' => ['bg' => '#fef2f2', 'border' => '#fecaca', 'badge' => '#dc2626', 'label' => te('Kritisch')],
+    'high'     => ['bg' => '#fff7ed', 'border' => '#fed7aa', 'badge' => '#ea580c', 'label' => te('Hoch')],
+    'medium'   => ['bg' => '#fffbeb', 'border' => '#fde68a', 'badge' => '#d97706', 'label' => te('Mittel')],
+    'low'      => ['bg' => '#f0f9ff', 'border' => '#bae6fd', 'badge' => '#0284c7', 'label' => te('Niedrig')],
 ];
 
 $criticalRecs = array_filter($recommendations, fn($r) => $r['priority'] === 'critical');
@@ -54,37 +54,37 @@ $highRecs     = array_filter($recommendations, fn($r) => $r['priority'] === 'hig
 
             <!-- Counters -->
             <div class="col">
-                <div style="font-size:18px;font-weight:600;margin-bottom:16px;">Security Posture Assessment</div>
+                <div style="font-size:18px;font-weight:600;margin-bottom:16px;"><?= te('Security Posture Assessment') ?></div>
                 <div class="row g-2">
                     <div class="col-6 col-sm-3">
                         <div style="background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);border-radius:8px;padding:10px;text-align:center;">
                             <div style="font-size:22px;font-weight:700;color:#4ade80;"><?= $passed ?></div>
-                            <div style="font-size:11px;color:rgba(255,255,255,.6);">Bestanden</div>
+                            <div style="font-size:11px;color:rgba(255,255,255,.6);"><?= te('Bestanden') ?></div>
                         </div>
                     </div>
                     <div class="col-6 col-sm-3">
                         <div style="background:rgba(217,119,6,.15);border:1px solid rgba(217,119,6,.3);border-radius:8px;padding:10px;text-align:center;">
                             <div style="font-size:22px;font-weight:700;color:#fbbf24;"><?= $warned ?></div>
-                            <div style="font-size:11px;color:rgba(255,255,255,.6);">Warnung</div>
+                            <div style="font-size:11px;color:rgba(255,255,255,.6);"><?= te('Warnung') ?></div>
                         </div>
                     </div>
                     <div class="col-6 col-sm-3">
                         <div style="background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);border-radius:8px;padding:10px;text-align:center;">
                             <div style="font-size:22px;font-weight:700;color:#f87171;"><?= $failed ?></div>
-                            <div style="font-size:11px;color:rgba(255,255,255,.6);">Fehlgeschlagen</div>
+                            <div style="font-size:11px;color:rgba(255,255,255,.6);"><?= te('Fehlgeschlagen') ?></div>
                         </div>
                     </div>
                     <div class="col-6 col-sm-3">
                         <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px;text-align:center;">
                             <div style="font-size:22px;font-weight:700;color:rgba(255,255,255,.5);"><?= $unknown ?></div>
-                            <div style="font-size:11px;color:rgba(255,255,255,.4);">Unbekannt</div>
+                            <div style="font-size:11px;color:rgba(255,255,255,.4);"><?= te('Unbekannt') ?></div>
                         </div>
                     </div>
                 </div>
                 <div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,.5);">
-                    <?= $total ?> Prüfungen bewertet · gewichteter Score (Kritisch = 3×, Mittel = 2×, Niedrig = 1×) ·
+                    <?= $total ?> <?= te('Prüfungen bewertet · gewichteter Score (Kritisch = 3×, Mittel = 2×, Niedrig = 1×) ·') ?>
                     <a href="?refresh=1" style="color:rgba(255,255,255,.6);text-decoration:none;">
-                        <i class="bi bi-arrow-clockwise me-1"></i>Neu laden
+                        <i class="bi bi-arrow-clockwise me-1"></i><?= te('Neu laden') ?>
                     </a>
                 </div>
             </div>
@@ -96,8 +96,8 @@ $highRecs     = array_filter($recommendations, fn($r) => $r['priority'] === 'hig
 <?php if (!empty($recommendations)): ?>
 <div class="content-card mb-4">
     <div class="card-header-custom">
-        <span><i class="bi bi-lightning-charge-fill me-2" style="color:#f59e0b;"></i>Empfehlungen</span>
-        <span style="font-size:12px;color:#9ca3af;"><?= count($recommendations) ?> Maßnahme(n) · sortiert nach Priorität</span>
+        <span><i class="bi bi-lightning-charge-fill me-2" style="color:#f59e0b;"></i><?= te('Empfehlungen') ?></span>
+        <span style="font-size:12px;color:#9ca3af;"><?= count($recommendations) ?> <?= te('Maßnahme(n) · sortiert nach Priorität') ?></span>
     </div>
     <div class="card-body-custom p-0">
         <?php foreach ($recommendations as $idx => $rec):
@@ -190,14 +190,14 @@ foreach ($byCategory as $cat => $items) {
             <span style="display:flex;align-items:center;gap:10px;">
                 <i class="bi <?= $icon ?>" style="font-size:16px;color:#0078d4;"></i>
                 <strong><?= $e($category) ?></strong>
-                <span style="font-size:12px;color:#9ca3af;"><?= count($categoryChecks) ?> Prüfungen</span>
+                <span style="font-size:12px;color:#9ca3af;"><?= count($categoryChecks) ?> <?= te('Prüfungen') ?></span>
             </span>
             <span style="display:flex;align-items:center;gap:8px;">
                 <?php if ($catFail > 0): ?>
-                    <span style="font-size:12px;color:#dc2626;"><i class="bi bi-x-circle-fill"></i> <?= $catFail ?> fehlgeschlagen</span>
+                    <span style="font-size:12px;color:#dc2626;"><i class="bi bi-x-circle-fill"></i> <?= $catFail ?> <?= te('fehlgeschlagen') ?></span>
                 <?php endif; ?>
                 <?php if ($catWarn > 0): ?>
-                    <span style="font-size:12px;color:#d97706;"><i class="bi bi-exclamation-triangle-fill"></i> <?= $catWarn ?> Warnung</span>
+                    <span style="font-size:12px;color:#d97706;"><i class="bi bi-exclamation-triangle-fill"></i> <?= $catWarn ?> <?= te('Warnung') ?></span>
                 <?php endif; ?>
                 <span style="font-size:13px;font-weight:600;color:<?= $catColor ?>;"><?= $catPct ?>%</span>
             </span>
@@ -227,11 +227,11 @@ foreach ($byCategory as $cat => $items) {
                     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px;">
                         <span style="font-size:13px;font-weight:500;color:#111827;"><?= $e($check['label']) ?></span>
                         <?php if ($check['severity'] === 'high'): ?>
-                            <span class="badge-danger badge-pill" style="font-size:10px;padding:2px 6px;">Hoch</span>
+                            <span class="badge-danger badge-pill" style="font-size:10px;padding:2px 6px;"><?= te('Hoch') ?></span>
                         <?php elseif ($check['severity'] === 'medium'): ?>
-                            <span class="badge-warning badge-pill" style="font-size:10px;padding:2px 6px;">Mittel</span>
+                            <span class="badge-warning badge-pill" style="font-size:10px;padding:2px 6px;"><?= te('Mittel') ?></span>
                         <?php else: ?>
-                            <span class="badge-info badge-pill" style="font-size:10px;padding:2px 6px;">Niedrig</span>
+                            <span class="badge-info badge-pill" style="font-size:10px;padding:2px 6px;"><?= te('Niedrig') ?></span>
                         <?php endif; ?>
                     </div>
                     <div style="font-size:12px;color:#6b7280;"><?= $e($check['description']) ?></div>
@@ -241,13 +241,13 @@ foreach ($byCategory as $cat => $items) {
                 <!-- Badge -->
                 <div style="flex-shrink:0;">
                     <?php if ($status === 'pass'): ?>
-                        <span class="badge-enabled badge-pill">Bestanden</span>
+                        <span class="badge-enabled badge-pill"><?= te('Bestanden') ?></span>
                     <?php elseif ($status === 'warn'): ?>
-                        <span class="badge-warning badge-pill">Warnung</span>
+                        <span class="badge-warning badge-pill"><?= te('Warnung') ?></span>
                     <?php elseif ($status === 'fail'): ?>
-                        <span class="badge-danger badge-pill">Fehlgeschlagen</span>
+                        <span class="badge-danger badge-pill"><?= te('Fehlgeschlagen') ?></span>
                     <?php else: ?>
-                        <span class="badge-neutral badge-pill">Unbekannt</span>
+                        <span class="badge-neutral badge-pill"><?= te('Unbekannt') ?></span>
                     <?php endif; ?>
                 </div>
 
@@ -262,9 +262,9 @@ foreach ($byCategory as $cat => $items) {
 <!-- Hinweis -->
 <div style="padding:12px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;color:#64748b;">
     <i class="bi bi-info-circle me-1"></i>
-    Prüfungen basieren auf Microsoft Graph API-Daten und Best Practices (CIS M365, Microsoft Security Baseline).
+    <?= t('Prüfungen basieren auf Microsoft Graph API-Daten und Best Practices (CIS M365, Microsoft Security Baseline).
     Fehlende Berechtigungen werden als <strong>Unbekannt</strong> angezeigt.
-    Einige Prüfungen nutzen gecachte Daten (5–30 Min). Für aktuelle Ergebnisse:
-    <a href="?refresh=1" style="color:#0078d4;">Aktualisieren</a>.
-    Risikobasierte CA-Richtlinien (Anmelderisiko, Benutzerrisiko) erfordern <strong>Entra ID P2</strong>.
+    Einige Prüfungen nutzen gecachte Daten (5–30 Min). Für aktuelle Ergebnisse:') ?>
+    <a href="?refresh=1" style="color:#0078d4;"><?= te('Aktualisieren') ?></a>.
+    <?= t('Risikobasierte CA-Richtlinien (Anmelderisiko, Benutzerrisiko) erfordern <strong>Entra ID P2</strong>.') ?>
 </div>

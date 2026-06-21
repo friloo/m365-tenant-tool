@@ -34,7 +34,7 @@ if ($style === 'empty'):
     </p>
     <?php if (!empty($diag['fix_url'])): ?>
         <a href="<?= $esc($diag['fix_url']) ?>" class="btn btn-sm btn-outline-secondary mt-3">
-            <i class="bi bi-arrow-right-circle me-1"></i>Zur Lösung
+            <i class="bi bi-arrow-right-circle me-1"></i><?= te('Zur Lösung') ?>
         </a>
     <?php endif; ?>
 </div>
@@ -49,7 +49,7 @@ if ($style === 'empty'):
         <div class="small text-muted"><?= $esc($diag['detail']) ?></div>
         <?php if (!empty($diag['fix_url'])): ?>
             <a href="<?= $esc($diag['fix_url']) ?>" class="btn btn-sm btn-outline-secondary mt-2">
-                <i class="bi bi-arrow-right-circle me-1"></i>Zur Lösung
+                <i class="bi bi-arrow-right-circle me-1"></i><?= te('Zur Lösung') ?>
             </a>
         <?php endif; ?>
     </div>

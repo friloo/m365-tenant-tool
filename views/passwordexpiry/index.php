@@ -12,41 +12,41 @@ $never    = $analyzed['never']    ?? [];
 <div class="row g-3 mb-4">
     <div class="col-sm-2" style="min-width:160px;">
         <div class="metric-card">
-            <div class="metric-label">Gesamt geprüft</div>
+            <div class="metric-label"><?= te('Gesamt geprüft') ?></div>
             <div class="metric-value"><?= number_format($totalChecked) ?></div>
-            <div class="metric-sub">Aktive Benutzer</div>
+            <div class="metric-sub"><?= te('Aktive Benutzer') ?></div>
         </div>
     </div>
     <div class="col-sm-2" style="min-width:160px;">
         <div class="metric-card">
-            <div class="metric-label">Abgelaufen</div>
+            <div class="metric-label"><?= te('Abgelaufen') ?></div>
             <div class="metric-value" style="color:<?= count($expired) > 0 ? '#dc2626' : '#16a34a' ?>;">
                 <?= number_format(count($expired)) ?>
             </div>
-            <div class="metric-sub">Passwort überfällig</div>
+            <div class="metric-sub"><?= te('Passwort überfällig') ?></div>
         </div>
     </div>
     <div class="col-sm-2" style="min-width:160px;">
         <div class="metric-card">
-            <div class="metric-label">Kritisch &lt;14 Tage</div>
+            <div class="metric-label"><?= te('Kritisch <14 Tage') ?></div>
             <div class="metric-value" style="color:<?= count($critical) > 0 ? '#d97706' : '#16a34a' ?>;">
                 <?= number_format(count($critical)) ?>
             </div>
-            <div class="metric-sub">Läuft bald ab</div>
+            <div class="metric-sub"><?= te('Läuft bald ab') ?></div>
         </div>
     </div>
     <div class="col-sm-2" style="min-width:160px;">
         <div class="metric-card">
-            <div class="metric-label">Warnung &lt;30 Tage</div>
+            <div class="metric-label"><?= te('Warnung <30 Tage') ?></div>
             <div class="metric-value" style="color:<?= count($warning) > 0 ? '#ca8a04' : '#16a34a' ?>;">
                 <?= number_format(count($warning)) ?>
             </div>
-            <div class="metric-sub">Bald ablaufend</div>
+            <div class="metric-sub"><?= te('Bald ablaufend') ?></div>
         </div>
     </div>
     <div class="col-sm-2" style="min-width:160px;">
         <div class="metric-card">
-            <div class="metric-label">Läuft nie ab</div>
+            <div class="metric-label"><?= te('Läuft nie ab') ?></div>
             <div class="metric-value" style="color:#6b7280;"><?= number_format(count($never)) ?></div>
             <div class="metric-sub">DisablePasswordExpiration</div>
         </div>
@@ -57,8 +57,10 @@ $never    = $analyzed['never']    ?? [];
 <?php if (count($expired) > 0): ?>
     <div class="alert alert-danger mb-4">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        <strong><?= count($expired) ?> Passwort<?= count($expired) !== 1 ? 'er' : '' ?> <?= count($expired) !== 1 ? 'sind' : 'ist' ?> abgelaufen!</strong>
-        Betroffene Benutzer sollten ihr Passwort sofort ändern.
+        <strong><?= count($expired) !== 1
+            ? te(':n Passwörter sind abgelaufen!', ['n' => count($expired)])
+            : te(':n Passwort ist abgelaufen!', ['n' => count($expired)]) ?></strong>
+        <?= te('Betroffene Benutzer sollten ihr Passwort sofort ändern.') ?>
     </div>
 <?php endif; ?>
 
@@ -68,7 +70,7 @@ $never    = $analyzed['never']    ?? [];
         <button class="nav-link <?= count($expired) > 0 ? 'active' : '' ?>"
                 id="expired-tab" data-bs-toggle="tab" data-bs-target="#expired-panel"
                 type="button" role="tab">
-            <i class="bi bi-x-circle me-1"></i>Abgelaufen
+            <i class="bi bi-x-circle me-1"></i><?= te('Abgelaufen') ?>
             <?php if (count($expired) > 0): ?>
                 <span class="badge bg-danger ms-1"><?= count($expired) ?></span>
             <?php endif; ?>
@@ -78,7 +80,7 @@ $never    = $analyzed['never']    ?? [];
         <button class="nav-link <?= count($expired) === 0 && count($critical) > 0 ? 'active' : '' ?>"
                 id="critical-tab" data-bs-toggle="tab" data-bs-target="#critical-panel"
                 type="button" role="tab">
-            <i class="bi bi-exclamation-triangle me-1"></i>Kritisch
+            <i class="bi bi-exclamation-triangle me-1"></i><?= te('Kritisch') ?>
             <?php if (count($critical) > 0): ?>
                 <span class="badge bg-warning text-dark ms-1"><?= count($critical) ?></span>
             <?php endif; ?>
@@ -88,7 +90,7 @@ $never    = $analyzed['never']    ?? [];
         <button class="nav-link <?= count($expired) === 0 && count($critical) === 0 && count($warning) > 0 ? 'active' : '' ?>"
                 id="warning-tab" data-bs-toggle="tab" data-bs-target="#warning-panel"
                 type="button" role="tab">
-            <i class="bi bi-exclamation-circle me-1"></i>Warnung
+            <i class="bi bi-exclamation-circle me-1"></i><?= te('Warnung') ?>
             <?php if (count($warning) > 0): ?>
                 <span class="badge bg-warning text-dark ms-1"><?= count($warning) ?></span>
             <?php endif; ?>
@@ -98,7 +100,7 @@ $never    = $analyzed['never']    ?? [];
         <button class="nav-link <?= count($expired) === 0 && count($critical) === 0 && count($warning) === 0 ? 'active' : '' ?>"
                 id="all-tab" data-bs-toggle="tab" data-bs-target="#all-panel"
                 type="button" role="tab">
-            <i class="bi bi-people me-1"></i>Alle
+            <i class="bi bi-people me-1"></i><?= te('Alle') ?>
             <span class="badge bg-secondary ms-1"><?= $totalChecked ?></span>
         </button>
     </li>
@@ -110,7 +112,7 @@ $never    = $analyzed['never']    ?? [];
     <div class="tab-pane fade <?= count($expired) > 0 ? 'show active' : '' ?>" id="expired-panel" role="tabpanel">
         <div class="content-card">
             <div class="table-toolbar">
-                <input type="text" id="expiredSearch" class="search-box" placeholder="Benutzer suchen…">
+                <input type="text" id="expiredSearch" class="search-box" placeholder="<?= te('Benutzer suchen…') ?>">
             </div>
             <?= renderPwdTable($expired, 'expiredTable', $e) ?>
         </div>
@@ -121,7 +123,7 @@ $never    = $analyzed['never']    ?? [];
          id="critical-panel" role="tabpanel">
         <div class="content-card">
             <div class="table-toolbar">
-                <input type="text" id="criticalSearch" class="search-box" placeholder="Benutzer suchen…">
+                <input type="text" id="criticalSearch" class="search-box" placeholder="<?= te('Benutzer suchen…') ?>">
             </div>
             <?= renderPwdTable($critical, 'criticalTable', $e) ?>
         </div>
@@ -132,7 +134,7 @@ $never    = $analyzed['never']    ?? [];
          id="warning-panel" role="tabpanel">
         <div class="content-card">
             <div class="table-toolbar">
-                <input type="text" id="warningSearch" class="search-box" placeholder="Benutzer suchen…">
+                <input type="text" id="warningSearch" class="search-box" placeholder="<?= te('Benutzer suchen…') ?>">
             </div>
             <?= renderPwdTable($warning, 'warningTable', $e) ?>
         </div>
@@ -143,7 +145,7 @@ $never    = $analyzed['never']    ?? [];
          id="all-panel" role="tabpanel">
         <div class="content-card">
             <div class="table-toolbar">
-                <input type="text" id="allSearch" class="search-box" placeholder="Benutzer suchen…">
+                <input type="text" id="allSearch" class="search-box" placeholder="<?= te('Benutzer suchen…') ?>">
             </div>
             <?php
             $allUsers = array_merge(
@@ -163,13 +165,8 @@ $never    = $analyzed['never']    ?? [];
 <div class="content-card mt-3" style="padding:12px 16px;background:#f8fafc;border:1px dashed #cbd5e1;">
     <p style="font-size:12px;color:#64748b;margin:0;">
         <i class="bi bi-info-circle me-1"></i>
-        <strong>Hinweis:</strong> Passwörter mit <em>Läuft nie ab</em> sind in dieser Ansicht nicht aufgeführt
-        (<?= number_format(count($never)) ?> Benutzer betroffen).
-        Das Ablauf-Intervall kann in den <a href="/settings">Einstellungen</a> konfiguriert werden
-        (aktuell: <?= (int)$expiryDays ?> Tage).<br>
-        <i class="bi bi-arrow-repeat me-1"></i><strong>Hybrid-Benutzer</strong> (AD Connect synchronisiert) haben ihre Passwortrichtlinie
-        im on-prem Active Directory. Der Ablauf wird hier auf Basis des konfigurierten Werts (<?= (int)$expiryDays ?> Tage)
-        geschätzt — die tatsächliche AD-Richtlinie kann abweichen.
+        <strong><?= te('Hinweis:') ?></strong> <?= t('Passwörter mit <em>Läuft nie ab</em> sind in dieser Ansicht nicht aufgeführt (:n Benutzer betroffen). Das Ablauf-Intervall kann in den <a href="/settings">Einstellungen</a> konfiguriert werden (aktuell: :days Tage).', ['n' => number_format(count($never)), 'days' => (int)$expiryDays]) ?><br>
+        <i class="bi bi-arrow-repeat me-1"></i><?= t('<strong>Hybrid-Benutzer</strong> (AD Connect synchronisiert) haben ihre Passwortrichtlinie im on-prem Active Directory. Der Ablauf wird hier auf Basis des konfigurierten Werts (:days Tage) geschätzt — die tatsächliche AD-Richtlinie kann abweichen.', ['days' => (int)$expiryDays]) ?>
     </p>
 </div>
 
@@ -191,13 +188,13 @@ function renderPwdTable(array $users, string $tableId, callable $e): string
             <thead>
                 <tr>
                     <th style="width:40px;"></th>
-                    <th>Name</th>
-                    <th>UPN</th>
-                    <th>Typ</th>
-                    <th>Geändert am</th>
-                    <th>Läuft ab am</th>
-                    <th>Verbleibend</th>
-                    <th>Status</th>
+                    <th><?= te('Name') ?></th>
+                    <th><?= te('UPN') ?></th>
+                    <th><?= te('Typ') ?></th>
+                    <th><?= te('Geändert am') ?></th>
+                    <th><?= te('Läuft ab am') ?></th>
+                    <th><?= te('Verbleibend') ?></th>
+                    <th><?= te('Status') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -212,36 +209,36 @@ function renderPwdTable(array $users, string $tableId, callable $e): string
 
                     if ($daysUntil === null) {
                         $badgeClass = 'badge-neutral';
-                        $badgeLabel = 'Nie';
+                        $badgeLabel = t('Nie');
                     } elseif ($daysUntil < 0) {
                         $badgeClass = 'badge-danger';
-                        $badgeLabel = abs((int)$daysUntil) . 'd überfällig';
+                        $badgeLabel = t(':nd überfällig', ['n' => abs((int)$daysUntil)]);
                     } elseif ($daysUntil <= 14) {
                         $badgeClass = 'badge-warning';
-                        $badgeLabel = (int)$daysUntil . 'd verbleibend';
+                        $badgeLabel = t(':nd verbleibend', ['n' => (int)$daysUntil]);
                     } elseif ($daysUntil <= 30) {
                         $badgeClass = 'badge-warning';
-                        $badgeLabel = (int)$daysUntil . 'd verbleibend';
+                        $badgeLabel = t(':nd verbleibend', ['n' => (int)$daysUntil]);
                     } else {
                         $badgeClass = 'badge-success';
-                        $badgeLabel = (int)$daysUntil . 'd verbleibend';
+                        $badgeLabel = t(':nd verbleibend', ['n' => (int)$daysUntil]);
                     }
 
                     if ($daysUntil === null) {
                         $statusClass = 'badge-neutral';
-                        $statusLabel = 'Läuft nie ab';
+                        $statusLabel = t('Läuft nie ab');
                     } elseif ($daysUntil < 0) {
                         $statusClass = 'badge-danger';
-                        $statusLabel = 'Abgelaufen';
+                        $statusLabel = t('Abgelaufen');
                     } elseif ($daysUntil <= 14) {
                         $statusClass = 'badge-warning';
-                        $statusLabel = 'Kritisch';
+                        $statusLabel = t('Kritisch');
                     } elseif ($daysUntil <= 30) {
                         $statusClass = 'badge-warning';
-                        $statusLabel = 'Warnung';
+                        $statusLabel = t('Warnung');
                     } else {
                         $statusClass = 'badge-success';
-                        $statusLabel = 'OK';
+                        $statusLabel = t('OK');
                     }
                 ?>
                 <tr>
@@ -256,11 +253,11 @@ function renderPwdTable(array $users, string $tableId, callable $e): string
                     <td style="font-size:12px;color:#6b7280;"><?= $e($upn) ?></td>
                     <td style="font-size:12px;white-space:nowrap;">
                         <?php if ($isHybrid): ?>
-                            <span class="badge-warning badge-pill" title="Passwort wird durch on-prem AD verwaltet. Ablauf basiert auf konfiguriertem Max-Alter.">
-                                <i class="bi bi-arrow-repeat me-1"></i>Hybrid
+                            <span class="badge-warning badge-pill" title="<?= te('Passwort wird durch on-prem AD verwaltet. Ablauf basiert auf konfiguriertem Max-Alter.') ?>">
+                                <i class="bi bi-arrow-repeat me-1"></i><?= te('Hybrid') ?>
                             </span>
                         <?php else: ?>
-                            <span class="badge-info badge-pill"><i class="bi bi-cloud me-1"></i>Cloud</span>
+                            <span class="badge-info badge-pill"><i class="bi bi-cloud me-1"></i><?= te('Cloud') ?></span>
                         <?php endif; ?>
                     </td>
                     <td style="font-size:12px;color:#6b7280;white-space:nowrap;">
@@ -282,7 +279,7 @@ function renderPwdTable(array $users, string $tableId, callable $e): string
                         <td colspan="8">
                             <div class="empty-state">
                                 <i class="bi bi-check-circle"></i>
-                                <p>Keine Benutzer in dieser Kategorie</p>
+                                <p><?= te('Keine Benutzer in dieser Kategorie') ?></p>
                             </div>
                         </td>
                     </tr>

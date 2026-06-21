@@ -16,24 +16,23 @@
 <div class="alert alert-warning d-flex align-items-start gap-2 mb-4">
     <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1"></i>
     <div>
-        Gelöschte Objekte werden nach <strong>30 Tagen</strong> automatisch und unwiderruflich gelöscht.
-        Objekte mit weniger als 7 verbleibenden Tagen sind rot markiert.
+        <?= t('Gelöschte Objekte werden nach <strong>30 Tagen</strong> automatisch und unwiderruflich gelöscht. Objekte mit weniger als 7 verbleibenden Tagen sind rot markiert.') ?>
     </div>
 </div>
 
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-person-x me-1"></i>Gelöschte Benutzer</div>
+            <div class="metric-label"><i class="bi bi-person-x me-1"></i><?= te('Gelöschte Benutzer') ?></div>
             <div class="metric-value"><?= count($users) ?></div>
-            <div class="metric-sub">im Papierkorb</div>
+            <div class="metric-sub"><?= te('im Papierkorb') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="metric-card">
-            <div class="metric-label"><i class="bi bi-collection me-1"></i>Gelöschte Gruppen</div>
+            <div class="metric-label"><i class="bi bi-collection me-1"></i><?= te('Gelöschte Gruppen') ?></div>
             <div class="metric-value"><?= count($groups) ?></div>
-            <div class="metric-sub">im Papierkorb</div>
+            <div class="metric-sub"><?= te('im Papierkorb') ?></div>
         </div>
     </div>
 </div>
@@ -43,14 +42,14 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="users-tab" data-bs-toggle="tab"
                     data-bs-target="#users-panel" type="button" role="tab">
-                <i class="bi bi-person-x me-1"></i>Benutzer
+                <i class="bi bi-person-x me-1"></i><?= te('Benutzer') ?>
                 <span class="badge bg-secondary ms-1"><?= count($users) ?></span>
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="groups-tab" data-bs-toggle="tab"
                     data-bs-target="#groups-panel" type="button" role="tab">
-                <i class="bi bi-collection me-1"></i>Gruppen
+                <i class="bi bi-collection me-1"></i><?= te('Gruppen') ?>
                 <span class="badge bg-secondary ms-1"><?= count($groups) ?></span>
             </button>
         </li>
@@ -61,18 +60,18 @@
         <!-- Users tab -->
         <div class="tab-pane fade show active" id="users-panel" role="tabpanel">
             <div class="table-toolbar">
-                <input type="text" id="usersSearch" class="search-box" placeholder="Benutzer suchen…">
+                <input type="text" id="usersSearch" class="search-box" placeholder="<?= te('Benutzer suchen…') ?>">
             </div>
             <div class="table-responsive">
                 <table class="data-table" id="usersTable">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>UPN</th>
-                            <th>Abteilung</th>
-                            <th>Gelöscht am</th>
-                            <th>Verbleibend</th>
-                            <th>Aktionen</th>
+                            <th><?= te('Name') ?></th>
+                            <th><?= te('UPN') ?></th>
+                            <th><?= te('Abteilung') ?></th>
+                            <th><?= te('Gelöscht am') ?></th>
+                            <th><?= te('Verbleibend') ?></th>
+                            <th><?= te('Aktionen') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -101,16 +100,16 @@
                                     <form method="post" action="/deletedobjects/<?= $e($u['id']) ?>/restore" class="mb-0">
                                         <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-outline-success py-0 px-2"
-                                                style="font-size:11px;" title="Wiederherstellen">
-                                            <i class="bi bi-arrow-counterclockwise me-1"></i>Wiederherstellen
+                                                style="font-size:11px;" title="<?= te('Wiederherstellen') ?>">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i><?= te('Wiederherstellen') ?>
                                         </button>
                                     </form>
                                     <?php if (\App\Auth\LocalAuth::role() === 'admin'): ?>
                                     <form method="post" action="/deletedobjects/<?= $e($u['id']) ?>/permanent-delete" class="mb-0"
-                                          onsubmit="return confirm('Benutzer endgültig löschen? Diese Aktion kann nicht rückgängig gemacht werden.')">
+                                          onsubmit="return confirm(<?= htmlspecialchars(json_encode(t('Benutzer endgültig löschen? Diese Aktion kann nicht rückgängig gemacht werden.'), JSON_UNESCAPED_UNICODE), ENT_QUOTES) ?>)">
                                         <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2"
-                                                style="font-size:11px;" title="Endgültig löschen">
+                                                style="font-size:11px;" title="<?= te('Endgültig löschen') ?>">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
@@ -120,7 +119,7 @@
                         </tr>
                         <?php endforeach; ?>
                         <?php if (empty($users)): ?>
-                            <tr><td colspan="6" class="text-center text-muted py-4">Keine gelöschten Benutzer gefunden</td></tr>
+                            <tr><td colspan="6" class="text-center text-muted py-4"><?= te('Keine gelöschten Benutzer gefunden') ?></td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -130,18 +129,18 @@
         <!-- Groups tab -->
         <div class="tab-pane fade" id="groups-panel" role="tabpanel">
             <div class="table-toolbar">
-                <input type="text" id="groupsSearch" class="search-box" placeholder="Gruppe suchen…">
+                <input type="text" id="groupsSearch" class="search-box" placeholder="<?= te('Gruppe suchen…') ?>">
             </div>
             <div class="table-responsive">
                 <table class="data-table" id="groupsTable">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>E-Mail</th>
-                            <th>Typ</th>
-                            <th>Gelöscht am</th>
-                            <th>Verbleibend</th>
-                            <th>Aktionen</th>
+                            <th><?= te('Name') ?></th>
+                            <th><?= te('E-Mail') ?></th>
+                            <th><?= te('Typ') ?></th>
+                            <th><?= te('Gelöscht am') ?></th>
+                            <th><?= te('Verbleibend') ?></th>
+                            <th><?= te('Aktionen') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -152,7 +151,7 @@
                             $isUrgent   = $daysRemaining < 7;
                             $groupTypes = $g['groupTypes'] ?? [];
                             $isM365     = in_array('Unified', $groupTypes, true);
-                            $typeLabel  = $isM365 ? 'M365' : 'Sicherheitsgruppe';
+                            $typeLabel  = $isM365 ? 'M365' : t('Sicherheitsgruppe');
                             $typeBadge  = $isM365 ? 'badge-info' : 'badge-neutral';
                         ?>
                         <tr>
@@ -174,16 +173,16 @@
                                     <form method="post" action="/deletedobjects/<?= $e($g['id']) ?>/restore" class="mb-0">
                                         <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-outline-success py-0 px-2"
-                                                style="font-size:11px;" title="Wiederherstellen">
-                                            <i class="bi bi-arrow-counterclockwise me-1"></i>Wiederherstellen
+                                                style="font-size:11px;" title="<?= te('Wiederherstellen') ?>">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i><?= te('Wiederherstellen') ?>
                                         </button>
                                     </form>
                                     <?php if (\App\Auth\LocalAuth::role() === 'admin'): ?>
                                     <form method="post" action="/deletedobjects/<?= $e($g['id']) ?>/permanent-delete" class="mb-0"
-                                          onsubmit="return confirm('Gruppe endgültig löschen? Diese Aktion kann nicht rückgängig gemacht werden.')">
+                                          onsubmit="return confirm(<?= htmlspecialchars(json_encode(t('Gruppe endgültig löschen? Diese Aktion kann nicht rückgängig gemacht werden.'), JSON_UNESCAPED_UNICODE), ENT_QUOTES) ?>)">
                                         <?= \App\Core\Csrf::field() ?>
                                         <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2"
-                                                style="font-size:11px;" title="Endgültig löschen">
+                                                style="font-size:11px;" title="<?= te('Endgültig löschen') ?>">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
@@ -193,7 +192,7 @@
                         </tr>
                         <?php endforeach; ?>
                         <?php if (empty($groups)): ?>
-                            <tr><td colspan="6" class="text-center text-muted py-4">Keine gelöschten Gruppen gefunden</td></tr>
+                            <tr><td colspan="6" class="text-center text-muted py-4"><?= te('Keine gelöschten Gruppen gefunden') ?></td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>

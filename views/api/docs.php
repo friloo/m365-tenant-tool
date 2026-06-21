@@ -6,20 +6,18 @@ use App\Core\View;
 <div class="content-card mb-3">
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
-            <h1 class="mb-1"><i class="bi bi-book text-primary"></i> REST-API Dokumentation</h1>
-            <p class="text-muted mb-0">Vollständige OpenAPI-3.0-Spezifikation aller verfügbaren Endpunkte. Über &quot;Try it out&quot; können Aufrufe direkt aus dem Browser getestet werden.</p>
+            <h1 class="mb-1"><i class="bi bi-book text-primary"></i> <?= te('REST-API Dokumentation') ?></h1>
+            <p class="text-muted mb-0"><?= te('Vollständige OpenAPI-3.0-Spezifikation aller verfügbaren Endpunkte. Über "Try it out" können Aufrufe direkt aus dem Browser getestet werden.') ?></p>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-            <a href="/settings/api-keys" class="btn btn-primary"><i class="bi bi-key"></i> API-Keys verwalten</a>
-            <a href="/api/openapi.json" target="_blank" class="btn btn-outline-secondary"><i class="bi bi-filetype-json"></i> Roh-Spec</a>
+            <a href="/settings/api-keys" class="btn btn-primary"><i class="bi bi-key"></i> <?= te('API-Keys verwalten') ?></a>
+            <a href="/api/openapi.json" target="_blank" class="btn btn-outline-secondary"><i class="bi bi-filetype-json"></i> <?= te('Roh-Spec') ?></a>
         </div>
     </div>
     <div class="alert alert-info mt-3 mb-0">
         <i class="bi bi-info-circle"></i>
-        <strong>So nutzt du die API:</strong>
-        Klicke oben rechts in Swagger UI auf <code>Authorize</code> und füge deinen API-Key ein
-        (erstellen unter <a href="/settings/api-keys">API-Schlüssel</a>) &mdash; dann sind alle Endpunkte direkt
-        ausprobierbar.
+        <strong><?= te('So nutzt du die API:') ?></strong>
+        <?= t('Klicke oben rechts in Swagger UI auf <code>Authorize</code> und füge deinen API-Key ein (erstellen unter <a href="/settings/api-keys">API-Schlüssel</a>) &mdash; dann sind alle Endpunkte direkt ausprobierbar.') ?>
     </div>
 </div>
 

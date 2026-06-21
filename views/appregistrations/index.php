@@ -18,7 +18,7 @@ foreach ($apps as $app) {
 <?php if (!empty($soonExpiring)): ?>
     <div class="alert alert-danger mb-4">
         <i class="bi bi-clock-fill me-2"></i>
-        <strong><?= count($soonExpiring) ?> App<?= count($soonExpiring) !== 1 ? 's' : '' ?> mit ablaufenden Secrets (< 30 Tage):</strong>
+        <strong><?= count($soonExpiring) ?> App<?= count($soonExpiring) !== 1 ? 's' : '' ?> <?= te('mit ablaufenden Secrets (< 30 Tage):') ?></strong>
         <?= implode(', ', array_map($e, $soonExpiring)) ?>
     </div>
 <?php endif; ?>
@@ -26,8 +26,8 @@ foreach ($apps as $app) {
 <?php if (!empty($highRiskApps)): ?>
     <div class="alert alert-danger mb-4">
         <i class="bi bi-shield-exclamation me-2"></i>
-        <strong><?= count($highRiskApps) ?> App<?= count($highRiskApps) !== 1 ? 's' : '' ?> mit hohem Risiko erkannt</strong> —
-        Diese Apps besitzen weitreichende Berechtigungen und sollten überprüft werden.
+        <strong><?= count($highRiskApps) ?> App<?= count($highRiskApps) !== 1 ? 's' : '' ?> <?= te('mit hohem Risiko erkannt') ?></strong> —
+        <?= te('Diese Apps besitzen weitreichende Berechtigungen und sollten überprüft werden.') ?>
     </div>
 <?php endif; ?>
 
@@ -35,35 +35,35 @@ foreach ($apps as $app) {
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">App-Registrierungen</div>
+            <div class="metric-label"><?= te('App-Registrierungen') ?></div>
             <div class="metric-value"><?= count($apps) ?></div>
-            <div class="metric-sub">Eigene Apps im Tenant</div>
+            <div class="metric-sub"><?= te('Eigene Apps im Tenant') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Hohes Risiko</div>
+            <div class="metric-label"><?= te('Hohes Risiko') ?></div>
             <div class="metric-value" style="color:<?= count($highRiskApps) > 0 ? '#dc2626' : '#16a34a' ?>;">
                 <?= count($highRiskApps) ?>
                 <?php if (count($highRiskApps) > 0): ?>
                     <span class="badge-danger ms-1" style="font-size:11px;">!</span>
                 <?php endif; ?>
             </div>
-            <div class="metric-sub">Sensitive Berechtigungen</div>
+            <div class="metric-sub"><?= te('Sensitive Berechtigungen') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Neu (letzte 30 Tage)</div>
+            <div class="metric-label"><?= te('Neu (letzte 30 Tage)') ?></div>
             <div class="metric-value" style="color:<?= $recentAppsCount > 0 ? '#f59e0b' : '#111827' ?>;">
                 <?= $recentAppsCount ?>
             </div>
-            <div class="metric-sub">Kürzlich registriert</div>
+            <div class="metric-sub"><?= te('Kürzlich registriert') ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Enterprise Apps</div>
+            <div class="metric-label"><?= te('Enterprise Apps') ?></div>
             <div class="metric-value"><?= count($servicePrincipals) ?></div>
             <div class="metric-sub">Service Principals</div>
         </div>
@@ -76,7 +76,7 @@ foreach ($apps as $app) {
         <button class="nav-link active" id="apps-tab" data-bs-toggle="tab" data-bs-target="#apps-panel"
                 type="button" role="tab">
             <i class="bi bi-code-square me-1"></i>
-            App-Registrierungen
+            <?= te('App-Registrierungen') ?>
             <span class="badge bg-secondary ms-1"><?= count($apps) ?></span>
         </button>
     </li>
@@ -84,7 +84,7 @@ foreach ($apps as $app) {
         <button class="nav-link" id="sp-tab" data-bs-toggle="tab" data-bs-target="#sp-panel"
                 type="button" role="tab">
             <i class="bi bi-building me-1"></i>
-            Enterprise Apps
+            <?= te('Enterprise Apps') ?>
             <span class="badge bg-secondary ms-1"><?= count($servicePrincipals) ?></span>
         </button>
     </li>
@@ -96,19 +96,19 @@ foreach ($apps as $app) {
     <div class="tab-pane fade show active" id="apps-panel" role="tabpanel">
         <div class="content-card">
             <div class="table-toolbar">
-                <input type="text" id="appsSearch" class="search-box" placeholder="App suchen…">
+                <input type="text" id="appsSearch" class="search-box" placeholder="<?= te('App suchen…') ?>">
             </div>
             <div class="table-responsive">
                 <table class="data-table" id="appsTable">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>App-ID</th>
-                            <th>Erstellt</th>
-                            <th>Zielgruppe</th>
-                            <th>Berechtigungen</th>
-                            <th>Secrets</th>
-                            <th>Risiko</th>
+                            <th><?= te('Name') ?></th>
+                            <th><?= te('App-ID') ?></th>
+                            <th><?= te('Erstellt') ?></th>
+                            <th><?= te('Zielgruppe') ?></th>
+                            <th><?= te('Berechtigungen') ?></th>
+                            <th><?= te('Secrets') ?></th>
+                            <th><?= te('Risiko') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -169,11 +169,11 @@ foreach ($apps as $app) {
                             </td>
                             <td>
                                 <?php if ($audience === 'AzureADMyOrg'): ?>
-                                    <span class="badge-info">Nur Tenant</span>
+                                    <span class="badge-info"><?= te('Nur Tenant') ?></span>
                                 <?php elseif ($audience === 'AzureADMultipleOrgs'): ?>
-                                    <span class="badge-warning">Multi-Tenant</span>
+                                    <span class="badge-warning"><?= te('Multi-Tenant') ?></span>
                                 <?php elseif (str_contains($audience, 'Personal')): ?>
-                                    <span class="badge-warning">Persönlich</span>
+                                    <span class="badge-warning"><?= te('Persönlich') ?></span>
                                 <?php else: ?>
                                     <span class="badge-secondary"><?= $e($audience) ?></span>
                                 <?php endif; ?>
@@ -193,7 +193,7 @@ foreach ($apps as $app) {
                                 <?php elseif ($secretStatus === 'critical'): ?>
                                     <span class="badge-danger badge-pill" title="<?= $secretExpiry !== null ? date('d.m.Y', $secretExpiry) : '' ?>">
                                         <?php if ($secretExpiry !== null && $secretExpiry <= $nowTs): ?>
-                                            Abgelaufen
+                                            <?= te('Abgelaufen') ?>
                                         <?php else: ?>
                                             <?= $secretExpiry !== null ? date('d.m.Y', $secretExpiry) : '!' ?>
                                         <?php endif; ?>
@@ -210,7 +210,7 @@ foreach ($apps as $app) {
                             </td>
                             <td>
                                 <?php if ($isHighRisk): ?>
-                                    <span class="badge-danger">Hoch</span>
+                                    <span class="badge-danger"><?= te('Hoch') ?></span>
                                 <?php else: ?>
                                     <span class="badge-enabled">OK</span>
                                 <?php endif; ?>
@@ -222,7 +222,7 @@ foreach ($apps as $app) {
                                 <td colspan="7">
                                     <div class="empty-state">
                                         <i class="bi bi-code-square"></i>
-                                        <p>Keine App-Registrierungen gefunden</p>
+                                        <p><?= te('Keine App-Registrierungen gefunden') ?></p>
                                     </div>
                                 </td>
                             </tr>
@@ -237,17 +237,17 @@ foreach ($apps as $app) {
     <div class="tab-pane fade" id="sp-panel" role="tabpanel">
         <div class="content-card">
             <div class="table-toolbar">
-                <input type="text" id="spSearch" class="search-box" placeholder="Enterprise App suchen…">
+                <input type="text" id="spSearch" class="search-box" placeholder="<?= te('Enterprise App suchen…') ?>">
             </div>
             <div class="table-responsive">
                 <table class="data-table" id="spTable">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Typ</th>
-                            <th>Erstellt</th>
-                            <th>Herausgeber</th>
-                            <th>Aktiviert</th>
+                            <th><?= te('Name') ?></th>
+                            <th><?= te('Typ') ?></th>
+                            <th><?= te('Erstellt') ?></th>
+                            <th><?= te('Herausgeber') ?></th>
+                            <th><?= te('Aktiviert') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -285,18 +285,18 @@ foreach ($apps as $app) {
                             </td>
                             <td>
                                 <?php if ($isExternal): ?>
-                                    <span class="badge-warning">Extern</span>
+                                    <span class="badge-warning"><?= te('Extern') ?></span>
                                 <?php elseif ($orgId): ?>
-                                    <span class="badge-enabled">Eigener Tenant</span>
+                                    <span class="badge-enabled"><?= te('Eigener Tenant') ?></span>
                                 <?php else: ?>
                                     <span class="badge-neutral">–</span>
                                 <?php endif; ?>
                             </td>
                             <td>
                                 <?php if ($enabled): ?>
-                                    <span class="badge-enabled">Aktiv</span>
+                                    <span class="badge-enabled"><?= te('Aktiv') ?></span>
                                 <?php else: ?>
-                                    <span class="badge-disabled">Deaktiviert</span>
+                                    <span class="badge-disabled"><?= te('Deaktiviert') ?></span>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -306,7 +306,7 @@ foreach ($apps as $app) {
                                 <td colspan="5">
                                     <div class="empty-state">
                                         <i class="bi bi-building"></i>
-                                        <p>Keine Enterprise Apps gefunden</p>
+                                        <p><?= te('Keine Enterprise Apps gefunden') ?></p>
                                     </div>
                                 </td>
                             </tr>

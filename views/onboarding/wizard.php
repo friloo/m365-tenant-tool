@@ -66,37 +66,37 @@
 <div class="step-indicator">
     <div class="step-wrapper">
         <div class="step active" id="ind-1">1</div>
-        <div class="step-label">Benutzerdaten</div>
+        <div class="step-label"><?= te('Benutzerdaten') ?></div>
     </div>
     <div class="step-connector"></div>
     <div class="step-wrapper">
         <div class="step" id="ind-2">2</div>
-        <div class="step-label">Lizenz</div>
+        <div class="step-label"><?= te('Lizenz') ?></div>
     </div>
     <div class="step-connector"></div>
     <div class="step-wrapper">
         <div class="step" id="ind-3">3</div>
-        <div class="step-label">Gruppen</div>
+        <div class="step-label"><?= te('Gruppen') ?></div>
     </div>
     <div class="step-connector"></div>
     <div class="step-wrapper">
         <div class="step" id="ind-4">4</div>
-        <div class="step-label">Zusammenfassung</div>
+        <div class="step-label"><?= te('Zusammenfassung') ?></div>
     </div>
 </div>
 
 <!-- Step 1: Benutzerdaten -->
 <div class="wizard-step" id="step-1">
     <div class="content-card">
-        <h5 class="mb-4"><i class="bi bi-person-plus me-2"></i>Schritt 1 – Benutzerdaten</h5>
+        <h5 class="mb-4"><i class="bi bi-person-plus me-2"></i><?= te('Schritt 1 – Benutzerdaten') ?></h5>
         <div class="row g-3">
             <div class="col-md-6">
-                <label class="form-label fw-semibold">Anzeigename <span class="text-danger">*</span></label>
+                <label class="form-label fw-semibold"><?= te('Anzeigename') ?> <span class="text-danger">*</span></label>
                 <input type="text" name="displayName" id="inp-displayName" class="form-control" required
-                       placeholder="Vorname Nachname" autocomplete="off">
+                       placeholder="<?= te('Vorname Nachname') ?>" autocomplete="off">
             </div>
             <div class="col-md-6">
-                <label class="form-label fw-semibold">Benutzerprinzipalname (UPN) <span class="text-danger">*</span></label>
+                <label class="form-label fw-semibold"><?= te('Benutzerprinzipalname (UPN)') ?> <span class="text-danger">*</span></label>
                 <?php if (!empty($domains)): ?>
                     <div class="input-group">
                         <input type="text" id="inp-upn-local" class="form-control"
@@ -106,53 +106,53 @@
                         <select id="inp-upn-domain" class="form-select" style="max-width:240px;">
                             <?php foreach ($domains as $d): ?>
                                 <option value="<?= $e($d['name']) ?>" <?= $d['isDefault'] ? 'selected' : '' ?>>
-                                    <?= $e($d['name']) ?><?= $d['isDefault'] ? ' (Standard)' : '' ?>
+                                    <?= $e($d['name']) ?><?= $d['isDefault'] ? ' (' . te('Standard') . ')' : '' ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                     <input type="hidden" name="userPrincipalName" id="inp-upn">
-                    <div class="form-text">Domain aus dem Dropdown wählen — es werden nur im Tenant verifizierte Domains angeboten.</div>
+                    <div class="form-text"><?= te('Domain aus dem Dropdown wählen — es werden nur im Tenant verifizierte Domains angeboten.') ?></div>
                 <?php else: ?>
                     <input type="email" name="userPrincipalName" id="inp-upn" class="form-control" required
                            placeholder="vorname.nachname@unternehmen.com" autocomplete="off">
                     <div class="form-text text-warning">
-                        Tenant-Domains konnten nicht gelesen werden (Berechtigung <code>Domain.Read.All</code> prüfen).
-                        Bitte UPN manuell eingeben — nur Domains, die im Tenant verifiziert sind, werden von Microsoft akzeptiert.
+                        <?= te('Tenant-Domains konnten nicht gelesen werden (Berechtigung') ?> <code>Domain.Read.All</code> <?= te('prüfen).') ?>
+                        <?= te('Bitte UPN manuell eingeben — nur Domains, die im Tenant verifiziert sind, werden von Microsoft akzeptiert.') ?>
                     </div>
                 <?php endif; ?>
             </div>
             <div class="col-md-6">
-                <label class="form-label fw-semibold">Passwort <span class="text-danger">*</span></label>
+                <label class="form-label fw-semibold"><?= te('Passwort') ?> <span class="text-danger">*</span></label>
                 <input type="password" name="password" id="inp-password" class="form-control" required
-                       minlength="8" placeholder="Mind. 8 Zeichen" autocomplete="new-password">
+                       minlength="8" placeholder="<?= te('Mind. 8 Zeichen') ?>" autocomplete="new-password">
                 <div class="strength-bar" id="strengthBar" style="width:0;background:#e5e7eb;"></div>
-                <div class="form-text" id="strengthText">Mind. 8 Zeichen, Groß-/Kleinbuchstaben, Zahlen empfohlen</div>
+                <div class="form-text" id="strengthText"><?= te('Mind. 8 Zeichen, Groß-/Kleinbuchstaben, Zahlen empfohlen') ?></div>
             </div>
             <div class="col-md-6">
-                <label class="form-label fw-semibold">Berufsbezeichnung</label>
+                <label class="form-label fw-semibold"><?= te('Berufsbezeichnung') ?></label>
                 <input type="text" name="jobTitle" id="inp-jobTitle" class="form-control"
-                       placeholder="z. B. Entwickler" autocomplete="off">
+                       placeholder="<?= te('z. B. Entwickler') ?>" autocomplete="off">
             </div>
             <div class="col-md-6">
-                <label class="form-label fw-semibold">Abteilung</label>
+                <label class="form-label fw-semibold"><?= te('Abteilung') ?></label>
                 <input type="text" name="department" id="inp-department" class="form-control"
-                       placeholder="z. B. IT" autocomplete="off">
+                       placeholder="<?= te('z. B. IT') ?>" autocomplete="off">
             </div>
             <div class="col-md-6">
-                <label class="form-label fw-semibold">Nutzungsstandort</label>
+                <label class="form-label fw-semibold"><?= te('Nutzungsstandort') ?></label>
                 <select name="usageLocation" id="inp-usageLocation" class="form-select">
-                    <option value="DE" selected>DE – Deutschland</option>
-                    <option value="AT">AT – Österreich</option>
-                    <option value="CH">CH – Schweiz</option>
-                    <option value="US">US – USA</option>
-                    <option value="GB">GB – Vereinigtes Königreich</option>
+                    <option value="DE" selected><?= te('DE – Deutschland') ?></option>
+                    <option value="AT"><?= te('AT – Österreich') ?></option>
+                    <option value="CH"><?= te('CH – Schweiz') ?></option>
+                    <option value="US"><?= te('US – USA') ?></option>
+                    <option value="GB"><?= te('GB – Vereinigtes Königreich') ?></option>
                 </select>
             </div>
         </div>
         <div class="d-flex justify-content-end mt-4">
             <button type="button" class="btn btn-primary" onclick="nextStep()">
-                Weiter <i class="bi bi-arrow-right ms-1"></i>
+                <?= te('Weiter') ?> <i class="bi bi-arrow-right ms-1"></i>
             </button>
         </div>
     </div>
@@ -161,12 +161,12 @@
 <!-- Step 2: Lizenz -->
 <div class="wizard-step" id="step-2" style="display:none">
     <div class="content-card">
-        <h5 class="mb-4"><i class="bi bi-award me-2"></i>Schritt 2 – Lizenz zuweisen</h5>
+        <h5 class="mb-4"><i class="bi bi-award me-2"></i><?= te('Schritt 2 – Lizenz zuweisen') ?></h5>
 
         <?php if (empty($licenses)): ?>
             <div class="alert alert-info">
                 <i class="bi bi-info-circle me-2"></i>
-                Keine verfügbaren Lizenzen gefunden. Entweder sind alle Lizenzen vergeben oder die Berechtigung fehlt.
+                <?= te('Keine verfügbaren Lizenzen gefunden. Entweder sind alle Lizenzen vergeben oder die Berechtigung fehlt.') ?>
             </div>
         <?php endif; ?>
 
@@ -174,8 +174,8 @@
             <div class="form-check mb-2">
                 <input class="form-check-input" type="radio" name="skuId" id="sku-none" value="" checked>
                 <label class="form-check-label" for="sku-none">
-                    <strong>Keine Lizenz</strong>
-                    <span class="text-muted ms-2 small">Lizenz später manuell zuweisen</span>
+                    <strong><?= te('Keine Lizenz') ?></strong>
+                    <span class="text-muted ms-2 small"><?= te('Lizenz später manuell zuweisen') ?></span>
                 </label>
             </div>
             <?php foreach ($licenses as $i => $lic): ?>
@@ -184,7 +184,7 @@
                            id="sku-<?= $e($lic['skuId']) ?>" value="<?= $e($lic['skuId']) ?>">
                     <label class="form-check-label" for="sku-<?= $e($lic['skuId']) ?>">
                         <strong><?= $e($lic['name']) ?></strong>
-                        <span class="badge-info ms-2"><?= (int)$lic['available'] ?> verfügbar</span>
+                        <span class="badge-info ms-2"><?= (int)$lic['available'] ?> <?= te('verfügbar') ?></span>
                     </label>
                 </div>
             <?php endforeach; ?>
@@ -192,10 +192,10 @@
 
         <div class="d-flex justify-content-between mt-4">
             <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">
-                <i class="bi bi-arrow-left me-1"></i> Zurück
+                <i class="bi bi-arrow-left me-1"></i> <?= te('Zurück') ?>
             </button>
             <button type="button" class="btn btn-primary" onclick="nextStep()">
-                Weiter <i class="bi bi-arrow-right ms-1"></i>
+                <?= te('Weiter') ?> <i class="bi bi-arrow-right ms-1"></i>
             </button>
         </div>
     </div>
@@ -204,7 +204,7 @@
 <!-- Step 3: Gruppen & Teams -->
 <div class="wizard-step" id="step-3" style="display:none">
     <div class="content-card">
-        <h5 class="mb-4"><i class="bi bi-diagram-3 me-2"></i>Schritt 3 – Gruppen &amp; Teams</h5>
+        <h5 class="mb-4"><i class="bi bi-diagram-3 me-2"></i><?= te('Schritt 3 – Gruppen & Teams') ?></h5>
 
         <?php
         $teams     = array_filter($groups, fn($g) => $g['isTeam']);
@@ -215,11 +215,11 @@
         <?php if (empty($groups)): ?>
             <div class="alert alert-info">
                 <i class="bi bi-info-circle me-2"></i>
-                Keine statischen Gruppen gefunden.
+                <?= te('Keine statischen Gruppen gefunden.') ?>
             </div>
         <?php else: ?>
             <input type="text" id="groupSearchInput" class="form-control group-search-box"
-                   placeholder="Gruppen durchsuchen…" oninput="filterGroups(this.value)">
+                   placeholder="<?= te('Gruppen durchsuchen…') ?>" oninput="filterGroups(this.value)">
 
             <?php if (!empty($teams)): ?>
                 <div class="mb-3" id="sectionTeams">
@@ -239,7 +239,7 @@
 
             <?php if (!empty($otherGrps)): ?>
                 <div class="mb-3" id="sectionGroups">
-                    <div class="fw-semibold mb-2 text-secondary"><i class="bi bi-people me-1"></i>Gruppen / Verteiler</div>
+                    <div class="fw-semibold mb-2 text-secondary"><i class="bi bi-people me-1"></i><?= te('Gruppen / Verteiler') ?></div>
                     <?php foreach (array_slice($otherGrps, 0, 50) as $g): ?>
                         <div class="form-check group-item mb-1" data-name="<?= strtolower($e($g['displayName'])) ?>">
                             <input class="form-check-input" type="checkbox" name="groupIds[]"
@@ -256,16 +256,16 @@
             <?php endif; ?>
 
             <?php if (count($groups) > 50): ?>
-                <div class="text-muted small mt-1">Es werden maximal 50 Gruppen angezeigt.</div>
+                <div class="text-muted small mt-1"><?= te('Es werden maximal 50 Gruppen angezeigt.') ?></div>
             <?php endif; ?>
         <?php endif; ?>
 
         <div class="d-flex justify-content-between mt-4">
             <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">
-                <i class="bi bi-arrow-left me-1"></i> Zurück
+                <i class="bi bi-arrow-left me-1"></i> <?= te('Zurück') ?>
             </button>
             <button type="button" class="btn btn-primary" onclick="nextStep()">
-                Weiter <i class="bi bi-arrow-right ms-1"></i>
+                <?= te('Weiter') ?> <i class="bi bi-arrow-right ms-1"></i>
             </button>
         </div>
     </div>
@@ -274,18 +274,18 @@
 <!-- Step 4: Zusammenfassung -->
 <div class="wizard-step" id="step-4" style="display:none">
     <div class="content-card">
-        <h5 class="mb-4"><i class="bi bi-clipboard2-check me-2"></i>Schritt 4 – Zusammenfassung &amp; Erstellen</h5>
+        <h5 class="mb-4"><i class="bi bi-clipboard2-check me-2"></i><?= te('Schritt 4 – Zusammenfassung & Erstellen') ?></h5>
 
         <div class="table-responsive mb-4">
             <table class="table table-bordered table-sm">
                 <tbody>
-                    <tr><th style="width:180px">Anzeigename</th><td id="sum-displayName">–</td></tr>
-                    <tr><th>UPN</th><td id="sum-upn">–</td></tr>
-                    <tr><th>Berufsbezeichnung</th><td id="sum-jobTitle">–</td></tr>
-                    <tr><th>Abteilung</th><td id="sum-department">–</td></tr>
-                    <tr><th>Nutzungsstandort</th><td id="sum-usageLocation">–</td></tr>
-                    <tr><th>Lizenz</th><td id="sum-license">Keine Lizenz</td></tr>
-                    <tr><th>Gruppen</th><td id="sum-groups">Keine</td></tr>
+                    <tr><th style="width:180px"><?= te('Anzeigename') ?></th><td id="sum-displayName">–</td></tr>
+                    <tr><th><?= te('UPN') ?></th><td id="sum-upn">–</td></tr>
+                    <tr><th><?= te('Berufsbezeichnung') ?></th><td id="sum-jobTitle">–</td></tr>
+                    <tr><th><?= te('Abteilung') ?></th><td id="sum-department">–</td></tr>
+                    <tr><th><?= te('Nutzungsstandort') ?></th><td id="sum-usageLocation">–</td></tr>
+                    <tr><th><?= te('Lizenz') ?></th><td id="sum-license"><?= te('Keine Lizenz') ?></td></tr>
+                    <tr><th><?= te('Gruppen') ?></th><td id="sum-groups"><?= te('Keine') ?></td></tr>
                 </tbody>
             </table>
         </div>
@@ -293,16 +293,16 @@
         <div class="form-check mb-4">
             <input class="form-check-input" type="checkbox" id="confirmCreate" required>
             <label class="form-check-label fw-semibold" for="confirmCreate">
-                Ich bestätige die Erstellung dieses Benutzerkontos
+                <?= te('Ich bestätige die Erstellung dieses Benutzerkontos') ?>
             </label>
         </div>
 
         <div class="d-flex justify-content-between">
             <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">
-                <i class="bi bi-arrow-left me-1"></i> Zurück
+                <i class="bi bi-arrow-left me-1"></i> <?= te('Zurück') ?>
             </button>
             <button type="submit" id="btnSubmit" class="btn btn-success" disabled>
-                <i class="bi bi-person-check me-1"></i> Benutzer erstellen
+                <i class="bi bi-person-check me-1"></i> <?= te('Benutzer erstellen') ?>
             </button>
         </div>
     </div>
@@ -398,7 +398,8 @@ function updateSummary() {
     document.getElementById('sum-usageLocation').textContent = locSel.options[locSel.selectedIndex]?.text || '–';
 
     const licRadio = document.querySelector('[name="skuId"]:checked');
-    const licLabel = licRadio ? (document.querySelector('label[for="' + licRadio.id + '"]')?.innerText?.trim() || 'Keine Lizenz') : 'Keine Lizenz';
+    const noLicense = <?= json_encode(t('Keine Lizenz'), JSON_UNESCAPED_UNICODE) ?>;
+    const licLabel = licRadio ? (document.querySelector('label[for="' + licRadio.id + '"]')?.innerText?.trim() || noLicense) : noLicense;
     document.getElementById('sum-license').textContent = licLabel;
 
     const checkedGroups = [...document.querySelectorAll('[name="groupIds[]"]:checked')];
@@ -406,7 +407,7 @@ function updateSummary() {
         const lbl = document.querySelector('label[for="' + cb.id + '"]');
         return lbl ? lbl.firstChild.textContent.trim() : cb.value;
     });
-    document.getElementById('sum-groups').textContent = groupNames.length ? groupNames.join(', ') : 'Keine';
+    document.getElementById('sum-groups').textContent = groupNames.length ? groupNames.join(', ') : <?= json_encode(t('Keine'), JSON_UNESCAPED_UNICODE) ?>;
 }
 
 function filterGroups(query) {
@@ -430,10 +431,10 @@ document.getElementById('inp-password').addEventListener('input', function () {
     if (/[0-9]/.test(val)) strength++;
     if (/[^A-Za-z0-9]/.test(val)) strength++;
     const colors = ['#ef4444', '#f59e0b', '#22c55e', '#16a34a'];
-    const labels = ['Schwach', 'Mittel', 'Gut', 'Stark'];
+    const labels = [<?= json_encode(t('Schwach'), JSON_UNESCAPED_UNICODE) ?>, <?= json_encode(t('Mittel'), JSON_UNESCAPED_UNICODE) ?>, <?= json_encode(t('Gut'), JSON_UNESCAPED_UNICODE) ?>, <?= json_encode(t('Stark'), JSON_UNESCAPED_UNICODE) ?>];
     bar.style.width = (strength * 25) + '%';
     bar.style.background = colors[strength - 1] || '#e5e7eb';
-    txt.textContent = strength > 0 ? 'Passwortstärke: ' + (labels[strength - 1] || '') : 'Mind. 8 Zeichen, Groß-/Kleinbuchstaben, Zahlen empfohlen';
+    txt.textContent = strength > 0 ? <?= json_encode(t('Passwortstärke:'), JSON_UNESCAPED_UNICODE) ?> + ' ' + (labels[strength - 1] || '') : <?= json_encode(t('Mind. 8 Zeichen, Groß-/Kleinbuchstaben, Zahlen empfohlen'), JSON_UNESCAPED_UNICODE) ?>;
 });
 
 showStep(1);

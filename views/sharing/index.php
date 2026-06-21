@@ -3,7 +3,7 @@ $items      = $summary['items']  ?? [];
 $byType     = $summary['byType'] ?? [];
 $hasScanned = $summary['hasScanned'] ?? false;
 ?>
-<?php \App\Core\View::partial('partials/module_tabs', ['tabs' => [['label'=>'Freigaben','href'=>'/sharing','icon'=>'link-45deg'],['label'=>'Monitor','href'=>'/sharing/monitor','icon'=>'eye-slash'],['label'=>'Richtlinien','href'=>'/sharing/policies','icon'=>'sliders'],]]); ?>
+<?php \App\Core\View::partial('partials/module_tabs', ['tabs' => [['label'=>t('Freigaben'),'href'=>'/sharing','icon'=>'link-45deg'],['label'=>t('Monitor'),'href'=>'/sharing/monitor','icon'=>'eye-slash'],['label'=>t('Richtlinien'),'href'=>'/sharing/policies','icon'=>'sliders'],]]); ?>
 
 
 <?php if (!empty($flash)): ?>
@@ -16,12 +16,12 @@ $hasScanned = $summary['hasScanned'] ?? false;
 <?php if (!$hasScanned): ?>
 <div class="alert alert-info mb-4">
     <i class="bi bi-info-circle me-2"></i>
-    <strong>Noch kein Freigaben-Scan durchgeführt.</strong>
-    Klicken Sie auf "Jetzt scannen", um alle SharePoint-Freigaben zu erfassen.
-    Der erste Scan kann je nach Tenant-Größe einige Minuten dauern — bitte die Seite während des Scans geöffnet lassen.
+    <strong><?= te('Noch kein Freigaben-Scan durchgeführt.') ?></strong>
+    <?= te('Klicken Sie auf "Jetzt scannen", um alle SharePoint-Freigaben zu erfassen.') ?>
+    <?= te('Der erste Scan kann je nach Tenant-Größe einige Minuten dauern — bitte die Seite während des Scans geöffnet lassen.') ?>
     <div class="mt-2">
         <a href="/sharing/scan" class="btn btn-sm btn-primary" id="scanBtn" onclick="scanStart(this)">
-            <i class="bi bi-search me-1"></i> Jetzt scannen
+            <i class="bi bi-search me-1"></i> <?= te('Jetzt scannen') ?>
         </a>
     </div>
 </div>
@@ -30,13 +30,13 @@ $hasScanned = $summary['hasScanned'] ?? false;
 <div class="row g-3 mb-4">
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Aktive Freigaben</div>
+            <div class="metric-label"><?= te('Aktive Freigaben') ?></div>
             <div class="metric-value"><?= number_format($summary['total'] ?? 0) ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Anonym (Anyone)</div>
+            <div class="metric-label"><?= te('Anonym (Anyone)') ?></div>
             <div class="metric-value" style="color:<?= ($byType['anonymous']??0) > 0 ? '#dc2626':'#111827' ?>">
                 <?= $byType['anonymous'] ?? 0 ?>
             </div>
@@ -44,13 +44,13 @@ $hasScanned = $summary['hasScanned'] ?? false;
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Externe Benutzer</div>
+            <div class="metric-label"><?= te('Externe Benutzer') ?></div>
             <div class="metric-value"><?= $byType['users'] ?? 0 ?></div>
         </div>
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label">Organisation</div>
+            <div class="metric-label"><?= te('Organisation') ?></div>
             <div class="metric-value"><?= $byType['organization'] ?? 0 ?></div>
         </div>
     </div>
@@ -59,27 +59,27 @@ $hasScanned = $summary['hasScanned'] ?? false;
 <?php if (($byType['anonymous'] ?? 0) > 0): ?>
     <div class="alert alert-warning mb-4">
         <i class="bi bi-exclamation-triangle me-2"></i>
-        <strong><?= $byType['anonymous'] ?> anonyme Freigaben</strong> — Dateien mit "Anyone"-Links sind für jeden ohne Anmeldung zugänglich.
+        <strong><?= te(':n anonyme Freigaben', ['n' => $byType['anonymous']]) ?></strong><?= te(' — Dateien mit "Anyone"-Links sind für jeden ohne Anmeldung zugänglich.') ?>
     </div>
 <?php endif; ?>
 
 <div class="content-card">
     <div class="table-toolbar">
-        <input type="text" id="sharingSearch" class="search-box" placeholder="Freigaben suchen…">
+        <input type="text" id="sharingSearch" class="search-box" placeholder="<?= te('Freigaben suchen…') ?>">
         <select id="scopeFilter" class="form-select form-select-sm ms-2" style="max-width:180px;" onchange="filterSharing()">
-            <option value="">Alle Typen</option>
-            <option value="anonymous" <?= ($scopeFilter ?? '') === 'anonymous' ? 'selected' : '' ?>>Anonym</option>
-            <option value="users"     <?= ($scopeFilter ?? '') === 'users'     ? 'selected' : '' ?>>Externe Benutzer</option>
-            <option value="organization" <?= ($scopeFilter ?? '') === 'organization' ? 'selected' : '' ?>>Organisation</option>
+            <option value=""><?= te('Alle Typen') ?></option>
+            <option value="anonymous" <?= ($scopeFilter ?? '') === 'anonymous' ? 'selected' : '' ?>><?= te('Anonym') ?></option>
+            <option value="users"     <?= ($scopeFilter ?? '') === 'users'     ? 'selected' : '' ?>><?= te('Externe Benutzer') ?></option>
+            <option value="organization" <?= ($scopeFilter ?? '') === 'organization' ? 'selected' : '' ?>><?= te('Organisation') ?></option>
         </select>
         <select id="statusFilter" class="form-select form-select-sm ms-2" style="max-width:180px;" onchange="applyStatusFilter()">
-            <option value=""         <?= ($statusFilter ?? '') === ''              ? 'selected' : '' ?>>Alle (ohne widerrufen)</option>
-            <option value="active"   <?= ($statusFilter ?? '') === 'active'        ? 'selected' : '' ?>>Aktiv</option>
-            <option value="confirmed"<?= ($statusFilter ?? '') === 'confirmed'     ? 'selected' : '' ?>>Bestätigt</option>
-            <option value="pending_review" <?= ($statusFilter ?? '') === 'pending_review' ? 'selected' : '' ?>>Ausstehend</option>
-            <option value="revoked"  <?= ($statusFilter ?? '') === 'revoked'       ? 'selected' : '' ?>>Widerrufen</option>
+            <option value=""         <?= ($statusFilter ?? '') === ''              ? 'selected' : '' ?>><?= te('Alle (ohne widerrufen)') ?></option>
+            <option value="active"   <?= ($statusFilter ?? '') === 'active'        ? 'selected' : '' ?>><?= te('Aktiv') ?></option>
+            <option value="confirmed"<?= ($statusFilter ?? '') === 'confirmed'     ? 'selected' : '' ?>><?= te('Bestätigt') ?></option>
+            <option value="pending_review" <?= ($statusFilter ?? '') === 'pending_review' ? 'selected' : '' ?>><?= te('Ausstehend') ?></option>
+            <option value="revoked"  <?= ($statusFilter ?? '') === 'revoked'       ? 'selected' : '' ?>><?= te('Widerrufen') ?></option>
         </select>
-        <a href="/sharing/scan" class="btn btn-sm btn-outline-primary ms-auto" id="scanBtn" onclick="scanStart(this)" title="Scan starten (kann einige Minuten dauern)">
+        <a href="/sharing/scan" class="btn btn-sm btn-outline-primary ms-auto" id="scanBtn" onclick="scanStart(this)" title="<?= te('Scan starten (kann einige Minuten dauern)') ?>">
             <i class="bi bi-arrow-repeat me-1"></i> Scan
         </a>
         <a href="/sharing/export" class="btn btn-sm btn-outline-secondary ms-2">
@@ -90,12 +90,12 @@ $hasScanned = $summary['hasScanned'] ?? false;
         <table class="data-table" id="sharingTable">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Standort</th>
-                    <th>Freigabe-Typ</th>
-                    <th>Besitzer</th>
-                    <th>Erstmals erkannt</th>
-                    <th>Status</th>
+                    <th><?= te('Name') ?></th>
+                    <th><?= te('Standort') ?></th>
+                    <th><?= te('Freigabe-Typ') ?></th>
+                    <th><?= te('Besitzer') ?></th>
+                    <th><?= te('Erstmals erkannt') ?></th>
+                    <th><?= te('Status') ?></th>
                     <th></th>
                 </tr>
             </thead>
@@ -115,11 +115,11 @@ $hasScanned = $summary['hasScanned'] ?? false;
                         <td>
                             <?php $scope = $item['scope'] ?? 'unknown'; ?>
                             <?php if ($scope === 'anonymous'): ?>
-                                <span class="badge-disabled">Anonym</span>
+                                <span class="badge-disabled"><?= te('Anonym') ?></span>
                             <?php elseif ($scope === 'users'): ?>
-                                <span class="badge-warning">Externe User</span>
+                                <span class="badge-warning"><?= te('Externe User') ?></span>
                             <?php elseif ($scope === 'organization'): ?>
-                                <span class="badge-info">Organisation</span>
+                                <span class="badge-info"><?= te('Organisation') ?></span>
                             <?php else: ?>
                                 <span class="badge-neutral"><?= $e($scope) ?></span>
                             <?php endif; ?>
@@ -136,13 +136,13 @@ $hasScanned = $summary['hasScanned'] ?? false;
                         <td>
                             <?php $status = $item['status'] ?? 'active'; ?>
                             <?php if ($status === 'active'): ?>
-                                <span class="badge-info">Aktiv</span>
+                                <span class="badge-info"><?= te('Aktiv') ?></span>
                             <?php elseif ($status === 'confirmed'): ?>
-                                <span class="badge-ok">Bestätigt</span>
+                                <span class="badge-ok"><?= te('Bestätigt') ?></span>
                             <?php elseif ($status === 'pending_review'): ?>
-                                <span class="badge-warning">Ausstehend</span>
+                                <span class="badge-warning"><?= te('Ausstehend') ?></span>
                             <?php elseif ($status === 'revoked'): ?>
-                                <span class="badge-disabled">Widerrufen</span>
+                                <span class="badge-disabled"><?= te('Widerrufen') ?></span>
                             <?php else: ?>
                                 <span class="badge-neutral"><?= $e($status) ?></span>
                             <?php endif; ?>
@@ -155,7 +155,7 @@ $hasScanned = $summary['hasScanned'] ?? false;
                                     data-item="<?= $e($item['item_id']) ?>"
                                     data-perm="<?= $e($item['permission_id']) ?>"
                                     data-name="<?= $e($item['name']) ?>"
-                                    title="Freigabe widerrufen">
+                                    title="<?= te('Freigabe widerrufen') ?>">
                                 <i class="bi bi-x-circle"></i>
                             </button>
                             <?php endif; ?>
@@ -165,7 +165,7 @@ $hasScanned = $summary['hasScanned'] ?? false;
                 <?php if (empty($items)): ?>
                     <tr>
                         <td colspan="7" class="text-center text-muted py-4">
-                            <?= $hasScanned ? 'Keine Freigaben gefunden' : 'Noch kein Scan durchgeführt — siehe Hinweis oben.' ?>
+                            <?= $hasScanned ? te('Keine Freigaben gefunden') : te('Noch kein Scan durchgeführt — siehe Hinweis oben.') ?>
                         </td>
                     </tr>
                 <?php endif; ?>
@@ -179,21 +179,21 @@ $hasScanned = $summary['hasScanned'] ?? false;
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-x-circle text-danger me-2"></i>Freigabe widerrufen</h5>
+                <h5 class="modal-title"><i class="bi bi-x-circle text-danger me-2"></i><?= te('Freigabe widerrufen') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Soll die Freigabe für <strong id="revokeName"></strong> widerrufen werden?</p>
-                <p class="text-muted" style="font-size:13px;">Diese Aktion entfernt die Berechtigung dauerhaft in SharePoint und kann nicht rückgängig gemacht werden.</p>
+                <p><?= te('Soll die Freigabe für') ?> <strong id="revokeName"></strong> <?= te('widerrufen werden?') ?></p>
+                <p class="text-muted" style="font-size:13px;"><?= te('Diese Aktion entfernt die Berechtigung dauerhaft in SharePoint und kann nicht rückgängig gemacht werden.') ?></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= te('Abbrechen') ?></button>
                 <form id="revokeForm" method="post" action="/sharing/revoke">
                     <?= \App\Core\Csrf::field() ?>
                     <input type="hidden" name="drive_id"      id="rDriveId">
                     <input type="hidden" name="item_id"       id="rItemId">
                     <input type="hidden" name="permission_id" id="rPermId">
-                    <button type="submit" class="btn btn-danger"><i class="bi bi-x-circle me-1"></i>Widerrufen</button>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-x-circle me-1"></i><?= te('Widerrufen') ?></button>
                 </form>
             </div>
         </div>
@@ -204,9 +204,9 @@ $hasScanned = $summary['hasScanned'] ?? false;
 initTableSearch('sharingSearch', 'sharingTable');
 
 function scanStart(btn) {
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Scan läuft…';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> ' + <?= json_encode(t('Scan läuft…'), JSON_UNESCAPED_UNICODE) ?>;
     btn.classList.add('disabled');
-    document.querySelectorAll('#scanBtn').forEach(b => { b.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Scan läuft…'; b.classList.add('disabled'); });
+    document.querySelectorAll('#scanBtn').forEach(b => { b.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> ' + <?= json_encode(t('Scan läuft…'), JSON_UNESCAPED_UNICODE) ?>; b.classList.add('disabled'); });
 }
 
 function filterSharing() {
