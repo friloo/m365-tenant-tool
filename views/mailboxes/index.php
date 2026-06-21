@@ -31,7 +31,7 @@ $fmtBytes = function (int $bytes): string {
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label"><?= te('Postfächer &gt; 50 GB') ?></div>
+            <div class="metric-label"><?= t('Postfächer &gt; 50 GB') ?></div>
             <div class="metric-value" style="color:<?= $stats['over50GB'] > 0 ? '#d97706' : '#111827' ?>;">
                 <?= number_format($stats['over50GB']) ?>
             </div>
@@ -40,7 +40,7 @@ $fmtBytes = function (int $bytes): string {
     </div>
     <div class="col-sm-3">
         <div class="metric-card">
-            <div class="metric-label"><?= te('Nie genutzt (&lt; 1 GB)') ?></div>
+            <div class="metric-label"><?= t('Nie genutzt (&lt; 1 GB)') ?></div>
             <div class="metric-value"><?= number_format($stats['under1GB']) ?></div>
             <div class="metric-sub"><?= te('sehr kleiner Speicher') ?></div>
         </div>

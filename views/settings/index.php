@@ -773,7 +773,7 @@
         <div class="content-card mb-4" data-tab="datenschutz" id="privacy">
             <div class="card-header-custom">
                 <i class="bi bi-shield-lock text-primary"></i>
-                <h6><?= te('Datenschutz &amp; Aufbewahrung') ?></h6>
+                <h6><?= t('Datenschutz &amp; Aufbewahrung') ?></h6>
             </div>
             <div class="card-body-custom">
                 <div class="row g-3 align-items-end">
@@ -805,7 +805,7 @@
         <div class="content-card mb-4" data-tab="allgemein" id="config">
             <div class="card-header-custom">
                 <i class="bi bi-filetype-json text-primary"></i>
-                <h6><?= te('Konfiguration sichern &amp; übertragen') ?></h6>
+                <h6><?= t('Konfiguration sichern &amp; übertragen') ?></h6>
             </div>
             <div class="card-body-custom">
                 <p class="text-muted small mb-3">

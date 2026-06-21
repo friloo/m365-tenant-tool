@@ -46,7 +46,7 @@ $hasSpError = isset($sp['_error']);
     </li>
     <li class="nav-item">
         <a class="nav-link" data-bs-toggle="tab" href="#tab-teams">
-            <i class="bi bi-people me-1"></i><?= te('Teams &amp; Extern') ?>
+            <i class="bi bi-people me-1"></i><?= t('Teams &amp; Extern') ?>
         </a>
     </li>
 </ul>
@@ -98,7 +98,7 @@ $hasSpError = isset($sp['_error']);
             <div class="content-card mb-4">
                 <div class="card-header-custom">
                     <i class="bi bi-sliders text-primary"></i>
-                    <h6><?= te('SharePoint &amp; OneDrive — Globale Freigabeeinstellungen') ?></h6>
+                    <h6><?= t('SharePoint &amp; OneDrive — Globale Freigabeeinstellungen') ?></h6>
                 </div>
                 <div class="card-body-custom">
                     <div class="row g-4">
@@ -151,7 +151,7 @@ $hasSpError = isset($sp['_error']);
                                 <label class="form-label fw-semibold"><?= te('Anonymer Link für Dateien') ?></label>
                                 <select name="fileAnonymousLinkType" class="form-select">
                                     <option value="view"  <?= ($sp['fileAnonymousLinkType'] ?? '') === 'view'  ? 'selected' : '' ?>><?= te('Nur anzeigen') ?></option>
-                                    <option value="edit"  <?= ($sp['fileAnonymousLinkType'] ?? '') === 'edit'  ? 'selected' : '' ?>><?= te('Anzeigen &amp; bearbeiten') ?></option>
+                                    <option value="edit"  <?= ($sp['fileAnonymousLinkType'] ?? '') === 'edit'  ? 'selected' : '' ?>><?= t('Anzeigen &amp; bearbeiten') ?></option>
                                     <option value="none"  <?= ($sp['fileAnonymousLinkType'] ?? '') === 'none'  ? 'selected' : '' ?>><?= te('Keine anonymen Links') ?></option>
                                 </select>
                             </div>
@@ -160,7 +160,7 @@ $hasSpError = isset($sp['_error']);
                                 <label class="form-label fw-semibold"><?= te('Anonymer Link für Ordner') ?></label>
                                 <select name="folderAnonymousLinkType" class="form-select">
                                     <option value="view"  <?= ($sp['folderAnonymousLinkType'] ?? '') === 'view'  ? 'selected' : '' ?>><?= te('Nur anzeigen') ?></option>
-                                    <option value="edit"  <?= ($sp['folderAnonymousLinkType'] ?? '') === 'edit'  ? 'selected' : '' ?>><?= te('Anzeigen &amp; bearbeiten') ?></option>
+                                    <option value="edit"  <?= ($sp['folderAnonymousLinkType'] ?? '') === 'edit'  ? 'selected' : '' ?>><?= t('Anzeigen &amp; bearbeiten') ?></option>
                                     <option value="none"  <?= ($sp['folderAnonymousLinkType'] ?? '') === 'none'  ? 'selected' : '' ?>><?= te('Keine anonymen Links') ?></option>
                                 </select>
                             </div>
