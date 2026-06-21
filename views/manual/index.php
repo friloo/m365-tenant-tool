@@ -33,6 +33,7 @@
         <a href="#intro"><?= te('Einführung') ?></a>
         <a href="#navigation"><?= te('Navigation') ?></a>
         <a href="#dashboard">Dashboard</a>
+        <a href="#action-center"><?= te('Konfigurations-Center') ?></a>
 
         <h6><?= te('Verzeichnis') ?></h6>
         <a href="#users"><?= te('Benutzer') ?></a>
@@ -111,6 +112,14 @@
         <a href="#kpisparklines"><?= te('KPI-Sparklines') ?></a>
         <a href="#onlinehelp"><?= te('Online-Hilfe') ?></a>
         <a href="#restapi"><?= te('REST-API & Swagger') ?></a>
+
+        <h6><?= te('Konfiguration & Governance') ?></h6>
+        <a href="#approvals"><?= te('Aktionsfreigaben (Vier-Augen)') ?></a>
+        <a href="#config-transfer"><?= te('Konfiguration sichern & übertragen') ?></a>
+        <a href="#drift"><?= te('Konfigurations-Drift') ?></a>
+        <a href="#alert-webhook"><?= te('Alert-Webhook (Teams/SIEM)') ?></a>
+        <a href="#data-retention"><?= te('Datenschutz & Daten-Retention') ?></a>
+        <a href="#advanced-modules"><?= te('Erweiterte Module („Mehr")') ?></a>
 
         <h6><?= te('Administration') ?></h6>
         <a href="#cron"><?= te('Cron & Automatisierung') ?></a>
@@ -1258,6 +1267,52 @@
 <div class="man-section" id="onlinehelp">
     <h2><i class="bi bi-question-circle"></i> <?= te('Online-Hilfe (?-Bubbles)') ?></h2>
     <p><?= t('An vielen Stellen findest du kleine <code>?</code>-Symbole neben Labels und Überschriften. Beim Hovern erscheint eine deutschsprachige Erklärung — der gesamte Katalog (~35 Begriffe) wird zentral in <code>src/Core/Help.php</code> gepflegt und kann mit <code>\App\Core\Help::tip(\'key\')</code> in jeder View aufgerufen werden.') ?></p>
+</div>
+
+<!-- ── Konfiguration & Governance (neu) ──────────────────────── -->
+<div class="man-section" id="action-center">
+    <h2><i class="bi bi-compass text-primary"></i> <?= te('Konfigurations-Center') ?></h2>
+    <p><?= te('Das Konfigurations-Center (oben in der Seitenleiste) ist der Startpunkt für die Tenant-Konfiguration und bündelt drei Dinge auf einer Seite: einen Sicherheits-Score, eine Einrichtungs-Checkliste und die wichtigsten nächsten Schritte.') ?></p>
+    <ul>
+        <li><?= te('Einrichtungs-Checkliste: Microsoft-365-Verbindung, Einrichtungs-Assistent, Compliance-Profil, Alarm-E-Mail, Backup-Status, Drift-Baseline und Admin-2FA.') ?></li>
+        <li><?= te('Empfohlene Schritte: die offenen Findings der Security Posture nach Priorität sortiert, jeweils mit Direktlink zur Behebung.') ?></li>
+    </ul>
+    <p><?= t('Der Score wird im Hintergrund vom <code>cache_warm</code>-Cron berechnet und 30 Minuten zwischengespeichert — die Seite lädt daher sofort. Ist noch kein Wert vorhanden, lässt er sich mit „Jetzt berechnen" einmalig erzeugen.') ?></p>
+</div>
+
+<div class="man-section" id="approvals">
+    <h2><i class="bi bi-check2-square text-primary"></i> <?= te('Aktionsfreigaben (Vier-Augen-Prinzip)') ?></h2>
+    <p><?= te('Optional aktivierbar unter Einstellungen → Datenschutz. Ist das Vier-Augen-Prinzip aktiv, müssen besonders kritische Aktionen von einem zweiten Administrator freigegeben werden: Gerät zurücksetzen (Retire) oder löschen (Wipe), Konto deaktivieren und MFA-Methoden zurücksetzen.') ?></p>
+    <p><?= te('Ablauf: Administrator A löst die Aktion aus — sie wird blockiert und als Anfrage eingereicht. Administrator B gibt sie unter „Aktionsfreigaben" frei (die eigene Anfrage kann man nicht selbst freigeben). Danach löst A dieselbe Aktion erneut aus, und sie wird ausgeführt.') ?></p>
+    <p><?= te('Freigaben gelten 24 Stunden; jede Anfrage, Freigabe und Ausführung wird im Audit-Log protokolliert. Bei deaktiviertem Vier-Augen-Prinzip laufen alle Aktionen wie gewohnt sofort.') ?></p>
+</div>
+
+<div class="man-section" id="config-transfer">
+    <h2><i class="bi bi-filetype-json text-primary"></i> <?= te('Konfiguration sichern & übertragen') ?></h2>
+    <p><?= te('Unter Einstellungen → Allgemein. Exportiert die operativen Einstellungen als JSON-Datei — als Backup oder um einen weiteren Tenant identisch aufzusetzen.') ?></p>
+    <p><?= t('Aus Sicherheitsgründen werden <strong>niemals Secrets exportiert</strong> (Passwörter, Client-Secret, API-Keys, SMTP-Passwort, Tenant-/App-IDs). Beim Import werden ausschließlich bekannte, nicht-sensible Einstellungen übernommen; alles andere wird ignoriert.') ?></p>
+</div>
+
+<div class="man-section" id="drift">
+    <h2><i class="bi bi-flag text-primary"></i> <?= te('Konfigurations-Drift') ?></h2>
+    <p><?= t('Auf der Seite <strong>Audit-Diff</strong> lässt sich ein Snapshot als <em>Baseline</em> festlegen. Der tägliche Cron-Job <code>config_drift_check</code> vergleicht den neuesten Snapshot mit dieser Baseline und warnt bei Abweichungen sicherheitsrelevanter Einstellungen — als In-App-Benachrichtigung und (falls konfiguriert) über den Alert-Webhook, mit Direktlink zum Diff.') ?></p>
+</div>
+
+<div class="man-section" id="alert-webhook">
+    <h2><i class="bi bi-broadcast text-primary"></i> <?= te('Alert-Webhook (Teams / SIEM)') ?></h2>
+    <p><?= te('Unter Einstellungen → Benachrichtigungen. Sicherheits-Warnungen ab der gewählten Stufe (Warnung oder Kritisch) werden zusätzlich an einen externen Endpunkt gesendet: einen Microsoft-Teams-Webhook (als MessageCard) oder ein generisches JSON-Ziel (SIEM/Sentinel/Slack-kompatibel). Ein Test-Button prüft die Verbindung.') ?></p>
+</div>
+
+<div class="man-section" id="data-retention">
+    <h2><i class="bi bi-shield-lock text-primary"></i> <?= te('Datenschutz & Daten-Retention') ?></h2>
+    <p><?= t('Unter Einstellungen → Datenschutz. Lokal gespeicherte Verlaufs- und PII-Daten (Audit-Log, Sign-ins, Freigaben, Snapshots, Drosselungs-Logs) älter als die konfigurierte Aufbewahrungsfrist werden täglich vom Cron-Job <code>local_data_retention</code> gelöscht (0 = unbegrenzt).') ?></p>
+    <p><?= t('Zusätzlich gibt es eine Sofort-Bereinigung sowie ein unwiderrufliches <strong>„Alle lokalen Tenant-Daten löschen"</strong> (mit getippter Bestätigung). Konfiguration, Tool-Benutzerzugänge und API-Schlüssel bleiben dabei immer erhalten.') ?></p>
+    <p><?= t('Der tägliche Selbstcheck <code>app_secret_expiry</code> warnt außerdem rechtzeitig, bevor das Client-Secret oder Zertifikat der eigenen App-Registrierung abläuft — andernfalls verliert das Tool den Graph-Zugriff.') ?></p>
+</div>
+
+<div class="man-section" id="advanced-modules">
+    <h2><i class="bi bi-three-dots text-primary"></i> <?= te('Erweiterte Module („Mehr")') ?></h2>
+    <p><?= te('Nischige und Beta-Module (z. B. Token-Lifetime, Cross-Tenant-Access, Identity Provider Trust, MFA-Fatigue, Insider-Threat, Phishing-Simulationen, eDiscovery, Customer Lockbox) liegen in der jeweiligen Hub-Tableiste standardmäßig im „Mehr"-Dropdown. So bleibt die Hauptleiste auf die Kern-Module fokussiert, alles bleibt aber jederzeit erreichbar.') ?></p>
 </div>
 
 </div><!-- /manual-body -->
