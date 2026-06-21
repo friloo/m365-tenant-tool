@@ -11,7 +11,7 @@ $formatVal = function ($v) {
 ?>
 <div class="content-card mb-3">
     <h1 class="mb-2"><i class="bi bi-arrow-left-right"></i> Audit-Diff <?= \App\Core\Help::tip('audit_diff') ?></h1>
-    <p class="text-muted">Vergleiche zwei Snapshots der Tenant-Einstellungen. Snapshots werden täglich automatisch erstellt (Cron-Job: <code>audit_diff_snapshot</code>) und können hier manuell ergänzt werden.</p>
+    <p class="text-muted"><?= te('Vergleiche zwei Snapshots der Tenant-Einstellungen. Snapshots werden täglich automatisch erstellt (Cron-Job: <code>audit_diff_snapshot</code>) und können hier manuell ergänzt werden.') ?></p>
 
     <?php $flash = \App\Core\Session::getFlash('success'); $err = \App\Core\Session::getFlash('error'); ?>
     <?php if ($flash): ?><div class="alert alert-success"><?= View::escape($flash) ?></div><?php endif; ?>
@@ -19,7 +19,7 @@ $formatVal = function ($v) {
 
     <form method="get" action="/auditdiff" class="row g-2 align-items-end">
         <div class="col-md-5">
-            <label class="form-label small">Snapshot A (älter / „vorher")</label>
+            <label class="form-label small"><?= te('Snapshot A (älter / „vorher")') ?></label>
             <select name="left" class="form-select">
                 <?php foreach ($snapshots as $s): ?>
                     <option value="<?= (int)$s['id'] ?>" <?= $left === (int)$s['id'] ? 'selected' : '' ?>>
@@ -29,7 +29,7 @@ $formatVal = function ($v) {
             </select>
         </div>
         <div class="col-md-5">
-            <label class="form-label small">Snapshot B (neuer / „nachher")</label>
+            <label class="form-label small"><?= te('Snapshot B (neuer / „nachher")') ?></label>
             <select name="right" class="form-select">
                 <?php foreach ($snapshots as $s): ?>
                     <option value="<?= (int)$s['id'] ?>" <?= $right === (int)$s['id'] ? 'selected' : '' ?>>
@@ -39,16 +39,16 @@ $formatVal = function ($v) {
             </select>
         </div>
         <div class="col-md-2">
-            <button class="btn btn-primary w-100" type="submit"><i class="bi bi-arrow-left-right"></i> Vergleichen</button>
+            <button class="btn btn-primary w-100" type="submit"><i class="bi bi-arrow-left-right"></i> <?= te('Vergleichen') ?></button>
         </div>
     </form>
 
     <form method="post" action="/auditdiff/capture" class="mt-3">
         <?= Csrf::field() ?>
         <button class="btn btn-outline-secondary btn-sm" type="submit">
-            <i class="bi bi-camera"></i> Jetzt manuellen Snapshot erstellen
+            <i class="bi bi-camera"></i> <?= te('Jetzt manuellen Snapshot erstellen') ?>
         </button>
-        <span class="text-muted small ms-2">Aktuell <?= count($snapshots) ?> Snapshots gespeichert (Aufbewahrung 365 Tage).</span>
+        <span class="text-muted small ms-2"><?= te('Aktuell') ?> <?= count($snapshots) ?> <?= te('Snapshots gespeichert (Aufbewahrung 365 Tage).') ?></span>
     </form>
 </div>
 

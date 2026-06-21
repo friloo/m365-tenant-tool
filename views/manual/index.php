@@ -644,36 +644,36 @@
 <!-- Authentication-Strength ─────────────────────────────── -->
 <div class="man-section" id="authstrength">
     <h2><i class="bi bi-fingerprint text-primary"></i> Authentication-Strength</h2>
-    <p>Microsoft empfiehlt seit 2024 ausschließlich <strong>phishing-resistente MFA-Methoden</strong>: FIDO2-Security-Keys, Windows Hello for Business, Certificate-Based Authentication oder Hardware-OATH-Token. Microsoft Authenticator mit Number-Matching ist <strong>nicht</strong> phishing-resistent — Adversary-in-the-Middle-Angriffe (Evilginx, EvilProxy) können den Push-Code abfangen. SMS-OTP und Voice-Call sind erst recht unsicher.</p>
-    <h3>Klassifizierung der User</h3>
+    <p><?= te('Microsoft empfiehlt seit 2024 ausschließlich <strong>phishing-resistente MFA-Methoden</strong>: FIDO2-Security-Keys, Windows Hello for Business, Certificate-Based Authentication oder Hardware-OATH-Token. Microsoft Authenticator mit Number-Matching ist <strong>nicht</strong> phishing-resistent — Adversary-in-the-Middle-Angriffe (Evilginx, EvilProxy) können den Push-Code abfangen. SMS-OTP und Voice-Call sind erst recht unsicher.') ?></p>
+    <h3><?= te('Klassifizierung der User') ?></h3>
     <ul>
-        <li><strong>Phishing-resistent</strong> — mindestens eine starke Methode registriert.</li>
-        <li><strong>Nur Software-MFA</strong> — Authenticator-App oder TOTP, aber keine FIDO2.</li>
-        <li><strong>Nur schwache MFA</strong> — nur SMS / Voice / E-Mail-OTP.</li>
-        <li><strong>Keine MFA</strong> — nur Passwort.</li>
+        <li><strong><?= te('Phishing-resistent') ?></strong> — <?= te('mindestens eine starke Methode registriert.') ?></li>
+        <li><strong><?= te('Nur Software-MFA') ?></strong> — <?= te('Authenticator-App oder TOTP, aber keine FIDO2.') ?></li>
+        <li><strong><?= te('Nur schwache MFA') ?></strong> — <?= te('nur SMS / Voice / E-Mail-OTP.') ?></li>
+        <li><strong><?= te('Keine MFA') ?></strong> — <?= te('nur Passwort.') ?></li>
     </ul>
-    <h3>Methoden-Verteilung</h3>
-    <p>Pro Methode (FIDO2, Windows Hello, Authenticator, TOTP, SMS, E-Mail) wird die Adoption als horizontales Bar-Chart angezeigt. Starke Methoden grün, schwache rot.</p>
-    <h3>Tenant-Strength-Policies</h3>
-    <p>Listet die im Tenant konfigurierten Authentication-Strength-Policies (Built-in + Custom). Die Built-ins „Phishing-resistant MFA" und „Passwordless MFA" können in Conditional Access als Zugriffs­bedingung für kritische Apps verwendet werden.</p>
+    <h3><?= te('Methoden-Verteilung') ?></h3>
+    <p><?= te('Pro Methode (FIDO2, Windows Hello, Authenticator, TOTP, SMS, E-Mail) wird die Adoption als horizontales Bar-Chart angezeigt. Starke Methoden grün, schwache rot.') ?></p>
+    <h3><?= te('Tenant-Strength-Policies') ?></h3>
+    <p><?= te('Listet die im Tenant konfigurierten Authentication-Strength-Policies (Built-in + Custom). Die Built-ins „Phishing-resistant MFA" und „Passwordless MFA" können in Conditional Access als Zugriffs­bedingung für kritische Apps verwendet werden.') ?></p>
     <p><span class="perm-tag">AuditLog.Read.All</span> <span class="perm-tag">Policy.Read.All</span></p>
 </div>
 
 <!-- Backup-Status ───────────────────────────────────────── -->
 <div class="man-section" id="backup">
-    <h2><i class="bi bi-database-fill-check text-primary"></i> Backup-Status</h2>
-    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><strong>Microsoft sichert deine M365-Daten NICHT.</strong> Die Recycle-Bin-Frist von 30–93 Tagen ist kein Backup — nach Ransomware, versehentlichem Löschen, kompromittierten Admin-Konten oder Tenant-Kündigung sind die Daten weg. Für DSGVO Art. 32 (Verfügbarkeit), ISO 27001 A.12.3 und NIS-2 Art. 21(d) ist ein 3rd-Party-Backup-Tool Pflicht.</div>
-    <h3>Manuelles Tracking</h3>
-    <p>Da jedes 3rd-Party-Tool (Veeam, Druva, Spanning, AvePoint, Acronis, …) eigene APIs hat und keine einheitliche Microsoft-Backup-API existiert, lässt sich der Backup-Status nicht automatisch abfragen. Stattdessen pflegen Admins folgende Felder manuell:</p>
+    <h2><i class="bi bi-database-fill-check text-primary"></i> <?= te('Backup-Status') ?></h2>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><strong><?= te('Microsoft sichert deine M365-Daten NICHT.') ?></strong> <?= te('Die Recycle-Bin-Frist von 30–93 Tagen ist kein Backup — nach Ransomware, versehentlichem Löschen, kompromittierten Admin-Konten oder Tenant-Kündigung sind die Daten weg. Für DSGVO Art. 32 (Verfügbarkeit), ISO 27001 A.12.3 und NIS-2 Art. 21(d) ist ein 3rd-Party-Backup-Tool Pflicht.') ?></div>
+    <h3><?= te('Manuelles Tracking') ?></h3>
+    <p><?= te('Da jedes 3rd-Party-Tool (Veeam, Druva, Spanning, AvePoint, Acronis, …) eigene APIs hat und keine einheitliche Microsoft-Backup-API existiert, lässt sich der Backup-Status nicht automatisch abfragen. Stattdessen pflegen Admins folgende Felder manuell:') ?></p>
     <ul>
-        <li>Anbieter + URL</li>
-        <li>Datum des letzten erfolgreichen Backup-Laufs + Status</li>
-        <li>Retention (in Tagen)</li>
-        <li>Coverage: welche Workloads sind gesichert (Mail, OneDrive, SharePoint, Teams)</li>
-        <li>Datum des letzten erfolgreichen Restore-Tests</li>
+        <li><?= te('Anbieter + URL') ?></li>
+        <li><?= te('Datum des letzten erfolgreichen Backup-Laufs + Status') ?></li>
+        <li><?= te('Retention (in Tagen)') ?></li>
+        <li><?= te('Coverage: welche Workloads sind gesichert (Mail, OneDrive, SharePoint, Teams)') ?></li>
+        <li><?= te('Datum des letzten erfolgreichen Restore-Tests') ?></li>
     </ul>
     <h3>Health-Score</h3>
-    <p>0–100, berechnet aus den oben genannten Feldern. Critical: kein Backup-Anbieter. High: Coverage unvollständig, letzter Lauf > 7 Tage alt, Restore-Test nie durchgeführt.</p>
+    <p><?= te('0–100, berechnet aus den oben genannten Feldern. Critical: kein Backup-Anbieter. High: Coverage unvollständig, letzter Lauf > 7 Tage alt, Restore-Test nie durchgeführt.') ?></p>
 </div>
 
 <!-- KI-Sicherheitsberater ──────────────────────────────── -->

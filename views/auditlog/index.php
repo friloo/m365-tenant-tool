@@ -80,7 +80,7 @@
         <div class="table-responsive">
             <table class="data-table" id="siTable">
                 <thead>
-                    <tr><th>Zeitpunkt</th><th>Benutzer</th><th>App</th><th>IP</th><th>Status</th><th>Risiko</th><th>CA</th></tr>
+                    <tr><th><?= te('Zeitpunkt') ?></th><th><?= te('Benutzer') ?></th><th>App</th><th>IP</th><th><?= te('Status') ?></th><th><?= te('Risiko') ?></th><th>CA</th></tr>
                 </thead>
                 <tbody>
                     <?php foreach ($signIns as $s): ?>
@@ -92,7 +92,7 @@
                             <td style="font-size:12px;"><?= $e($s['userPrincipalName'] ?? '') ?></td>
                             <td style="font-size:12px;color:#6b7280;"><?= $e($s['appDisplayName'] ?? '') ?></td>
                             <td style="font-size:11px;color:#9ca3af;"><?= $e($s['ipAddress'] ?? '') ?></td>
-                            <td><?= $success ? '<span class="badge-enabled">OK</span>' : '<span class="badge-disabled">Fehler</span>' ?></td>
+                            <td><?= $success ? '<span class="badge-enabled">OK</span>' : '<span class="badge-disabled">'.te('Fehler').'</span>' ?></td>
                             <td>
                                 <?php $risk = strtolower($s['riskLevelDuringSignIn'] ?? 'none'); ?>
                                 <?php if ($risk !== 'none' && $risk !== ''): ?>
@@ -106,7 +106,7 @@
                         </tr>
                     <?php endforeach; ?>
                     <?php if (empty($signIns)): ?>
-                        <tr><td colspan="7" class="text-center text-muted py-4">Keine Einträge im gewählten Zeitraum</td></tr>
+                        <tr><td colspan="7" class="text-center text-muted py-4"><?= te('Keine Einträge im gewählten Zeitraum') ?></td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>

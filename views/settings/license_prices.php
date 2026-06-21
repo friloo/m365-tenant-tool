@@ -58,8 +58,8 @@ ksort($tiers);
                 <tr>
                     <th>SKU</th>
                     <th>Part Number</th>
-                    <th style="width:200px">Preis Standard (€)</th>
-                    <th style="width:200px">Preis NPO (€)</th>
+                    <th style="width:200px"><?= te('Preis Standard (€)') ?></th>
+                    <th style="width:200px"><?= te('Preis NPO (€)') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -78,7 +78,7 @@ ksort($tiers);
                                placeholder="<?= $p['default_eur'] !== null ? number_format($p['default_eur'], 2, ',', '.') : '–' ?>">
                     </div>
                     <?php if ($p['default_eur'] !== null): ?>
-                    <small class="text-muted">Standard: <?= number_format($p['default_eur'], 2, ',', '.') ?> €</small>
+                    <small class="text-muted"><?= te('Standard:') ?> <?= number_format($p['default_eur'], 2, ',', '.') ?> €</small>
                     <?php endif; ?>
                 </td>
                 <td>
@@ -92,9 +92,9 @@ ksort($tiers);
                                placeholder="<?= $p['default_npo'] !== null ? number_format($p['default_npo'], 2, ',', '.') : '–' ?>">
                     </div>
                     <?php if ($p['default_npo'] !== null): ?>
-                    <small class="text-muted">Standard: <?= number_format($p['default_npo'], 2, ',', '.') ?> €</small>
+                    <small class="text-muted"><?= te('Standard:') ?> <?= number_format($p['default_npo'], 2, ',', '.') ?> €</small>
                     <?php elseif ($p['default_npo'] === null): ?>
-                    <small class="text-muted">Kein NPO-Preis bekannt</small>
+                    <small class="text-muted"><?= te('Kein NPO-Preis bekannt') ?></small>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -107,13 +107,13 @@ ksort($tiers);
 
 <div class="d-flex gap-2 mb-5">
     <button type="submit" class="btn btn-primary">
-        <i class="bi bi-check-lg me-1"></i>Preise speichern
+        <i class="bi bi-check-lg me-1"></i><?= te('Preise speichern') ?>
     </button>
     <button type="reset" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-counterclockwise me-1"></i>Zurücksetzen
+        <i class="bi bi-arrow-counterclockwise me-1"></i><?= te('Zurücksetzen') ?>
     </button>
     <a href="/settings" class="btn btn-outline-secondary ms-auto">
-        Zurück zu Einstellungen
+        <?= te('Zurück zu Einstellungen') ?>
     </a>
 </div>
 

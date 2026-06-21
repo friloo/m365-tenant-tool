@@ -76,20 +76,19 @@ $readinessIcon = match($score['readiness']) {
     <?php if (empty($domains)): ?>
     <div class="card mb-4 border-danger">
       <div class="card-header fw-semibold text-danger-emphasis bg-danger-subtle">
-        <i class="bi bi-x-circle-fill me-2"></i>Keine Custom-Domain gefunden
+        <i class="bi bi-x-circle-fill me-2"></i><?= te('Keine Custom-Domain gefunden') ?>
       </div>
       <div class="card-body">
         <p class="mb-2">
-          Es wurden keine verifizierten Custom-Domains gefunden — nur <code>*.onmicrosoft.com</code>.
-          Für Exchange Online benötigst du mindestens eine eigene Domain (z.B. <code>deinefirma.de</code>).
+          <?= te('Es wurden keine verifizierten Custom-Domains gefunden — nur') ?> <code>*.onmicrosoft.com</code>.
+          <?= te('Für Exchange Online benötigst du mindestens eine eigene Domain (z.B.') ?> <code>deinefirma.de</code>).
         </p>
         <p class="text-muted small mb-3">
-          <strong>Was zu tun ist:</strong> Domain im Microsoft 365 Admin Center hinzufügen,
-          den angezeigten TXT-Eintrag bei deinem DNS-Provider eintragen, dann verifizieren.
+          <strong><?= te('Was zu tun ist:') ?></strong> <?= te('Domain im Microsoft 365 Admin Center hinzufügen, den angezeigten TXT-Eintrag bei deinem DNS-Provider eintragen, dann verifizieren.') ?>
         </p>
         <a href="https://admin.microsoft.com/AdminPortal/Home#/Domains" target="_blank" rel="noopener noreferrer"
            class="btn btn-primary btn-sm">
-          <i class="bi bi-box-arrow-up-right me-1"></i>Domains im Admin Center öffnen
+          <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Domains im Admin Center öffnen') ?>
         </a>
       </div>
     </div>
@@ -98,15 +97,15 @@ $readinessIcon = match($score['readiness']) {
     <div class="card mb-4 shadow-sm">
       <div class="card-header d-flex align-items-center gap-2 fw-semibold">
         <i class="bi bi-globe2"></i>
-        DNS-Prüfung für <code><?= $e($dc['domain']) ?></code>
+        <?= te('DNS-Prüfung für') ?> <code><?= $e($dc['domain']) ?></code>
       </div>
       <div class="table-responsive">
         <table class="table table-hover mb-0 align-middle">
           <thead class="table-light">
             <tr>
               <th style="width:30px"></th>
-              <th style="width:130px">Prüfung</th>
-              <th>Ergebnis / Hinweis</th>
+              <th style="width:130px"><?= te('Prüfung') ?></th>
+              <th><?= te('Ergebnis / Hinweis') ?></th>
               <th style="width:110px"></th>
             </tr>
           </thead>

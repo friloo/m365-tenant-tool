@@ -25,25 +25,25 @@
     </div>
     <div class="col-sm-6 col-md-3 col-lg">
         <div class="metric-card">
-            <div class="metric-label">Fehlgeschlagen</div>
+            <div class="metric-label"><?= te('Fehlgeschlagen') ?></div>
             <div class="metric-value" style="color:<?= $stats['failure'] > 0 ? '#dc2626' : '#111827' ?>;">
                 <?= $stats['failure'] ?>
             </div>
-            <div class="metric-sub"><?= $stats['failure'] > 0 ? 'Fehler aufgetreten' : 'Keine Fehler' ?></div>
+            <div class="metric-sub"><?= $stats['failure'] > 0 ? te('Fehler aufgetreten') : te('Keine Fehler') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3 col-lg">
         <div class="metric-card">
-            <div class="metric-label">Eindeutige Benutzer</div>
+            <div class="metric-label"><?= te('Eindeutige Benutzer') ?></div>
             <div class="metric-value"><?= $stats['unique_users'] ?></div>
-            <div class="metric-sub">verschiedene Konten</div>
+            <div class="metric-sub"><?= te('verschiedene Konten') ?></div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3 col-lg">
         <div class="metric-card">
-            <div class="metric-label">Eindeutige IPs</div>
+            <div class="metric-label"><?= te('Eindeutige IPs') ?></div>
             <div class="metric-value"><?= $stats['unique_ips'] ?></div>
-            <div class="metric-sub">verschiedene Adressen</div>
+            <div class="metric-sub"><?= te('verschiedene Adressen') ?></div>
         </div>
     </div>
 </div>
@@ -72,7 +72,7 @@ $exportParams = http_build_query(array_filter([
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <span>
-            <i class="bi bi-funnel me-2"></i>Filter
+            <i class="bi bi-funnel me-2"></i><?= te('Filter') ?>
             <?php if ($activeFilters > 0): ?>
                 <span class="badge-pill badge-info ms-1"><?= $activeFilters ?></span>
             <?php endif; ?>
@@ -81,11 +81,11 @@ $exportParams = http_build_query(array_filter([
     <div class="card-body-custom">
         <form method="get" action="/signinlog" class="row g-2 align-items-end">
             <div class="col-12 col-sm-6 col-md-3 col-lg-2">
-                <label class="form-label form-label-sm small fw-medium mb-1">Benutzer</label>
+                <label class="form-label form-label-sm small fw-medium mb-1"><?= te('Benutzer') ?></label>
                 <input type="text"
                        name="user"
                        class="form-control form-control-sm"
-                       placeholder="Name oder UPN"
+                       placeholder="<?= te('Name oder UPN') ?>"
                        value="<?= $e($filters['user'] ?? '') ?>">
             </div>
             <div class="col-6 col-sm-4 col-md-2 col-lg-1">

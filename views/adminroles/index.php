@@ -176,14 +176,14 @@
                     ?>
                     <tr>
                         <td>
-                            <div style="width:32px;height:32px;border-radius:50%;background:<?= $avatarBg ?>;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:<?= $avatarColor ?>;flex-shrink:0;" title="<?= $isSp ? 'Service Principal' : 'Benutzer' ?>">
+                            <div style="width:32px;height:32px;border-radius:50%;background:<?= $avatarBg ?>;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:<?= $avatarColor ?>;flex-shrink:0;" title="<?= $isSp ? te('Service Principal') : te('Benutzer') ?>">
                                 <?= $e($initial) ?>
                             </div>
                         </td>
                         <td style="font-weight:500;font-size:13px;"><?= $e($displayName) ?></td>
                         <td style="color:#6b7280;font-size:12px;">
                             <?php if ($isSp): ?>
-                                <span style="font-size:11px;color:#7c3aed;background:#f3e8ff;padding:1px 6px;border-radius:4px;">Service-Konto</span>
+                                <span style="font-size:11px;color:#7c3aed;background:#f3e8ff;padding:1px 6px;border-radius:4px;"><?= te('Service-Konto') ?></span>
                             <?php else: ?>
                                 <?= $e($upn) ?>
                             <?php endif; ?>
@@ -192,9 +192,9 @@
                             <?php if ($isSp): ?>
                                 <span class="badge-pill" style="background:#f3e8ff;color:#7c3aed;font-size:11px;">App</span>
                             <?php elseif ($enabled === false): ?>
-                                <span class="badge-disabled">Deaktiviert</span>
+                                <span class="badge-disabled"><?= te('Deaktiviert') ?></span>
                             <?php else: ?>
-                                <span class="badge-enabled">Aktiv</span>
+                                <span class="badge-enabled"><?= te('Aktiv') ?></span>
                             <?php endif; ?>
                         </td>
                         <?php if (LocalAuth::isAdmin()): ?>
@@ -203,13 +203,13 @@
                             <form method="post"
                                   action="/adminroles/<?= $e($assignId) ?>/remove"
                                   class="mb-0"
-                                  onsubmit="return confirm('Rollenzuweisung für <?= $e(addslashes($displayName)) ?> wirklich entfernen?');">
+                                  onsubmit="return confirm('<?= $e(t('Rollenzuweisung für')) ?> <?= $e(addslashes($displayName)) ?> <?= $e(t('wirklich entfernen?')) ?>');">
                                 <?= \App\Core\Csrf::field() ?>
                                 <button type="submit"
                                         class="btn btn-sm btn-outline-danger py-0 px-2"
                                         style="font-size:11px;"
-                                        title="Zuweisung entfernen">
-                                    <i class="bi bi-person-dash me-1"></i>Entfernen
+                                        title="<?= te('Zuweisung entfernen') ?>">
+                                    <i class="bi bi-person-dash me-1"></i><?= te('Entfernen') ?>
                                 </button>
                             </form>
                             <?php endif; ?>
