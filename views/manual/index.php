@@ -1209,15 +1209,15 @@
 </div>
 
 <div class="man-section" id="auditreport">
-    <h2><i class="bi bi-file-earmark-pdf"></i> DSGVO/NIS-2 Audit-Report</h2>
-    <p>Unter <strong>Compliance &amp; Audit → DSGVO/NIS-2 Report</strong> erzeugt das Tool einen kompletten Audit-Bericht. Die Struktur:</p>
+    <h2><i class="bi bi-file-earmark-pdf"></i> <?= te('DSGVO/NIS-2 Audit-Report') ?></h2>
+    <p><?= te('Unter <strong>Compliance &amp; Audit → DSGVO/NIS-2 Report</strong> erzeugt das Tool einen kompletten Audit-Bericht. Die Struktur:') ?></p>
     <ol>
-        <li><strong>Deckblatt</strong> mit Tenant-Stammdaten und aktivem Compliance-Profil</li>
-        <li><strong>Graph-API-Berechtigungen</strong> — wieviele erteilt, wieviele fehlen</li>
-        <li><strong>Hardening-Übersicht</strong> aller 21 Items, gruppiert nach Kategorie</li>
-        <li><strong>Regulatorische Zuordnung</strong> — DSGVO Art. 25/32, NIS-2 Art. 21, BSI ORP.4 mit den jeweils zugeordneten Hardening-Items</li>
+        <li><strong><?= te('Deckblatt') ?></strong> <?= te('mit Tenant-Stammdaten und aktivem Compliance-Profil') ?></li>
+        <li><strong>Graph-API-Berechtigungen</strong> — <?= te('wieviele erteilt, wieviele fehlen') ?></li>
+        <li><strong>Hardening-Übersicht</strong> <?= te('aller 21 Items, gruppiert nach Kategorie') ?></li>
+        <li><strong><?= te('Regulatorische Zuordnung') ?></strong> — <?= te('DSGVO Art. 25/32, NIS-2 Art. 21, BSI ORP.4 mit den jeweils zugeordneten Hardening-Items') ?></li>
     </ol>
-    <p>Mit dem &quot;Als PDF speichern&quot;-Button generiert dein Browser daraus eine PDF-Datei — perfekt für Auditoren, IT-Leitung oder Lieferanten-Auskünfte.</p>
+    <p><?= te('Mit dem &quot;Als PDF speichern&quot;-Button generiert dein Browser daraus eine PDF-Datei — perfekt für Auditoren, IT-Leitung oder Lieferanten-Auskünfte.') ?></p>
 </div>
 
 <div class="man-section" id="restapi">
