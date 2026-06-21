@@ -1192,20 +1192,20 @@
 </div>
 
 <div class="man-section" id="complianceprofiles">
-    <h2><i class="bi bi-patch-check"></i> Compliance-Profile</h2>
-    <p>Compliance-Profile bündeln branchen-typische Härtungs-Voreinstellungen zu Ein-Klick-Presets. Verfügbare Profile: <strong>Standard / DSGVO-Basis</strong>, <strong>Gesundheitswesen (KRITIS)</strong>, <strong>Finanzwesen (BaFin/DORA)</strong>, <strong>Öffentlicher Sektor / BSI</strong>, <strong>Bildung</strong>. Jedes Profil ruft beim Anwenden eine Sequenz von <code>HardeningService</code>-Aktionen auf — komplett im Audit-Log nachvollziehbar und über das Härtungs-Modul einzeln revidierbar.</p>
-    <div class="tip-box"><i class="bi bi-lightbulb"></i>Profile sind <strong>nicht exklusiv</strong>. Du kannst z. B. mit dem Standard-Profil starten und einzelne Härtungs-Items im <code>/hardening</code>-Modul nachjustieren. Das aktuell aktive Profil wird in den Settings vermerkt.</div>
+    <h2><i class="bi bi-patch-check"></i> <?= te('Compliance-Profile') ?></h2>
+    <p><?= te('Compliance-Profile bündeln branchen-typische Härtungs-Voreinstellungen zu Ein-Klick-Presets. Verfügbare Profile: <strong>Standard / DSGVO-Basis</strong>, <strong>Gesundheitswesen (KRITIS)</strong>, <strong>Finanzwesen (BaFin/DORA)</strong>, <strong>Öffentlicher Sektor / BSI</strong>, <strong>Bildung</strong>. Jedes Profil ruft beim Anwenden eine Sequenz von <code>HardeningService</code>-Aktionen auf — komplett im Audit-Log nachvollziehbar und über das Härtungs-Modul einzeln revidierbar.') ?></p>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Profile sind <strong>nicht exklusiv</strong>. Du kannst z. B. mit dem Standard-Profil starten und einzelne Härtungs-Items im <code>/hardening</code>-Modul nachjustieren. Das aktuell aktive Profil wird in den Settings vermerkt.') ?></div>
 </div>
 
 <div class="man-section" id="notifications">
-    <h2><i class="bi bi-bell"></i> In-App-Benachrichtigungen</h2>
-    <p>Die Glocke oben rechts in der Topbar zeigt alle Tenant-Ereignisse seit deinem letzten Besuch. Module wie Defender-Alerts, Cross-Tenant-Access, MFA-Fatigue oder das Compliance-Profil drücken Events in das gemeinsame Feed — eine Klick-Adresse pro Eintrag führt direkt zur Detail-Seite. Benachrichtigungen werden 90 Tage aufbewahrt und automatisch vom Cron-Job <code>notification_trim</code> gepflegt.</p>
+    <h2><i class="bi bi-bell"></i> <?= te('In-App-Benachrichtigungen') ?></h2>
+    <p><?= te('Die Glocke oben rechts in der Topbar zeigt alle Tenant-Ereignisse seit deinem letzten Besuch. Module wie Defender-Alerts, Cross-Tenant-Access, MFA-Fatigue oder das Compliance-Profil drücken Events in das gemeinsame Feed — eine Klick-Adresse pro Eintrag führt direkt zur Detail-Seite. Benachrichtigungen werden 90 Tage aufbewahrt und automatisch vom Cron-Job <code>notification_trim</code> gepflegt.') ?></p>
 </div>
 
 <div class="man-section" id="auditdiff">
-    <h2><i class="bi bi-arrow-left-right"></i> Audit-Diff</h2>
-    <p>Täglich (Cron-Job <code>audit_diff_snapshot</code>) wird ein Snapshot aller sicherheitsrelevanten Tenant-Einstellungen erstellt — Authorization Policy, Security Defaults, Auth Methods, SharePoint, Conditional Access, Admin-Rollen, Gast-Konfiguration. In <strong>Compliance &amp; Audit → Audit-Diff</strong> kannst du beliebige zwei Snapshots auswählen und alle Veränderungen mit Rot-/Grün-/Gelb-Markierung darstellen.</p>
-    <p>Ideal für Übergaben (was hat der Vorgänger letzte Woche verändert?), für Audits (was hat sich seit der letzten Prüfung getan?) und für die Untersuchung von Vorfällen (wer hat wann diese Einstellung umgestellt? — Audit-Log liefert das &quot;wer&quot;, Audit-Diff das &quot;was&quot;).</p>
+    <h2><i class="bi bi-arrow-left-right"></i> <?= te('Audit-Diff') ?></h2>
+    <p><?= te('Täglich (Cron-Job <code>audit_diff_snapshot</code>) wird ein Snapshot aller sicherheitsrelevanten Tenant-Einstellungen erstellt — Authorization Policy, Security Defaults, Auth Methods, SharePoint, Conditional Access, Admin-Rollen, Gast-Konfiguration. In <strong>Compliance &amp; Audit → Audit-Diff</strong> kannst du beliebige zwei Snapshots auswählen und alle Veränderungen mit Rot-/Grün-/Gelb-Markierung darstellen.') ?></p>
+    <p><?= te('Ideal für Übergaben (was hat der Vorgänger letzte Woche verändert?), für Audits (was hat sich seit der letzten Prüfung getan?) und für die Untersuchung von Vorfällen (wer hat wann diese Einstellung umgestellt? — Audit-Log liefert das &quot;wer&quot;, Audit-Diff das &quot;was&quot;).') ?></p>
 </div>
 
 <div class="man-section" id="auditreport">
