@@ -19,7 +19,7 @@ $scoreColor = $s['score'] >= 80 ? '#16a34a' : ($s['score'] >= 50 ? '#d97706' : '
                 <div class="text-muted small mt-1"><?= te('Härtungs-Score') ?></div>
             </div>
             <div class="flex-grow-1">
-                <div class="fw-semibold mb-2"><i class="bi bi-shield-fill-check me-1" style="color:#0078d4;"></i><?= te('Security Center — Status &amp; Einstellungen an einem Ort') ?></div>
+                <div class="fw-semibold mb-2"><i class="bi bi-shield-fill-check me-1" style="color:#0078d4;"></i><?= t('Security Center — Status &amp; Einstellungen an einem Ort') ?></div>
                 <div class="d-flex flex-wrap gap-2 mb-2">
                     <span class="badge bg-success"><?= (int)$s['on'] ?> OK</span>
                     <span class="badge bg-danger"><?= (int)$s['off'] ?> <?= te('zu härten') ?></span>

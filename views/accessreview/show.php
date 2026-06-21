@@ -101,7 +101,7 @@
         <?= \App\Core\Csrf::field() ?>
         <button type="submit" class="btn btn-sm btn-danger"
                 onclick="return confirm('<?= t('Entscheidungen anwenden und Prüfung abschließen?\n\nAlle als „Widerrufen" markierten Konten werden deaktiviert. Diese Aktion kann nicht rückgängig gemacht werden.') ?>')">
-            <i class="bi bi-play-fill me-1"></i> <?= te('Entscheidungen anwenden &amp; abschließen') ?>
+            <i class="bi bi-play-fill me-1"></i> <?= t('Entscheidungen anwenden &amp; abschließen') ?>
         </button>
     </form>
     <?php endif; ?>

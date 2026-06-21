@@ -92,7 +92,7 @@ $ruleExt   = count($report['external_forward'] ?? []);
                     <table class="data-table" id="fwdTable">
                         <thead><tr>
                             <th><?= te('Benutzer') ?></th><th><?= te('Weiterleitungsadresse') ?></th><th><?= te('Status') ?></th>
-                            <th><?= te('Lokal&nbsp;+&nbsp;Weiterleiten') ?></th><th class="text-end"><?= te('Aktion') ?></th>
+                            <th><?= t('Lokal&nbsp;+&nbsp;Weiterleiten') ?></th><th class="text-end"><?= te('Aktion') ?></th>
                         </tr></thead>
                         <tbody>
                         <?php foreach ($forwards as $fwd): ?>

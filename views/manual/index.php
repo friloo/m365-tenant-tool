@@ -756,8 +756,8 @@
     <p><?= te('Statistische Anomalie-Erkennung pro User, basierend auf Sign-in- und Audit-Log-Daten. Das volle Microsoft Purview Insider Risk Management ist mächtiger, aber lizenz-pflichtig (E5 / Compliance-Add-on); dieses Modul liefert die wichtigsten Signale ohne zusätzliche Lizenz.') ?></p>
     <h3><?= te('Erfasste Signale') ?></h3>
     <ul>
-        <li><strong><?= te('Off-Hours-Anmeldungen') ?></strong> — <?= te('wieviel Prozent der Logins fanden zwischen 22:00 und 06:00 statt? &gt; 50 % = Score +25, &gt; 25 % = +10.') ?></li>
-        <li><strong><?= te('Geo-Diversität') ?></strong> — <?= te('Anmeldungen aus &gt; 3 verschiedenen Ländern in 30 Tagen = +15.') ?></li>
+        <li><strong><?= te('Off-Hours-Anmeldungen') ?></strong> — <?= t('wieviel Prozent der Logins fanden zwischen 22:00 und 06:00 statt? &gt; 50 % = Score +25, &gt; 25 % = +10.') ?></li>
+        <li><strong><?= te('Geo-Diversität') ?></strong> — <?= t('Anmeldungen aus &gt; 3 verschiedenen Ländern in 30 Tagen = +15.') ?></li>
         <li><strong><?= te('Massendownloads') ?></strong> — <?= te('≥ 50 OneDrive-File-Reads in einer Stunde = +15 pro Burst.') ?></li>
         <li><strong>Mass-Mail-Send</strong> — <?= te('≥ 100 Mails in einer Stunde = +20 pro Burst.') ?></li>
         <li><strong><?= te('Lösch-Aktivität') ?></strong> — <?= te('≥ 100 Lösch-Events = +25, ≥ 30 = +10.') ?></li>
@@ -782,7 +782,7 @@
 
 <!-- Token-Lifetime ──────────────────────────────────────── -->
 <div class="man-section" id="tokenlifetime">
-    <h2><i class="bi bi-clock-history text-primary"></i> <?= te('Token-Lifetime &amp; Sign-in-Frequency') ?></h2>
+    <h2><i class="bi bi-clock-history text-primary"></i> <?= t('Token-Lifetime &amp; Sign-in-Frequency') ?></h2>
     <p><?= t('Microsoft hat 2021 die globalen Token-Lifetime-Policies deprecated. Heute steuert man die effektive Anmelde-Frequenz über das <code>signInFrequency</code>-Setting in Conditional-Access-Policies.') ?></p>
     <h3><?= te('Empfohlene Werte') ?></h3>
     <table style="width:100%;border-collapse:collapse;font-size:13px;">
@@ -817,8 +817,8 @@
     <p><?= te('Übersicht der durchgeführten Phishing-Simulationen aus Microsoft Defender Attack Simulation Training. Pro Simulation werden Empfänger-Anzahl, Klick-Rate, „Compromised"-Rate (User hat Credentials eingegeben oder Datei geöffnet) und Reporting-Rate (User hat die Phishing-Mail korrekt gemeldet) angezeigt.') ?></p>
     <h3><?= te('Wichtige Kennzahlen') ?></h3>
     <ul>
-        <li><strong><?= te('Compromised-Rate &lt; 5 %') ?></strong> <?= te('ist ein gutes Ziel. &gt; 20 % bedeutet dringender Schulungs­bedarf.') ?></li>
-        <li><strong><?= te('Reporting-Rate &gt; 50 %') ?></strong> <?= te('zeigt, dass die User das „Report Phishing"-Plugin in Outlook aktiv nutzen.') ?></li>
+        <li><strong><?= t('Compromised-Rate &lt; 5 %') ?></strong> <?= t('ist ein gutes Ziel. &gt; 20 % bedeutet dringender Schulungs­bedarf.') ?></li>
+        <li><strong><?= t('Reporting-Rate &gt; 50 %') ?></strong> <?= te('zeigt, dass die User das „Report Phishing"-Plugin in Outlook aktiv nutzen.') ?></li>
         <li><strong><?= te('Training-Quote') ?></strong> — <?= te('wieviele der erwischten User haben das zugewiesene Training auch abgeschlossen.') ?></li>
     </ul>
 </div>
@@ -844,7 +844,7 @@
         <li><strong><?= te('Vorgespräche:') ?></strong> <?= t('Betriebs­rat und Daten­schutz­beauftragten <strong>vor</strong> der ersten Simulation einbinden — in Deutschland ist eine Phishing-Simulation eine Mitarbeiter-Schulungs­maßnahme, die u. U. mitbestimmungs­pflichtig ist (§ 87 Abs. 1 Nr. 6 BetrVG).') ?></li>
     </ul>
 
-    <h3><?= te('2. Vorbereitung &amp; Kommunikation') ?></h3>
+    <h3><?= t('2. Vorbereitung &amp; Kommunikation') ?></h3>
     <ol>
         <li>
             <strong><?= te('Pilotphase planen.') ?></strong> <?= te('Niemals direkt den ganzen Tenant ins kalte Wasser werfen — beginnen Sie mit einer Pilotgruppe von 10–30 Personen aus IT, Marketing oder Verwaltung.') ?>
@@ -853,7 +853,7 @@
             <strong><?= te('Vorab-Kommunikation:') ?></strong> <?= t('ankündigen, dass „in den nächsten Wochen Phishing-Simulationen stattfinden werden, ohne konkreten Termin". Das ist nicht der Verrat — Mitarbeiter sollen wissen, dass es passieren <em>kann</em>, aber nicht <em>wann</em>.') ?>
         </li>
         <li>
-            <strong><?= te('Reporting-Plugin in Outlook aktivieren:') ?></strong> <?= te('stellen Sie sicher, dass der Button „Report Phishing" oder „Report Message" in Outlook für alle User sichtbar ist (Defender-Portal → Email &amp; collaboration → Policies → User reported settings).') ?>
+            <strong><?= te('Reporting-Plugin in Outlook aktivieren:') ?></strong> <?= t('stellen Sie sicher, dass der Button „Report Phishing" oder „Report Message" in Outlook für alle User sichtbar ist (Defender-Portal → Email &amp; collaboration → Policies → User reported settings).') ?>
         </li>
         <li>
             <strong><?= te('Training-Module vorbereiten:') ?></strong> <?= te('Microsoft bringt einen Standard-Pool von ca. 70 Trainings­videos mit. Schauen Sie sie sich vorher an und wählen Sie 3–5 aus, die zu Ihrer Kampagne passen.') ?>
@@ -958,7 +958,7 @@
     <h2><i class="bi bi-lock-fill text-primary"></i> Customer Lockbox</h2>
     <p><?= t('Ohne Customer Lockbox darf Microsoft Support im Notfall direkt auf Ihre Daten zugreifen — Sie erfahren es nicht. Mit aktiviertem Lockbox muss jeder Microsoft-Support-Zugriff aktiv von einem Tenant-Admin approvt werden, sonst gibt es <strong>keinen</strong> Zugriff.') ?></p>
     <p><strong><?= te('Voraussetzung:') ?></strong> <?= te('Microsoft 365 E5 oder als Add-on.') ?></p>
-    <p><?= te('Microsoft Graph stellt für diese Einstellung keinen Schreib-Endpunkt zur Verfügung — Konfiguration daher im M365 Admin Center → Security &amp; Privacy. Das Tool tracked nur den manuell eingetragenen Aktivierungs-Status, die Approver-Liste, die SLA-Reaktionszeit und das Datum der letzten Review (halbjährlich empfohlen).') ?></p>
+    <p><?= t('Microsoft Graph stellt für diese Einstellung keinen Schreib-Endpunkt zur Verfügung — Konfiguration daher im M365 Admin Center → Security &amp; Privacy. Das Tool tracked nur den manuell eingetragenen Aktivierungs-Status, die Approver-Liste, die SLA-Reaktionszeit und das Datum der letzten Review (halbjährlich empfohlen).') ?></p>
 </div>
 
 <!-- Geräte ───────────────────────────────────────────────── -->
@@ -1094,7 +1094,7 @@
         <li><?= te('Ist er nicht eingetragen: Anzeige der Seite „Kein Zugriff" — kein Zugriff auf das Tool') ?></li>
     </ol>
 
-    <h3><?= te('Rollen &amp; Berechtigungen') ?></h3>
+    <h3><?= t('Rollen &amp; Berechtigungen') ?></h3>
     <table class="table table-sm table-bordered small">
         <thead class="table-light"><tr><th><?= te('Funktion') ?></th><th>Operator</th><th>Administrator</th></tr></thead>
         <tbody>
@@ -1205,7 +1205,7 @@
 <div class="man-section" id="auditdiff">
     <h2><i class="bi bi-arrow-left-right"></i> <?= te('Audit-Diff') ?></h2>
     <p><?= t('Täglich (Cron-Job <code>audit_diff_snapshot</code>) wird ein Snapshot aller sicherheitsrelevanten Tenant-Einstellungen erstellt — Authorization Policy, Security Defaults, Auth Methods, SharePoint, Conditional Access, Admin-Rollen, Gast-Konfiguration. In <strong>Compliance &amp; Audit → Audit-Diff</strong> kannst du beliebige zwei Snapshots auswählen und alle Veränderungen mit Rot-/Grün-/Gelb-Markierung darstellen.') ?></p>
-    <p><?= te('Ideal für Übergaben (was hat der Vorgänger letzte Woche verändert?), für Audits (was hat sich seit der letzten Prüfung getan?) und für die Untersuchung von Vorfällen (wer hat wann diese Einstellung umgestellt? — Audit-Log liefert das &quot;wer&quot;, Audit-Diff das &quot;was&quot;).') ?></p>
+    <p><?= t('Ideal für Übergaben (was hat der Vorgänger letzte Woche verändert?), für Audits (was hat sich seit der letzten Prüfung getan?) und für die Untersuchung von Vorfällen (wer hat wann diese Einstellung umgestellt? — Audit-Log liefert das &quot;wer&quot;, Audit-Diff das &quot;was&quot;).') ?></p>
 </div>
 
 <div class="man-section" id="auditreport">
@@ -1217,7 +1217,7 @@
         <li><strong>Hardening-Übersicht</strong> <?= te('aller 21 Items, gruppiert nach Kategorie') ?></li>
         <li><strong><?= te('Regulatorische Zuordnung') ?></strong> — <?= te('DSGVO Art. 25/32, NIS-2 Art. 21, BSI ORP.4 mit den jeweils zugeordneten Hardening-Items') ?></li>
     </ol>
-    <p><?= te('Mit dem &quot;Als PDF speichern&quot;-Button generiert dein Browser daraus eine PDF-Datei — perfekt für Auditoren, IT-Leitung oder Lieferanten-Auskünfte.') ?></p>
+    <p><?= t('Mit dem &quot;Als PDF speichern&quot;-Button generiert dein Browser daraus eine PDF-Datei — perfekt für Auditoren, IT-Leitung oder Lieferanten-Auskünfte.') ?></p>
 </div>
 
 <div class="man-section" id="restapi">
@@ -1243,9 +1243,9 @@
     <h2><i class="bi bi-diagram-2"></i> <?= te('Workflow-Automatisierung') ?></h2>
     <p><?= t('Unter <strong>Administration → Workflows</strong> kannst du leichtgewichtige Trigger-Aktion-Sequenzen anlegen — als Mini-Power-Automate für M365-Standardabläufe. Beispiele:') ?></p>
     <ul>
-        <li><?= te('&quot;Neuer Gast-Benutzer&quot; → &quot;In Gruppe X aufnehmen&quot; + &quot;Mail an IT-Leitung&quot; + &quot;In-App-Benachrichtigung erzeugen&quot;') ?></li>
-        <li><?= te('&quot;Alle 60 Minuten&quot; → &quot;Notification erzeugen, wenn Risk-Score hoch&quot;') ?></li>
-        <li><?= te('&quot;Neuer Benutzer in Gruppe XY&quot; → &quot;Lizenz E3 zuweisen&quot; + &quot;Begrüßungsmail senden&quot;') ?></li>
+        <li><?= t('&quot;Neuer Gast-Benutzer&quot; → &quot;In Gruppe X aufnehmen&quot; + &quot;Mail an IT-Leitung&quot; + &quot;In-App-Benachrichtigung erzeugen&quot;') ?></li>
+        <li><?= t('&quot;Alle 60 Minuten&quot; → &quot;Notification erzeugen, wenn Risk-Score hoch&quot;') ?></li>
+        <li><?= t('&quot;Neuer Benutzer in Gruppe XY&quot; → &quot;Lizenz E3 zuweisen&quot; + &quot;Begrüßungsmail senden&quot;') ?></li>
     </ul>
     <p><?= t('Trigger werden alle 15 Minuten vom Cron-Job <code>workflow_runner</code> ausgewertet. Jede Aktion landet im Run-Log (Schwester-Tabelle <code>app_workflow_runs</code>) mit Status, Ziel und Detail. Template-Variablen für Mail-/Notification-Felder: <code>{{user.userPrincipalName}}</code>, <code>{{user.displayName}}</code>, <code>{{user.id}}</code>, <code>{{trigger}}</code>.') ?></p>
 </div>

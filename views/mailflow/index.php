@@ -235,7 +235,7 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
 <div class="content-card mb-4">
     <div class="card-header-custom">
         <i class="bi bi-box-arrow-up-right text-secondary"></i>
-        <h6><?= te('Verwaltung in Exchange Online &amp; Microsoft Defender') ?></h6>
+        <h6><?= t('Verwaltung in Exchange Online &amp; Microsoft Defender') ?></h6>
     </div>
     <div class="card-body-custom">
         <p class="text-muted mb-3" style="font-size:13px;">

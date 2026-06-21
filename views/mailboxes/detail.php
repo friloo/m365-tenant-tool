@@ -188,7 +188,7 @@ $tz          = $detail['timeZone'] ?? '';
                         </label>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small text-muted"><?= te('Nachricht (intern &amp; extern):') ?></label>
+                        <label class="form-label small text-muted"><?= t('Nachricht (intern &amp; extern):') ?></label>
                         <textarea class="form-control form-control-sm" name="auto_reply_message"
                                   rows="4" placeholder="<?= te('Ich bin derzeit nicht erreichbar…') ?>"
                                   style="font-size:13px;"><?= $e($autoMsg) ?></textarea>
@@ -271,7 +271,7 @@ $tz          = $detail['timeZone'] ?? '';
                         <i class="bi bi-info-circle me-1"></i>
                         <?= te('Kalenderberechtigungen konnten nicht abgerufen werden. Dies erfordert entweder delegierte Berechtigungen') ?> (<code>Calendars.Read</code>) <?= te('oder den Exchange Admin-Zugriff.') ?>
                         <a href="https://admin.exchange.microsoft.com" target="_blank" rel="noopener"
-                           class="ms-1"><?= te('&rarr; Exchange Admin Center öffnen') ?></a>
+                           class="ms-1"><?= t('&rarr; Exchange Admin Center öffnen') ?></a>
                     </div>
                 <?php else: ?>
                     <div class="table-responsive">
