@@ -39,6 +39,11 @@ class SettingsController
             'operator_username'              => $config->get('operator_username', ''),
             'alert_risky_users'              => $config->get('alert_risky_users', '1'),
             'alert_anon_shares'              => $config->get('alert_anon_shares', '1'),
+            'alert_webhook_url'              => $config->get('alert_webhook_url', ''),
+            'alert_webhook_type'             => $config->get('alert_webhook_type', 'teams'),
+            'alert_webhook_min_severity'     => $config->get('alert_webhook_min_severity', 'warn'),
+            'four_eyes_enabled'              => $config->get('four_eyes_enabled', '0'),
+            'local_retention_days'           => $config->get('local_retention_days', '0'),
             'app_base_url'                   => $config->get('app_base_url', ''),
             'share_review_interval_days'     => $config->get('share_review_interval_days', '30'),
             'share_review_grace_days'        => $config->get('share_review_grace_days', '7'),
@@ -103,6 +108,12 @@ class SettingsController
             $config->set('alert_stale_accounts_max',       (string)max(0, (int)($_POST['alert_stale_accounts_max'] ?? 10)));
             $config->set('alert_risky_users',             isset($_POST['alert_risky_users']) ? '1' : '0');
             $config->set('alert_anon_shares',             isset($_POST['alert_anon_shares']) ? '1' : '0');
+            $whUrl = trim($_POST['alert_webhook_url'] ?? '');
+            $config->set('alert_webhook_url',             preg_match('#^https://#i', $whUrl) ? $whUrl : '');
+            $config->set('alert_webhook_type',            in_array($_POST['alert_webhook_type'] ?? '', ['teams', 'generic'], true) ? $_POST['alert_webhook_type'] : 'teams');
+            $config->set('alert_webhook_min_severity',    in_array($_POST['alert_webhook_min_severity'] ?? '', ['warn', 'critical'], true) ? $_POST['alert_webhook_min_severity'] : 'warn');
+            $config->set('four_eyes_enabled',             isset($_POST['four_eyes_enabled']) ? '1' : '0');
+            $config->set('local_retention_days',          (string)max(0, (int)($_POST['local_retention_days'] ?? 0)));
             $config->set('app_base_url',                  rtrim(trim($_POST['app_base_url'] ?? ''), '/'));
             $config->set('share_review_interval_days',    (string)max(1, (int)($_POST['share_review_interval_days'] ?? 30)));
             $config->set('share_review_grace_days',       (string)max(1, (int)($_POST['share_review_grace_days'] ?? 7)));
@@ -195,6 +206,28 @@ class SettingsController
             Session::flash('error', t('E-Mail-Versand fehlgeschlagen. SMTP-Einstellungen prüfen.'));
         }
         Redirect::to('/settings');
+    }
+
+    public function testWebhook(): void
+    {
+        LocalAuth::requireAdmin();
+        if (!\App\Helpers\WebhookNotifier::isConfigured()) {
+            Session::flash('error', t('Keine Webhook-URL konfiguriert.'));
+            Redirect::to('/settings#benachrichtigungen');
+        }
+        $ok = \App\Helpers\WebhookNotifier::dispatch(
+            t('Test-Benachrichtigung'),
+            t('Diese Nachricht bestätigt, dass der Alert-Webhook korrekt konfiguriert ist.'),
+            'warn',
+            'system',
+            '/action-center'
+        );
+        if ($ok) {
+            Session::flash('success', t('Test-Benachrichtigung an den Webhook gesendet.'));
+        } else {
+            Session::flash('error', t('Webhook-Test fehlgeschlagen. URL und Format prüfen.'));
+        }
+        Redirect::to('/settings#benachrichtigungen');
     }
 
     public function manual(): void

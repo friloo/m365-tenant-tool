@@ -367,6 +367,41 @@
             </div>
         </div>
 
+        <!-- Alert webhook (Teams / SIEM) -->
+        <div class="content-card mb-4" data-tab="benachrichtigungen" id="alert-webhook">
+            <div class="card-header-custom">
+                <i class="bi bi-broadcast text-primary"></i>
+                <h6><?= te('Alert-Webhook (Teams / SIEM)') ?></h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted small mb-3"><?= te('Sende Sicherheits-Warnungen zusätzlich an einen externen Endpunkt — einen Microsoft-Teams-Webhook oder ein generisches JSON-Ziel (SIEM/Sentinel/Slack-kompatibel).') ?></p>
+                <div class="row g-3">
+                    <div class="col-md-7">
+                        <label class="form-label fw-medium"><?= te('Webhook-URL (https)') ?></label>
+                        <input type="url" name="alert_webhook_url" class="form-control" placeholder="https://…" value="<?= $e($s['alert_webhook_url'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-medium"><?= te('Format') ?></label>
+                        <select name="alert_webhook_type" class="form-select">
+                            <option value="teams"   <?= ($s['alert_webhook_type'] ?? 'teams') === 'teams' ? 'selected' : '' ?>><?= te('Microsoft Teams') ?></option>
+                            <option value="generic" <?= ($s['alert_webhook_type'] ?? 'teams') === 'generic' ? 'selected' : '' ?>><?= te('Generisch (JSON)') ?></option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-medium"><?= te('Ab Stufe') ?></label>
+                        <select name="alert_webhook_min_severity" class="form-select">
+                            <option value="warn"     <?= ($s['alert_webhook_min_severity'] ?? 'warn') === 'warn' ? 'selected' : '' ?>><?= te('Warnung') ?></option>
+                            <option value="critical" <?= ($s['alert_webhook_min_severity'] ?? 'warn') === 'critical' ? 'selected' : '' ?>><?= te('Kritisch') ?></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a href="/settings/test-webhook" class="btn btn-sm btn-outline-secondary"><i class="bi bi-send me-1"></i> <?= te('Test-Benachrichtigung senden') ?></a>
+                    <span class="text-muted small ms-2"><?= te('Speichere zuerst die URL, dann teste.') ?></span>
+                </div>
+            </div>
+        </div>
+
         <!-- Alert Thresholds -->
         <div class="content-card mb-4" data-tab="benachrichtigungen" id="alert-thresholds">
             <div class="card-header-custom">
