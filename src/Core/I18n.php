@@ -151,12 +151,30 @@ class I18n
         if (self::$loaded) {
             return;
         }
-        self::$loaded = true;
+        self::$loaded   = true;
+        self::$messages = [];
+
+        // 1. The central map (navigation, chrome, shared terms).
         $file = BASE_PATH . '/lang/' . self::$locale . '.php';
         if (is_file($file)) {
             $data = require $file;
             if (is_array($data)) {
                 self::$messages = $data;
+            }
+        }
+
+        // 2. Per-module maps under lang/<locale>/*.php, merged in. This keeps
+        //    each view's translations in its own file so they can be added
+        //    independently without one giant conflict-prone map.
+        $dir = BASE_PATH . '/lang/' . self::$locale;
+        if (is_dir($dir)) {
+            foreach (glob($dir . '/*.php') ?: [] as $part) {
+                $data = require $part;
+                if (is_array($data)) {
+                    // Central map wins on collisions so shared terms stay
+                    // consistent; otherwise module files contribute their keys.
+                    self::$messages += $data;
+                }
             }
         }
     }
