@@ -148,7 +148,7 @@ server {
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
 
     # Sensibles hart sperren
-    location ~* ^/(storage|src|views|vendor|database|install)/ { deny all; return 404; }
+    location ~* ^/(storage|config|src|views|vendor|database|install)/ { deny all; return 404; }
     location ~* \.(key|ini|lock|sql|log)$ { deny all; return 404; }
     location ~* ^/(composer\.(json|lock)|\.env)$ { deny all; return 404; }
 
