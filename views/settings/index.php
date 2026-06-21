@@ -741,6 +741,40 @@
         </div>
         </form>
 
+        <!-- Config-as-Code: export / import (outside the main settings form) -->
+        <div class="content-card mb-4" data-tab="allgemein" id="config">
+            <div class="card-header-custom">
+                <i class="bi bi-filetype-json text-primary"></i>
+                <h6><?= te('Konfiguration sichern &amp; übertragen') ?></h6>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted small mb-3">
+                    <?= te('Exportiere die operativen Einstellungen als JSON-Datei — als Backup oder um einen weiteren Tenant identisch aufzusetzen. Aus Sicherheitsgründen werden niemals Secrets exportiert (Passwörter, Client-Secret, API-Keys, SMTP-Passwort, Tenant-/App-IDs).') ?>
+                </p>
+                <div class="d-flex flex-wrap gap-2 align-items-center mb-4">
+                    <a href="/settings/config-export" class="btn btn-outline-primary">
+                        <i class="bi bi-download me-1"></i> <?= te('Konfiguration exportieren') ?>
+                    </a>
+                    <span class="text-muted small"><?= te('Lädt eine JSON-Datei herunter.') ?></span>
+                </div>
+
+                <hr class="my-3">
+
+                <form method="post" action="/settings/config-import" enctype="multipart/form-data"
+                      onsubmit="return confirm(<?= $e(json_encode(t('Importierte Werte überschreiben die aktuellen Einstellungen. Fortfahren?'), JSON_UNESCAPED_UNICODE)) ?>);">
+                    <?= \App\Core\Csrf::field() ?>
+                    <label class="form-label fw-medium"><?= te('Konfiguration importieren') ?></label>
+                    <input type="file" name="config_file" accept="application/json,.json" class="form-control mb-2">
+                    <div class="text-muted small mb-2"><?= te('… oder JSON direkt einfügen:') ?></div>
+                    <textarea name="config_json" class="form-control mb-3" rows="4" style="font-family:monospace;font-size:12px;" placeholder='{ "format_version": 1, "settings": { … } }'></textarea>
+                    <button type="submit" class="btn btn-outline-secondary">
+                        <i class="bi bi-upload me-1"></i> <?= te('Importieren') ?>
+                    </button>
+                    <div class="text-muted small mt-2"><?= te('Nur bekannte, nicht-sensible Einstellungen werden übernommen; alles andere wird ignoriert.') ?></div>
+                </form>
+            </div>
+        </div>
+
 <script>
 // AI provider defaults
 function updateAiDefaults() {

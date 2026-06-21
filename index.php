@@ -680,6 +680,10 @@ $router->post('/settings/2fa/disable',           [\App\Modules\Settings\Settings
 $router->post('/settings/2fa/regen-codes',       [\App\Modules\Settings\SettingsController::class, 'twofaRegenCodes']);
 $router->post('/settings/2fa/cancel',            function() { \App\Core\Session::remove('_totp_setup_secret'); \App\Core\Redirect::to('/settings/2fa'); });
 
+// Config-as-Code: export/import operational settings (never secrets)
+$router->get('/settings/config-export',  [\App\Modules\TenantConfig\TenantConfigController::class, 'export']);
+$router->post('/settings/config-import', [\App\Modules\TenantConfig\TenantConfigController::class, 'import']);
+
 // User management (M365 users with tool access)
 $router->get('/settings/users',                 [\App\Modules\Settings\UserManagementController::class, 'index']);
 $router->get('/settings/users/search',          [\App\Modules\Settings\UserManagementController::class, 'search']);
