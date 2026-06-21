@@ -28,7 +28,7 @@ class DeletedObjectsController
         }
 
         View::render('deletedobjects/index', [
-            'pageTitle' => 'Papierkorb',
+            'pageTitle' => t('Papierkorb'),
             'users'     => $users,
             'groups'    => $groups,
             'flash'     => Session::getFlash('success'),
@@ -43,9 +43,9 @@ class DeletedObjectsController
         $service = app_service(DeletedObjectsService::class);
         try {
             $service->restore($id);
-            Session::flash('success', 'Objekt erfolgreich wiederhergestellt.');
+            Session::flash('success', t('Objekt erfolgreich wiederhergestellt.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Wiederherstellen fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Wiederherstellen fehlgeschlagen: ') . $e->getMessage());
         }
         Redirect::to('/deleted');
     }
@@ -57,9 +57,9 @@ class DeletedObjectsController
         $service = app_service(DeletedObjectsService::class);
         try {
             $service->permanentDelete($id);
-            Session::flash('success', 'Objekt endgültig gelöscht.');
+            Session::flash('success', t('Objekt endgültig gelöscht.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Löschen fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Löschen fehlgeschlagen: ') . $e->getMessage());
         }
         Redirect::to('/deleted');
     }

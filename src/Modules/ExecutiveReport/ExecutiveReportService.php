@@ -38,12 +38,12 @@ class ExecutiveReportService
     {
         $config = Config::getInstance();
         $to     = $config->get('executive_report_to', '') ?: $config->get('alert_email_to', '');
-        if (!$to) return 'Kein Empfänger konfiguriert';
+        if (!$to) return t('Kein Empfänger konfiguriert');
 
         try {
             $kpis = $this->collectKpis();
         } catch (\Throwable $e) {
-            return 'KPI-Sammlung fehlgeschlagen: ' . $e->getMessage();
+            return t('KPI-Sammlung fehlgeschlagen: :error', ['error' => $e->getMessage()]);
         }
 
         $appName = $config->get('app_name', 'M365 Tenant Tool');
@@ -56,8 +56,8 @@ class ExecutiveReportService
             if (Mailer::send(trim($addr), $subject, $html)) $sent++;
         }
         return $sent > 0
-            ? "Executive-Report versendet an {$sent} Empfänger"
-            : 'Versand fehlgeschlagen — SMTP/Mail-Config prüfen';
+            ? t('Executive-Report versendet an :count Empfänger', ['count' => $sent])
+            : t('Versand fehlgeschlagen — SMTP/Mail-Config prüfen');
     }
 
     public function previewHtml(): string
@@ -130,47 +130,47 @@ class ExecutiveReportService
         $html .= '<table style="max-width:680px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.06);">';
         $html .= '<tr><td style="background:linear-gradient(135deg,#0078d4,#005a9e);color:#fff;padding:24px 28px;">';
         $html .= '<div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:.85;">' . htmlspecialchars($appName) . '</div>';
-        $html .= '<div style="font-size:22px;font-weight:700;margin-top:4px;">Executive Report — ' . htmlspecialchars($month) . '</div>';
+        $html .= '<div style="font-size:22px;font-weight:700;margin-top:4px;">' . t('Executive Report') . ' — ' . htmlspecialchars($month) . '</div>';
         $html .= '</td></tr>';
 
         // Score
         $html .= '<tr><td style="padding:24px 28px 8px;">';
         $html .= '<div style="display:inline-block;background:' . $scoreColor . ';color:#fff;padding:6px 14px;border-radius:999px;font-weight:600;font-size:13px;">';
-        $html .= 'Security-Score: ' . $score . '%';
+        $html .= t('Security-Score:') . ' ' . $score . '%';
         $html .= '</div>';
         $html .= '<p style="margin:14px 0 0;color:#475569;font-size:14px;line-height:1.5;">'
-              . 'Stand: ' . htmlspecialchars($kpis['_generated_at'] ?? '') . '. '
-              . ($score >= 75 ? 'Der Tenant befindet sich in einem soliden Sicherheitszustand.'
-              :  ($score >= 50 ? 'Der Tenant hat Verbesserungspotenzial in mehreren Bereichen.'
-                              :  'Der Tenant weist kritische Sicherheitslücken auf — sofortiger Handlungsbedarf.'))
+              . t('Stand:') . ' ' . htmlspecialchars($kpis['_generated_at'] ?? '') . '. '
+              . ($score >= 75 ? t('Der Tenant befindet sich in einem soliden Sicherheitszustand.')
+              :  ($score >= 50 ? t('Der Tenant hat Verbesserungspotenzial in mehreren Bereichen.')
+                              :  t('Der Tenant weist kritische Sicherheitslücken auf — sofortiger Handlungsbedarf.')))
               . '</p>';
         $html .= '</td></tr>';
 
         // KPI tiles
         $html .= '<tr><td style="padding:20px 28px 8px;">';
-        $html .= '<div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Tenant-Kennzahlen</div>';
+        $html .= '<div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">' . t('Tenant-Kennzahlen') . '</div>';
         $html .= '<table style="width:100%;border-collapse:separate;border-spacing:6px;"><tr>';
-        $html .= $tile('Benutzer',   $m['total_users']   ?? null, ($m['enabled_users'] ?? 0) . ' aktiv');
-        $html .= $tile('Geräte',     $m['total_devices'] ?? null, ($s['non_compliant'] ?? 0) . ' nicht konform');
-        $html .= $tile('MFA-Quote',  ($s['mfa_pct'] ?? null) !== null ? $s['mfa_pct'] . '%' : null, '', (($s['mfa_pct'] ?? 0) >= 80 ? '#16a34a' : '#d97706'));
-        $html .= $tile('CA-Policies',$s['ca_enabled']   ?? null, ($s['ca_report_only'] ?? 0) . ' report-only');
+        $html .= $tile(t('Benutzer'),   $m['total_users']   ?? null, ($m['enabled_users'] ?? 0) . ' ' . t('aktiv'));
+        $html .= $tile(t('Geräte'),     $m['total_devices'] ?? null, ($s['non_compliant'] ?? 0) . ' ' . t('nicht konform'));
+        $html .= $tile(t('MFA-Quote'),  ($s['mfa_pct'] ?? null) !== null ? $s['mfa_pct'] . '%' : null, '', (($s['mfa_pct'] ?? 0) >= 80 ? '#16a34a' : '#d97706'));
+        $html .= $tile(t('CA-Policies'),$s['ca_enabled']   ?? null, ($s['ca_report_only'] ?? 0) . ' report-only');
         $html .= '</tr></table>';
         $html .= '</td></tr>';
 
         // Risk row
         $html .= '<tr><td style="padding:8px 28px;">';
         $html .= '<table style="width:100%;border-collapse:separate;border-spacing:6px;"><tr>';
-        $html .= $tile('Risikobenutzer', $m['risky_users']        ?? null, '', ($m['risky_users'] ?? 0) > 0 ? '#dc2626' : '#16a34a');
-        $html .= $tile('Defender Alerts',$s['unresolved_alerts']  ?? null, 'offen/in Bearbeitung', ($s['unresolved_alerts'] ?? 0) > 0 ? '#dc2626' : '#16a34a');
-        $html .= $tile('Gastbenutzer',   $x['guests']             ?? null);
-        $html .= $tile('Lizenz-SKUs',    $m['license_products']   ?? null);
+        $html .= $tile(t('Risikobenutzer'), $m['risky_users']        ?? null, '', ($m['risky_users'] ?? 0) > 0 ? '#dc2626' : '#16a34a');
+        $html .= $tile(t('Defender Alerts'),$s['unresolved_alerts']  ?? null, t('offen/in Bearbeitung'), ($s['unresolved_alerts'] ?? 0) > 0 ? '#dc2626' : '#16a34a');
+        $html .= $tile(t('Gastbenutzer'),   $x['guests']             ?? null);
+        $html .= $tile(t('Lizenz-SKUs'),    $m['license_products']   ?? null);
         $html .= '</tr></table>';
         $html .= '</td></tr>';
 
         // Top fails
         if (!empty($kpis['top_fails'])) {
             $html .= '<tr><td style="padding:20px 28px 8px;">';
-            $html .= '<div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Top-Findings — fehlgeschlagene Posture-Checks</div>';
+            $html .= '<div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">' . t('Top-Findings — fehlgeschlagene Posture-Checks') . '</div>';
             $html .= '<ul style="margin:0;padding-left:20px;color:#334155;font-size:14px;line-height:1.7;">';
             foreach ($kpis['top_fails'] as $f) {
                 $html .= '<li>' . htmlspecialchars($f) . '</li>';
@@ -182,11 +182,11 @@ class ExecutiveReportService
         // Footer
         $baseUrl = Config::getInstance()->get('app_base_url', '');
         $html .= '<tr><td style="padding:20px 28px 28px;color:#64748b;font-size:12px;border-top:1px solid #e2e8f0;">';
-        $html .= 'Diese Mail wurde automatisch erzeugt. Den vollständigen Bericht inkl. Empfehlungen finden Sie ';
+        $html .= t('Diese Mail wurde automatisch erzeugt. Den vollständigen Bericht inkl. Empfehlungen finden Sie ');
         if ($baseUrl) {
-            $html .= '<a href="' . htmlspecialchars(rtrim($baseUrl, '/')) . '/ai" style="color:#0078d4;">im KI-Sicherheitsberater</a>.';
+            $html .= '<a href="' . htmlspecialchars(rtrim($baseUrl, '/')) . '/ai" style="color:#0078d4;">' . t('im KI-Sicherheitsberater') . '</a>.';
         } else {
-            $html .= 'im Tool unter /ai.';
+            $html .= t('im Tool unter /ai.');
         }
         $html .= '</td></tr>';
 

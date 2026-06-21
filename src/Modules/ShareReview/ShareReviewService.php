@@ -135,10 +135,8 @@ class ShareReviewService
         array_unshift(
             $log,
             $this->scanTruncated
-                ? "WARNUNG: Abdeckung UNVOLLSTÄNDIG — aus Performance-Gründen wurden nur die "
-                  . "ersten {$maxSites} Sites (je 3 Bibliotheken, Ordnertiefe 3, max. 15 Unterordner/Ebene) "
-                  . "gescannt. Nicht gefundene Freigaben bedeuten NICHT, dass keine existieren."
-                : "Abdeckung vollständig im Rahmen der Limits ({$maxSites} Sites, Ordnertiefe 3)."
+                ? t('WARNUNG: Abdeckung UNVOLLSTÄNDIG — aus Performance-Gründen wurden nur die ersten :max Sites (je 3 Bibliotheken, Ordnertiefe 3, max. 15 Unterordner/Ebene) gescannt. Nicht gefundene Freigaben bedeuten NICHT, dass keine existieren.', ['max' => $maxSites])
+                : t('Abdeckung vollständig im Rahmen der Limits (:max Sites, Ordnertiefe 3).', ['max' => $maxSites])
         );
 
         return $log;
@@ -258,7 +256,7 @@ class ShareReviewService
             $body = $this->buildEmailBody($share, $link, $autoDate);
             $appName = Config::getInstance()->get('app_name', 'M365 Tenant Tool');
 
-            $subject = "[{$appName}] Freigabe-Überprüfung erforderlich: {$share['item_name']}";
+            $subject = "[{$appName}] " . t('Freigabe-Überprüfung erforderlich: :item', ['item' => $share['item_name']]);
 
             if (Mailer::send($share['owner_email'], $subject, $body)) {
                 $autoRevoke = date('Y-m-d H:i:s', strtotime("+{$this->graceDays} days"));
@@ -400,7 +398,7 @@ class ShareReviewService
         // surface the error instead of falsely reporting success.
         $err = $this->revokeGraphPermission($share);
         if ($err !== null) {
-            throw new \RuntimeException('Widerruf fehlgeschlagen: ' . $err);
+            throw new \RuntimeException(t('Widerruf fehlgeschlagen: ') . $err);
         }
 
         DB::execute(
@@ -420,7 +418,7 @@ class ShareReviewService
         $autoDate = date('d.m.Y', strtotime("+{$this->graceDays} days"));
         $body     = $this->buildEmailBody($share, $link, $autoDate);
         $appName  = Config::getInstance()->get('app_name', 'M365 Tenant Tool');
-        $subject  = "[{$appName}] Erinnerung: Freigabe-Überprüfung: {$share['item_name']}";
+        $subject  = "[{$appName}] " . t('Erinnerung: Freigabe-Überprüfung: :item', ['item' => $share['item_name']]);
 
         $ok = Mailer::send($share['owner_email'], $subject, $body);
         if ($ok) {
@@ -441,35 +439,46 @@ class ShareReviewService
         $itemName = htmlspecialchars($share['item_name'] ?? '');
         $siteName = htmlspecialchars($share['site_name'] ?? '');
         $scope    = match($share['share_scope']) {
-            'anonymous'    => '🌐 <strong>Öffentlich (Anyone-Link)</strong> — kein Login erforderlich',
-            'users'        => '👥 <strong>Externe Benutzer</strong>',
-            'organization' => '🏢 <strong>Organisation</strong>',
+            'anonymous'    => t('🌐 <strong>Öffentlich (Anyone-Link)</strong> — kein Login erforderlich'),
+            'users'        => t('👥 <strong>Externe Benutzer</strong>'),
+            'organization' => t('🏢 <strong>Organisation</strong>'),
             default        => htmlspecialchars($share['share_scope']),
         };
 
-        $itemUrl = $share['item_url'] ? "<a href=\"{$share['item_url']}\" style=\"color:#0078d4;\">Datei öffnen</a>" : '';
+        $openFile = t('Datei öffnen');
+        $itemUrl = $share['item_url'] ? "<a href=\"{$share['item_url']}\" style=\"color:#0078d4;\">{$openFile}</a>" : '';
+
+        $lblFileFolder = t('Datei/Ordner');
+        $lblLocation   = t('Standort');
+        $lblShareType  = t('Freigabe-Typ');
+        $intro         = t('Sie haben eine Datei oder einen Ordner freigegeben, die regelmäßig überprüft werden muss:');
+        $stillNeeded   = t('Ist diese Freigabe noch notwendig?');
+        $clickLink     = t('Klicken Sie auf den folgenden Link, geben Sie eine kurze Begründung ein und bestätigen Sie — die Freigabe wird dann automatisch um :days Tage verlängert:', ['days' => $share['review_interval_days']]);
+        $confirmBtn    = t('✓ Freigabe bestätigen');
+        $autoRevokeNote = t('⚠️ Wenn Sie nicht bis zum :date reagieren, wird die Freigabe automatisch widerrufen.', ['date' => $autoDate]);
+        $oneTimeNote   = t('Dieser Link ist personalisiert und kann nur einmal verwendet werden.');
 
         $body = "
-            <p>Sie haben eine Datei oder einen Ordner freigegeben, die regelmäßig überprüft werden muss:</p>
+            <p>{$intro}</p>
             <table style=\"border-collapse:collapse;width:100%;margin:16px 0;\">
-                <tr><td style=\"padding:8px;background:#f9fafb;font-weight:600;width:140px;\">Datei/Ordner</td><td style=\"padding:8px;\">{$itemName} {$itemUrl}</td></tr>
-                <tr><td style=\"padding:8px;background:#f9fafb;font-weight:600;\">Standort</td><td style=\"padding:8px;\">{$siteName}</td></tr>
-                <tr><td style=\"padding:8px;background:#f9fafb;font-weight:600;\">Freigabe-Typ</td><td style=\"padding:8px;\">{$scope}</td></tr>
+                <tr><td style=\"padding:8px;background:#f9fafb;font-weight:600;width:140px;\">{$lblFileFolder}</td><td style=\"padding:8px;\">{$itemName} {$itemUrl}</td></tr>
+                <tr><td style=\"padding:8px;background:#f9fafb;font-weight:600;\">{$lblLocation}</td><td style=\"padding:8px;\">{$siteName}</td></tr>
+                <tr><td style=\"padding:8px;background:#f9fafb;font-weight:600;\">{$lblShareType}</td><td style=\"padding:8px;\">{$scope}</td></tr>
             </table>
-            <p><strong>Ist diese Freigabe noch notwendig?</strong></p>
-            <p>Klicken Sie auf den folgenden Link, geben Sie eine kurze Begründung ein und bestätigen Sie — die Freigabe wird dann automatisch um {$share['review_interval_days']} Tage verlängert:</p>
+            <p><strong>{$stillNeeded}</strong></p>
+            <p>{$clickLink}</p>
             <p style=\"text-align:center;margin:24px 0;\">
                 <a href=\"{$link}\" style=\"background:#0078d4;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;\">
-                    ✓ Freigabe bestätigen
+                    {$confirmBtn}
                 </a>
             </p>
             <p style=\"color:#6b7280;font-size:13px;\">
-                ⚠️ Wenn Sie nicht bis zum <strong>{$autoDate}</strong> reagieren, wird die Freigabe automatisch widerrufen.<br>
-                Dieser Link ist personalisiert und kann nur einmal verwendet werden.
+                {$autoRevokeNote}<br>
+                {$oneTimeNote}
             </p>
         ";
 
-        return Mailer::alertTemplate('Freigabe-Überprüfung erforderlich', $body, $appName);
+        return Mailer::alertTemplate(t('Freigabe-Überprüfung erforderlich'), $body, $appName);
     }
 
     private function sendRevocationNotice(array $share): void
@@ -477,15 +486,19 @@ class ShareReviewService
         if (!$share['owner_email']) return;
         $appName  = Config::getInstance()->get('app_name', 'M365 Tenant Tool');
         $itemName = htmlspecialchars($share['item_name'] ?? '');
+        $intro         = t('Die folgende Freigabe wurde automatisch widerrufen, da keine Bestätigung erfolgte:');
+        $lblFileFolder = t('Datei/Ordner');
+        $lblLocation   = t('Standort');
+        $recreateNote  = t('Falls diese Freigabe weiterhin benötigt wird, erstellen Sie sie bitte erneut und wenden Sie sich an Ihren Administrator.');
         $body = "
-            <p>Die folgende Freigabe wurde automatisch widerrufen, da keine Bestätigung erfolgte:</p>
+            <p>{$intro}</p>
             <table style=\"border-collapse:collapse;width:100%;margin:16px 0;\">
-                <tr><td style=\"padding:8px;background:#f9fafb;font-weight:600;width:140px;\">Datei/Ordner</td><td style=\"padding:8px;\">{$itemName}</td></tr>
-                <tr><td style=\"padding:8px;background:#f9fafb;font-weight:600;\">Standort</td><td style=\"padding:8px;\">".htmlspecialchars($share['site_name'] ?? '')."</td></tr>
+                <tr><td style=\"padding:8px;background:#f9fafb;font-weight:600;width:140px;\">{$lblFileFolder}</td><td style=\"padding:8px;\">{$itemName}</td></tr>
+                <tr><td style=\"padding:8px;background:#f9fafb;font-weight:600;\">{$lblLocation}</td><td style=\"padding:8px;\">".htmlspecialchars($share['site_name'] ?? '')."</td></tr>
             </table>
-            <p style=\"color:#6b7280;font-size:13px;\">Falls diese Freigabe weiterhin benötigt wird, erstellen Sie sie bitte erneut und wenden Sie sich an Ihren Administrator.</p>
+            <p style=\"color:#6b7280;font-size:13px;\">{$recreateNote}</p>
         ";
-        $subject = "[{$appName}] Freigabe automatisch widerrufen: {$itemName}";
-        Mailer::send($share['owner_email'], $subject, Mailer::alertTemplate('Freigabe widerrufen', $body, $appName));
+        $subject = "[{$appName}] " . t('Freigabe automatisch widerrufen: :item', ['item' => $itemName]);
+        Mailer::send($share['owner_email'], $subject, Mailer::alertTemplate(t('Freigabe widerrufen'), $body, $appName));
     }
 }

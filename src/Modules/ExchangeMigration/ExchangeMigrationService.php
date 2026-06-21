@@ -188,7 +188,7 @@ class ExchangeMigrationService
     {
         $records = PublicDns::lookup($domain, 'MX'); // entries: "<pref> <target>"
         if (empty($records)) {
-            return ['status' => 'missing', 'label' => 'Kein MX-Eintrag gefunden', 'records' => []];
+            return ['status' => 'missing', 'label' => t('Kein MX-Eintrag gefunden'), 'records' => []];
         }
 
         $targets = array_map(function ($d) {
@@ -198,9 +198,9 @@ class ExchangeMigrationService
         $o365 = array_filter($targets, fn($t) => str_ends_with($t, '.mail.protection.outlook.com'));
 
         if (!empty($o365)) {
-            return ['status' => 'ok', 'label' => 'Zeigt auf Exchange Online', 'records' => $targets];
+            return ['status' => 'ok', 'label' => t('Zeigt auf Exchange Online'), 'records' => $targets];
         }
-        return ['status' => 'warning', 'label' => 'MX zeigt noch nicht auf Exchange Online', 'records' => $targets];
+        return ['status' => 'warning', 'label' => t('MX zeigt noch nicht auf Exchange Online'), 'records' => $targets];
     }
 
     private function checkSpf(string $domain): array
@@ -211,14 +211,14 @@ class ExchangeMigrationService
             $all     = $this->extractSpfAll($txt);
             if ($hasO365) {
                 $status = ($all === '-all' || $all === '~all') ? 'ok' : 'warning';
-                $label  = 'SPF enthält Exchange Online' . ($all ? " ($all)" : '');
+                $label  = t('SPF enthält Exchange Online') . ($all ? " ($all)" : '');
             } else {
                 $status = 'warning';
-                $label  = 'SPF gefunden, aber ohne Exchange Online (spf.protection.outlook.com fehlt)';
+                $label  = t('SPF gefunden, aber ohne Exchange Online (spf.protection.outlook.com fehlt)');
             }
             return ['status' => $status, 'label' => $label, 'record' => $txt];
         }
-        return ['status' => 'missing', 'label' => 'Kein SPF-Eintrag gefunden', 'record' => null];
+        return ['status' => 'missing', 'label' => t('Kein SPF-Eintrag gefunden'), 'record' => null];
     }
 
     private function checkDkim(string $domain): array
@@ -252,13 +252,13 @@ class ExchangeMigrationService
 
         if ($anyO365) {
             $status = 'ok';
-            $label  = 'DKIM für Exchange Online konfiguriert';
+            $label  = t('DKIM für Exchange Online konfiguriert');
         } elseif ($anyFound) {
             $status = 'warning';
-            $label  = 'DKIM-Einträge gefunden, aber nicht Exchange Online zugeordnet';
+            $label  = t('DKIM-Einträge gefunden, aber nicht Exchange Online zugeordnet');
         } else {
             $status = 'missing';
-            $label  = 'Keine DKIM-Selektoren gefunden (selector1/selector2)';
+            $label  = t('Keine DKIM-Selektoren gefunden (selector1/selector2)');
         }
 
         return ['status' => $status, 'label' => $label, 'selectors' => $results];
@@ -277,11 +277,11 @@ class ExchangeMigrationService
                 'reject', 'quarantine' => 'ok',
                 default => 'warning',
             };
-            $label = "DMARC gefunden (p={$policy}" . ($hasRua ? ', rua vorhanden' : '') . ')';
+            $label = t('DMARC gefunden (p=:policy', ['policy' => $policy]) . ($hasRua ? t(', rua vorhanden') : '') . ')';
             return ['status' => $status, 'label' => $label, 'record' => $txt, 'policy' => $policy];
         }
 
-        return ['status' => 'missing', 'label' => 'Kein DMARC-Eintrag gefunden', 'record' => null, 'policy' => null];
+        return ['status' => 'missing', 'label' => t('Kein DMARC-Eintrag gefunden'), 'record' => null, 'policy' => null];
     }
 
     private function checkAutodiscover(string $domain): array
@@ -296,8 +296,8 @@ class ExchangeMigrationService
             return [
                 'status' => $isO365 ? 'ok' : 'warning',
                 'label'  => $isO365
-                    ? 'Autodiscover → autodiscover.outlook.com (CNAME)'
-                    : "Autodiscover CNAME zeigt auf: {$target}",
+                    ? t('Autodiscover → autodiscover.outlook.com (CNAME)')
+                    : t('Autodiscover CNAME zeigt auf: :target', ['target' => $target]),
                 'type'   => 'CNAME',
                 'target' => $cname[0],
             ];
@@ -312,8 +312,8 @@ class ExchangeMigrationService
             return [
                 'status' => $isO365 ? 'ok' : 'warning',
                 'label'  => $isO365
-                    ? 'Autodiscover SRV → Outlook.com'
-                    : "Autodiscover SRV zeigt auf: {$target}",
+                    ? t('Autodiscover SRV → Outlook.com')
+                    : t('Autodiscover SRV zeigt auf: :target', ['target' => $target]),
                 'type'   => 'SRV',
                 'target' => $target,
             ];
@@ -324,13 +324,13 @@ class ExchangeMigrationService
         if (!empty($a)) {
             return [
                 'status' => 'warning',
-                'label'  => 'Autodiscover hat A-Eintrag (möglicherweise on-prem: ' . $a[0] . ')',
+                'label'  => t('Autodiscover hat A-Eintrag (möglicherweise on-prem: :ip)', ['ip' => $a[0]]),
                 'type'   => 'A',
                 'target' => $a[0],
             ];
         }
 
-        return ['status' => 'missing', 'label' => 'Kein Autodiscover-Eintrag gefunden', 'type' => null, 'target' => null];
+        return ['status' => 'missing', 'label' => t('Kein Autodiscover-Eintrag gefunden'), 'type' => null, 'target' => null];
     }
 
     private function extractSpfAll(string $txt): string
@@ -402,16 +402,16 @@ class ExchangeMigrationService
                 $points += 25;
             } elseif ($pct >= 80) {
                 $points += 18;
-                $issues[] = "Lizenz-Abdeckung {$pct}% — nicht alle Benutzer haben Exchange Online";
+                $issues[] = t('Lizenz-Abdeckung :pct% — nicht alle Benutzer haben Exchange Online', ['pct' => $pct]);
             } elseif ($pct >= 50) {
                 $points += 10;
-                $issues[] = "Lizenz-Abdeckung {$pct}% — viele Benutzer ohne Exchange Online";
+                $issues[] = t('Lizenz-Abdeckung :pct% — viele Benutzer ohne Exchange Online', ['pct' => $pct]);
             } else {
                 $points += 3;
-                $issues[] = "Lizenz-Abdeckung {$pct}% — zu wenige Exchange-Online-Lizenzen";
+                $issues[] = t('Lizenz-Abdeckung :pct% — zu wenige Exchange-Online-Lizenzen', ['pct' => $pct]);
             }
         } else {
-            $issues[] = 'Keine Exchange-Online-Lizenzen gefunden';
+            $issues[] = t('Keine Exchange-Online-Lizenzen gefunden');
         }
 
         // Per-domain checks (up to 75 pts split across DNS checks)
@@ -432,27 +432,27 @@ class ExchangeMigrationService
                         $label   = $dc[$check]['label'] ?? $check;
                         $issues[] = "[{$domain}] {$label}";
                     } else {
-                        $label   = $dc[$check]['label'] ?? "{$check} fehlt";
+                        $label   = $dc[$check]['label'] ?? t(':check fehlt', ['check' => $check]);
                         $issues[] = "[{$domain}] {$label}";
                     }
                 }
             }
         } else {
             $maxPoints += 75;
-            $issues[] = 'Keine verifizierten Domains (außer onmicrosoft.com) gefunden';
+            $issues[] = t('Keine verifizierten Domains (außer onmicrosoft.com) gefunden');
         }
 
         $pct = $maxPoints > 0 ? (int)round(($points / $maxPoints) * 100) : 0;
 
         if ($pct >= 85) {
             $readiness = 'ready';
-            $readinessLabel = 'Bereit für Migration';
+            $readinessLabel = t('Bereit für Migration');
         } elseif ($pct >= 55) {
             $readiness = 'partial';
-            $readinessLabel = 'Teilweise bereit';
+            $readinessLabel = t('Teilweise bereit');
         } else {
             $readiness = 'notready';
-            $readinessLabel = 'Nicht bereit';
+            $readinessLabel = t('Nicht bereit');
         }
 
         return [

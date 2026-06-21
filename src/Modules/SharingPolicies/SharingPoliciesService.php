@@ -85,20 +85,20 @@ class SharingPoliciesService
     public static function sharingCapabilityLabel(string $capability): array
     {
         return match($capability) {
-            'Disabled'                        => ['label' => 'Nur intern', 'class' => 'badge-secondary', 'icon' => 'lock-fill'],
-            'ExistingExternalUserSharingOnly' => ['label' => 'Nur bestehende Gäste', 'class' => 'badge-warning', 'icon' => 'person-check'],
-            'ExternalUserSharingOnly'         => ['label' => 'Neue & bestehende Gäste', 'class' => 'badge-info', 'icon' => 'person-plus'],
-            'ExternalUserAndGuestSharing'     => ['label' => 'Alle (inkl. Anyone-Links)', 'class' => 'badge-danger', 'icon' => 'globe'],
-            default                           => ['label' => $capability ?: 'Unbekannt', 'class' => '', 'icon' => 'question-circle'],
+            'Disabled'                        => ['label' => t('Nur intern'), 'class' => 'badge-secondary', 'icon' => 'lock-fill'],
+            'ExistingExternalUserSharingOnly' => ['label' => t('Nur bestehende Gäste'), 'class' => 'badge-warning', 'icon' => 'person-check'],
+            'ExternalUserSharingOnly'         => ['label' => t('Neue & bestehende Gäste'), 'class' => 'badge-info', 'icon' => 'person-plus'],
+            'ExternalUserAndGuestSharing'     => ['label' => t('Alle (inkl. Anyone-Links)'), 'class' => 'badge-danger', 'icon' => 'globe'],
+            default                           => ['label' => $capability ?: t('Unbekannt'), 'class' => '', 'icon' => 'question-circle'],
         };
     }
 
     public static function linkTypeLabel(string $type): string
     {
         return match($type) {
-            'anonymous'    => '🌐 Jeder mit dem Link (anonym)',
-            'direct'       => '👤 Nur eingeladen Personen',
-            'organization' => '🏢 Personen in der Organisation',
+            'anonymous'    => t('🌐 Jeder mit dem Link (anonym)'),
+            'direct'       => t('👤 Nur eingeladen Personen'),
+            'organization' => t('🏢 Personen in der Organisation'),
             default        => $type ?: '—',
         };
     }
@@ -106,8 +106,8 @@ class SharingPoliciesService
     public static function permissionLabel(string $perm): string
     {
         return match($perm) {
-            'view' => '👁 Anzeigen',
-            'edit' => '✏️ Bearbeiten',
+            'view' => t('👁 Anzeigen'),
+            'edit' => t('✏️ Bearbeiten'),
             default => $perm ?: '—',
         };
     }

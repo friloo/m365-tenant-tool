@@ -29,7 +29,7 @@ class SecurityController
         $newState = trim($_POST['state'] ?? '');
 
         if (!in_array($newState, $allowedStates, true)) {
-            Session::flash('error', 'Ungültiger Status.');
+            Session::flash('error', t('Ungültiger Status.'));
             Redirect::to('/hardening');
             return;
         }
@@ -37,9 +37,9 @@ class SecurityController
         try {
             $service = app_service(SecurityService::class);
             $service->toggleCaPolicy($policyId, $newState);
-            Session::flash('success', 'Richtlinie aktualisiert.');
+            Session::flash('success', t('Richtlinie aktualisiert.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: :msg', ['msg' => $e->getMessage()]));
         }
 
         Redirect::to('/hardening');

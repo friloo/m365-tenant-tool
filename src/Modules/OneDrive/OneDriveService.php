@@ -220,9 +220,7 @@ class OneDriveService
         // auth — not this tool's Graph token. Fail with a clear, actionable error
         // instead of issuing the unsupported call.
         throw new \RuntimeException(
-            'OneDrive-Sites können nicht über die Graph-API gelöscht werden. '
-            . 'Bitte im SharePoint Admin Center → „Aktive Sites" nach der OneDrive-URL des '
-            . 'Benutzers suchen und dort löschen (alternativ per PnP PowerShell: Remove-SPOSite).'
+            t('OneDrive-Sites können nicht über die Graph-API gelöscht werden. Bitte im SharePoint Admin Center → „Aktive Sites" nach der OneDrive-URL des Benutzers suchen und dort löschen (alternativ per PnP PowerShell: Remove-SPOSite).')
         );
     }
 }

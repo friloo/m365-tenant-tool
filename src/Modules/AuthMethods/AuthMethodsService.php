@@ -45,9 +45,9 @@ class AuthMethodsService
                 'id'        => $id,
                 'state'     => $c['state'] ?? 'default',
                 'odataType' => $c['@odata.type'] ?? '',
-                'label'     => $meta['label'],
+                'label'     => $meta['label'] !== $id ? t($meta['label']) : $meta['label'],
                 'recommend' => $meta['recommend'],
-                'note'      => $meta['note'],
+                'note'      => $meta['note'] !== '' ? t($meta['note']) : $meta['note'],
             ];
         }
         return $out;

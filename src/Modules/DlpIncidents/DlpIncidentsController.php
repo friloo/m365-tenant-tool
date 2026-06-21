@@ -30,7 +30,7 @@ class DlpIncidentsController
         }
 
         View::render('dlpincidents/index', [
-            'pageTitle' => 'DLP-Vorfälle',
+            'pageTitle' => t('DLP-Vorfälle'),
             'incidents' => $incidents,
             'summary'   => $summary,
             'days'      => $days,

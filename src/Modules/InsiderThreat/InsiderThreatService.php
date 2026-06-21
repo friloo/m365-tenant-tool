@@ -116,10 +116,10 @@ class InsiderThreatService
                 $pct = $u['off_hours'] / $u['signin_count'];
                 if ($pct >= 0.5) {
                     $score += 25;
-                    $signals[] = sprintf('%d %% Anmeldungen außerhalb Bürozeiten', (int)round($pct * 100));
+                    $signals[] = t(':pct % Anmeldungen außerhalb Bürozeiten', ['pct' => (int)round($pct * 100)]);
                 } elseif ($pct >= 0.25) {
                     $score += 10;
-                    $signals[] = sprintf('Erhöhter Off-Hours-Anteil (%d %%)', (int)round($pct * 100));
+                    $signals[] = t('Erhöhter Off-Hours-Anteil (:pct %)', ['pct' => (int)round($pct * 100)]);
                 }
             }
             // Länder
@@ -128,28 +128,28 @@ class InsiderThreatService
             $countryNames = array_keys($countries);
             if (count($countryNames) > 3) {
                 $score += 15;
-                $signals[] = sprintf('Anmeldungen aus %d verschiedenen Ländern', count($countryNames));
+                $signals[] = t('Anmeldungen aus :count verschiedenen Ländern', ['count' => count($countryNames)]);
             }
             // Mass-Bursts
             if ($u['mass_downloads'] > 0) {
                 $score += min(40, 15 * $u['mass_downloads']);
-                $signals[] = sprintf('%dx Massen-Download (≥ 50 Files in 1h)', $u['mass_downloads']);
+                $signals[] = t(':count x Massen-Download (≥ 50 Files in 1h)', ['count' => $u['mass_downloads']]);
             }
             if ($u['mass_sends'] > 0) {
                 $score += min(40, 20 * $u['mass_sends']);
-                $signals[] = sprintf('%dx Mass-Mail-Send (≥ 100 Mails in 1h)', $u['mass_sends']);
+                $signals[] = t(':count x Mass-Mail-Send (≥ 100 Mails in 1h)', ['count' => $u['mass_sends']]);
             }
             // Lösch-/Share-Aktivität
             if ($u['delete_events'] >= 100) {
                 $score += 25;
-                $signals[] = sprintf('%d Lösch-Events', $u['delete_events']);
+                $signals[] = t(':count Lösch-Events', ['count' => $u['delete_events']]);
             } elseif ($u['delete_events'] >= 30) {
                 $score += 10;
-                $signals[] = sprintf('%d Lösch-Events', $u['delete_events']);
+                $signals[] = t(':count Lösch-Events', ['count' => $u['delete_events']]);
             }
             if ($u['share_events'] >= 50) {
                 $score += 20;
-                $signals[] = sprintf('%d Sharing-Events', $u['share_events']);
+                $signals[] = t(':count Sharing-Events', ['count' => $u['share_events']]);
             }
 
             $u['risk_score']    = min(100, $score);

@@ -27,7 +27,7 @@ class NamedLocationsController
         $classified = $service->classify($all);
 
         View::render('namedlocations/index', [
-            'pageTitle'        => 'Named Locations (Vertrauenswürdige Standorte)',
+            'pageTitle'        => t('Named Locations (Vertrauenswürdige Standorte)'),
             'ipLocations'      => $classified['ip'],
             'countryLocations' => $classified['country'],
             'lastError'        => $service->getLastError(),
@@ -45,15 +45,15 @@ class NamedLocationsController
         $unknown  = !empty($_POST['include_unknown']);
 
         if ($name === '' || empty($codes)) {
-            Session::flash('error', 'Name und mindestens ein Ländercode sind erforderlich.');
+            Session::flash('error', t('Name und mindestens ein Ländercode sind erforderlich.'));
             Redirect::to('/namedlocations');
         }
 
         try {
             app_service(NamedLocationsService::class)->createCountryLocation($name, $codes, $unknown);
-            Session::flash('success', 'Länder-Standort "' . $name . '" wurde angelegt.');
+            Session::flash('success', t('Länder-Standort ":name" wurde angelegt.', ['name' => $name]));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/namedlocations');
     }
@@ -66,15 +66,15 @@ class NamedLocationsController
         $trusted = !empty($_POST['trusted']);
 
         if ($name === '' || empty($cidrs)) {
-            Session::flash('error', 'Name und mindestens ein IP-Bereich sind erforderlich.');
+            Session::flash('error', t('Name und mindestens ein IP-Bereich sind erforderlich.'));
             Redirect::to('/namedlocations');
         }
 
         try {
             app_service(NamedLocationsService::class)->createIpLocation($name, $cidrs, $trusted);
-            Session::flash('success', 'IP-Standort "' . $name . '" wurde angelegt.');
+            Session::flash('success', t('IP-Standort ":name" wurde angelegt.', ['name' => $name]));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/namedlocations');
     }
@@ -84,9 +84,9 @@ class NamedLocationsController
         LocalAuth::requireAdmin();
         try {
             app_service(NamedLocationsService::class)->delete($id);
-            Session::flash('success', 'Standort wurde gelöscht.');
+            Session::flash('success', t('Standort wurde gelöscht.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Löschen fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Löschen fehlgeschlagen: ') . $e->getMessage());
         }
         Redirect::to('/namedlocations');
     }

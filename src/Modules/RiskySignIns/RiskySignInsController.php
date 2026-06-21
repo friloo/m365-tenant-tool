@@ -30,18 +30,13 @@ class RiskySignInsController
         $diagnostic = null;
         $err = $usersErr ?: $detectionsErr;
         if ($err && ($err['status'] ?? 0) === 403) {
-            $diagnostic = 'Microsoft Graph hat die Anfrage abgelehnt (403). '
-                . 'Bitte sicherstellen, dass die App-Registrierung die Berechtigung '
-                . 'IdentityRiskyUser.Read.All und IdentityRiskEvent.Read.All hat. '
-                . 'Details: ' . ($err['message'] ?? '');
+            $diagnostic = t('Microsoft Graph hat die Anfrage abgelehnt (403). Bitte sicherstellen, dass die App-Registrierung die Berechtigung IdentityRiskyUser.Read.All und IdentityRiskEvent.Read.All hat. Details: :details', ['details' => ($err['message'] ?? '')]);
         } elseif (empty($riskyUsers) && empty($detections) && empty($signIns)) {
-            $diagnostic = 'Es wurden keine Risiko-Daten gefunden. '
-                . 'Hinweis: Microsoft Entra ID Protection erfordert eine Azure AD Premium P2-Lizenz — '
-                . 'ohne P2 sind die Endpunkte zwar erreichbar, liefern aber leere Listen.';
+            $diagnostic = t('Es wurden keine Risiko-Daten gefunden. Hinweis: Microsoft Entra ID Protection erfordert eine Azure AD Premium P2-Lizenz — ohne P2 sind die Endpunkte zwar erreichbar, liefern aber leere Listen.');
         }
 
         View::render('riskysignins/index', [
-            'pageTitle'       => 'Risiko-Anmeldungen',
+            'pageTitle'       => t('Risiko-Anmeldungen'),
             'riskyUsers'      => $riskyUsers,
             'detections'      => $detections,
             'signIns'         => $signIns,
@@ -60,9 +55,9 @@ class RiskySignInsController
         LocalAuth::requireAdmin();
         try {
             app_service(RiskySignInsService::class)->confirmCompromised($userId);
-            Session::flash('success', 'Benutzer als kompromittiert bestätigt.');
+            Session::flash('success', t('Benutzer als kompromittiert bestätigt.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: :msg', ['msg' => $e->getMessage()]));
         }
         Redirect::to('/riskysignins');
     }
@@ -72,9 +67,9 @@ class RiskySignInsController
         LocalAuth::requireAdmin();
         try {
             app_service(RiskySignInsService::class)->dismissRisk($userId);
-            Session::flash('success', 'Risiko für Benutzer zurückgesetzt.');
+            Session::flash('success', t('Risiko für Benutzer zurückgesetzt.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: :msg', ['msg' => $e->getMessage()]));
         }
         Redirect::to('/riskysignins');
     }

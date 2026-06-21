@@ -189,7 +189,7 @@ foreach ($byCategory as $cat => $items) {
         <div class="card-header-custom">
             <span style="display:flex;align-items:center;gap:10px;">
                 <i class="bi <?= $icon ?>" style="font-size:16px;color:#0078d4;"></i>
-                <strong><?= $e($category) ?></strong>
+                <strong><?= te($category) ?></strong>
                 <span style="font-size:12px;color:#9ca3af;"><?= count($categoryChecks) ?> <?= te('Prüfungen') ?></span>
             </span>
             <span style="display:flex;align-items:center;gap:8px;">

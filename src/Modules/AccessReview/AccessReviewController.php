@@ -28,7 +28,7 @@ class AccessReviewController
         }
 
         View::render('accessreview/index', [
-            'pageTitle'   => 'Zugriffsprüfungen',
+            'pageTitle'   => t('Zugriffsprüfungen'),
             'reviews'     => $reviews,
             'openCount'   => $openCount,
             'totalGuests' => $totalGuests,
@@ -46,16 +46,16 @@ class AccessReviewController
 
         $title = trim($_POST['title'] ?? '');
         if ($title === '') {
-            $title = 'Gastbenutzer-Review ' . date('d.m.Y');
+            $title = t('Gastbenutzer-Review :date', ['date' => date('d.m.Y')]);
         }
 
         try {
             $service  = app_service(AccessReviewService::class);
             $reviewId = $service->createGuestReview($title, LocalAuth::username());
-            Session::flash('success', 'Prüfung "' . $title . '" wurde erstellt.');
+            Session::flash('success', t('Prüfung ":title" wurde erstellt.', ['title' => $title]));
             Redirect::to('/accessreview/' . $reviewId);
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler beim Erstellen der Prüfung: ' . $e->getMessage());
+            Session::flash('error', t('Fehler beim Erstellen der Prüfung: :msg', ['msg' => $e->getMessage()]));
             Redirect::to('/accessreview');
         }
     }
@@ -72,7 +72,7 @@ class AccessReviewController
 
         if (!$review) {
             http_response_code(404);
-            die('<h2>404 — Prüfung nicht gefunden</h2>');
+            die('<h2>' . t('404 — Prüfung nicht gefunden') . '</h2>');
         }
 
         View::render('accessreview/show', [
@@ -92,7 +92,7 @@ class AccessReviewController
 
         $decision = $_POST['decision'] ?? '';
         if (!in_array($decision, ['approve', 'revoke', 'pending'], true)) {
-            Session::flash('error', 'Ungültige Entscheidung.');
+            Session::flash('error', t('Ungültige Entscheidung.'));
             Redirect::to('/accessreview/' . $id);
             return;
         }
@@ -104,7 +104,7 @@ class AccessReviewController
                 LocalAuth::username()
             );
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: :msg', ['msg' => $e->getMessage()]));
         }
 
         Redirect::to('/accessreview/' . $id);
@@ -119,7 +119,7 @@ class AccessReviewController
 
         $decision = $_POST['decision'] ?? '';
         if (!in_array($decision, ['approve', 'revoke'], true)) {
-            Session::flash('error', 'Ungültige Entscheidung.');
+            Session::flash('error', t('Ungültige Entscheidung.'));
             Redirect::to('/accessreview/' . $id);
             return;
         }
@@ -130,10 +130,10 @@ class AccessReviewController
                 $decision,
                 LocalAuth::username()
             );
-            $label = $decision === 'approve' ? 'genehmigt' : 'widerrufen';
-            Session::flash('success', 'Alle ausstehenden Einträge wurden ' . $label . '.');
+            $label = $decision === 'approve' ? t('genehmigt') : t('widerrufen');
+            Session::flash('success', t('Alle ausstehenden Einträge wurden :label.', ['label' => $label]));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: :msg', ['msg' => $e->getMessage()]));
         }
 
         Redirect::to('/accessreview/' . $id);
@@ -149,17 +149,17 @@ class AccessReviewController
         try {
             $result = app_service(AccessReviewService::class)->applyAndClose((int)$id);
 
-            $msg = 'Prüfung abgeschlossen.';
+            $msg = t('Prüfung abgeschlossen.');
             if (!empty($result['revoked'])) {
-                $msg .= ' ' . count($result['revoked']) . ' Konto(s) deaktiviert.';
+                $msg .= ' ' . t(':count Konto(s) deaktiviert.', ['count' => count($result['revoked'])]);
             }
             if (!empty($result['errors'])) {
-                $msg .= ' ' . count($result['errors']) . ' Fehler aufgetreten.';
+                $msg .= ' ' . t(':count Fehler aufgetreten.', ['count' => count($result['errors'])]);
                 Session::flash('error', implode(' | ', $result['errors']));
             }
             Session::flash('success', $msg);
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler beim Anwenden: ' . $e->getMessage());
+            Session::flash('error', t('Fehler beim Anwenden: :msg', ['msg' => $e->getMessage()]));
         }
 
         Redirect::to('/accessreview/' . $id);

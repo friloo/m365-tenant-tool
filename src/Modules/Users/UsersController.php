@@ -22,14 +22,14 @@ class UsersController
 
         $users = []; $mfaMap = []; $skus = []; $loadErr = null;
         try { $users = $service->getAll(); }
-        catch (\Throwable $e) { $loadErr = 'Benutzer: ' . $e->getMessage(); error_log('Users index users: ' . $e->getMessage()); }
+        catch (\Throwable $e) { $loadErr = t('Benutzer: ') . $e->getMessage(); error_log('Users index users: ' . $e->getMessage()); }
         try { $mfaMap = $service->getMfaStatus(); }
         catch (\Throwable $e) { error_log('Users index mfa: ' . $e->getMessage()); }
         try { $skus = app_service(LicensesService::class)->getSkus(); }
         catch (\Throwable $e) { error_log('Users index skus: ' . $e->getMessage()); }
 
         View::render('users/index', [
-            'pageTitle' => 'Benutzer',
+            'pageTitle' => t('Benutzer'),
             'users'     => $users,
             'mfaMap'    => $mfaMap,
             'skus'      => $skus,
@@ -45,7 +45,7 @@ class UsersController
 
         $user = null; $groups = []; $skus = []; $signIns = []; $loadErr = null;
         try { $user = $service->getOne($id); }
-        catch (\Throwable $e) { $loadErr = 'Benutzer nicht ladbar: ' . $e->getMessage(); error_log('Users show: ' . $e->getMessage()); }
+        catch (\Throwable $e) { $loadErr = t('Benutzer nicht ladbar: ') . $e->getMessage(); error_log('Users show: ' . $e->getMessage()); }
         try { $groups = $service->getMemberOf($id); }
         catch (\Throwable $e) { error_log('Users show groups: ' . $e->getMessage()); }
         try { $skus = app_service(LicensesService::class)->getSkus(); }
@@ -55,7 +55,7 @@ class UsersController
         $notes = (new UserNotesService())->getForUser($id);
 
         View::render('users/detail', [
-            'pageTitle' => $user['displayName'] ?? 'Benutzer',
+            'pageTitle' => $user['displayName'] ?? t('Benutzer'),
             'user'      => $user,
             'groups'    => $groups,
             'skus'      => $skus,
@@ -73,7 +73,7 @@ class UsersController
         $user    = $service->getOne($id);
 
         View::render('users/edit', [
-            'pageTitle' => 'Benutzer bearbeiten',
+            'pageTitle' => t('Benutzer bearbeiten'),
             'user'      => $user,
             'flash'     => Session::getFlash('success'),
             'error'     => Session::getFlash('error'),
@@ -93,9 +93,9 @@ class UsersController
         try {
             app_service(UsersService::class)->updateUser($id, $data);
             AppAudit::log('user_updated', 'users', "User ID: {$id}");
-            Session::flash('success', 'Benutzer erfolgreich aktualisiert.');
+            Session::flash('success', t('Benutzer erfolgreich aktualisiert.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            Session::flash('error', t('Fehler beim Speichern: ') . $e->getMessage());
         }
         Redirect::to('/users/' . $id);
     }
@@ -111,18 +111,18 @@ class UsersController
         if (!empty($_POST['revoke_sessions'])) {
             try {
                 $off->revokeSessions($id);
-                $completed[] = 'Sitzungen beendet';
+                $completed[] = t('Sitzungen beendet');
             } catch (\Throwable $e) {
-                Session::flash('error', 'Sitzungen beenden fehlgeschlagen: ' . $e->getMessage());
+                Session::flash('error', t('Sitzungen beenden fehlgeschlagen: ') . $e->getMessage());
             }
         }
 
         if (!empty($_POST['remove_licenses'])) {
             try {
                 $off->removeAllLicenses($id);
-                $completed[] = 'Lizenzen entzogen';
+                $completed[] = t('Lizenzen entzogen');
             } catch (\Throwable $e) {
-                Session::flash('error', 'Lizenzen entziehen fehlgeschlagen: ' . $e->getMessage());
+                Session::flash('error', t('Lizenzen entziehen fehlgeschlagen: ') . $e->getMessage());
             }
         }
 
@@ -131,9 +131,9 @@ class UsersController
             if ($forwardTo !== '') {
                 try {
                     $mbx->setForwarding($id, $forwardTo);
-                    $completed[] = 'E-Mail-Weiterleitung gesetzt';
+                    $completed[] = t('E-Mail-Weiterleitung gesetzt');
                 } catch (\Throwable $e) {
-                    Session::flash('error', 'Weiterleitung fehlgeschlagen: ' . $e->getMessage());
+                    Session::flash('error', t('Weiterleitung fehlgeschlagen: ') . $e->getMessage());
                 }
             }
         }
@@ -143,16 +143,16 @@ class UsersController
             if ($oooMessage !== '') {
                 try {
                     $mbx->setAutoReply($id, $oooMessage, true);
-                    $completed[] = 'Abwesenheitsnotiz aktiviert';
+                    $completed[] = t('Abwesenheitsnotiz aktiviert');
                 } catch (\Throwable $e) {
-                    Session::flash('error', 'Abwesenheitsnotiz fehlgeschlagen: ' . $e->getMessage());
+                    Session::flash('error', t('Abwesenheitsnotiz fehlgeschlagen: ') . $e->getMessage());
                 }
             }
         }
 
         if (!empty($completed)) {
             AppAudit::log('offboarding', 'users', "User ID: {$id}, actions: " . implode(',', $completed));
-            Session::flash('success', 'Cloud-Cleanup abgeschlossen: ' . implode(', ', $completed) . '.');
+            Session::flash('success', t('Cloud-Cleanup abgeschlossen: ') . implode(', ', $completed) . '.');
         }
         Redirect::to('/users/' . $id);
     }
@@ -164,12 +164,12 @@ class UsersController
         $mfaMap = app_service(UsersService::class)->getMfaStatus();
 
         CsvExporter::download('benutzer_' . date('Ymd') . '.csv',
-            ['Name', 'UPN', 'Status', 'MFA', 'Abteilung', 'Titel', 'Lizenzen', 'Erstellt', 'Letzter Login'],
+            [t('Name'), t('UPN'), t('Status'), t('MFA'), t('Abteilung'), t('Titel'), t('Lizenzen'), t('Erstellt'), t('Letzter Login')],
             array_map(fn($u) => [
                 $u['displayName'] ?? '',
                 $u['userPrincipalName'] ?? '',
-                ($u['accountEnabled'] ?? true) ? 'Aktiv' : 'Deaktiviert',
-                ($mfaMap[$u['userPrincipalName'] ?? '']['mfaRegistered'] ?? false) ? 'Ja' : 'Nein',
+                ($u['accountEnabled'] ?? true) ? t('Aktiv') : t('Deaktiviert'),
+                ($mfaMap[$u['userPrincipalName'] ?? '']['mfaRegistered'] ?? false) ? t('Ja') : t('Nein'),
                 $u['department'] ?? '',
                 $u['jobTitle'] ?? '',
                 count($u['assignedLicenses'] ?? []),
@@ -188,9 +188,9 @@ class UsersController
         try {
             $service->setAccountEnabled($id, !$current);
             AppAudit::log('user_' . ($current ? 'disabled' : 'enabled'), 'users', "User ID: {$id}");
-            Session::flash('success', ($current ? 'Deaktiviert: ' : 'Aktiviert: ') . ($user['displayName'] ?? $id));
+            Session::flash('success', ($current ? t('Deaktiviert: ') : t('Aktiviert: ')) . ($user['displayName'] ?? $id));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/users/' . $id);
     }
@@ -201,9 +201,9 @@ class UsersController
         try {
             app_service(UsersService::class)->resetMfa($id);
             AppAudit::log('mfa_reset', 'users', "User ID: {$id}");
-            Session::flash('success', 'MFA-Methoden wurden zurückgesetzt.');
+            Session::flash('success', t('MFA-Methoden wurden zurückgesetzt.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'MFA-Reset fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('MFA-Reset fehlgeschlagen: ') . $e->getMessage());
         }
         Redirect::to('/users/' . $id);
     }
@@ -214,9 +214,9 @@ class UsersController
         try {
             $pw = app_service(UsersService::class)->resetPassword($id);
             AppAudit::log('password_reset', 'users', "User ID: {$id}");
-            Session::flash('success', 'Temporäres Passwort gesetzt (Änderung bei nächster Anmeldung erforderlich): ' . $pw);
+            Session::flash('success', t('Temporäres Passwort gesetzt (Änderung bei nächster Anmeldung erforderlich): ') . $pw);
         } catch (\Throwable $e) {
-            Session::flash('error', 'Passwort-Reset fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Passwort-Reset fehlgeschlagen: ') . $e->getMessage());
         }
         Redirect::to('/users/' . $id);
     }
@@ -229,9 +229,9 @@ class UsersController
         try {
             app_service(UsersService::class)->assignLicense($id, $skuId);
             AppAudit::log('license_assign', 'users', "User: {$id}");
-            Session::flash('success', 'Lizenz zugewiesen.');
+            Session::flash('success', t('Lizenz zugewiesen.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Lizenz-Zuweisung fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Lizenz-Zuweisung fehlgeschlagen: ') . $e->getMessage());
         }
         Redirect::to('/users/' . $id);
     }
@@ -244,9 +244,9 @@ class UsersController
         try {
             app_service(UsersService::class)->removeLicense($id, $skuId);
             AppAudit::log('license_remove', 'users', "User: {$id}");
-            Session::flash('success', 'Lizenz entfernt.');
+            Session::flash('success', t('Lizenz entfernt.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Lizenz-Entfernung fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Lizenz-Entfernung fehlgeschlagen: ') . $e->getMessage());
         }
         Redirect::to('/users/' . $id);
     }
@@ -257,7 +257,7 @@ class UsersController
         $note = trim($_POST['note'] ?? '');
         if ($note !== '') {
             (new UserNotesService())->add($id, $note, LocalAuth::username());
-            Session::flash('success', 'Notiz gespeichert.');
+            Session::flash('success', t('Notiz gespeichert.'));
         }
         Redirect::to("/users/{$id}");
     }
@@ -266,7 +266,7 @@ class UsersController
     {
         LocalAuth::requireAdmin();
         (new UserNotesService())->delete((int)$noteId, $id);
-        Session::flash('success', 'Notiz gelöscht.');
+        Session::flash('success', t('Notiz gelöscht.'));
         Redirect::to("/users/{$id}");
     }
 
@@ -281,14 +281,14 @@ class UsersController
 
         $validActions = ['disable', 'enable', 'reset_mfa', 'assign_license', 'remove_license'];
         if (empty($userIds) || !in_array($action, $validActions, true)) {
-            Session::flash('error', 'Ungültige Bulk-Aktion oder keine Benutzer ausgewählt.');
+            Session::flash('error', t('Ungültige Bulk-Aktion oder keine Benutzer ausgewählt.'));
             Redirect::to('/users');
         }
 
         if ($action === 'assign_license') {
             $skuId = trim($_POST['sku_id'] ?? '');
             if (!$skuId) {
-                Session::flash('error', 'Keine Lizenz ausgewählt.');
+                Session::flash('error', t('Keine Lizenz ausgewählt.'));
                 Redirect::to('/users');
             }
             $graph  = app_graph();
@@ -305,7 +305,7 @@ class UsersController
             $graph->getCache()->forget('users_all');
             AppAudit::log('bulk_assign_license', 'users', count($userIds) . " users");
             Session::flash($errors ? 'error' : 'success',
-                "{$ok} Lizenzen zugewiesen" . ($errors ? ", {$errors} Fehler." : '.'));
+                t(':ok Lizenzen zugewiesen', ['ok' => $ok]) . ($errors ? t(', :errors Fehler.', ['errors' => $errors]) : '.'));
             Redirect::to('/users');
         }
 
@@ -328,7 +328,7 @@ class UsersController
             $graph->getCache()->forget('users_all');
             AppAudit::log('bulk_remove_license', 'users', count($userIds) . " users");
             Session::flash($errors ? 'error' : 'success',
-                "{$ok} Benutzer Lizenzen entfernt" . ($errors ? ", {$errors} Fehler." : '.'));
+                t(':ok Benutzer Lizenzen entfernt', ['ok' => $ok]) . ($errors ? t(', :errors Fehler.', ['errors' => $errors]) : '.'));
             Redirect::to('/users');
         }
 
@@ -352,12 +352,12 @@ class UsersController
         AppAudit::log('bulk_' . $action, 'users', count($userIds) . " users");
 
         $label = match($action) {
-            'disable'   => 'Deaktivieren',
-            'enable'    => 'Aktivieren',
-            'reset_mfa' => 'MFA zurücksetzen',
+            'disable'   => t('Deaktivieren'),
+            'enable'    => t('Aktivieren'),
+            'reset_mfa' => t('MFA zurücksetzen'),
         };
 
-        Session::flash('success', "{$count} Benutzer zum {$label} in die Warteschlange aufgenommen — Verarbeitung durch den Cron-Job.");
+        Session::flash('success', t(':count Benutzer zum :label in die Warteschlange aufgenommen — Verarbeitung durch den Cron-Job.', ['count' => $count, 'label' => $label]));
         Redirect::to('/users');
     }
 }

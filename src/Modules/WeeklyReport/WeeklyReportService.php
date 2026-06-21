@@ -44,7 +44,7 @@ class WeeklyReportService
         $baseUrl   = rtrim($config->get('app_base_url', ''), '/');
 
         if (empty($recipient)) {
-            return 'Kein Empfänger konfiguriert';
+            return t('Kein Empfänger konfiguriert');
         }
 
         $generatedAt = date('d.m.Y H:i');
@@ -207,12 +207,12 @@ class WeeklyReportService
             'activeIncidents'   => $activeIncidents,
         ]);
 
-        $subject = '[' . $appName . '] Wöchentlicher Status-Report – ' . date('d.m.Y');
-        $html    = Mailer::alertTemplate('Wöchentlicher Status-Report', $body, $appName);
+        $subject = '[' . $appName . '] ' . t('Wöchentlicher Status-Report') . ' – ' . date('d.m.Y');
+        $html    = Mailer::alertTemplate(t('Wöchentlicher Status-Report'), $body, $appName);
 
         Mailer::send($recipient, $subject, $html);
 
-        return 'Report gesendet an ' . $recipient;
+        return t('Report gesendet an :recipient', ['recipient' => $recipient]);
     }
 
     /**
@@ -235,99 +235,125 @@ class WeeklyReportService
         $incidentsBad = is_int($d['activeIncidents'])  && $d['activeIncidents'] > 0;
         $pendingBad   = is_int($d['sharesPending'])    && $d['sharesPending'] > 0;
 
+        // Translated display labels for the HTML table (interpolated below)
+        $lCreatedAt    = t('Erstellt am');
+        $lApp          = t('App:');
+        $lArea         = t('Bereich');
+        $lMetric       = t('Kennzahl');
+        $lValue        = t('Wert');
+        $lUsers        = t('Benutzer');
+        $lActiveUsers  = t('Aktive Nutzer gesamt');
+        $lMfaReg       = t('MFA registriert');
+        $lInactive90   = t('Inaktiv > 90 Tage');
+        $lLicenses     = t('Lizenzen');
+        $lTotalBought  = t('Gesamt erworben');
+        $lConsumed     = t('Verbraucht');
+        $lFreeSlots    = t('Freie Slots');
+        $lShares       = t('Freigaben');
+        $lActive       = t('Aktiv');
+        $lPendingRev   = t('Ausstehende Reviews');
+        $lRevoked      = t('Widerrufen');
+        $lSecureScore  = t('Secure Score');
+        $lCurrentScore = t('Aktueller Score');
+        $lMaxScore     = t('Maximaler Score');
+        $lRiskyUsers   = t('Risikobenutzer');
+        $lRiskState    = t('Nutzer mit Risikostatus „atRisk"');
+        $lServiceState = t('Dienststatus');
+        $lActiveInc    = t('Aktive Incidents');
+
         $html = <<<HTML
 <p style="margin:0 0 16px; color:#374151; font-size:14px;">
-    Erstellt am <strong>{$ts}</strong> &nbsp;|&nbsp; App: <strong>{$appName}</strong>
+    {$lCreatedAt} <strong>{$ts}</strong> &nbsp;|&nbsp; {$lApp} <strong>{$appName}</strong>
 </p>
 
 <table style="width:100%; border-collapse:collapse; font-size:14px;">
     <thead>
         <tr style="background:#f3f4f6;">
-            <th style="text-align:left; padding:10px 12px; border-bottom:2px solid #e5e7eb; color:#374151;">Bereich</th>
-            <th style="text-align:left; padding:10px 12px; border-bottom:2px solid #e5e7eb; color:#374151;">Kennzahl</th>
-            <th style="text-align:right; padding:10px 12px; border-bottom:2px solid #e5e7eb; color:#374151;">Wert</th>
+            <th style="text-align:left; padding:10px 12px; border-bottom:2px solid #e5e7eb; color:#374151;">{$lArea}</th>
+            <th style="text-align:left; padding:10px 12px; border-bottom:2px solid #e5e7eb; color:#374151;">{$lMetric}</th>
+            <th style="text-align:right; padding:10px 12px; border-bottom:2px solid #e5e7eb; color:#374151;">{$lValue}</th>
         </tr>
     </thead>
     <tbody>
         <!-- Benutzer -->
         <tr style="background:#ffffff;">
             <td rowspan="3" style="padding:10px 12px; border-bottom:1px solid #e5e7eb; vertical-align:top; color:#374151; font-weight:600;">
-                👤 Benutzer
+                👤 {$lUsers}
             </td>
-            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">Aktive Nutzer gesamt</td>
+            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">{$lActiveUsers}</td>
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600;">{$e($d['usersTotal'])}</td>
         </tr>
         <tr style="background:#fafafa;">
-            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">MFA registriert</td>
+            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">{$lMfaReg}</td>
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600;">{$e($d['mfaPct'])}</td>
         </tr>
         <tr style="background:#ffffff;">
-            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">Inaktiv &gt; 90 Tage</td>
+            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">{$lInactive90}</td>
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600;">{$e($d['staleCount'])}</td>
         </tr>
 
         <!-- Lizenzen -->
         <tr style="background:#f9fafb;">
             <td rowspan="3" style="padding:10px 12px; border-bottom:1px solid #e5e7eb; vertical-align:top; color:#374151; font-weight:600;">
-                🪪 Lizenzen
+                🪪 {$lLicenses}
             </td>
-            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">Gesamt erworben</td>
+            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">{$lTotalBought}</td>
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600;">{$e($d['licTotal'])}</td>
         </tr>
         <tr style="background:#ffffff;">
-            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">Verbraucht</td>
+            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">{$lConsumed}</td>
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600;">{$e($d['licConsumed'])}</td>
         </tr>
         <tr style="background:#fafafa;">
-            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">Freie Slots</td>
+            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">{$lFreeSlots}</td>
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600;">{$e($d['licFree'])}</td>
         </tr>
 
         <!-- Freigaben -->
         <tr style="background:#f9fafb;">
             <td rowspan="3" style="padding:10px 12px; border-bottom:1px solid #e5e7eb; vertical-align:top; color:#374151; font-weight:600;">
-                🔗 Freigaben
+                🔗 {$lShares}
             </td>
-            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">Aktiv</td>
+            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">{$lActive}</td>
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600;">{$e($d['sharesActive'])}</td>
         </tr>
         <tr style="background:#ffffff;">
-            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">Ausstehende Reviews</td>
+            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">{$lPendingRev}</td>
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600;">{$warn($d['sharesPending'], $pendingBad)}</td>
         </tr>
         <tr style="background:#fafafa;">
-            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">Widerrufen</td>
+            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">{$lRevoked}</td>
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600;">{$e($d['sharesRevoked'])}</td>
         </tr>
 
         <!-- Secure Score -->
         <tr style="background:#ffffff;">
             <td rowspan="2" style="padding:10px 12px; border-bottom:1px solid #e5e7eb; vertical-align:top; color:#374151; font-weight:600;">
-                🛡 Secure Score
+                🛡 {$lSecureScore}
             </td>
-            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">Aktueller Score</td>
+            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">{$lCurrentScore}</td>
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600;">{$e($d['secureScoreCurrent'])}</td>
         </tr>
         <tr style="background:#fafafa;">
-            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">Maximaler Score</td>
+            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">{$lMaxScore}</td>
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600;">{$e($d['secureScoreMax'])}</td>
         </tr>
 
         <!-- Risikobenutzer -->
         <tr style="background:#ffffff;">
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#374151; font-weight:600;">
-                ⚠️ Risikobenutzer
+                ⚠️ {$lRiskyUsers}
             </td>
-            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">Nutzer mit Risikostatus „atRisk"</td>
+            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">{$lRiskState}</td>
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600;">{$warn($d['riskyUserCount'], $riskyBad)}</td>
         </tr>
 
         <!-- Dienststatus -->
         <tr style="background:#fafafa;">
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#374151; font-weight:600;">
-                🌐 Dienststatus
+                🌐 {$lServiceState}
             </td>
-            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">Aktive Incidents</td>
+            <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; color:#6b7280;">{$lActiveInc}</td>
             <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600;">{$warn($d['activeIncidents'], $incidentsBad)}</td>
         </tr>
     </tbody>
@@ -335,16 +361,19 @@ class WeeklyReportService
 HTML;
 
         if (!empty($d['baseUrl'])) {
+            $lOpenDashboard = t('Dashboard öffnen');
+            $lShares        = t('Freigaben');
+            $lRiskyUsers    = t('Risikobenutzer');
             $html .= <<<HTML
 
 <p style="margin:24px 0 0; font-size:13px; color:#6b7280;">
-    <a href="{$baseUrl}/dashboard" style="color:#3b82f6;">→ Dashboard öffnen</a>
+    <a href="{$baseUrl}/dashboard" style="color:#3b82f6;">→ {$lOpenDashboard}</a>
     &nbsp;|&nbsp;
     <a href="{$baseUrl}/securescore" style="color:#3b82f6;">Secure Score</a>
     &nbsp;|&nbsp;
-    <a href="{$baseUrl}/sharereview" style="color:#3b82f6;">Freigaben</a>
+    <a href="{$baseUrl}/sharereview" style="color:#3b82f6;">{$lShares}</a>
     &nbsp;|&nbsp;
-    <a href="{$baseUrl}/riskysignins" style="color:#3b82f6;">Risikobenutzer</a>
+    <a href="{$baseUrl}/riskysignins" style="color:#3b82f6;">{$lRiskyUsers}</a>
 </p>
 HTML;
         }

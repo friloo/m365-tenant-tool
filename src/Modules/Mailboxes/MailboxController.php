@@ -26,7 +26,7 @@ class MailboxController
         usort($usage, fn($a, $b) => $b['storageUsedBytes'] <=> $a['storageUsedBytes']);
 
         View::render('mailboxes/index', [
-            'pageTitle' => 'Postfächer',
+            'pageTitle' => t('Postfächer'),
             'usage'     => $usage,
             'stats'     => $stats,
             'diag'      => $diag,
@@ -43,7 +43,7 @@ class MailboxController
         $calendarPermissions = $service->getCalendarPermissions($id);
 
         View::render('mailboxes/detail', [
-            'pageTitle'           => $detail['displayName'] ?? 'Postfach',
+            'pageTitle'           => $detail['displayName'] ?? t('Postfach'),
             'detail'              => $detail,
             'folders'             => $folders,
             'calendarPermissions' => $calendarPermissions,
@@ -64,7 +64,7 @@ class MailboxController
         $alias = preg_replace('/[^a-z0-9\-]/', '', strtolower($alias));
 
         if ($displayName === '' || $alias === '') {
-            Session::flash('error', 'Anzeigename und Alias dürfen nicht leer sein.');
+            Session::flash('error', t('Anzeigename und Alias dürfen nicht leer sein.'));
             Redirect::to('/mailboxes');
             return;
         }
@@ -73,13 +73,13 @@ class MailboxController
 
         try {
             $service->createSharedMailbox($displayName, $alias, $domain);
-            Session::flash('success', "Shared Mailbox '{$displayName}' wird angelegt. Exchange Online benötigt einige Minuten zur Bereitstellung.");
+            Session::flash('success', t("Shared Mailbox ':name' wird angelegt. Exchange Online benötigt einige Minuten zur Bereitstellung.", ['name' => $displayName]));
         } catch (\Throwable $e) {
             $msg = $e->getMessage();
             if (str_contains($msg, 'Authorization') || str_contains($msg, 'Forbidden') || str_contains($msg, '403') || str_contains($msg, 'permission') || str_contains($msg, 'Permission')) {
-                Session::flash('error', 'Fehlende Berechtigung: User.ReadWrite.All ist in der Azure App nicht erteilt.');
+                Session::flash('error', t('Fehlende Berechtigung: User.ReadWrite.All ist in der Azure App nicht erteilt.'));
             } else {
-                Session::flash('error', 'Fehler beim Anlegen des Shared Mailbox: ' . $msg);
+                Session::flash('error', t('Fehler beim Anlegen des Shared Mailbox: :msg', ['msg' => $msg]));
             }
         }
 
@@ -96,17 +96,17 @@ class MailboxController
         try {
             if ($forwardTo === '') {
                 $service->removeForwarding($id);
-                Session::flash('success', 'Weiterleitung wurde entfernt.');
+                Session::flash('success', t('Weiterleitung wurde entfernt.'));
             } else {
                 $service->setForwarding($id, $forwardTo);
-                Session::flash('success', 'Weiterleitung gesetzt auf: ' . $forwardTo);
+                Session::flash('success', t('Weiterleitung gesetzt auf: :address', ['address' => $forwardTo]));
             }
         } catch (\Throwable $e) {
             $msg = $e->getMessage();
             if (str_contains($msg, 'Authorization') || str_contains($msg, 'Forbidden') || str_contains($msg, '403') || str_contains($msg, 'permission') || str_contains($msg, 'Permission')) {
-                Session::flash('error', 'Fehlende Berechtigung: MailboxSettings.ReadWrite ist in der Azure App nicht erteilt.');
+                Session::flash('error', t('Fehlende Berechtigung: MailboxSettings.ReadWrite ist in der Azure App nicht erteilt.'));
             } else {
-                Session::flash('error', 'Fehler beim Speichern der Weiterleitung: ' . $msg);
+                Session::flash('error', t('Fehler beim Speichern der Weiterleitung: :msg', ['msg' => $msg]));
             }
         }
 
@@ -123,13 +123,13 @@ class MailboxController
 
         try {
             $service->setAutoReply($id, $message, $enabled);
-            Session::flash('success', $enabled ? 'Abwesenheitsnotiz aktiviert.' : 'Abwesenheitsnotiz deaktiviert.');
+            Session::flash('success', $enabled ? t('Abwesenheitsnotiz aktiviert.') : t('Abwesenheitsnotiz deaktiviert.'));
         } catch (\Throwable $e) {
             $msg = $e->getMessage();
             if (str_contains($msg, 'Authorization') || str_contains($msg, 'Forbidden') || str_contains($msg, '403') || str_contains($msg, 'permission') || str_contains($msg, 'Permission')) {
-                Session::flash('error', 'Fehlende Berechtigung: MailboxSettings.ReadWrite ist in der Azure App nicht erteilt.');
+                Session::flash('error', t('Fehlende Berechtigung: MailboxSettings.ReadWrite ist in der Azure App nicht erteilt.'));
             } else {
-                Session::flash('error', 'Fehler beim Speichern der Abwesenheitsnotiz: ' . $msg);
+                Session::flash('error', t('Fehler beim Speichern der Abwesenheitsnotiz: :msg', ['msg' => $msg]));
             }
         }
 
@@ -162,7 +162,7 @@ class MailboxController
         }
 
         View::render('mailboxes/forwarding', [
-            'pageTitle' => 'Weiterleitungen & Regeln',
+            'pageTitle' => t('Weiterleitungen & Regeln'),
             'forwards'  => $forwards,
             'report'    => $report,
             'rulesDiag' => $rulesDiag,
@@ -181,9 +181,9 @@ class MailboxController
             $service = app_service(MailboxService::class);
             try {
                 $service->removeExternalForward($userId);
-                Session::flash('success', 'Weiterleitung entfernt.');
+                Session::flash('success', t('Weiterleitung entfernt.'));
             } catch (\Throwable $e) {
-                Session::flash('error', 'Fehler beim Entfernen der Weiterleitung: ' . $e->getMessage());
+                Session::flash('error', t('Fehler beim Entfernen der Weiterleitung: :msg', ['msg' => $e->getMessage()]));
             }
         }
 
@@ -199,14 +199,14 @@ class MailboxController
 
         CsvExporter::download(
             'externe_weiterleitungen_' . date('Ymd') . '.csv',
-            ['Anzeigename', 'UPN', 'E-Mail', 'Weiterleitungsadresse', 'Aktiviert', 'An Postfach und weiterleiten'],
+            [t('Anzeigename'), t('UPN'), t('E-Mail'), t('Weiterleitungsadresse'), t('Aktiviert'), t('An Postfach und weiterleiten')],
             array_map(fn($f) => [
                 $f['displayName'],
                 $f['userPrincipalName'],
                 $f['mail'],
                 $f['forwardingAddress'],
-                $f['forwardingEnabled'] ? 'Ja' : 'Nein',
-                $f['deliverToMailboxAndForward'] ? 'Ja' : 'Nein',
+                $f['forwardingEnabled'] ? t('Ja') : t('Nein'),
+                $f['deliverToMailboxAndForward'] ? t('Ja') : t('Nein'),
             ], $forwards)
         );
     }
@@ -225,7 +225,7 @@ class MailboxController
         $mailboxes = $service->getSharedMailboxes();
 
         View::render('mailboxes/shared', [
-            'pageTitle' => 'Freigegebene Postfächer',
+            'pageTitle' => t('Freigegebene Postfächer'),
             'mailboxes' => $mailboxes,
             'flash'     => Session::getFlash('success'),
             'error'     => Session::getFlash('error'),
@@ -242,7 +242,7 @@ class MailboxController
         $usage   = $service->getUsageSummary();
 
         CsvExporter::download('postfaecher_' . date('Ymd') . '.csv',
-            ['Anzeigename', 'UPN', 'Größe (MB)', 'Elemente', 'Gel. Elemente', 'Gel. Größe (MB)', 'Gelöscht'],
+            [t('Anzeigename'), t('UPN'), t('Größe (MB)'), t('Elemente'), t('Gel. Elemente'), t('Gel. Größe (MB)'), t('Gelöscht')],
             array_map(fn($u) => [
                 $u['displayName'],
                 $u['upn'],
@@ -250,7 +250,7 @@ class MailboxController
                 $u['itemCount'],
                 $u['deletedItemCount'],
                 number_format($u['deletedItemSizeBytes'] / (1024 ** 2), 2, '.', ''),
-                $u['isDeleted'] ? 'Ja' : 'Nein',
+                $u['isDeleted'] ? t('Ja') : t('Nein'),
             ], $usage)
         );
     }

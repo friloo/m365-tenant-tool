@@ -19,7 +19,7 @@ class OverviewController
         }
 
         View::render('overview/index', [
-            'pageTitle' => 'Modul-Übersicht',
+            'pageTitle' => t('Modul-Übersicht'),
             'groups'    => $groups,
             'total'     => $total,
         ]);

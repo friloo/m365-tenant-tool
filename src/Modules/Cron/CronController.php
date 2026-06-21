@@ -21,7 +21,7 @@ class CronController
         $queueItems = QueueWorker::recentItems(30);
 
         View::render('cron/index', [
-            'pageTitle'   => 'Cron & Automatisierung',
+            'pageTitle'   => t('Cron & Automatisierung'),
             'jobs'        => $jobs,
             'queueStats'  => $queueStats,
             'queueItems'  => $queueItems,
@@ -40,7 +40,7 @@ class CronController
 
         (new CronRunner(app_graph()))->updateJob($jobKey, $enabled, $interval);
 
-        Session::flash('success', 'Job "{' . $jobKey . '}" aktualisiert.');
+        Session::flash('success', t('Job ":jobKey" aktualisiert.', ['jobKey' => $jobKey]));
         Redirect::to('/cron');
     }
 
@@ -52,9 +52,9 @@ class CronController
         $result = (new CronRunner(app_graph()))->runJob($jobKey);
 
         if ($result['status'] === 'success') {
-            Session::flash('success', "Job ausgeführt ({$result['seconds']}s): {$result['log']}");
+            Session::flash('success', t('Job ausgeführt (:secondss): :log', ['seconds' => $result['seconds'], 'log' => $result['log']]));
         } else {
-            Session::flash('error', "Job fehlgeschlagen: {$result['log']}");
+            Session::flash('error', t('Job fehlgeschlagen: :log', ['log' => $result['log']]));
         }
         Redirect::to('/cron');
     }
@@ -64,7 +64,7 @@ class CronController
     {
         LocalAuth::requireAdmin();
         QueueDispatcher::retryFailed();
-        Session::flash('success', 'Fehlgeschlagene Jobs zurückgesetzt.');
+        Session::flash('success', t('Fehlgeschlagene Jobs zurückgesetzt.'));
         Redirect::to('/cron');
     }
 
@@ -73,7 +73,7 @@ class CronController
     {
         LocalAuth::requireAdmin();
         QueueDispatcher::pruneCompleted(0); // delete all done items
-        Session::flash('success', 'Abgeschlossene Jobs aus der Warteschlange entfernt.');
+        Session::flash('success', t('Abgeschlossene Jobs aus der Warteschlange entfernt.'));
         Redirect::to('/cron');
     }
 }

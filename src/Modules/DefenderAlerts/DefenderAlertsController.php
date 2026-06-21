@@ -22,7 +22,7 @@ class DefenderAlertsController
         $stats   = $service->getStats($alerts);
 
         View::render('defenderalerts/index', [
-            'pageTitle' => 'Defender Sicherheitswarnungen',
+            'pageTitle' => t('Defender Sicherheitswarnungen'),
             'alerts'    => $alerts,
             'stats'     => $stats,
             'service'   => $service,
@@ -38,9 +38,9 @@ class DefenderAlertsController
 
         try {
             app_service(DefenderAlertsService::class)->updateAlertStatus($alertId, 'resolved');
-            Session::flash('success', 'Warnung wurde als gelöst markiert.');
+            Session::flash('success', t('Warnung wurde als gelöst markiert.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler beim Aktualisieren der Warnung: ' . $e->getMessage());
+            Session::flash('error', t('Fehler beim Aktualisieren der Warnung: :msg', ['msg' => $e->getMessage()]));
         }
 
         Redirect::to('/defenderalerts');

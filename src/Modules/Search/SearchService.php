@@ -82,7 +82,7 @@ class SearchService
                 'type'     => 'group',
                 'icon'     => 'people',
                 'label'    => $g['displayName'] ?? '',
-                'subtitle' => 'Gruppe',
+                'subtitle' => t('Gruppe'),
                 'url'      => '/groups/' . ($g['id'] ?? ''),
                 'enabled'  => null,
             ];
@@ -103,7 +103,7 @@ class SearchService
                 'type'     => 'device',
                 'icon'     => 'laptop',
                 'label'    => $d['deviceName'] ?? '',
-                'subtitle' => $d['operatingSystem'] ?? 'Gerät',
+                'subtitle' => $d['operatingSystem'] ?? t('Gerät'),
                 'url'      => '/devices/' . ($d['id'] ?? ''),
                 'enabled'  => null,
             ];

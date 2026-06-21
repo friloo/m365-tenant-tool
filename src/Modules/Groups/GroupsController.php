@@ -17,10 +17,10 @@ class GroupsController
 
         $groups = []; $loadErr = null;
         try { $groups = $service->getAll(); }
-        catch (\Throwable $e) { $loadErr = 'Gruppen nicht ladbar: ' . $e->getMessage(); error_log('Groups index: ' . $e->getMessage()); }
+        catch (\Throwable $e) { $loadErr = t('Gruppen nicht ladbar: ') . $e->getMessage(); error_log('Groups index: ' . $e->getMessage()); }
 
         View::render('groups/index', [
-            'pageTitle' => 'Gruppen & Teams',
+            'pageTitle' => t('Gruppen & Teams'),
             'groups'    => $groups,
             'error'     => Session::getFlash('error') ?: $loadErr,
         ]);
@@ -33,14 +33,14 @@ class GroupsController
 
         $group = null; $members = []; $owners = []; $loadErr = null;
         try { $group = $service->getOne($id); }
-        catch (\Throwable $e) { $loadErr = 'Gruppe nicht ladbar: ' . $e->getMessage(); error_log('Groups show: ' . $e->getMessage()); }
+        catch (\Throwable $e) { $loadErr = t('Gruppe nicht ladbar: ') . $e->getMessage(); error_log('Groups show: ' . $e->getMessage()); }
         try { $members = $service->getMembers($id); }
         catch (\Throwable $e) { error_log('Groups show members: ' . $e->getMessage()); }
         try { $owners = $service->getOwners($id); }
         catch (\Throwable $e) { error_log('Groups show owners: ' . $e->getMessage()); }
 
         View::render('groups/detail', [
-            'pageTitle' => $group['displayName'] ?? 'Gruppe',
+            'pageTitle' => $group['displayName'] ?? t('Gruppe'),
             'group'     => $group,
             'members'   => $members,
             'owners'    => $owners,
@@ -56,9 +56,9 @@ class GroupsController
         if (!$userId) { Redirect::to('/groups/' . $id); }
         try {
             app_service(GroupsService::class)->addMember($id, $userId);
-            Session::flash('success', 'Mitglied hinzugefügt.');
+            Session::flash('success', t('Mitglied hinzugefügt.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/groups/' . $id);
     }
@@ -68,9 +68,9 @@ class GroupsController
         LocalAuth::require();
         try {
             app_service(GroupsService::class)->removeMember($groupId, $userId);
-            Session::flash('success', 'Mitglied entfernt.');
+            Session::flash('success', t('Mitglied entfernt.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/groups/' . $groupId);
     }
@@ -84,7 +84,7 @@ class GroupsController
         $mailNickname = trim($_POST['mailNickname'] ?? '');
 
         if ($displayName === '') {
-            Session::flash('error', 'Anzeigename darf nicht leer sein.');
+            Session::flash('error', t('Anzeigename darf nicht leer sein.'));
             Redirect::to('/groups');
         }
 
@@ -96,9 +96,9 @@ class GroupsController
                 false,
                 $mailNickname
             );
-            Session::flash('success', 'Gruppe „' . $group['displayName'] . '" wurde erstellt.');
+            Session::flash('success', t('Gruppe „:name" wurde erstellt.', ['name' => $group['displayName']]));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler beim Erstellen: ' . $e->getMessage());
+            Session::flash('error', t('Fehler beim Erstellen: ') . $e->getMessage());
         }
         Redirect::to('/groups');
     }
@@ -108,9 +108,9 @@ class GroupsController
         LocalAuth::requireAdmin();
         try {
             app_service(GroupsService::class)->deleteGroup($id);
-            Session::flash('success', 'Gruppe wurde gelöscht.');
+            Session::flash('success', t('Gruppe wurde gelöscht.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler beim Löschen: ' . $e->getMessage());
+            Session::flash('error', t('Fehler beim Löschen: ') . $e->getMessage());
         }
         Redirect::to('/groups');
     }
@@ -122,9 +122,9 @@ class GroupsController
         if (!$userId) { Redirect::to('/groups/' . $id); }
         try {
             app_service(GroupsService::class)->addOwner($id, $userId);
-            Session::flash('success', 'Besitzer hinzugefügt.');
+            Session::flash('success', t('Besitzer hinzugefügt.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/groups/' . $id);
     }
@@ -134,9 +134,9 @@ class GroupsController
         LocalAuth::requireAdmin();
         try {
             app_service(GroupsService::class)->removeOwner($id, $userId);
-            Session::flash('success', 'Besitzer entfernt.');
+            Session::flash('success', t('Besitzer entfernt.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: ') . $e->getMessage());
         }
         Redirect::to('/groups/' . $id);
     }
@@ -146,7 +146,7 @@ class GroupsController
         LocalAuth::require();
         $groups = app_service(GroupsService::class)->getAll();
         CsvExporter::download('gruppen_' . date('Ymd') . '.csv',
-            ['Name', 'Typ', 'E-Mail', 'Erstellt'],
+            [t('Name'), t('Typ'), t('E-Mail'), t('Erstellt')],
             array_map(fn($g) => [
                 $g['displayName'] ?? '',
                 GroupsService::getType($g),
@@ -169,7 +169,7 @@ class GroupsController
         $groups = $service->getInactiveGroups($days);
 
         View::render('groups/inactive', [
-            'pageTitle' => 'Inaktive Gruppen',
+            'pageTitle' => t('Inaktive Gruppen'),
             'groups'    => $groups,
             'days'      => $days,
         ]);
@@ -182,7 +182,7 @@ class GroupsController
         $groups = app_service(GroupsService::class)->getInactiveGroups($days);
 
         CsvExporter::download('inaktive-gruppen.csv',
-            ['Gruppe', 'Besitzer', 'Letzte Aktivität', 'Tage inaktiv', 'Mitglieder', 'Externe', 'Exchange E-Mails', 'SharePoint Dateien'],
+            [t('Gruppe'), t('Besitzer'), t('Letzte Aktivität'), t('Tage inaktiv'), t('Mitglieder'), t('Externe'), t('Exchange E-Mails'), t('SharePoint Dateien')],
             array_map(fn($row) => [
                 $row['group_name'],
                 $row['owner'],

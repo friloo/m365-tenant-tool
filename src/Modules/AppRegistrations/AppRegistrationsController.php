@@ -32,7 +32,7 @@ class AppRegistrationsController
         });
 
         View::render('appregistrations/index', [
-            'pageTitle'          => 'App-Registrierungen',
+            'pageTitle'          => t('App-Registrierungen'),
             'apps'               => $apps,
             'servicePrincipals'  => $servicePrincipals,
             'highRiskApps'       => $highRiskApps,
@@ -52,7 +52,7 @@ class AppRegistrationsController
         $error   = Session::getFlash('error');
 
         View::render('appregistrations/detail', [
-            'pageTitle' => $detail['displayName'] ?? 'App-Details',
+            'pageTitle' => $detail['displayName'] ?? t('App-Details'),
             'detail'    => $detail,
             'flash'     => $flash,
             'error'     => $error,
@@ -63,16 +63,16 @@ class AppRegistrationsController
     {
         LocalAuth::requireAdmin();
 
-        $displayName  = trim($_POST['secret_name'] ?? 'Neues Secret');
+        $displayName  = trim($_POST['secret_name'] ?? t('Neues Secret'));
         $expiryMonths = min(24, max(1, (int)($_POST['expiry_months'] ?? 12)));
 
         try {
             $service = app_service(AppRegistrationsService::class);
             $result  = $service->addSecret($id, $displayName, $expiryMonths);
             Session::flash('new_secret', $result['secretText'] ?? '');
-            Session::flash('success', 'Secret erstellt. Kopiere den Wert jetzt — er wird nicht erneut angezeigt.');
+            Session::flash('success', t('Secret erstellt. Kopiere den Wert jetzt — er wird nicht erneut angezeigt.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: :error', ['error' => $e->getMessage()]));
         }
 
         Redirect::to('/appregistrations/' . $id);
@@ -87,9 +87,9 @@ class AppRegistrationsController
         try {
             $service = app_service(AppRegistrationsService::class);
             $service->deleteSecret($id, $keyId);
-            Session::flash('success', 'Secret gelöscht.');
+            Session::flash('success', t('Secret gelöscht.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Fehler: ' . $e->getMessage());
+            Session::flash('error', t('Fehler: :error', ['error' => $e->getMessage()]));
         }
 
         Redirect::to('/appregistrations/' . $id);

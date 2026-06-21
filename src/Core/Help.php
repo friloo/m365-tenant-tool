@@ -196,8 +196,8 @@ class Help
         if ($entry === null) {
             return '';
         }
-        $title = $entry['title'] ?? '';
-        $body  = $entry['body'];
+        $title = isset($entry['title']) && $entry['title'] !== '' ? t($entry['title']) : '';
+        $body  = t($entry['body']);
         $html  = ($title !== '' ? '<strong>' . htmlspecialchars($title) . '</strong><br>' : '')
                . nl2br(htmlspecialchars($body));
         $safe  = htmlspecialchars($html, ENT_QUOTES);
@@ -215,13 +215,13 @@ class Help
     public static function text(string $key): string
     {
         $entry = self::$catalogue[$key] ?? null;
-        return $entry === null ? '' : $entry['body'];
+        return $entry === null ? '' : t($entry['body']);
     }
 
     public static function title(string $key): string
     {
         $entry = self::$catalogue[$key] ?? null;
-        return $entry === null ? '' : ($entry['title'] ?? '');
+        return $entry === null || !isset($entry['title']) ? '' : t($entry['title']);
     }
 
     /**

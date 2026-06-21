@@ -27,7 +27,7 @@ class EdiscoveryController
         $closedCount = count(array_filter($cases, fn($c) => ($c['status'] ?? '') === 'closed'));
 
         View::render('ediscovery/index', [
-            'pageTitle'   => 'eDiscovery-Fälle',
+            'pageTitle'   => t('eDiscovery-Fälle'),
             'cases'       => $cases,
             'openCount'   => $openCount,
             'closedCount' => $closedCount,

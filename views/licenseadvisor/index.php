@@ -100,7 +100,7 @@ $fmtPrice = function ($val) {
                             <div class="flex-grow-1">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <label class="form-check-label fw-medium" for="crit_<?= $e($key) ?>">
-                                        <?= $e($def['label']) ?>
+                                        <?= te($def['label']) ?>
                                     </label>
                                     <div class="form-check form-switch mb-0">
                                         <input class="form-check-input" type="checkbox"
@@ -258,7 +258,7 @@ $fmtPrice = function ($val) {
                                             <?php if (isset($criteriaMap[$criterionKey])): ?>
                                                 <span class="badge-success badge-pill" style="font-size:11px;">
                                                     <i class="bi <?= $e($criteriaIcons[$criterionKey] ?? 'bi-check') ?> me-1"></i>
-                                                    <?= $e($criteriaMap[$criterionKey]['label']) ?>
+                                                    <?= te($criteriaMap[$criterionKey]['label']) ?>
                                                 </span>
                                             <?php endif; ?>
                                         <?php endforeach; ?>
@@ -337,7 +337,7 @@ $fmtPrice = function ($val) {
                                         <?php if (isset($criteriaMap[$criterionKey])): ?>
                                             <span class="badge-info badge-pill" style="font-size:11px;">
                                                 <i class="bi <?= $e($criteriaIcons[$criterionKey] ?? 'bi-check') ?> me-1"></i>
-                                                <?= $e($criteriaMap[$criterionKey]['label']) ?>
+                                                <?= te($criteriaMap[$criterionKey]['label']) ?>
                                             </span>
                                         <?php endif; ?>
                                     <?php endforeach; ?>
@@ -436,7 +436,7 @@ $gapUsers = array_merge($uncovered, $noLicense);
                                                 <?php if (isset($criteriaMap[$mk])): ?>
                                                     <span class="badge-danger badge-pill" style="font-size:11px;">
                                                         <i class="bi <?= $e($criteriaIcons[$mk] ?? 'bi-x') ?> me-1"></i>
-                                                        <?= $e($criteriaMap[$mk]['label']) ?>
+                                                        <?= te($criteriaMap[$mk]['label']) ?>
                                                     </span>
                                                 <?php endif; ?>
                                             <?php endforeach; ?>

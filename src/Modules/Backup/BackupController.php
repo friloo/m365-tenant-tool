@@ -43,7 +43,7 @@ class BackupController
         $health = $this->assessHealth($data);
 
         View::render('backup/index', [
-            'pageTitle' => 'Backup-Status (3rd-Party)',
+            'pageTitle' => t('Backup-Status (3rd-Party)'),
             'data'      => $data,
             'health'    => $health,
             'flash'     => Session::getFlash('success'),
@@ -68,7 +68,7 @@ class BackupController
         $config->set('backup_restore_tested',     trim($_POST['restore_tested']     ?? ''));
         $config->set('backup_notes',              trim($_POST['notes']              ?? ''));
 
-        Session::flash('success', 'Backup-Konfiguration gespeichert.');
+        Session::flash('success', t('Backup-Konfiguration gespeichert.'));
         Redirect::to('/backup');
     }
 
@@ -80,34 +80,34 @@ class BackupController
     {
         $issues = [];
         if (empty($data['provider'])) {
-            $issues[] = ['severity' => 'critical', 'msg' => 'Kein Backup-Anbieter eingetragen — M365-Daten haben keine echte Wiederherstellung über die Microsoft-Recycle-Bin-Frist hinaus (30-93 Tage).'];
+            $issues[] = ['severity' => 'critical', 'msg' => t('Kein Backup-Anbieter eingetragen — M365-Daten haben keine echte Wiederherstellung über die Microsoft-Recycle-Bin-Frist hinaus (30-93 Tage).')];
         } else {
             // Coverage
             $coverage = $data['covers_mail'] + $data['covers_onedrive'] + $data['covers_sp'] + $data['covers_teams'];
-            if ($coverage === 0) $issues[] = ['severity' => 'high',  'msg' => 'Backup-Anbieter eingetragen, aber keine Workloads markiert — Coverage unbekannt.'];
-            elseif ($coverage < 3) $issues[] = ['severity' => 'medium', 'msg' => 'Nicht alle M365-Workloads (Mail, OneDrive, SharePoint, Teams) gesichert.'];
+            if ($coverage === 0) $issues[] = ['severity' => 'high',  'msg' => t('Backup-Anbieter eingetragen, aber keine Workloads markiert — Coverage unbekannt.')];
+            elseif ($coverage < 3) $issues[] = ['severity' => 'medium', 'msg' => t('Nicht alle M365-Workloads (Mail, OneDrive, SharePoint, Teams) gesichert.')];
 
             // Last run
             if (empty($data['last_run'])) {
-                $issues[] = ['severity' => 'high', 'msg' => 'Kein Datum für letzten Backup-Lauf eingetragen.'];
+                $issues[] = ['severity' => 'high', 'msg' => t('Kein Datum für letzten Backup-Lauf eingetragen.')];
             } else {
                 $age = (time() - strtotime($data['last_run'])) / 86400;
-                if ($age > 7)       $issues[] = ['severity' => 'high',   'msg' => 'Letzter Backup-Lauf vor ' . (int)$age . ' Tagen — sollte täglich laufen.'];
-                elseif ($age > 2)   $issues[] = ['severity' => 'medium', 'msg' => 'Letzter Backup-Lauf vor ' . (int)$age . ' Tagen.'];
+                if ($age > 7)       $issues[] = ['severity' => 'high',   'msg' => t('Letzter Backup-Lauf vor :days Tagen — sollte täglich laufen.', ['days' => (int)$age])];
+                elseif ($age > 2)   $issues[] = ['severity' => 'medium', 'msg' => t('Letzter Backup-Lauf vor :days Tagen.', ['days' => (int)$age])];
             }
             if ($data['last_run_status'] !== '' && strtolower($data['last_run_status']) !== 'success') {
-                $issues[] = ['severity' => 'critical', 'msg' => 'Letzter Backup-Lauf war nicht erfolgreich: ' . $data['last_run_status']];
+                $issues[] = ['severity' => 'critical', 'msg' => t('Letzter Backup-Lauf war nicht erfolgreich: :status', ['status' => $data['last_run_status']])];
             }
             if ($data['retention_days'] === 0) {
-                $issues[] = ['severity' => 'medium', 'msg' => 'Aufbewahrungsfrist nicht dokumentiert.'];
+                $issues[] = ['severity' => 'medium', 'msg' => t('Aufbewahrungsfrist nicht dokumentiert.')];
             } elseif ($data['retention_days'] < 90) {
-                $issues[] = ['severity' => 'medium', 'msg' => 'Aufbewahrung ' . $data['retention_days'] . ' Tage — empfohlen mindestens 90, bei DSGVO-Pflicht oft 7 Jahre.'];
+                $issues[] = ['severity' => 'medium', 'msg' => t('Aufbewahrung :days Tage — empfohlen mindestens 90, bei DSGVO-Pflicht oft 7 Jahre.', ['days' => $data['retention_days']])];
             }
             if (empty($data['restore_tested'])) {
-                $issues[] = ['severity' => 'high', 'msg' => 'Restore-Test nicht dokumentiert — ein nie getesteter Backup ist ein unbekannter Backup.'];
+                $issues[] = ['severity' => 'high', 'msg' => t('Restore-Test nicht dokumentiert — ein nie getesteter Backup ist ein unbekannter Backup.')];
             } else {
                 $tested = (time() - strtotime($data['restore_tested'])) / 86400;
-                if ($tested > 365) $issues[] = ['severity' => 'medium', 'msg' => 'Letzter Restore-Test vor mehr als einem Jahr.'];
+                if ($tested > 365) $issues[] = ['severity' => 'medium', 'msg' => t('Letzter Restore-Test vor mehr als einem Jahr.')];
             }
         }
 

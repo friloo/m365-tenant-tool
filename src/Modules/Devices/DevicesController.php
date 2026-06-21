@@ -26,7 +26,7 @@ class DevicesController
         $stats = $service->getStats($devices);
 
         View::render('devices/index', [
-            'pageTitle' => 'Geräte',
+            'pageTitle' => t('Geräte'),
             'devices'   => $devices,
             'stats'     => $stats,
             'flash'     => Session::getFlash('success'),
@@ -44,7 +44,7 @@ class DevicesController
         $bitlockerKeys = $service->getBitLockerKeys($detail['azureADDeviceId'] ?? '');
 
         View::render('devices/detail', [
-            'pageTitle'     => $detail['deviceName'] ?? 'Gerät',
+            'pageTitle'     => $detail['deviceName'] ?? t('Gerät'),
             'detail'        => $detail,
             'bitlockerKeys' => $bitlockerKeys,
             'flash'         => Session::getFlash('success'),
@@ -57,17 +57,15 @@ class DevicesController
         LocalAuth::require();
         try {
             app_service(DevicesService::class)->syncDevice($id);
-            Session::flash('success', 'Synchronisation angefordert. Das Gerät wird sich beim nächsten Check-In aktualisieren.');
+            Session::flash('success', t('Synchronisation angefordert. Das Gerät wird sich beim nächsten Check-In aktualisieren.'));
         } catch (\Throwable $e) {
             $msg = $e->getMessage();
             if (str_contains($msg, 'PrivilegedOperations') || str_contains($msg, 'not authorized')) {
                 Session::flash('error',
-                    'Synchronisation fehlgeschlagen: Fehlende Berechtigung <strong>DeviceManagementManagedDevices.PrivilegedOperations.All</strong>. ' .
-                    'Bitte in Azure AD → App-Registrierungen → deine App → API-Berechtigungen hinzufügen und Admin-Consent erteilen. ' .
-                    '<a href="https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/CallAnAPI" target="_blank" rel="noopener noreferrer">Azure AD öffnen →</a>'
+                    t('Synchronisation fehlgeschlagen: Fehlende Berechtigung <strong>DeviceManagementManagedDevices.PrivilegedOperations.All</strong>. Bitte in Azure AD → App-Registrierungen → deine App → API-Berechtigungen hinzufügen und Admin-Consent erteilen. <a href=":url" target="_blank" rel="noopener noreferrer">Azure AD öffnen →</a>', ['url' => 'https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/CallAnAPI'])
                 );
             } else {
-                Session::flash('error', 'Synchronisation fehlgeschlagen: ' . $msg);
+                Session::flash('error', t('Synchronisation fehlgeschlagen: :msg', ['msg' => $msg]));
             }
         }
         Redirect::to('/devices/' . $id);
@@ -78,9 +76,9 @@ class DevicesController
         LocalAuth::requireAdmin();
         try {
             app_service(DevicesService::class)->retireDevice($id);
-            Session::flash('success', 'Gerät wurde zurückgesetzt (Retire). Unternehmensdaten wurden entfernt.');
+            Session::flash('success', t('Gerät wurde zurückgesetzt (Retire). Unternehmensdaten wurden entfernt.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Retire fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Retire fehlgeschlagen: :msg', ['msg' => $e->getMessage()]));
         }
         Redirect::to('/devices');
     }
@@ -90,9 +88,9 @@ class DevicesController
         LocalAuth::requireAdmin();
         try {
             app_service(DevicesService::class)->wipeDevice($id);
-            Session::flash('success', 'Gerät wird auf Werkseinstellungen zurückgesetzt (Wipe). Dieser Vorgang kann nicht rückgängig gemacht werden.');
+            Session::flash('success', t('Gerät wird auf Werkseinstellungen zurückgesetzt (Wipe). Dieser Vorgang kann nicht rückgängig gemacht werden.'));
         } catch (\Throwable $e) {
-            Session::flash('error', 'Wipe fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Wipe fehlgeschlagen: :msg', ['msg' => $e->getMessage()]));
         }
         Redirect::to('/devices');
     }
@@ -102,14 +100,14 @@ class DevicesController
         LocalAuth::require();
         $devices = app_service(DevicesService::class)->getAll();
         CsvExporter::download('geraete_' . date('Ymd') . '.csv',
-            ['Gerät', 'OS', 'Version', 'Benutzer', 'Compliance', 'Verschlüsselt', 'Letzter Sync', 'Registriert'],
+            [t('Gerät'), t('OS'), t('Version'), t('Benutzer'), t('Compliance'), t('Verschlüsselt'), t('Letzter Sync'), t('Registriert')],
             array_map(fn($d) => [
                 $d['deviceName'] ?? '',
                 $d['operatingSystem'] ?? '',
                 $d['osVersion'] ?? '',
                 $d['userPrincipalName'] ?? '',
                 $d['complianceState'] ?? '',
-                ($d['isEncrypted'] ?? false) ? 'Ja' : 'Nein',
+                ($d['isEncrypted'] ?? false) ? t('Ja') : t('Nein'),
                 CsvExporter::formatDate($d['lastSyncDateTime'] ?? ''),
                 CsvExporter::formatDate($d['enrolledDateTime'] ?? ''),
             ], $devices)

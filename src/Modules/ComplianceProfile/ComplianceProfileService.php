@@ -41,11 +41,11 @@ class ComplianceProfileService
         return [
             'standard' => [
                 'key'        => 'standard',
-                'name'       => 'Standard / DSGVO-Basis',
+                'name'       => t('Standard / DSGVO-Basis'),
                 'icon'       => 'shield-check',
                 'color'      => '#3b82f6',
-                'short'      => 'Mindestmaß für jeden M365-Mandanten (DSGVO Art. 32, Secure-Score Quick Wins).',
-                'regulations'=> ['DSGVO Art. 32', 'Microsoft Secure Score'],
+                'short'      => t('Mindestmaß für jeden M365-Mandanten (DSGVO Art. 32, Secure-Score Quick Wins).'),
+                'regulations'=> [t('DSGVO Art. 32'), t('Microsoft Secure Score')],
                 'actions'    => [
                     'block_legacy_auth',
                     'guest_invite_admins',
@@ -54,15 +54,15 @@ class ComplianceProfileService
                     'block_user_tenants',
                     'restrict_user_read',
                 ],
-                'note' => 'Universell sicher — empfohlen, wenn kein spezielles Branchen-Profil zutrifft.',
+                'note' => t('Universell sicher — empfohlen, wenn kein spezielles Branchen-Profil zutrifft.'),
             ],
             'healthcare' => [
                 'key'        => 'healthcare',
-                'name'       => 'Gesundheitswesen (KRITIS)',
+                'name'       => t('Gesundheitswesen (KRITIS)'),
                 'icon'       => 'heart-pulse',
                 'color'      => '#dc2626',
-                'short'      => 'Verschärfte Einstellungen für Praxen, Kliniken, MVZ und Sozialträger.',
-                'regulations'=> ['KRITIS Gesundheit', 'DSGVO Art. 9 (Gesundheitsdaten)', 'NIS-2 Art. 21', 'SGB V § 75b'],
+                'short'      => t('Verschärfte Einstellungen für Praxen, Kliniken, MVZ und Sozialträger.'),
+                'regulations'=> [t('KRITIS Gesundheit'), t('DSGVO Art. 9 (Gesundheitsdaten)'), t('NIS-2 Art. 21'), t('SGB V § 75b')],
                 'actions'    => [
                     'block_legacy_auth',
                     'guest_invite_admins',
@@ -78,15 +78,15 @@ class ComplianceProfileService
                     'sp_default_internal',
                     'sp_idle_signout_on',
                 ],
-                'note' => 'Externes Sharing wird stark eingeschränkt. Patientendaten dürfen den Mandanten nur per gezielter Einladung verlassen.',
+                'note' => t('Externes Sharing wird stark eingeschränkt. Patientendaten dürfen den Mandanten nur per gezielter Einladung verlassen.'),
             ],
             'finance' => [
                 'key'        => 'finance',
-                'name'       => 'Finanzwesen (BaFin / DORA)',
+                'name'       => t('Finanzwesen (BaFin / DORA)'),
                 'icon'       => 'bank',
                 'color'      => '#059669',
-                'short'      => 'Banken, Versicherungen, Vermögensverwalter — BaFin BAIT, VAIT, DORA.',
-                'regulations'=> ['BaFin BAIT/VAIT', 'DORA (EU 2022/2554)', 'DSGVO', 'MiFID II'],
+                'short'      => t('Banken, Versicherungen, Vermögensverwalter — BaFin BAIT, VAIT, DORA.'),
+                'regulations'=> [t('BaFin BAIT/VAIT'), t('DORA (EU 2022/2554)'), t('DSGVO'), t('MiFID II')],
                 'actions'    => [
                     'block_legacy_auth',
                     'guest_invite_admins',
@@ -102,15 +102,15 @@ class ComplianceProfileService
                     'sp_default_internal',
                     'sp_idle_signout_on',
                 ],
-                'note' => 'Auditierbarkeit aller Aktionen (audit_log) ist Pflicht — bitte zusätzlich Purview-Audit auf "alle Aktivitäten" konfigurieren.',
+                'note' => t('Auditierbarkeit aller Aktionen (audit_log) ist Pflicht — bitte zusätzlich Purview-Audit auf "alle Aktivitäten" konfigurieren.'),
             ],
             'public' => [
                 'key'        => 'public',
-                'name'       => 'Öffentlicher Sektor / BSI',
+                'name'       => t('Öffentlicher Sektor / BSI'),
                 'icon'       => 'bank2',
                 'color'      => '#7c3aed',
-                'short'      => 'Behörden, Stadtwerke, Hochschulen — BSI IT-Grundschutz Baseline.',
-                'regulations'=> ['BSI IT-Grundschutz', 'OZG', 'DSGVO', 'NIS-2 (Bund/Länder)'],
+                'short'      => t('Behörden, Stadtwerke, Hochschulen — BSI IT-Grundschutz Baseline.'),
+                'regulations'=> [t('BSI IT-Grundschutz'), t('OZG'), t('DSGVO'), t('NIS-2 (Bund/Länder)')],
                 'actions'    => [
                     'block_legacy_auth',
                     'guest_invite_admins',
@@ -124,15 +124,15 @@ class ComplianceProfileService
                     'sp_anon_expiry_30',
                     'sp_default_internal',
                 ],
-                'note' => 'Empfehlung: zusätzlich Customer Lockbox aktivieren (separater Schritt in /customerlockbox), um Microsoft-Support-Zugriffe explizit freigeben zu müssen.',
+                'note' => t('Empfehlung: zusätzlich Customer Lockbox aktivieren (separater Schritt in /customerlockbox), um Microsoft-Support-Zugriffe explizit freigeben zu müssen.'),
             ],
             'education' => [
                 'key'        => 'education',
-                'name'       => 'Bildung / Schulen',
+                'name'       => t('Bildung / Schulen'),
                 'icon'       => 'mortarboard',
                 'color'      => '#0891b2',
-                'short'      => 'Schulen und Bildungseinrichtungen — Schutz von Schülerdaten (DSGVO Art. 8).',
-                'regulations'=> ['DSGVO Art. 8 (Kinder)', 'Landesdatenschutzgesetze'],
+                'short'      => t('Schulen und Bildungseinrichtungen — Schutz von Schülerdaten (DSGVO Art. 8).'),
+                'regulations'=> [t('DSGVO Art. 8 (Kinder)'), t('Landesdatenschutzgesetze')],
                 'actions'    => [
                     'block_legacy_auth',
                     'guest_role_restricted',
@@ -142,7 +142,7 @@ class ComplianceProfileService
                     'sp_anon_expiry_30',
                     'sp_default_internal',
                 ],
-                'note' => 'Externes Sharing ist häufig nötig (Elternkommunikation). Daher etwas lockerer als Healthcare/Finance, aber harte Defaults für Konto-Anlage und Anwendungen.',
+                'note' => t('Externes Sharing ist häufig nötig (Elternkommunikation). Daher etwas lockerer als Healthcare/Finance, aber harte Defaults für Konto-Anlage und Anwendungen.'),
             ],
         ];
     }
@@ -160,7 +160,7 @@ class ComplianceProfileService
     {
         $profiles = self::profiles();
         if (!isset($profiles[$profileKey])) {
-            return ['ok' => false, 'results' => [['id' => $profileKey, 'ok' => false, 'msg' => 'Unbekanntes Profil.']]];
+            return ['ok' => false, 'results' => [['id' => $profileKey, 'ok' => false, 'msg' => t('Unbekanntes Profil.')]]];
         }
         @set_time_limit(180);
 
@@ -173,7 +173,7 @@ class ComplianceProfileService
                 $msg = (string)($r['msg'] ?? '');
             } catch (\Throwable $e) {
                 $ok  = false;
-                $msg = 'Ausnahme: ' . $e->getMessage();
+                $msg = t('Ausnahme: :msg', ['msg' => $e->getMessage()]);
             }
             $results[] = ['id' => $actionId, 'ok' => $ok, 'msg' => $msg];
             if ($ok) $okCount++;

@@ -14,7 +14,7 @@ class AiAdvisorController
         $service = app_service(AiAdvisorService::class);
 
         View::render('ai/index', [
-            'pageTitle' => 'KI-Sicherheitsberater',
+            'pageTitle' => t('KI-Sicherheitsberater'),
             'enabled'   => $service->isEnabled(),
             'analysis'  => $service->isEnabled() ? $service->getCachedAnalysis() : null,
             'provider'  => $service->getProviderLabel(),
@@ -34,7 +34,7 @@ class AiAdvisorController
             if ($this->wantsJson()) {
                 http_response_code(400);
                 header('Content-Type: application/json; charset=utf-8');
-                echo json_encode(['ok' => false, 'error' => 'KI ist nicht aktiviert.']);
+                echo json_encode(['ok' => false, 'error' => t('KI ist nicht aktiviert.')]);
                 return;
             }
             Redirect::to('/ai');
@@ -54,7 +54,7 @@ class AiAdvisorController
                 echo json_encode(['ok' => true]);
                 return;
             }
-            Session::flash('success', 'KI-Analyse abgeschlossen.');
+            Session::flash('success', t('KI-Analyse abgeschlossen.'));
         } catch (\Throwable $e) {
             if ($this->wantsJson()) {
                 http_response_code(500);
@@ -62,7 +62,7 @@ class AiAdvisorController
                 echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
                 return;
             }
-            Session::flash('error', 'Analyse fehlgeschlagen: ' . $e->getMessage());
+            Session::flash('error', t('Analyse fehlgeschlagen: :msg', ['msg' => $e->getMessage()]));
         }
         Redirect::to('/ai');
     }
@@ -78,7 +78,7 @@ class AiAdvisorController
     {
         LocalAuth::requireAdmin();
         app_service(AiAdvisorService::class)->clearCache();
-        Session::flash('success', 'KI-Analyse-Cache geleert.');
+        Session::flash('success', t('KI-Analyse-Cache geleert.'));
         Redirect::to('/ai');
     }
 
@@ -92,7 +92,7 @@ class AiAdvisorController
         header('Content-Type: application/json; charset=utf-8');
         $payload = app_service(AiAdvisorService::class)->getLastPayload();
         if (!$payload) {
-            echo json_encode(['empty' => true, 'message' => 'Es wurde noch keine KI-Analyse durchgeführt. Starte die Analyse einmal unter "Zum KI-Berater".']);
+            echo json_encode(['empty' => true, 'message' => t('Es wurde noch keine KI-Analyse durchgeführt. Starte die Analyse einmal unter "Zum KI-Berater".')]);
             return;
         }
         echo json_encode($payload, JSON_UNESCAPED_UNICODE);

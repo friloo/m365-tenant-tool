@@ -83,11 +83,7 @@ $gapClass = ['ok' => 'success',                    'warning' => 'warning',      
         <?php if ($gap['type'] === 'missing'): ?>
         <button class="btn btn-outline-primary btn-sm flex-shrink-0"
                 data-bs-toggle="modal" data-bs-target="#modalCreate"
-                data-template="<?= match(true) {
-                    str_contains($gap['title'], 'MFA für alle')  => 'mfa_all',
-                    str_contains($gap['title'], 'Legacy')         => 'block_legacy',
-                    default                                        => 'mfa_all',
-                } ?>">
+                data-template="<?= $e($gap['template'] ?? 'mfa_all') ?>">
           <i class="bi bi-plus-circle me-1"></i><?= te('Anlegen') ?>
         </button>
         <?php endif ?>

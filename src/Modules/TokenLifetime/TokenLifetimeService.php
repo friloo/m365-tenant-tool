@@ -84,7 +84,7 @@ class TokenLifetimeService
         if (empty($caPolicies)) {
             $rec[] = [
                 'severity' => 'high',
-                'msg' => 'Keine CA-Policy mit Sign-in-Frequency konfiguriert. Microsoft-Default ist 90 Tage Refresh-Token — für Admin-Konten viel zu lang.',
+                'msg' => t('Keine CA-Policy mit Sign-in-Frequency konfiguriert. Microsoft-Default ist 90 Tage Refresh-Token — für Admin-Konten viel zu lang.'),
             ];
         } else {
             foreach ($caPolicies as $p) {
@@ -92,7 +92,7 @@ class TokenLifetimeService
                 if ($hours > 24 * 30) {
                     $rec[] = [
                         'severity' => 'medium',
-                        'msg' => "CA-Policy \"{$p['name']}\" hat Sign-in-Frequency > 30 Tage — für administrative Apps zu lang.",
+                        'msg' => t('CA-Policy ":name" hat Sign-in-Frequency > 30 Tage — für administrative Apps zu lang.', ['name' => $p['name']]),
                     ];
                 }
             }

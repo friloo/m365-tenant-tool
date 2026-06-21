@@ -10,7 +10,7 @@ function _wfActionRow(int $idx, string $type, array $cfg, array $actions): strin
     $opts = '<option value="">' . htmlspecialchars(t('— wählen —')) . '</option>';
     foreach ($actions as $k => $label) {
         $sel = $type === $k ? ' selected' : '';
-        $opts .= '<option value="' . htmlspecialchars($k) . '"' . $sel . '>' . htmlspecialchars($label) . '</option>';
+        $opts .= '<option value="' . htmlspecialchars($k) . '"' . $sel . '>' . htmlspecialchars(t($label)) . '</option>';
     }
     $fields = '';
     $templates = [
@@ -59,7 +59,7 @@ $existingTrigCfg = $existing ? (json_decode((string)($existing['trigger_cfg'] ??
                 <label class="form-label"><?= te('Trigger') ?></label>
                 <select name="trigger_key" class="form-select" id="wfTrigger" onchange="document.querySelectorAll('.trig-cfg').forEach(e=>e.style.display='none');document.getElementById('trig-'+this.value).style.display='block';">
                     <?php foreach ($triggers as $key => $label): ?>
-                        <option value="<?= View::escape($key) ?>" <?= ($existing['trigger_key'] ?? '') === $key ? 'selected' : '' ?>><?= View::escape($label) ?></option>
+                        <option value="<?= View::escape($key) ?>" <?= ($existing['trigger_key'] ?? '') === $key ? 'selected' : '' ?>><?= te($label) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

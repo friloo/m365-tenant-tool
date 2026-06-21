@@ -66,7 +66,7 @@ class CronRunner
         $this->ensureJobsExist();
         $def = $this->definitions[$jobKey] ?? null;
         if (!$def) {
-            return ['status' => 'error', 'log' => "Unknown job: {$jobKey}", 'seconds' => 0];
+            return ['status' => 'error', 'log' => t('Unbekannter Job: :jobKey', ['jobKey' => $jobKey]), 'seconds' => 0];
         }
 
         $t0 = microtime(true);
@@ -192,19 +192,19 @@ class CronRunner
 
         return [
             'queue_worker' => [
-                'label'            => 'Job-Queue verarbeiten',
-                'description'      => 'Verarbeitet ausstehende Aufgaben aus der Warteschlange (Lizenzänderungen, Bulk-Aktionen). Läuft jede Minute.',
+                'label'            => t('Job-Queue verarbeiten'),
+                'description'      => t('Verarbeitet ausstehende Aufgaben aus der Warteschlange (Lizenzänderungen, Bulk-Aktionen). Läuft jede Minute.'),
                 'default_interval' => 1,
                 'handler'          => function () use ($graph): string {
                     $worker = new QueueWorker($graph);
                     $n = $worker->processNext(20);
-                    return $n > 0 ? "{$n} Job(s) verarbeitet" : 'Keine ausstehenden Jobs';
+                    return $n > 0 ? t(':n Job(s) verarbeitet', ['n' => $n]) : t('Keine ausstehenden Jobs');
                 },
             ],
 
             'cache_warm' => [
-                'label'            => 'Cache vorwärmen (alle Module)',
-                'description'      => 'Ruft alle Graph-API-Endpunkte im Hintergrund ab und füllt den DB-Cache. Seiten laden danach sofort aus der DB ohne API-Wartezeit.',
+                'label'            => t('Cache vorwärmen (alle Module)'),
+                'description'      => t('Ruft alle Graph-API-Endpunkte im Hintergrund ab und füllt den DB-Cache. Seiten laden danach sofort aus der DB ohne API-Wartezeit.'),
                 'default_interval' => 5,
                 'handler'          => function () use ($graph): string {
                     $results = [];
@@ -212,20 +212,20 @@ class CronRunner
                     $fail = 0;
 
                     $jobs = [
-                        'Dashboard — Metriken'       => fn() => (new DashboardService($graph))->getMetrics(),
-                        'Dashboard — Lizenzübersicht'=> fn() => (new DashboardService($graph))->getLicenseSummary(),
-                        'Dashboard — Sicherheit'     => fn() => (new DashboardService($graph))->getSecurityStatus(),
-                        'Dashboard — Erweitert'      => fn() => (new DashboardService($graph))->getExtendedStats(),
-                        'Benutzer — Gesamtliste'     => fn() => (new UsersService($graph))->getAll(),
-                        'Benutzer — MFA-Status'      => fn() => (new UsersService($graph))->getMfaStatus(),
-                        'MFA-Methoden'               => fn() => (new MfaMethodsService($graph))->getAll(),
-                        'Conditional Access'         => fn() => (new ConditionalAccessService($graph))->getPolicies(),
-                        'Named Locations'            => fn() => (new NamedLocationsService($graph))->getAll(),
-                        'Geräte'                     => fn() => (new DevicesService($graph))->getAll(),
-                        'Gruppen'                    => fn() => (new GroupsService($graph))->getAll(),
-                        'Lizenzen'                   => fn() => (new LicensesService($graph))->getSkus(),
-                        'Dienststatus'               => fn() => (new ServiceHealthService($graph))->getOverview(),
-                        'Security Posture'           => fn() => (new SecurityPostureService($graph))->runChecks(),
+                        t('Dashboard — Metriken')       => fn() => (new DashboardService($graph))->getMetrics(),
+                        t('Dashboard — Lizenzübersicht')=> fn() => (new DashboardService($graph))->getLicenseSummary(),
+                        t('Dashboard — Sicherheit')     => fn() => (new DashboardService($graph))->getSecurityStatus(),
+                        t('Dashboard — Erweitert')      => fn() => (new DashboardService($graph))->getExtendedStats(),
+                        t('Benutzer — Gesamtliste')     => fn() => (new UsersService($graph))->getAll(),
+                        t('Benutzer — MFA-Status')      => fn() => (new UsersService($graph))->getMfaStatus(),
+                        t('MFA-Methoden')               => fn() => (new MfaMethodsService($graph))->getAll(),
+                        'Conditional Access'            => fn() => (new ConditionalAccessService($graph))->getPolicies(),
+                        'Named Locations'               => fn() => (new NamedLocationsService($graph))->getAll(),
+                        t('Geräte')                     => fn() => (new DevicesService($graph))->getAll(),
+                        t('Gruppen')                    => fn() => (new GroupsService($graph))->getAll(),
+                        t('Lizenzen')                   => fn() => (new LicensesService($graph))->getSkus(),
+                        t('Dienststatus')               => fn() => (new ServiceHealthService($graph))->getOverview(),
+                        'Security Posture'              => fn() => (new SecurityPostureService($graph))->runChecks(),
                     ];
 
                     foreach ($jobs as $label => $fn) {
@@ -240,55 +240,55 @@ class CronRunner
 
                     $msg = "OK: {$ok}/" . count($jobs);
                     if ($fail > 0) {
-                        $msg .= ", Fehler: {$fail} — " . implode('; ', array_slice($results, 0, 3));
+                        $msg .= ', ' . t('Fehler') . ": {$fail} — " . implode('; ', array_slice($results, 0, 3));
                     }
                     return $msg;
                 },
             ],
 
             'share_scan' => [
-                'label'            => 'Freigaben scannen',
-                'description'      => 'Synchronisiert externe SharePoint-Freigaben aus der Graph API und legt neue Einträge in der Datenbank an.',
+                'label'            => t('Freigaben scannen'),
+                'description'      => t('Synchronisiert externe SharePoint-Freigaben aus der Graph API und legt neue Einträge in der Datenbank an.'),
                 'default_interval' => 60,
                 'handler'          => function () use ($graph): string {
                     $service = new ShareReviewService($graph);
                     $result  = $service->scanAndSync();
                     $found   = count($result['found'] ?? $result);
                     $new     = count($result['new'] ?? []);
-                    return "Gefunden: {$found}, Neu: {$new}";
+                    return t('Gefunden: :found, Neu: :new', ['found' => $found, 'new' => $new]);
                 },
             ],
 
             'share_emails' => [
-                'label'            => 'Review-E-Mails senden',
-                'description'      => 'Sendet Bestätigungs-E-Mails an Freigabe-Besitzer, deren Prüfintervall abgelaufen ist.',
+                'label'            => t('Review-E-Mails senden'),
+                'description'      => t('Sendet Bestätigungs-E-Mails an Freigabe-Besitzer, deren Prüfintervall abgelaufen ist.'),
                 'default_interval' => 60,
                 'handler'          => function () use ($graph): string {
                     $service = new ShareReviewService($graph);
                     $n = count($service->sendDueReviewEmails());
-                    return "{$n} E-Mail(s) gesendet";
+                    return t(':n E-Mail(s) gesendet', ['n' => $n]);
                 },
             ],
 
             'share_auto_revoke' => [
-                'label'            => 'Freigaben automatisch widerrufen',
-                'description'      => 'Widerruft Freigaben, für die kein Besitzer innerhalb der Toleranzzeit reagiert hat.',
+                'label'            => t('Freigaben automatisch widerrufen'),
+                'description'      => t('Widerruft Freigaben, für die kein Besitzer innerhalb der Toleranzzeit reagiert hat.'),
                 'default_interval' => 60,
                 'handler'          => function () use ($graph): string {
                     $service = new ShareReviewService($graph);
                     $n = count($service->autoRevokeOverdue());
-                    return "{$n} Freigabe(n) widerrufen";
+                    return t(':n Freigabe(n) widerrufen', ['n' => $n]);
                 },
             ],
 
             'stale_cleanup' => [
-                'label'            => 'Inaktive Konten bereinigen',
-                'description'      => 'Prüft inaktive Benutzer und entfernt Lizenzen bei konfigurierten Schwellwerten (nur wenn Auto-Release aktiviert).',
+                'label'            => t('Inaktive Konten bereinigen'),
+                'description'      => t('Prüft inaktive Benutzer und entfernt Lizenzen bei konfigurierten Schwellwerten (nur wenn Auto-Release aktiviert).'),
                 'default_interval' => 1440,
                 'handler'          => function () use ($graph): string {
                     $config  = Config::getInstance();
                     if ($config->get('stale_auto_release_enabled', '0') !== '1') {
-                        return 'Auto-Release deaktiviert — übersprungen';
+                        return t('Auto-Release deaktiviert — übersprungen');
                     }
 
                     $autoReleaseDays = (int)$config->get('stale_auto_release_days', '180');
@@ -321,10 +321,10 @@ class CronRunner
                                 if ($alertEmail) {
                                     \App\Helpers\Mailer::send(
                                         $alertEmail,
-                                        "Lizenz automatisch entzogen: {$name}",
+                                        t('Lizenz automatisch entzogen: :name', ['name' => $name]),
                                         \App\Helpers\Mailer::alertTemplate(
-                                            'Automatische Lizenzfreigabe',
-                                            "<p>Dem Benutzer <strong>" . htmlspecialchars($name) . "</strong> (<code>" . htmlspecialchars($upn) . "</code>) wurden automatisch alle Lizenzen entzogen (inaktiv seit <strong>{$days} Tagen</strong>).</p><p><a href=\"{$baseUrl}/staleaccounts\">→ Inaktive Konten verwalten</a></p>",
+                                            t('Automatische Lizenzfreigabe'),
+                                            t('<p>Dem Benutzer <strong>:name</strong> (<code>:upn</code>) wurden automatisch alle Lizenzen entzogen (inaktiv seit <strong>:days Tagen</strong>).</p><p><a href=":url">→ Inaktive Konten verwalten</a></p>', ['name' => htmlspecialchars($name), 'upn' => htmlspecialchars($upn), 'days' => $days, 'url' => "{$baseUrl}/staleaccounts"]),
                                             $appName
                                         )
                                     );
@@ -342,10 +342,10 @@ class CronRunner
                                 if (!$already && $alertEmail) {
                                     \App\Helpers\Mailer::send(
                                         $alertEmail,
-                                        "Vorwarnung: Lizenzfreigabe in {$remaining} Tagen — {$name}",
+                                        t('Vorwarnung: Lizenzfreigabe in :remaining Tagen — :name', ['remaining' => $remaining, 'name' => $name]),
                                         \App\Helpers\Mailer::alertTemplate(
-                                            'Bevorstehende Lizenzfreigabe',
-                                            "<p>Dem Benutzer <strong>" . htmlspecialchars($name) . "</strong> werden in <strong>{$remaining} Tagen</strong> automatisch alle Lizenzen entzogen (inaktiv seit {$days} Tagen).</p><p><a href=\"{$baseUrl}/staleaccounts\">→ Inaktive Konten verwalten</a></p>",
+                                            t('Bevorstehende Lizenzfreigabe'),
+                                            t('<p>Dem Benutzer <strong>:name</strong> werden in <strong>:remaining Tagen</strong> automatisch alle Lizenzen entzogen (inaktiv seit :days Tagen).</p><p><a href=":url">→ Inaktive Konten verwalten</a></p>', ['name' => htmlspecialchars($name), 'remaining' => $remaining, 'days' => $days, 'url' => "{$baseUrl}/staleaccounts"]),
                                             $appName
                                         )
                                     );
@@ -355,32 +355,32 @@ class CronRunner
                             }
                         }
                     }
-                    return "Lizenzen entzogen: {$released}, Warnungen: {$warned}";
+                    return t('Lizenzen entzogen: :released, Warnungen: :warned', ['released' => $released, 'warned' => $warned]);
                 },
             ],
 
             'queue_prune' => [
-                'label'            => 'Queue aufräumen',
-                'description'      => 'Löscht abgeschlossene Jobs aus der Warteschlange, die älter als 24 Stunden sind.',
+                'label'            => t('Queue aufräumen'),
+                'description'      => t('Löscht abgeschlossene Jobs aus der Warteschlange, die älter als 24 Stunden sind.'),
                 'default_interval' => 1440,
                 'handler'          => function (): string {
                     $n = \App\Queue\QueueDispatcher::pruneCompleted(24);
-                    return "{$n} abgeschlossene Job(s) gelöscht";
+                    return t(':n abgeschlossene Job(s) gelöscht', ['n' => $n]);
                 },
             ],
 
             'weekly_report' => [
-                'label'            => 'Wöchentlicher E-Mail-Report',
-                'description'      => 'Sendet einen wöchentlichen Zusammenfassungsbericht per E-Mail (konfigurierbar: Wochentag, Empfänger). Läuft täglich und prüft selbst, ob heute der richtige Tag ist.',
+                'label'            => t('Wöchentlicher E-Mail-Report'),
+                'description'      => t('Sendet einen wöchentlichen Zusammenfassungsbericht per E-Mail (konfigurierbar: Wochentag, Empfänger). Läuft täglich und prüft selbst, ob heute der richtige Tag ist.'),
                 'default_interval' => 1440,
                 'handler'          => function () use ($graph): string {
                     $config = Config::getInstance();
                     if ($config->get('weekly_report_enabled', '0') !== '1') {
-                        return 'Wöchentlicher Report deaktiviert — übersprungen';
+                        return t('Wöchentlicher Report deaktiviert — übersprungen');
                     }
                     $reportDay = (int)$config->get('weekly_report_day', '1');
                     if ((int)date('N') !== $reportDay) {
-                        return 'Heute kein Report-Tag — übersprungen';
+                        return t('Heute kein Report-Tag — übersprungen');
                     }
                     $service = new WeeklyReportService($graph);
                     return $service->generate();
@@ -388,29 +388,29 @@ class CronRunner
             ],
 
             'executive_report' => [
-                'label'            => 'Monatlicher Executive-Report',
-                'description'      => 'Versendet am ersten Tag jedes Monats den Executive-Report an die Geschäftsführung. Läuft täglich und prüft selbst, ob heute der 1. ist.',
+                'label'            => t('Monatlicher Executive-Report'),
+                'description'      => t('Versendet am ersten Tag jedes Monats den Executive-Report an die Geschäftsführung. Läuft täglich und prüft selbst, ob heute der 1. ist.'),
                 'default_interval' => 1440,
                 'handler'          => function () use ($graph): string {
                     if (Config::getInstance()->get('executive_report_enabled', '0') !== '1') {
-                        return 'Executive-Report deaktiviert — übersprungen';
+                        return t('Executive-Report deaktiviert — übersprungen');
                     }
                     if ((int)date('j') !== 1) {
-                        return 'Heute nicht der 1. des Monats — übersprungen';
+                        return t('Heute nicht der 1. des Monats — übersprungen');
                     }
                     return (new ExecutiveReportService($graph))->generate();
                 },
             ],
 
             'alert_new_defender' => [
-                'label'            => 'Alert: Neue Defender-Warnungen',
-                'description'      => 'Sendet E-Mail wenn neue ungelöste Defender Alerts seit dem letzten Check aufgetreten sind.',
+                'label'            => t('Alert: Neue Defender-Warnungen'),
+                'description'      => t('Sendet E-Mail wenn neue ungelöste Defender Alerts seit dem letzten Check aufgetreten sind.'),
                 'default_interval' => 60,
                 'handler'          => function () use ($graph): string {
                     $config  = Config::getInstance();
                     $to      = $config->get('alert_email_to', '');
                     if (!$to) {
-                        return 'Kein Empfänger konfiguriert';
+                        return t('Kein Empfänger konfiguriert');
                     }
 
                     $defaultLastCheck = (new \DateTimeImmutable('-24 hours'))->format('c');
@@ -430,7 +430,7 @@ class CronRunner
                         );
                     } catch (\Throwable $e) {
                         if (str_contains($e->getMessage(), '403')) {
-                            return 'Defender-API nicht verfügbar (403 — fehlende Lizenz oder Berechtigung)';
+                            return t('Defender-API nicht verfügbar (403 — fehlende Lizenz oder Berechtigung)');
                         }
                         throw $e;
                     }
@@ -439,7 +439,7 @@ class CronRunner
                     $config->set('alert_defender_last_check', (new \DateTimeImmutable())->format('c'));
 
                     if (empty($alerts)) {
-                        return 'Keine neuen Alerts';
+                        return t('Keine neuen Alerts');
                     }
 
                     $rows = '';
@@ -449,43 +449,43 @@ class CronRunner
                         $created  = htmlspecialchars($alert['createdDateTime'] ?? '—');
                         $url      = htmlspecialchars($alert['alertWebUrl'] ?? '#');
                         $rows .= "<tr><td>{$title}</td><td>{$severity}</td><td>{$created}</td>"
-                               . "<td><a href=\"{$url}\">Link</a></td></tr>";
+                               . '<td><a href="' . $url . '">' . t('Link') . '</a></td></tr>';
                     }
 
                     $html = '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%">'
-                          . '<thead><tr><th>Titel</th><th>Schweregrad</th><th>Erstellt</th><th>Details</th></tr></thead>'
+                          . '<thead><tr><th>' . t('Titel') . '</th><th>' . t('Schweregrad') . '</th><th>' . t('Erstellt') . '</th><th>' . t('Details') . '</th></tr></thead>'
                           . "<tbody>{$rows}</tbody></table>";
 
                     $count = count($alerts);
                     \App\Helpers\Mailer::send(
                         $to,
-                        "Defender Alert: {$count} neue Warnung(en)",
+                        t('Defender Alert: :count neue Warnung(en)', ['count' => $count]),
                         \App\Helpers\Mailer::alertTemplate(
-                            "Neue Defender-Warnungen ({$count})",
-                            "<p>Es wurden <strong>{$count}</strong> neue Defender-Alert(s) gefunden:</p>{$html}",
+                            t('Neue Defender-Warnungen (:count)', ['count' => $count]),
+                            t('<p>Es wurden <strong>:count</strong> neue Defender-Alert(s) gefunden:</p>:html', ['count' => $count, 'html' => $html]),
                             $appName
                         )
                     );
                     \App\Modules\Notifications\NotificationService::push(
-                        "{$count} neue Defender-Warnungen",
-                        'Bitte unter /defenderalerts prüfen und bewerten.',
+                        t(':count neue Defender-Warnungen', ['count' => $count]),
+                        t('Bitte unter /defenderalerts prüfen und bewerten.'),
                         'critical', '/defenderalerts', 'defender',
                         'defender_' . date('YmdH')
                     );
 
-                    return "{$count} neue Alerts — E-Mail gesendet";
+                    return t(':count neue Alerts — E-Mail gesendet', ['count' => $count]);
                 },
             ],
 
             'alert_service_incidents' => [
-                'label'            => 'Alert: Dienststörungen',
-                'description'      => 'Sendet E-Mail wenn Microsoft-Dienste mit Störungen gemeldet werden.',
+                'label'            => t('Alert: Dienststörungen'),
+                'description'      => t('Sendet E-Mail wenn Microsoft-Dienste mit Störungen gemeldet werden.'),
                 'default_interval' => 30,
                 'handler'          => function () use ($graph): string {
                     $config  = Config::getInstance();
                     $to      = $config->get('alert_email_to', '');
                     if (!$to) {
-                        return 'Kein Empfänger konfiguriert';
+                        return t('Kein Empfänger konfiguriert');
                     }
 
                     $appName      = $config->get('app_name', 'M365 Tenant Tool');
@@ -513,7 +513,7 @@ class CronRunner
                     $config->set('alert_service_known_incidents', json_encode($currentIds));
 
                     if (empty($newOnes)) {
-                        return 'Keine neuen Dienststörungen';
+                        return t('Keine neuen Dienststörungen');
                     }
 
                     $rows = '';
@@ -526,33 +526,33 @@ class CronRunner
                     }
 
                     $html = '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%">'
-                          . '<thead><tr><th>Dienst</th><th>Status</th><th>Titel</th><th>Beginn</th></tr></thead>'
+                          . '<thead><tr><th>' . t('Dienst') . '</th><th>' . t('Status') . '</th><th>' . t('Titel') . '</th><th>' . t('Beginn') . '</th></tr></thead>'
                           . "<tbody>{$rows}</tbody></table>";
 
                     $count = count($newOnes);
                     \App\Helpers\Mailer::send(
                         $to,
-                        "Dienststörung: {$count} neue Incident(s)",
+                        t('Dienststörung: :count neue Incident(s)', ['count' => $count]),
                         \App\Helpers\Mailer::alertTemplate(
-                            "Neue Dienststörungen ({$count})",
-                            "<p>Es wurden <strong>{$count}</strong> neue Dienststörung(en) erkannt:</p>{$html}",
+                            t('Neue Dienststörungen (:count)', ['count' => $count]),
+                            t('<p>Es wurden <strong>:count</strong> neue Dienststörung(en) erkannt:</p>:html', ['count' => $count, 'html' => $html]),
                             $appName
                         )
                     );
 
-                    return "{$count} neue Incidents — E-Mail gesendet";
+                    return t(':count neue Incidents — E-Mail gesendet', ['count' => $count]);
                 },
             ],
 
             'alert_new_risky_users' => [
-                'label'            => 'Alert: Neue Risiko-Benutzer',
-                'description'      => 'Sendet E-Mail wenn neue Benutzer einen aktiven Risikostatus erhalten haben.',
+                'label'            => t('Alert: Neue Risiko-Benutzer'),
+                'description'      => t('Sendet E-Mail wenn neue Benutzer einen aktiven Risikostatus erhalten haben.'),
                 'default_interval' => 60,
                 'handler'          => function () use ($graph): string {
                     $config  = Config::getInstance();
                     $to      = $config->get('alert_email_to', '');
                     if (!$to) {
-                        return 'Kein Empfänger konfiguriert';
+                        return t('Kein Empfänger konfiguriert');
                     }
 
                     $defaultLastCheck = (new \DateTimeImmutable('-24 hours'))->format('c');
@@ -574,7 +574,7 @@ class CronRunner
                     $config->set('alert_risky_last_check', (new \DateTimeImmutable())->format('c'));
 
                     if (empty($users)) {
-                        return 'Keine neuen Risiko-Benutzer';
+                        return t('Keine neuen Risiko-Benutzer');
                     }
 
                     $rows = '';
@@ -587,54 +587,54 @@ class CronRunner
                     }
 
                     $html = '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%">'
-                          . '<thead><tr><th>UPN</th><th>Risikostufe</th><th>Status</th><th>Aktualisiert</th></tr></thead>'
+                          . '<thead><tr><th>UPN</th><th>' . t('Risikostufe') . '</th><th>' . t('Status') . '</th><th>' . t('Aktualisiert') . '</th></tr></thead>'
                           . "<tbody>{$rows}</tbody></table>";
 
                     $count = count($users);
                     \App\Helpers\Mailer::send(
                         $to,
-                        "Risiko-Benutzer: {$count} neue(r) Benutzer",
+                        t('Risiko-Benutzer: :count neue(r) Benutzer', ['count' => $count]),
                         \App\Helpers\Mailer::alertTemplate(
-                            "Neue Risiko-Benutzer ({$count})",
-                            "<p>Es wurden <strong>{$count}</strong> neue Risiko-Benutzer erkannt:</p>{$html}",
+                            t('Neue Risiko-Benutzer (:count)', ['count' => $count]),
+                            t('<p>Es wurden <strong>:count</strong> neue Risiko-Benutzer erkannt:</p>:html', ['count' => $count, 'html' => $html]),
                             $appName
                         )
                     );
 
-                    return "{$count} neue Risiko-Benutzer — E-Mail gesendet";
+                    return t(':count neue Risiko-Benutzer — E-Mail gesendet', ['count' => $count]);
                 },
             ],
 
             'audit_diff_snapshot' => [
-                'label'            => 'Audit-Diff-Snapshot',
-                'description'      => 'Tenant-Snapshot für Audit-Diff erstellen',
+                'label'            => t('Audit-Diff-Snapshot'),
+                'description'      => t('Tenant-Snapshot für Audit-Diff erstellen'),
                 'default_interval' => 1440, // daily
                 'handler'          => function () use ($graph): string {
                     $svc = new \App\Modules\AuditDiff\SnapshotService($graph);
                     $id  = $svc->capture('daily');
                     \App\Modules\AuditDiff\SnapshotService::trim(365, 365);
-                    return "Snapshot #{$id} erstellt";
+                    return t('Snapshot #:id erstellt', ['id' => $id]);
                 },
             ],
 
             'notification_trim' => [
-                'label'            => 'Benachrichtigungen aufräumen',
-                'description'      => 'Alte In-App-Benachrichtigungen aufräumen',
+                'label'            => t('Benachrichtigungen aufräumen'),
+                'description'      => t('Alte In-App-Benachrichtigungen aufräumen'),
                 'default_interval' => 1440,
                 'handler'          => function (): string {
                     $deleted = \App\Modules\Notifications\NotificationService::trim(500, 90);
-                    return "{$deleted} alte Benachrichtigungen entfernt";
+                    return t(':deleted alte Benachrichtigungen entfernt', ['deleted' => $deleted]);
                 },
             ],
 
             'workflow_runner' => [
-                'label'            => 'Workflow-Runner',
-                'description'      => 'Geplante Workflow-Automatisierungen ausführen',
+                'label'            => t('Workflow-Runner'),
+                'description'      => t('Geplante Workflow-Automatisierungen ausführen'),
                 'default_interval' => 15,
                 'handler'          => function () use ($graph): string {
                     $svc = new \App\Modules\Workflows\WorkflowService($graph);
                     $r   = $svc->runDue();
-                    return "Ausgeführt: {$r['ran']} Workflows · {$r['actions']} Aktionen";
+                    return t('Ausgeführt: :ran Workflows · :actions Aktionen', ['ran' => $r['ran'], 'actions' => $r['actions']]);
                 },
             ],
         ];
