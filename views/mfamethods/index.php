@@ -32,7 +32,7 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
                         <a href="?refresh=1"><strong><?= te('Aktualisieren') ?></strong></a> <?= te('— das leert auch den Token-Cache.') ?></li>
                     <li><strong><?= te('Azure AD Premium-Lizenz fehlt:') ?></strong> <?= te('Der Bericht') ?>
                         <code>userRegistrationDetails</code> <?= te('setzt mindestens eine') ?>
-                        <strong>Azure AD / Entra ID P1 oder P2</strong><?= te('-Lizenz im Tenant voraus. Ohne P1/P2 liefert die API HTTP 403 selbst mit vollständigen Berechtigungen.') ?></li>
+                        <strong><?= te('Azure AD / Entra ID P1 oder P2') ?></strong><?= te('-Lizenz im Tenant voraus. Ohne P1/P2 liefert die API HTTP 403 selbst mit vollständigen Berechtigungen.') ?></li>
                 </ul>
                 <?= te('Vollständige Endpunkt-URL:') ?> <code><?= $e($apiError['url']) ?></code>
             </div>
@@ -53,7 +53,7 @@ $maxDefault    = !empty($byDefault) ? max($byDefault) : 1;
                     <li><strong><?= te('Berichtsdaten noch nicht verfügbar:') ?></strong> <?= te('Der Bericht') ?>
                         <code>credentialUserRegistrationDetails</code> <?= te('kann im Tenant einige Stunden brauchen, bevor er nach der ersten Aktivierung Daten liefert.') ?></li>
                     <li><strong><?= te('Entra ID P1/P2-Lizenz:') ?></strong> <?= te('Der Bericht setzt mindestens eine') ?>
-                        <strong>Entra ID P1 oder P2</strong><?= te('-Lizenz im Tenant voraus.') ?></li>
+                        <strong><?= te('Entra ID P1 oder P2') ?></strong><?= te('-Lizenz im Tenant voraus.') ?></li>
                     <li><strong><?= te('Berichtsverschleierung aktiv:') ?></strong> <?= t('Wenn im Microsoft 365 Admin Center unter <em>Einstellungen → Dienste → Berichte</em> die Option „Anonymisierte Benutzerberichte" aktiviert ist, sind Berichte für Apps gesperrt. Diese Einstellung muss deaktiviert sein.') ?></li>
                 </ul>
             </div>

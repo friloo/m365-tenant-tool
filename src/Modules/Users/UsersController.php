@@ -185,6 +185,11 @@ class UsersController
         $service = app_service(UsersService::class);
         $user    = $service->getOne($id);
         $current = $user['accountEnabled'] ?? true;
+        // Four-eyes only for the destructive direction (disabling an account).
+        if ($current && !\App\Modules\Approvals\ApprovalService::gate('user_disable', $id, t('Konto deaktivieren: :name', ['name' => $user['displayName'] ?? $id]))) {
+            Session::flash('success', t('Zur Freigabe eingereicht — ein zweiter Administrator muss bestätigen.'));
+            Redirect::to('/users/' . $id);
+        }
         try {
             $service->setAccountEnabled($id, !$current);
             AppAudit::log('user_' . ($current ? 'disabled' : 'enabled'), 'users', "User ID: {$id}");
@@ -198,6 +203,10 @@ class UsersController
     public function resetMfa(string $id): void
     {
         LocalAuth::require();
+        if (!\App\Modules\Approvals\ApprovalService::gate('user_reset_mfa', $id, t('MFA-Methoden zurücksetzen: :id', ['id' => $id]))) {
+            Session::flash('success', t('Zur Freigabe eingereicht — ein zweiter Administrator muss bestätigen.'));
+            Redirect::to('/users/' . $id);
+        }
         try {
             app_service(UsersService::class)->resetMfa($id);
             AppAudit::log('mfa_reset', 'users', "User ID: {$id}");

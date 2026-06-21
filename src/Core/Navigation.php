@@ -144,6 +144,7 @@ class Navigation
 
             // ── Administration (admin-only) ─────────────────────────────
             ['hub' => 'administration', 'icon' => 'gear',             'label' => 'Einstellungen',          'route' => 'settings',            'admin' => true],
+            ['hub' => 'administration', 'icon' => 'check2-square',    'label' => 'Aktionsfreigaben',       'route' => 'approvals',           'admin' => true],
             ['hub' => 'administration', 'icon' => 'people-fill',      'label' => 'Benutzer-Zugang',        'route' => 'settings/users',      'admin' => true],
             ['hub' => 'administration', 'icon' => 'magic',            'label' => 'Einrichtungs-Assistent', 'route' => 'setup',               'admin' => true],
             ['hub' => 'administration', 'icon' => 'key',              'label' => 'API-Schlüssel',          'route' => 'settings/api-keys',   'admin' => true],

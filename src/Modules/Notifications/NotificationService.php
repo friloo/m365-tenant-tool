@@ -39,6 +39,13 @@ class NotificationService
                  VALUES (?, ?, ?, ?, ?, ?)",
                 [$category, $severity, mb_substr($title, 0, 250), $body, $link, $dedupeKey]
             );
+            // Fan out alerts to an external webhook (Teams/SIEM) if configured.
+            // Only fresh inserts reach here, so deduped repeats are not re-sent.
+            try {
+                \App\Helpers\WebhookNotifier::dispatch($title, $body, $severity, $category, $link);
+            } catch (\Throwable) {
+                // Webhook is best-effort and must never break the notification.
+            }
             return true;
         } catch (\Throwable $e) {
             // Unique key violation on dedupe — that's the *expected* path

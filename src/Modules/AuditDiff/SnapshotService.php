@@ -111,6 +111,52 @@ class SnapshotService
         return ['added' => $added, 'removed' => $removed, 'modified' => $modified];
     }
 
+    // ── Drift baseline ──────────────────────────────────────────────────────
+
+    private const BASELINE_KEY = 'drift_baseline_snapshot_id';
+
+    /** The snapshot id currently pinned as the configuration baseline, or 0. */
+    public static function getBaselineId(): int
+    {
+        return (int)\App\Core\Config::getInstance()->get(self::BASELINE_KEY, 0);
+    }
+
+    public static function setBaselineId(int $id): void
+    {
+        \App\Core\Config::getInstance()->set(self::BASELINE_KEY, (string)$id);
+    }
+
+    /**
+     * Diff the latest snapshot against the pinned baseline.
+     *
+     * @return array{baseline_id:int, latest_id:int, diff:array}|null  null if no baseline / no newer snapshot
+     */
+    public static function driftAgainstBaseline(): ?array
+    {
+        $baselineId = self::getBaselineId();
+        if ($baselineId <= 0) return null;
+
+        $list = self::list(1);
+        $latestId = $list[0]['id'] ?? 0;
+        if (!$latestId || $latestId === $baselineId) return null;
+
+        $base   = self::load($baselineId);
+        $latest = self::load($latestId);
+        if (!$base || !$latest) return null;
+
+        return [
+            'baseline_id' => $baselineId,
+            'latest_id'   => $latestId,
+            'diff'        => self::diff($base['payload'], $latest['payload']),
+        ];
+    }
+
+    /** Total number of changed fields in a diff result. */
+    public static function diffCount(array $diff): int
+    {
+        return count($diff['added'] ?? []) + count($diff['removed'] ?? []) + count($diff['modified'] ?? []);
+    }
+
     public static function trim(int $keepDays = 365, int $maxRows = 365): int
     {
         $deleted = 0;

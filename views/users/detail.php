@@ -55,7 +55,7 @@ if ($neverExpires) {
         <div class="content-card mb-3">
             <div class="card-body-custom text-center py-4">
                 <div style="width:80px;height:80px;border-radius:50%;background:#e3f0fb;display:inline-flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:#0078d4;margin-bottom:12px;">
-                    <?= strtoupper(substr($user['displayName'] ?? '?', 0, 1)) ?>
+                    <?= $e(strtoupper(substr($user['displayName'] ?? '?', 0, 1))) ?>
                 </div>
                 <h5 class="mb-1"><?= $e($user['displayName'] ?? '') ?></h5>
                 <p class="text-muted mb-0 small"><?= $e($user['userPrincipalName'] ?? '') ?></p>

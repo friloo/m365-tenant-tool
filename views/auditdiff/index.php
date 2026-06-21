@@ -50,6 +50,41 @@ $formatVal = function ($v) {
         </button>
         <span class="text-muted small ms-2"><?= te('Aktuell') ?> <?= count($snapshots) ?> <?= te('Snapshots gespeichert (Aufbewahrung 365 Tage).') ?></span>
     </form>
+
+    <!-- Configuration drift baseline -->
+    <div class="mt-3 pt-3" style="border-top:1px solid #eef0f3;">
+        <?php $baselineId = $baselineId ?? 0; $driftN = ($drift ?? null) !== null ? \App\Modules\AuditDiff\SnapshotService::diffCount($drift['diff']) : 0; ?>
+        <?php if ($baselineId <= 0): ?>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="badge bg-light text-dark border"><i class="bi bi-flag"></i> <?= te('Drift-Baseline') ?></span>
+                <span class="text-muted small"><?= te('Noch keine Baseline gesetzt. Lege einen bekannten, sicheren Stand als Baseline fest — der Cron-Job warnt dann bei jeder Abweichung.') ?></span>
+            </div>
+        <?php else: ?>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="badge bg-light text-dark border"><i class="bi bi-flag-fill text-primary"></i> <?= te('Baseline:') ?> #<?= (int)$baselineId ?></span>
+                <?php if ($driftN > 0 && ($drift ?? null) !== null): ?>
+                    <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle"></i> <?= te(':n Abweichung(en) seit Baseline', ['n' => $driftN]) ?></span>
+                    <a class="btn btn-sm btn-outline-warning" href="/auditdiff?left=<?= (int)$drift['baseline_id'] ?>&right=<?= (int)$drift['latest_id'] ?>"><?= te('Drift anzeigen') ?></a>
+                <?php else: ?>
+                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> <?= te('Keine Abweichung') ?></span>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+        <form method="post" action="/auditdiff/baseline" class="mt-2 d-flex flex-wrap gap-2 align-items-end">
+            <?= Csrf::field() ?>
+            <div>
+                <label class="form-label small mb-1"><?= te('Snapshot als Baseline setzen') ?></label>
+                <select name="snapshot_id" class="form-select form-select-sm" style="min-width:240px;">
+                    <?php foreach ($snapshots as $s): ?>
+                        <option value="<?= (int)$s['id'] ?>" <?= $baselineId === (int)$s['id'] ? 'selected' : '' ?>>
+                            #<?= (int)$s['id'] ?> · <?= View::escape($s['created_at']) ?> · <?= View::escape($s['kind']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <button class="btn btn-sm btn-outline-primary" type="submit"><i class="bi bi-flag"></i> <?= te('Als Baseline festlegen') ?></button>
+        </form>
+    </div>
 </div>
 
 <?php if ($diff === null): ?>

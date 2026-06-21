@@ -120,7 +120,6 @@ return [
     'Diese Einstellung wird im'        => 'This setting is managed in the',
     'unter'                            => 'under',
     'Einstellungen → OneDrive'         => 'Settings → OneDrive',
-    'verwaltet.'                       => '.',
     'Das Tool kann die Provisionierung einzelner Benutzer direkt über die Microsoft Graph API auslösen.'
         => 'The tool can trigger provisioning for individual users directly via the Microsoft Graph API.',
     'Alle Benutzer'                    => 'All users',
@@ -261,7 +260,6 @@ return [
     'Erweiterte Teams-Einstellungen (Gäste, externe Channels) werden über'
         => 'Advanced Teams settings (guests, external channels) are managed through',
     'das'                              => 'the',
-    'verwaltet.'                       => '.',
     'Die Graph API bietet hier nur lesenden Zugriff.'
         => 'The Graph API offers only read access here.',
     'Mandantenübergreifender Zugriff'  => 'Cross-tenant access',

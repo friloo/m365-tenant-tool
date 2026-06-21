@@ -310,6 +310,19 @@ $ddl = [
         last_seen  DATETIME NOT NULL,
         PRIMARY KEY (actor)
     )",
+    "CREATE TABLE IF NOT EXISTS app_approval_requests (
+        id           INT AUTO_INCREMENT PRIMARY KEY,
+        action_key   VARCHAR(64)  NOT NULL,
+        target       VARCHAR(191) NOT NULL DEFAULT '',
+        label        VARCHAR(255) NOT NULL DEFAULT '',
+        status       ENUM('pending','approved','rejected','executed') NOT NULL DEFAULT 'pending',
+        requested_by VARCHAR(255) NOT NULL,
+        requested_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        approved_by  VARCHAR(255) DEFAULT NULL,
+        decided_at   DATETIME DEFAULT NULL,
+        INDEX idx_lookup (action_key, target, status),
+        INDEX idx_status (status, requested_at)
+    )",
     "CREATE TABLE IF NOT EXISTS app_tenant_snapshots (
         id         INT AUTO_INCREMENT PRIMARY KEY,
         kind       VARCHAR(64) NOT NULL,
@@ -459,6 +472,14 @@ $router->get('/',        [\App\Modules\Dashboard\DashboardController::class, 'in
 
 // Modul-Übersicht (module map)
 $router->get('/overview', [\App\Modules\Overview\OverviewController::class, 'index']);
+
+// Action Center — guided "start here" configuration surface
+$router->get('/action-center', [\App\Modules\ActionCenter\ActionCenterController::class, 'index']);
+
+// Approvals (four-eyes principle)
+$router->get('/approvals',         [\App\Modules\Approvals\ApprovalsController::class, 'index']);
+$router->post('/approvals/approve', [\App\Modules\Approvals\ApprovalsController::class, 'approve']);
+$router->post('/approvals/reject',  [\App\Modules\Approvals\ApprovalsController::class, 'reject']);
 
 // Favoriten (client-side, localStorage)
 $router->get('/favorites', [\App\Modules\Favorites\FavoritesController::class, 'index']);
@@ -668,6 +689,9 @@ $router->get('/settings',                         [\App\Modules\Settings\Setting
 $router->post('/settings/save',                   [\App\Modules\Settings\SettingsController::class, 'save']);
 $router->get('/settings/clear-cache',             [\App\Modules\Settings\SettingsController::class, 'clearCache']);
 $router->get('/settings/test-mail',               [\App\Modules\Settings\SettingsController::class, 'testMail']);
+$router->get('/settings/test-webhook',            [\App\Modules\Settings\SettingsController::class, 'testWebhook']);
+$router->post('/settings/purge-data',             [\App\Modules\Settings\SettingsController::class, 'purgeData']);
+$router->post('/settings/delete-tenant-data',     [\App\Modules\Settings\SettingsController::class, 'deleteTenantData']);
 $router->get('/settings/permissions',             [\App\Modules\Settings\SettingsController::class, 'permissions']);
 $router->get('/settings/refresh-token',           [\App\Modules\Settings\SettingsController::class, 'refreshToken']);
 $router->get('/settings/license-prices',          [\App\Modules\Settings\SettingsController::class, 'licensePrice']);
@@ -679,6 +703,10 @@ $router->post('/settings/2fa/verify',            [\App\Modules\Settings\Settings
 $router->post('/settings/2fa/disable',           [\App\Modules\Settings\SettingsController::class, 'twofaDisable']);
 $router->post('/settings/2fa/regen-codes',       [\App\Modules\Settings\SettingsController::class, 'twofaRegenCodes']);
 $router->post('/settings/2fa/cancel',            function() { \App\Core\Session::remove('_totp_setup_secret'); \App\Core\Redirect::to('/settings/2fa'); });
+
+// Config-as-Code: export/import operational settings (never secrets)
+$router->get('/settings/config-export',  [\App\Modules\TenantConfig\TenantConfigController::class, 'export']);
+$router->post('/settings/config-import', [\App\Modules\TenantConfig\TenantConfigController::class, 'import']);
 
 // User management (M365 users with tool access)
 $router->get('/settings/users',                 [\App\Modules\Settings\UserManagementController::class, 'index']);
@@ -830,6 +858,7 @@ $router->post('/complianceprofile/apply-step', [\App\Modules\ComplianceProfile\C
 // ── Audit-Diff ─────────────────────────────────────────────
 $router->get('/auditdiff',                  [\App\Modules\AuditDiff\AuditDiffController::class, 'index']);
 $router->post('/auditdiff/capture',         [\App\Modules\AuditDiff\AuditDiffController::class, 'capture']);
+$router->post('/auditdiff/baseline',        [\App\Modules\AuditDiff\AuditDiffController::class, 'setBaseline']);
 
 // ── DSGVO/NIS-2 Audit-Report ───────────────────────────────
 $router->get('/auditreport',                [\App\Modules\AuditReport\AuditReportController::class, 'index']);

@@ -29,13 +29,15 @@ class AuditDiffController
         }
 
         View::render('auditdiff/index', [
-            'pageTitle' => 'Audit-Diff',
-            'snapshots' => $snaps,
-            'left'      => $left,
-            'right'     => $right,
-            'oldRow'    => $oldRow,
-            'newRow'    => $newRow,
-            'diff'      => $diff,
+            'pageTitle'  => 'Audit-Diff',
+            'snapshots'  => $snaps,
+            'left'       => $left,
+            'right'      => $right,
+            'oldRow'     => $oldRow,
+            'newRow'     => $newRow,
+            'diff'       => $diff,
+            'baselineId' => SnapshotService::getBaselineId(),
+            'drift'      => SnapshotService::driftAgainstBaseline(),
         ]);
     }
 
@@ -53,6 +55,21 @@ class AuditDiffController
             );
         } catch (\Throwable $e) {
             Session::flash('error', 'Snapshot fehlgeschlagen: ' . $e->getMessage());
+        }
+        Redirect::to('/auditdiff');
+    }
+
+    /** Pin a snapshot as the configuration baseline for drift detection. */
+    public function setBaseline(): void
+    {
+        LocalAuth::requireAdmin();
+        $id = (int)($_POST['snapshot_id'] ?? 0);
+        if ($id > 0 && SnapshotService::load($id) !== null) {
+            SnapshotService::setBaselineId($id);
+            AppAudit::log('drift_baseline_set', 'auditdiff', "Snapshot #{$id}");
+            Session::flash('success', t('Snapshot #:id als Baseline für die Drift-Erkennung gesetzt.', ['id' => $id]));
+        } else {
+            Session::flash('error', t('Snapshot nicht gefunden.'));
         }
         Redirect::to('/auditdiff');
     }

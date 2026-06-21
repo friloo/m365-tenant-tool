@@ -63,9 +63,8 @@ $total = count($list);
 <div class="alert mb-3" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 16px;display:flex;align-items:flex-start;gap:10px;">
     <i class="bi bi-info-circle" style="color:#3b82f6;font-size:16px;margin-top:2px;flex-shrink:0;"></i>
     <div style="font-size:13px;color:#1e40af;">
-        <strong><?= te('Welche Gruppen dürfen OneDrives provisionieren?') ?></strong> <?= te('Diese Einstellung wird im') ?>
-        <a href="https://admin.microsoft.com/Adminportal/Home#/SharePoint" target="_blank" rel="noopener" style="color:#2563eb;">SharePoint Admin Center</a>
-        <?= te('unter') ?> <em><?= te('Einstellungen → OneDrive') ?></em> <?= te('verwaltet.') ?>
+        <strong><?= te('Welche Gruppen dürfen OneDrives provisionieren?') ?></strong>
+        <?= t('Diese Einstellung wird im :link unter :section verwaltet.', ['link' => '<a href="https://admin.microsoft.com/Adminportal/Home#/SharePoint" target="_blank" rel="noopener" style="color:#2563eb;">SharePoint Admin Center</a>', 'section' => '<em>' . te('Einstellungen → OneDrive') . '</em>']) ?>
         <?= te('Das Tool kann die Provisionierung einzelner Benutzer direkt über die Microsoft Graph API auslösen.') ?>
     </div>
 </div>
@@ -104,7 +103,7 @@ $total = count($list);
                         <td>
                             <div class="d-flex align-items-center gap-2">
                                 <div style="width:32px;height:32px;border-radius:50%;background:#e3f0fb;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#0078d4;flex-shrink:0;">
-                                    <?= strtoupper(substr($u['displayName'], 0, 1)) ?>
+                                    <?= $e(strtoupper(substr($u['displayName'] ?? '?', 0, 1))) ?>
                                 </div>
                                 <span style="font-weight:500;"><?= $e($u['displayName']) ?></span>
                             </div>

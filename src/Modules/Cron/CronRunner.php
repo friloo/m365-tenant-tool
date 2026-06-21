@@ -617,6 +617,31 @@ class CronRunner
                 },
             ],
 
+            'config_drift_check' => [
+                'label'            => t('Konfigurations-Drift prüfen'),
+                'description'      => t('Vergleicht den neuesten Tenant-Snapshot mit der gesetzten Baseline und warnt bei Abweichungen sicherheitsrelevanter Einstellungen.'),
+                'default_interval' => 1440, // daily (runs after the snapshot job)
+                'handler'          => function (): string {
+                    $drift = \App\Modules\AuditDiff\SnapshotService::driftAgainstBaseline();
+                    if ($drift === null) {
+                        return t('Keine Baseline gesetzt oder kein neuerer Snapshot.');
+                    }
+                    $n = \App\Modules\AuditDiff\SnapshotService::diffCount($drift['diff']);
+                    if ($n === 0) {
+                        return t('Keine Abweichung von der Baseline.');
+                    }
+                    \App\Modules\Notifications\NotificationService::push(
+                        t(':n Konfigurations-Abweichung(en) von der Baseline', ['n' => $n]),
+                        t('Sicherheitsrelevante Tenant-Einstellungen haben sich gegenüber der Baseline (Snapshot #:id) geändert. Details unter Audit-Diff.', ['id' => $drift['baseline_id']]),
+                        'warn',
+                        '/auditdiff?left=' . $drift['baseline_id'] . '&right=' . $drift['latest_id'],
+                        'compliance',
+                        'config_drift_' . $drift['latest_id']
+                    );
+                    return t(':n Abweichung(en) erkannt — Warnung gesendet.', ['n' => $n]);
+                },
+            ],
+
             'notification_trim' => [
                 'label'            => t('Benachrichtigungen aufräumen'),
                 'description'      => t('Alte In-App-Benachrichtigungen aufräumen'),
@@ -624,6 +649,20 @@ class CronRunner
                 'handler'          => function (): string {
                     $deleted = \App\Modules\Notifications\NotificationService::trim(500, 90);
                     return t(':deleted alte Benachrichtigungen entfernt', ['deleted' => $deleted]);
+                },
+            ],
+
+            'local_data_retention' => [
+                'label'            => t('Lokale Daten-Aufbewahrung'),
+                'description'      => t('Löscht lokal gespeicherte PII/Verlaufsdaten (Audit, Sign-ins, Freigaben, Snapshots) älter als die konfigurierte Aufbewahrungsfrist. Deaktiviert, solange die Frist 0 ist.'),
+                'default_interval' => 1440, // daily
+                'handler'          => function (): string {
+                    $days = (int)\App\Core\Config::getInstance()->get('local_retention_days', 0);
+                    if ($days <= 0) {
+                        return t('Deaktiviert (Aufbewahrungsfrist = 0).');
+                    }
+                    $r = \App\Modules\Settings\DataRetentionService::purge($days);
+                    return t(':n Datensätze älter als :days Tage gelöscht.', ['n' => $r['deleted'], 'days' => $days]);
                 },
             ],
 
@@ -635,6 +674,36 @@ class CronRunner
                     $svc = new \App\Modules\Workflows\WorkflowService($graph);
                     $r   = $svc->runDue();
                     return t('Ausgeführt: :ran Workflows · :actions Aktionen', ['ran' => $r['ran'], 'actions' => $r['actions']]);
+                },
+            ],
+
+            'app_secret_expiry' => [
+                'label'            => t('App-Secret-Ablauf prüfen'),
+                'description'      => t('Warnt, bevor das Client-Secret/Zertifikat der eigenen App-Registrierung abläuft (sonst verliert das Tool den Zugriff).'),
+                'default_interval' => 1440, // daily
+                'handler'          => function () use ($graph): string {
+                    $info = (new \App\Modules\Settings\AppCredentialService($graph))->check();
+                    if (!$info['found'] || $info['days_left'] === null) {
+                        return t('Kein Ablaufdatum ermittelbar.');
+                    }
+                    $days = (int)$info['days_left'];
+                    if ($days > 30) {
+                        return t('OK — läuft in :n Tagen ab.', ['n' => $days]);
+                    }
+                    $sev = $days <= 7 ? 'critical' : 'warn';
+                    $type = $info['type'] === 'certificate' ? t('Zertifikat') : t('Client-Secret');
+                    \App\Modules\Notifications\NotificationService::push(
+                        $days < 0
+                            ? t(':type der App-Registrierung ist ABGELAUFEN', ['type' => $type])
+                            : t(':type der App-Registrierung läuft in :n Tagen ab', ['type' => $type, 'n' => $days]),
+                        t('Erneuere das :type im Microsoft Entra Admin Center, sonst verliert das Tool den Graph-Zugriff.', ['type' => $type]),
+                        $sev,
+                        'https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade',
+                        'system',
+                        // dedupe per day so we warn once daily, not every run
+                        'app_secret_expiry_' . date('Y-m-d')
+                    );
+                    return t('Warnung gesendet — :type läuft in :n Tagen ab.', ['type' => $type, 'n' => $days]);
                 },
             ],
         ];

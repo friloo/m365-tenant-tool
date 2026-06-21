@@ -324,9 +324,7 @@ $tz          = $detail['timeZone'] ?? '';
                     </div>
                     <p class="mt-2 mb-0 text-muted" style="font-size:11px;">
                         <i class="bi bi-info-circle me-1"></i>
-                        <?= te('Vollzugriff (Full Access) und &bdquo;Senden als&ldquo;-Berechtigungen werden über das') ?>
-                        <a href="https://admin.exchange.microsoft.com" target="_blank" rel="noopener">Exchange Admin Center</a>
-                        <?= te('verwaltet.') ?>
+                        <?= t('Vollzugriff (Full Access) und &bdquo;Senden als&ldquo;-Berechtigungen werden über das :link verwaltet.', ['link' => '<a href="https://admin.exchange.microsoft.com" target="_blank" rel="noopener">Exchange Admin Center</a>']) ?>
                     </p>
                 <?php endif; ?>
             </div>
