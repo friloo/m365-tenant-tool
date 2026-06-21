@@ -105,26 +105,26 @@
                             <?php endif; ?>
                         </dd>
 
-                        <dt class="col-5 text-muted">Letzte Anmeldung</dt>
+                        <dt class="col-5 text-muted"><?= te('Letzte Anmeldung') ?></dt>
                         <dd class="col-7">
                             <?php if ($s['daysSinceSignIn'] === null): ?>
-                                <span class="badge bg-warning text-dark">Noch nie</span>
+                                <span class="badge bg-warning text-dark"><?= te('Noch nie') ?></span>
                             <?php elseif ($s['daysSinceSignIn'] > 180): ?>
-                                <span class="badge bg-warning text-dark">vor <?= $s['daysSinceSignIn'] ?> Tagen</span>
+                                <span class="badge bg-warning text-dark"><?= te('vor :n Tagen', ['n' => $s['daysSinceSignIn']]) ?></span>
                             <?php else: ?>
-                                <?= $e($s['daysSinceSignIn']) ?> Tage
+                                <?= $e($s['daysSinceSignIn']) ?> <?= te('Tage') ?>
                                 <span class="text-muted small">(<?= $e(date('d.m.Y', strtotime($s['lastSignIn']))) ?>)</span>
                             <?php endif; ?>
                         </dd>
 
-                        <dt class="col-5 text-muted">CA-Policies ausgenommen</dt>
+                        <dt class="col-5 text-muted"><?= te('CA-Policies ausgenommen') ?></dt>
                         <dd class="col-7">
                             <?php if ($s['caExcluded'] === null): ?>
-                                <span class="text-muted small">nicht prüfbar (Permission?)</span>
+                                <span class="text-muted small"><?= te('nicht prüfbar (Permission?)') ?></span>
                             <?php elseif (empty($s['caExcluded'])): ?>
-                                <span class="badge bg-danger"><i class="bi bi-shield-x me-1"></i>Keine</span>
+                                <span class="badge bg-danger"><i class="bi bi-shield-x me-1"></i><?= te('Keine') ?></span>
                             <?php else: ?>
-                                <span class="badge bg-success"><?= count($s['caExcluded']) ?> Policy(s)</span>
+                                <span class="badge bg-success"><?= count($s['caExcluded']) ?> <?= te('Policy(s)') ?></span>
                                 <div class="text-muted small mt-1">
                                     <?php foreach ($s['caExcluded'] as $p): ?>
                                         · <?= $e($p) ?><br>

@@ -956,26 +956,26 @@
 <!-- Customer Lockbox ───────────────────────────────────── -->
 <div class="man-section" id="customerlockbox">
     <h2><i class="bi bi-lock-fill text-primary"></i> Customer Lockbox</h2>
-    <p>Ohne Customer Lockbox darf Microsoft Support im Notfall direkt auf Ihre Daten zugreifen — Sie erfahren es nicht. Mit aktiviertem Lockbox muss jeder Microsoft-Support-Zugriff aktiv von einem Tenant-Admin approvt werden, sonst gibt es <strong>keinen</strong> Zugriff.</p>
-    <p><strong>Voraussetzung:</strong> Microsoft 365 E5 oder als Add-on.</p>
-    <p>Microsoft Graph stellt für diese Einstellung keinen Schreib-Endpunkt zur Verfügung — Konfiguration daher im M365 Admin Center → Security &amp; Privacy. Das Tool tracked nur den manuell eingetragenen Aktivierungs-Status, die Approver-Liste, die SLA-Reaktionszeit und das Datum der letzten Review (halbjährlich empfohlen).</p>
+    <p><?= te('Ohne Customer Lockbox darf Microsoft Support im Notfall direkt auf Ihre Daten zugreifen — Sie erfahren es nicht. Mit aktiviertem Lockbox muss jeder Microsoft-Support-Zugriff aktiv von einem Tenant-Admin approvt werden, sonst gibt es <strong>keinen</strong> Zugriff.') ?></p>
+    <p><strong><?= te('Voraussetzung:') ?></strong> <?= te('Microsoft 365 E5 oder als Add-on.') ?></p>
+    <p><?= te('Microsoft Graph stellt für diese Einstellung keinen Schreib-Endpunkt zur Verfügung — Konfiguration daher im M365 Admin Center → Security &amp; Privacy. Das Tool tracked nur den manuell eingetragenen Aktivierungs-Status, die Approver-Liste, die SLA-Reaktionszeit und das Datum der letzten Review (halbjährlich empfohlen).') ?></p>
 </div>
 
 <!-- Geräte ───────────────────────────────────────────────── -->
 <div class="man-section" id="devices">
-    <h2><i class="bi bi-phone text-primary"></i> Geräte (Intune)</h2>
-    <p>Zeigt alle in Microsoft Intune verwalteten Geräte mit Betriebssystem, Version, Compliance-Status, Verschlüsselungsstatus und letztem Sync.</p>
+    <h2><i class="bi bi-phone text-primary"></i> <?= te('Geräte (Intune)') ?></h2>
+    <p><?= te('Zeigt alle in Microsoft Intune verwalteten Geräte mit Betriebssystem, Version, Compliance-Status, Verschlüsselungsstatus und letztem Sync.') ?></p>
 
-    <h3>Aktionen</h3>
+    <h3><?= te('Aktionen') ?></h3>
     <ul>
-        <li><strong>Synchronisieren</strong>: Sendet eine Sync-Anfrage ans Gerät — beim nächsten Check-In werden Richtlinien und Status aktualisiert</li>
-        <li><strong>Retire</strong> (nur Admin): Entfernt Unternehmens-Apps und -Daten, das Gerät bleibt persönlich nutzbar (für BYOD geeignet)</li>
-        <li><strong>Wipe</strong> (nur Admin): Setzt das Gerät auf Werkseinstellungen zurück — <strong>alle Daten werden unwiderruflich gelöscht</strong></li>
+        <li><strong><?= te('Synchronisieren') ?></strong>: <?= te('Sendet eine Sync-Anfrage ans Gerät — beim nächsten Check-In werden Richtlinien und Status aktualisiert') ?></li>
+        <li><strong>Retire</strong> <?= te('(nur Admin)') ?>: <?= te('Entfernt Unternehmens-Apps und -Daten, das Gerät bleibt persönlich nutzbar (für BYOD geeignet)') ?></li>
+        <li><strong>Wipe</strong> <?= te('(nur Admin)') ?>: <?= te('Setzt das Gerät auf Werkseinstellungen zurück — <strong>alle Daten werden unwiderruflich gelöscht</strong>') ?></li>
     </ul>
 
-    <h3>BitLocker-Schlüssel</h3>
-    <p>Auf der Gerätdetailseite werden BitLocker-Recovery-Schlüssel angezeigt (sofern in Intune hinterlegt und die Berechtigung vorhanden ist).</p>
-    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i>Ein Wipe kann nicht rückgängig gemacht werden. Vergewissere dich, dass das Gerät tatsächlich verloren, gestohlen oder auszumustern ist.</div>
+    <h3><?= te('BitLocker-Schlüssel') ?></h3>
+    <p><?= te('Auf der Gerätdetailseite werden BitLocker-Recovery-Schlüssel angezeigt (sofern in Intune hinterlegt und die Berechtigung vorhanden ist).') ?></p>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><?= te('Ein Wipe kann nicht rückgängig gemacht werden. Vergewissere dich, dass das Gerät tatsächlich verloren, gestohlen oder auszumustern ist.') ?></div>
     <p><span class="perm-tag">DeviceManagementManagedDevices.Read.All</span> <span class="perm-tag">DeviceManagementManagedDevices.PrivilegedOperations.All</span></p>
 </div>
 

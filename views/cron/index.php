@@ -258,28 +258,28 @@ function cronIn(?string $dt): string {
                 <?= \App\Core\Csrf::field() ?>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-medium">Intervall</label>
+                        <label class="form-label fw-medium"><?= te('Intervall') ?></label>
                         <select name="interval_minutes" id="modalInterval" class="form-select">
-                            <option value="1">Jede Minute</option>
-                            <option value="5">Alle 5 Min.</option>
-                            <option value="15">Alle 15 Min.</option>
-                            <option value="30">Alle 30 Min.</option>
-                            <option value="60">Stündlich</option>
-                            <option value="120">Alle 2 Stunden</option>
-                            <option value="360">Alle 6 Stunden</option>
-                            <option value="720">Alle 12 Stunden</option>
-                            <option value="1440">Täglich</option>
-                            <option value="10080">Wöchentlich</option>
+                            <option value="1"><?= te('Jede Minute') ?></option>
+                            <option value="5"><?= te('Alle 5 Min.') ?></option>
+                            <option value="15"><?= te('Alle 15 Min.') ?></option>
+                            <option value="30"><?= te('Alle 30 Min.') ?></option>
+                            <option value="60"><?= te('Stündlich') ?></option>
+                            <option value="120"><?= te('Alle 2 Stunden') ?></option>
+                            <option value="360"><?= te('Alle 6 Stunden') ?></option>
+                            <option value="720"><?= te('Alle 12 Stunden') ?></option>
+                            <option value="1440"><?= te('Täglich') ?></option>
+                            <option value="10080"><?= te('Wöchentlich') ?></option>
                         </select>
                     </div>
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" name="enabled" id="modalEnabled" value="1">
-                        <label class="form-check-label" for="modalEnabled">Job aktiviert</label>
+                        <label class="form-check-label" for="modalEnabled"><?= te('Job aktiviert') ?></label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-                    <button type="submit" class="btn btn-primary">Speichern</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= te('Abbrechen') ?></button>
+                    <button type="submit" class="btn btn-primary"><?= te('Speichern') ?></button>
                 </div>
             </form>
         </div>

@@ -140,9 +140,9 @@
 <div class="content-card">
     <div class="card-header-custom">
         <i class="bi bi-chat-square-text text-primary"></i>
-        <h6>Nachrichten (<?= count($messages) ?>)</h6>
+        <h6><?= te('Nachrichten') ?> (<?= count($messages) ?>)</h6>
         <a href="/msgcenter?refresh=1" class="ms-auto btn btn-sm btn-outline-secondary">
-            <i class="bi bi-arrow-clockwise me-1"></i>Aktualisieren
+            <i class="bi bi-arrow-clockwise me-1"></i><?= te('Aktualisieren') ?>
         </a>
     </div>
 
@@ -150,13 +150,13 @@
         <div class="card-body-custom">
             <div class="empty-state">
                 <i class="bi bi-chat-square-text text-muted" style="font-size:2.5rem;"></i>
-                <p class="mt-3 mb-1 fw-medium">Keine Nachrichten gefunden</p>
+                <p class="mt-3 mb-1 fw-medium"><?= te('Keine Nachrichten gefunden') ?></p>
                 <p class="text-muted small">
                     <?php if (array_filter($filters)): ?>
-                        Keine Nachrichten entsprechen den gewählten Filtern.
-                        <a href="/msgcenter">Filter zurücksetzen</a>
+                        <?= te('Keine Nachrichten entsprechen den gewählten Filtern.') ?>
+                        <a href="/msgcenter"><?= te('Filter zurücksetzen') ?></a>
                     <?php else: ?>
-                        Es sind keine Message-Center-Nachrichten verfügbar.
+                        <?= te('Es sind keine Message-Center-Nachrichten verfügbar.') ?>
                     <?php endif; ?>
                 </p>
             </div>
@@ -173,9 +173,9 @@
                 default    => 'badge-secondary',
             };
             $sevLabel = match ($severity) {
-                'critical' => 'Kritisch',
-                'high'     => 'Hoch',
-                'normal'   => 'Normal',
+                'critical' => t('Kritisch'),
+                'high'     => t('Hoch'),
+                'normal'   => t('Normal'),
                 default    => $severity,
             };
             $startDate     = !empty($message['startDateTime'])
@@ -186,7 +186,7 @@
         <div class="msg-item">
             <div class="msg-header">
                 <?php if (!$isRead): ?>
-                    <span class="msg-unread-dot" title="Ungelesen"></span>
+                    <span class="msg-unread-dot" title="<?= te('Ungelesen') ?>"></span>
                 <?php else: ?>
                     <span style="width:8px;height:8px;flex-shrink:0;"></span>
                 <?php endif; ?>
