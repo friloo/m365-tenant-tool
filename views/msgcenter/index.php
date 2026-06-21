@@ -218,7 +218,7 @@
                 <a href="https://admin.microsoft.com/Adminportal/Home#/MessageCenter"
                    target="_blank" rel="noopener noreferrer"
                    class="btn btn-sm btn-outline-primary">
-                    <i class="bi bi-box-arrow-up-right me-1"></i>Im Admin Center öffnen
+                    <i class="bi bi-box-arrow-up-right me-1"></i><?= te('Im Admin Center öffnen') ?>
                 </a>
             </div>
         </div>

@@ -981,159 +981,159 @@
 
 <!-- Inaktive Konten ──────────────────────────────────────── -->
 <div class="man-section" id="staleaccounts">
-    <h2><i class="bi bi-person-x text-primary"></i> Inaktive Konten</h2>
-    <p>Listet Benutzerkonten, die sich länger als die konfigurierte Anzahl Tage nicht mehr angemeldet haben (Standard: 90 Tage).</p>
+    <h2><i class="bi bi-person-x text-primary"></i> <?= te('Inaktive Konten') ?></h2>
+    <p><?= te('Listet Benutzerkonten, die sich länger als die konfigurierte Anzahl Tage nicht mehr angemeldet haben (Standard: 90 Tage).') ?></p>
 
-    <h3>Konfiguration</h3>
-    <p>In den Einstellungen kann konfiguriert werden:</p>
+    <h3><?= te('Konfiguration') ?></h3>
+    <p><?= te('In den Einstellungen kann konfiguriert werden:') ?></p>
     <ul>
-        <li><strong>Inaktivitätsschwelle</strong>: Ab wann gilt ein Konto als inaktiv (Standard: 90 Tage)</li>
-        <li><strong>Automatisches Lizenz-Entfernen</strong>: Optionale Automatisierung — Lizenzen werden nach X Tagen Inaktivität automatisch entzogen</li>
-        <li><strong>Vorwarnzeit</strong>: Benutzer erhalten X Tage vor der automatischen Aktion eine Warn-E-Mail</li>
+        <li><strong><?= te('Inaktivitätsschwelle') ?></strong>: <?= te('Ab wann gilt ein Konto als inaktiv (Standard: 90 Tage)') ?></li>
+        <li><strong><?= te('Automatisches Lizenz-Entfernen') ?></strong>: <?= te('Optionale Automatisierung — Lizenzen werden nach X Tagen Inaktivität automatisch entzogen') ?></li>
+        <li><strong><?= te('Vorwarnzeit') ?></strong>: <?= te('Benutzer erhalten X Tage vor der automatischen Aktion eine Warn-E-Mail') ?></li>
     </ul>
 
-    <h3>Lizenz manuell entfernen</h3>
-    <p>Für einzelne inaktive Benutzer können Lizenzen direkt aus der Tabelle heraus entzogen werden.</p>
+    <h3><?= te('Lizenz manuell entfernen') ?></h3>
+    <p><?= te('Für einzelne inaktive Benutzer können Lizenzen direkt aus der Tabelle heraus entzogen werden.') ?></p>
     <p><span class="perm-tag">User.Read.All</span> <span class="perm-tag">AuditLog.Read.All</span></p>
 </div>
 
 <!-- Audit-Log ────────────────────────────────────────────── -->
 <div class="man-section" id="auditlog">
-    <h2><i class="bi bi-clock-history text-primary"></i> Audit-Log</h2>
-    <p>Zeigt Aktivitäten aus dem Microsoft Entra-Audit-Log: Benutzeränderungen, Gruppen-Änderungen, App-Zuweisungen, Rollen-Änderungen und weitere Verzeichnisoperationen.</p>
-    <p>Die letzten 200 Ereignisse werden angezeigt, filterbar nach Kategorie und Datum. Der CSV-Export enthält alle sichtbaren Einträge.</p>
-    <div class="info-box"><i class="bi bi-info-circle"></i>Das Entra-Audit-Log speichert Daten 30 Tage (Azure AD Free) bzw. 90 Tage (Azure AD P1/P2). Ältere Daten sind nur über Azure Monitor / Log Analytics zugänglich.</div>
+    <h2><i class="bi bi-clock-history text-primary"></i> <?= te('Audit-Log') ?></h2>
+    <p><?= te('Zeigt Aktivitäten aus dem Microsoft Entra-Audit-Log: Benutzeränderungen, Gruppen-Änderungen, App-Zuweisungen, Rollen-Änderungen und weitere Verzeichnisoperationen.') ?></p>
+    <p><?= te('Die letzten 200 Ereignisse werden angezeigt, filterbar nach Kategorie und Datum. Der CSV-Export enthält alle sichtbaren Einträge.') ?></p>
+    <div class="info-box"><i class="bi bi-info-circle"></i><?= te('Das Entra-Audit-Log speichert Daten 30 Tage (Azure AD Free) bzw. 90 Tage (Azure AD P1/P2). Ältere Daten sind nur über Azure Monitor / Log Analytics zugänglich.') ?></div>
     <p><span class="perm-tag">AuditLog.Read.All</span></p>
 </div>
 
 <!-- Sign-in-Log ──────────────────────────────────────────── -->
 <div class="man-section" id="signinlog">
-    <h2><i class="bi bi-journal-text text-primary"></i> Sign-in-Log</h2>
-    <p>Zeigt die Anmeldeprotokolle des Tenants: Wer hat sich wann, von welchem Gerät und welcher IP-Adresse angemeldet, mit welcher App, mit welchem Ergebnis und ob Conditional Access angewendet wurde.</p>
-    <p>Filter: Zeitraum, Status (Erfolg/Fehler/Unterbrochen), Benutzer, App.</p>
-    <p>Der CSV-Export eignet sich für Compliance-Audits und Forensik-Untersuchungen.</p>
+    <h2><i class="bi bi-journal-text text-primary"></i> <?= te('Sign-in-Log') ?></h2>
+    <p><?= te('Zeigt die Anmeldeprotokolle des Tenants: Wer hat sich wann, von welchem Gerät und welcher IP-Adresse angemeldet, mit welcher App, mit welchem Ergebnis und ob Conditional Access angewendet wurde.') ?></p>
+    <p><?= te('Filter: Zeitraum, Status (Erfolg/Fehler/Unterbrochen), Benutzer, App.') ?></p>
+    <p><?= te('Der CSV-Export eignet sich für Compliance-Audits und Forensik-Untersuchungen.') ?></p>
     <p><span class="perm-tag">AuditLog.Read.All</span></p>
 </div>
 
 <!-- Cron ─────────────────────────────────────────────────── -->
 <div class="man-section" id="cron">
-    <h2><i class="bi bi-clock text-primary"></i> Cron & Automatisierung</h2>
-    <p>Verwaltet wiederkehrende Hintergrundaufgaben des Tools. Jeder Job hat einen konfigurierbaren Zeitplan (Cron-Ausdruck) und kann auch manuell ausgelöst werden.</p>
+    <h2><i class="bi bi-clock text-primary"></i> <?= te('Cron & Automatisierung') ?></h2>
+    <p><?= te('Verwaltet wiederkehrende Hintergrundaufgaben des Tools. Jeder Job hat einen konfigurierbaren Zeitplan (Cron-Ausdruck) und kann auch manuell ausgelöst werden.') ?></p>
 
-    <h3>Verfügbare Jobs</h3>
+    <h3><?= te('Verfügbare Jobs') ?></h3>
     <ul>
-        <li><strong>Alert-Check</strong>: Prüft Sicherheitsmetriken und sendet E-Mail-Benachrichtigungen (MFA-Abdeckung unter Schwellwert, neue Risiko-Benutzer, neue anonyme Freigaben)</li>
-        <li><strong>Freigaben-Monitor-Scan</strong>: Scannt externe Freigaben und versendet Review-E-Mails</li>
-        <li><strong>Inaktive Konten — Warn-E-Mail</strong>: Versendet Warnungen vor automatischem Lizenz-Entzug</li>
-        <li><strong>Inaktive Konten — Auto-Release</strong>: Entzieht Lizenzen bei Inaktivität (wenn aktiviert)</li>
-        <li><strong>Wöchentlicher Report</strong>: Sendet einen wöchentlichen Zusammenfassungs-Report per E-Mail</li>
+        <li><strong>Alert-Check</strong>: <?= te('Prüft Sicherheitsmetriken und sendet E-Mail-Benachrichtigungen (MFA-Abdeckung unter Schwellwert, neue Risiko-Benutzer, neue anonyme Freigaben)') ?></li>
+        <li><strong>Freigaben-Monitor-Scan</strong>: <?= te('Scannt externe Freigaben und versendet Review-E-Mails') ?></li>
+        <li><strong><?= te('Inaktive Konten — Warn-E-Mail') ?></strong>: <?= te('Versendet Warnungen vor automatischem Lizenz-Entzug') ?></li>
+        <li><strong><?= te('Inaktive Konten — Auto-Release') ?></strong>: <?= te('Entzieht Lizenzen bei Inaktivität (wenn aktiviert)') ?></li>
+        <li><strong><?= te('Wöchentlicher Report') ?></strong>: <?= te('Sendet einen wöchentlichen Zusammenfassungs-Report per E-Mail') ?></li>
     </ul>
 
-    <h3>Einrichten des System-Crons</h3>
-    <p>Das Tool selbst führt keine Hintergrundprozesse aus. Es muss ein System-Cron eingerichtet werden, der regelmäßig den Tool-internen Cron-Runner aufruft:</p>
+    <h3><?= te('Einrichten des System-Crons') ?></h3>
+    <p><?= te('Das Tool selbst führt keine Hintergrundprozesse aus. Es muss ein System-Cron eingerichtet werden, der regelmäßig den Tool-internen Cron-Runner aufruft:') ?></p>
     <pre style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:10px;font-size:12px;overflow-x:auto;">* * * * * www-data php /var/www/m365.example.com/artisan cron:run</pre>
-    <p>Oder via HTTP-Aufruf (z.B. mit curl in einem Shell-Script).</p>
+    <p><?= te('Oder via HTTP-Aufruf (z.B. mit curl in einem Shell-Script).') ?></p>
     <p><span class="perm-tag">Mail.ReadBasic.All</span> <span class="perm-tag">Sites.Read.All</span> <span class="perm-tag">User.Read.All</span></p>
 </div>
 
 <!-- Einstellungen ────────────────────────────────────────── -->
 <div class="man-section" id="settings">
-    <h2><i class="bi bi-gear text-primary"></i> Einstellungen</h2>
-    <p>Zentraler Konfigurationsbereich für alle allgemeinen Tool-Einstellungen. Nur für Administratoren sichtbar.</p>
+    <h2><i class="bi bi-gear text-primary"></i> <?= te('Einstellungen') ?></h2>
+    <p><?= te('Zentraler Konfigurationsbereich für alle allgemeinen Tool-Einstellungen. Nur für Administratoren sichtbar.') ?></p>
 
-    <h3>Allgemein</h3>
+    <h3><?= te('Allgemein') ?></h3>
     <ul>
-        <li><strong>App-Name</strong>: Wird im Browser-Tab und in der Sidebar angezeigt</li>
-        <li><strong>Cache-Dauer</strong>: Wie lange API-Antworten gecacht werden (5–60 Min.)</li>
-        <li><strong>Zeitzone</strong>: Für Zeitstempel-Anzeigen im Tool</li>
+        <li><strong>App-Name</strong>: <?= te('Wird im Browser-Tab und in der Sidebar angezeigt') ?></li>
+        <li><strong><?= te('Cache-Dauer') ?></strong>: <?= te('Wie lange API-Antworten gecacht werden (5–60 Min.)') ?></li>
+        <li><strong><?= te('Zeitzone') ?></strong>: <?= te('Für Zeitstempel-Anzeigen im Tool') ?></li>
     </ul>
 
     <h3>E-Mail & SMTP</h3>
-    <p>Konfiguriert den ausgehenden Mailserver für Alert-E-Mails, Freigaben-Monitor und Berichte. Pflichtfelder: SMTP-Host, Port, Absender-Adresse, Empfänger-Adresse. Optional: SMTP-Authentifizierung.</p>
+    <p><?= te('Konfiguriert den ausgehenden Mailserver für Alert-E-Mails, Freigaben-Monitor und Berichte. Pflichtfelder: SMTP-Host, Port, Absender-Adresse, Empfänger-Adresse. Optional: SMTP-Authentifizierung.') ?></p>
 
-    <h3>Admin-Passwort</h3>
-    <p>Ändert das Passwort des lokalen Administrator-Kontos (das ursprünglich beim Setup eingerichtete Konto).</p>
+    <h3><?= te('Admin-Passwort') ?></h3>
+    <p><?= te('Ändert das Passwort des lokalen Administrator-Kontos (das ursprünglich beim Setup eingerichtete Konto).') ?></p>
 
-    <h3>Berechtigungen prüfen</h3>
-    <p>Zeigt, welche Microsoft Graph Berechtigungen dem konfigurierten App-Konto erteilt wurden und welche Module dadurch eingeschränkt sind. Nach Änderungen in Azure AD kann das Token über den Button „Token erneuern & neu prüfen" sofort aktualisiert werden.</p>
+    <h3><?= te('Berechtigungen prüfen') ?></h3>
+    <p><?= te('Zeigt, welche Microsoft Graph Berechtigungen dem konfigurierten App-Konto erteilt wurden und welche Module dadurch eingeschränkt sind. Nach Änderungen in Azure AD kann das Token über den Button „Token erneuern & neu prüfen" sofort aktualisiert werden.') ?></p>
 
-    <h3>Cache leeren</h3>
-    <p>Löscht alle zwischengespeicherten API-Antworten sofort. Hilfreich nach manuellen Änderungen direkt in Azure AD.</p>
+    <h3><?= te('Cache leeren') ?></h3>
+    <p><?= te('Löscht alle zwischengespeicherten API-Antworten sofort. Hilfreich nach manuellen Änderungen direkt in Azure AD.') ?></p>
 </div>
 
 <!-- Benutzer-Zugang ──────────────────────────────────────── -->
 <div class="man-section" id="useraccess">
-    <h2><i class="bi bi-people-fill text-primary"></i> Benutzer-Zugang</h2>
-    <p>Neben dem lokalen Admin-Konto können beliebig viele <strong>Microsoft 365-Benutzer</strong> des Tenants berechtigt werden, sich mit ihrem Microsoft-Konto anzumelden — z.B. IT-Mitarbeiter als Operator.</p>
+    <h2><i class="bi bi-people-fill text-primary"></i> <?= te('Benutzer-Zugang') ?></h2>
+    <p><?= te('Neben dem lokalen Admin-Konto können beliebig viele <strong>Microsoft 365-Benutzer</strong> des Tenants berechtigt werden, sich mit ihrem Microsoft-Konto anzumelden — z.B. IT-Mitarbeiter als Operator.') ?></p>
 
-    <h3>Voraussetzungen in Azure</h3>
-    <p>Die bestehende App-Registrierung muss um folgende Konfiguration ergänzt werden:</p>
+    <h3><?= te('Voraussetzungen in Azure') ?></h3>
+    <p><?= te('Die bestehende App-Registrierung muss um folgende Konfiguration ergänzt werden:') ?></p>
     <ol>
-        <li>In der App-Registrierung unter <strong>Authentifizierung → Redirect-URIs</strong> die angezeigte URI eintragen (wird auf der Seite <em>Einstellungen → Benutzer-Zugang</em> direkt angezeigt)</li>
-        <li>Unter <strong>API-Berechtigungen</strong> die <strong>delegierte</strong> Berechtigung <span class="perm-tag">User.Read</span> hinzufügen (nicht die Anwendungsberechtigung — die delegierte Version reicht für das Login)</li>
-        <li>Kein zusätzlicher Admin-Consent nötig — <code>User.Read</code> delegiert wird von jedem Benutzer selbst beim ersten Login genehmigt</li>
+        <li><?= te('In der App-Registrierung unter <strong>Authentifizierung → Redirect-URIs</strong> die angezeigte URI eintragen (wird auf der Seite <em>Einstellungen → Benutzer-Zugang</em> direkt angezeigt)') ?></li>
+        <li><?= te('Unter <strong>API-Berechtigungen</strong> die <strong>delegierte</strong> Berechtigung') ?> <span class="perm-tag">User.Read</span> <?= te('hinzufügen (nicht die Anwendungsberechtigung — die delegierte Version reicht für das Login)') ?></li>
+        <li><?= te('Kein zusätzlicher Admin-Consent nötig — <code>User.Read</code> delegiert wird von jedem Benutzer selbst beim ersten Login genehmigt') ?></li>
     </ol>
-    <div class="tip-box"><i class="bi bi-lightbulb"></i>Die Redirect-URI ist im Format <code>https://ihre-domain/auth/microsoft/callback</code>. Wenn <em>App-Basis-URL</em> in den Einstellungen konfiguriert ist, wird diese verwendet.</div>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Die Redirect-URI ist im Format <code>https://ihre-domain/auth/microsoft/callback</code>. Wenn <em>App-Basis-URL</em> in den Einstellungen konfiguriert ist, wird diese verwendet.') ?></div>
 
-    <h3>Benutzer hinzufügen</h3>
-    <p>Über <strong>Einstellungen → Benutzer-Zugang → Benutzer hinzufügen</strong> können vorhandene Tenant-Benutzer per Suchfunktion ausgewählt werden:</p>
+    <h3><?= te('Benutzer hinzufügen') ?></h3>
+    <p><?= te('Über <strong>Einstellungen → Benutzer-Zugang → Benutzer hinzufügen</strong> können vorhandene Tenant-Benutzer per Suchfunktion ausgewählt werden:') ?></p>
     <ol>
-        <li>Im Suchfeld Name oder E-Mail-Adresse eingeben (mindestens 2 Zeichen)</li>
-        <li>Benutzer aus den Vorschlägen auswählen (durchsucht Anzeigenamen und UPN)</li>
-        <li>Rolle festlegen: <strong>Operator</strong> (Standard) oder <strong>Administrator</strong></li>
-        <li>„Hinzufügen" klicken</li>
+        <li><?= te('Im Suchfeld Name oder E-Mail-Adresse eingeben (mindestens 2 Zeichen)') ?></li>
+        <li><?= te('Benutzer aus den Vorschlägen auswählen (durchsucht Anzeigenamen und UPN)') ?></li>
+        <li><?= te('Rolle festlegen: <strong>Operator</strong> (Standard) oder <strong>Administrator</strong>') ?></li>
+        <li><?= te('„Hinzufügen" klicken') ?></li>
     </ol>
-    <p>Falls die Graph-Suche nicht verfügbar ist (z.B. fehlende Berechtigung), kann der UPN auch manuell eingegeben werden (Link „UPN manuell eingeben" im Dialog).</p>
+    <p><?= te('Falls die Graph-Suche nicht verfügbar ist (z.B. fehlende Berechtigung), kann der UPN auch manuell eingegeben werden (Link „UPN manuell eingeben" im Dialog).') ?></p>
 
-    <h3>Anmeldevorgang für Benutzer</h3>
+    <h3><?= te('Anmeldevorgang für Benutzer') ?></h3>
     <ol>
-        <li>Benutzer öffnet die Login-Seite und klickt <strong>„Mit Microsoft anmelden"</strong></li>
-        <li>Weiterleitung zur Microsoft-Anmeldeseite (login.microsoftonline.com)</li>
-        <li>Nach erfolgreicher Authentifizierung prüft das Tool, ob der Benutzer in der Zugriffsliste steht</li>
-        <li>Ist er eingetragen und aktiv: automatische Anmeldung mit der zugewiesenen Rolle</li>
-        <li>Ist er nicht eingetragen: Anzeige der Seite „Kein Zugriff" — kein Zugriff auf das Tool</li>
+        <li><?= te('Benutzer öffnet die Login-Seite und klickt <strong>„Mit Microsoft anmelden"</strong>') ?></li>
+        <li><?= te('Weiterleitung zur Microsoft-Anmeldeseite (login.microsoftonline.com)') ?></li>
+        <li><?= te('Nach erfolgreicher Authentifizierung prüft das Tool, ob der Benutzer in der Zugriffsliste steht') ?></li>
+        <li><?= te('Ist er eingetragen und aktiv: automatische Anmeldung mit der zugewiesenen Rolle') ?></li>
+        <li><?= te('Ist er nicht eingetragen: Anzeige der Seite „Kein Zugriff" — kein Zugriff auf das Tool') ?></li>
     </ol>
 
-    <h3>Rollen &amp; Berechtigungen</h3>
+    <h3><?= te('Rollen &amp; Berechtigungen') ?></h3>
     <table class="table table-sm table-bordered small">
-        <thead class="table-light"><tr><th>Funktion</th><th>Operator</th><th>Administrator</th></tr></thead>
+        <thead class="table-light"><tr><th><?= te('Funktion') ?></th><th>Operator</th><th>Administrator</th></tr></thead>
         <tbody>
-            <tr><td>Alle Monitoring-Module lesen</td><td><i class="bi bi-check text-success"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
-            <tr><td>Scans starten, Erinnerungen senden</td><td><i class="bi bi-check text-success"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
-            <tr><td>Freigaben manuell widerrufen</td><td><i class="bi bi-check text-success"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
-            <tr><td>Einstellungen bearbeiten</td><td><i class="bi bi-x text-danger"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
-            <tr><td>Benutzer-Zugang verwalten</td><td><i class="bi bi-x text-danger"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
-            <tr><td>Updates einspielen</td><td><i class="bi bi-x text-danger"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
+            <tr><td><?= te('Alle Monitoring-Module lesen') ?></td><td><i class="bi bi-check text-success"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
+            <tr><td><?= te('Scans starten, Erinnerungen senden') ?></td><td><i class="bi bi-check text-success"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
+            <tr><td><?= te('Freigaben manuell widerrufen') ?></td><td><i class="bi bi-check text-success"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
+            <tr><td><?= te('Einstellungen bearbeiten') ?></td><td><i class="bi bi-x text-danger"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
+            <tr><td><?= te('Benutzer-Zugang verwalten') ?></td><td><i class="bi bi-x text-danger"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
+            <tr><td><?= te('Updates einspielen') ?></td><td><i class="bi bi-x text-danger"></i></td><td><i class="bi bi-check text-success"></i></td></tr>
         </tbody>
     </table>
 
-    <h3>Benutzer deaktivieren / entfernen</h3>
-    <p>Über den Bearbeiten-Button kann ein Benutzer <strong>deaktiviert</strong> werden (Zugriff gesperrt, aber Eintrag bleibt erhalten) oder über den Löschen-Button vollständig entfernt werden. Eine aktive Session wird beim nächsten Seitenaufruf automatisch beendet.</p>
-    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i>Der letzte Administrator-Benutzer sollte nicht entfernt werden. Das lokale Admin-Konto (aus dem Setup) ist davon unabhängig und bleibt immer erhalten.</div>
+    <h3><?= te('Benutzer deaktivieren / entfernen') ?></h3>
+    <p><?= te('Über den Bearbeiten-Button kann ein Benutzer <strong>deaktiviert</strong> werden (Zugriff gesperrt, aber Eintrag bleibt erhalten) oder über den Löschen-Button vollständig entfernt werden. Eine aktive Session wird beim nächsten Seitenaufruf automatisch beendet.') ?></p>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle"></i><?= te('Der letzte Administrator-Benutzer sollte nicht entfernt werden. Das lokale Admin-Konto (aus dem Setup) ist davon unabhängig und bleibt immer erhalten.') ?></div>
 </div>
 
 <!-- Updates ──────────────────────────────────────────────── -->
 <div class="man-section" id="updates">
     <h2><i class="bi bi-cloud-arrow-down text-primary"></i> Updates</h2>
-    <p>Ermöglicht das automatische Aktualisieren des Tools auf die neueste Version aus dem konfigurierten Update-Channel.</p>
+    <p><?= te('Ermöglicht das automatische Aktualisieren des Tools auf die neueste Version aus dem konfigurierten Update-Channel.') ?></p>
 
     <h3>Update-Channels</h3>
     <ul>
-        <li><strong>stable</strong>: Produktionsreife Releases — empfohlen für den Produktivbetrieb</li>
-        <li><strong>development</strong>: Aktuelle Entwicklungsversion mit neuen Features — nur für Testumgebungen</li>
+        <li><strong>stable</strong>: <?= te('Produktionsreife Releases — empfohlen für den Produktivbetrieb') ?></li>
+        <li><strong>development</strong>: <?= te('Aktuelle Entwicklungsversion mit neuen Features — nur für Testumgebungen') ?></li>
     </ul>
 
-    <h3>Update-Prozess</h3>
+    <h3><?= te('Update-Prozess') ?></h3>
     <ol>
-        <li>„Auf Updates prüfen" klicken — vergleicht die installierte SHA mit der neuesten im Channel</li>
-        <li>Falls ein Update verfügbar ist, erscheint „Update installieren"</li>
-        <li>Während des Updates wird ein Fortschrittsbalken angezeigt</li>
-        <li>Nach dem Update lädt die Seite automatisch neu</li>
+        <li><?= te('„Auf Updates prüfen" klicken — vergleicht die installierte SHA mit der neuesten im Channel') ?></li>
+        <li><?= te('Falls ein Update verfügbar ist, erscheint „Update installieren"') ?></li>
+        <li><?= te('Während des Updates wird ein Fortschrittsbalken angezeigt') ?></li>
+        <li><?= te('Nach dem Update lädt die Seite automatisch neu') ?></li>
     </ol>
-    <div class="tip-box"><i class="bi bi-lightbulb"></i>Geschützte Verzeichnisse (<code>config/</code>, <code>storage/</code>, <code>vendor/</code>, <code>composer.lock</code>) werden beim Update nie überschrieben — Konfiguration und Daten bleiben erhalten.</div>
+    <div class="tip-box"><i class="bi bi-lightbulb"></i><?= te('Geschützte Verzeichnisse (<code>config/</code>, <code>storage/</code>, <code>vendor/</code>, <code>composer.lock</code>) werden beim Update nie überschrieben — Konfiguration und Daten bleiben erhalten.') ?></div>
 
-    <h3>Datenbank-Migrationen</h3>
-    <p>Nach einem Update können ausstehende SQL-Migrationen manuell oder automatisch ausgeführt werden. Das Tool zeigt an, welche Migrationen bereits angewendet wurden.</p>
+    <h3><?= te('Datenbank-Migrationen') ?></h3>
+    <p><?= te('Nach einem Update können ausstehende SQL-Migrationen manuell oder automatisch ausgeführt werden. Das Tool zeigt an, welche Migrationen bereits angewendet wurden.') ?></p>
 </div>
 
 <!-- Berechtigungen ───────────────────────────────────────── -->

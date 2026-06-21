@@ -137,7 +137,7 @@
 
                 <?php if (!empty($s['issues'])): ?>
                     <div class="alert alert-warning small mb-0">
-                        <div class="fw-semibold mb-1"><i class="bi bi-exclamation-triangle me-1"></i>Hinweise:</div>
+                        <div class="fw-semibold mb-1"><i class="bi bi-exclamation-triangle me-1"></i><?= te('Hinweise:') ?></div>
                         <ul class="mb-0 ps-3">
                             <?php foreach ($s['issues'] as $i): ?>
                                 <li><?= $e($i) ?></li>

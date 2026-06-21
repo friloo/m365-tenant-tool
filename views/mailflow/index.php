@@ -288,7 +288,7 @@ $isOperational = ($exoStatus === 'serviceOperational' || $exoStatus === 'service
                 </span>
             </div>
             <span class="text-muted ms-auto" style="font-size:11px;">
-                <i class="bi bi-clock me-1"></i><?= te('Abgerufen:') ?> <?= date('d.m.Y H:i') ?> <?= te('Uhr') ?>
+                <i class="bi bi-clock me-1"></i><?= te('Abgerufen:') ?> <?= date('d.m.Y H:i') ?><?= \App\Core\I18n::locale() === 'de' ? ' Uhr' : '' ?>
             </span>
         </div>
         <?php if (!$isOperational && !empty($exoStatus)): ?>
