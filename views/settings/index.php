@@ -273,6 +273,15 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-medium"><?= te('Sprache') ?></label>
+                        <select name="default_language" class="form-select">
+                            <?php foreach (\App\Core\I18n::supported() as $code => $name): ?>
+                                <option value="<?= $e($code) ?>" <?= ($s['default_language'] ?? \App\Core\I18n::SOURCE) === $code ? 'selected' : '' ?>><?= $e($name) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="text-muted small mt-1"><?= te('Standardsprache der Oberfläche. Jeder Nutzer kann sie über das Sprachmenü oben rechts wechseln.') ?></div>
+                    </div>
                 </div>
             </div>
         </div>

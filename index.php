@@ -143,10 +143,12 @@ if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
 }
 
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/src/i18n_functions.php';
 
 use App\Auth\GraphTokenManager;
 use App\Cache\GraphCache;
 use App\Core\Config;
+use App\Core\I18n;
 use App\Core\Router;
 use App\Core\Session;
 use App\Database\DB;
@@ -370,6 +372,14 @@ $config->setEncryptor($encryptor);
 // so swallow the error.
 $tz = $config->get('timezone', 'Europe/Berlin');
 try { date_default_timezone_set($tz); } catch (\Throwable) {}
+
+// Resolve the active UI language (German source, English translation available).
+// Wrapped defensively so a config glitch never takes the whole request down.
+try {
+    I18n::init($config->get('default_language', I18n::SOURCE));
+} catch (\Throwable $e) {
+    error_log('[M365Tool] I18n init skipped: ' . $e->getMessage());
+}
 try {
     DB::get()->exec("SET time_zone = '" . (new \DateTime())->format('P') . "'");
 } catch (\Throwable $e) {

@@ -3,13 +3,12 @@
 <div class="alert alert-info d-flex gap-3 mb-3">
     <i class="bi bi-grid-1x2 flex-shrink-0 mt-1" style="font-size:1.4rem;color:#0078d4;"></i>
     <div>
-        <strong>Alle <?= (int)$total ?> Module auf einen Blick.</strong>
-        Diese Seite listet jeden Bereich des Tools gruppiert auf — nutze sie zum schnellen
-        Einstieg oder die Suche oben, um direkt zu einem Modul zu springen.
+        <strong><?= te('Alle :count Module auf einen Blick.', ['count' => (int)$total]) ?></strong>
+        <?= te('Diese Seite listet jeden Bereich des Tools gruppiert auf — nutze sie zum schnellen Einstieg oder die Suche oben, um direkt zu einem Modul zu springen.') ?>
     </div>
 </div>
 
-<input type="text" id="ovFilter" class="form-control mb-3" placeholder="Module filtern …" autocomplete="off">
+<input type="text" id="ovFilter" class="form-control mb-3" placeholder="<?= te('Module filtern …') ?>" autocomplete="off">
 
 <div class="row g-3" id="ovGrid">
 <?php foreach ($groups as $group): ?>
@@ -30,7 +29,7 @@
                             <span class="nav-icon"><i class="bi bi-<?= $e($item['icon']) ?>"></i></span>
                             <span><?= $e($item['label']) ?></span>
                             <?php if (!empty($item['admin'])): ?>
-                                <span class="badge bg-light text-muted ms-auto" style="font-size:.65rem;">Admin</span>
+                                <span class="badge bg-light text-muted ms-auto" style="font-size:.65rem;"><?= te('Admin') ?></span>
                             <?php endif; ?>
                         </a>
                     <?php endforeach; ?>

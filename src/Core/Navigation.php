@@ -22,7 +22,7 @@ class Navigation
     /** Ordered top-level hubs shown in the sidebar. */
     public static function hubs(): array
     {
-        return [
+        $hubs = [
             ['key' => 'identitaet',     'label' => 'Identität & Konten',       'icon' => 'people'],
             ['key' => 'zugriff',        'label' => 'Zugriff & Privilegien',    'icon' => 'shield-lock'],
             ['key' => 'bedrohungen',    'label' => 'Bedrohungen & Response',   'icon' => 'shield-exclamation'],
@@ -35,6 +35,10 @@ class Navigation
             ['key' => 'apps',           'label' => 'Apps & Automatisierung',   'icon' => 'grid-3x3-gap'],
             ['key' => 'administration', 'label' => 'Administration',           'icon' => 'gear'],
         ];
+        foreach ($hubs as &$hub) {
+            $hub['label'] = \App\Core\I18n::t($hub['label']);
+        }
+        return $hubs;
     }
 
     /**
@@ -43,7 +47,7 @@ class Navigation
      */
     public static function defs(): array
     {
-        return [
+        $defs = [
             // ── Identität & Konten ──────────────────────────────────────
             ['hub' => 'identitaet', 'icon' => 'people',         'label' => 'Benutzer',                'route' => 'users',                  'admin' => false],
             ['hub' => 'identitaet', 'icon' => 'person-badge',   'label' => 'Gastbenutzer',            'route' => 'guestusers',             'admin' => false],
@@ -150,6 +154,12 @@ class Navigation
             ['hub' => 'administration', 'icon' => null, 'label' => null, 'route' => 'settings/permissions',    'admin' => true],
             ['hub' => 'administration', 'icon' => null, 'label' => null, 'route' => 'settings/license-prices', 'admin' => true],
         ];
+        foreach ($defs as &$def) {
+            if ($def['label'] !== null) {
+                $def['label'] = \App\Core\I18n::t($def['label']);
+            }
+        }
+        return $defs;
     }
 
     /** All routes (for sidebar active-state resolution). */
